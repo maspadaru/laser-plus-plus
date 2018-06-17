@@ -4,13 +4,13 @@
 #ifndef LASER_RULE_RULE_H
 #define LASER_RULE_RULE_H
 
-
-#include <iostream> // DELETE
-
 namespace laser {
 namespace rule {
 
-void print_me(); // DELETE
+
+class RuleBody {
+
+};
 
 
 } // namespace rule

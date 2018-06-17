@@ -5,12 +5,11 @@
 #define LASER_FORMULA_EXTENDED_ATOM_H
 
 
-#include <iostream> // DELETE
 #include <vector>
 #include <string>
 
-#include <formula/formula.h>
-#include <formula/groundingtable.h>
+#include "formula/formula.h"
+#include "formula/grounding_table.h"
 
 namespace laser {
 namespace formula {
@@ -33,7 +32,6 @@ public:
     FormulaType get_type() {return this->type;}
     std::string get_predicate() {return predicate;}
     bool is_negated() {return _is_negated;}
-    void print_me(); // DELETE
 };
 
 
@@ -42,4 +40,4 @@ public:
 
 
 
-#endif //LASER_FORMULA_EXTENDED_ATOM_H
+#endif // LASER_FORMULA_EXTENDED_ATOM_H

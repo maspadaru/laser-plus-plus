@@ -2,8 +2,8 @@
 // Created by mike on 6/16/18.
 //
 
-#ifndef LASERPP_FORMULA_GROUNDINGTABLE_H
-#define LASERPP_FORMULA_GROUNDINGTABLE_H
+#ifndef LASER_FORMULA_GROUNDING_TABLE_H
+#define LASER_FORMULA_GROUNDING_TABLE_H
 
 
 namespace laser {
@@ -21,4 +21,4 @@ public:
 } // namespace laser
 
 
-#endif //LASERPP_FORMULA_GROUNDINGTABLE_H
+#endif // LASER_FORMULA_GROUNDING_TABLE_H

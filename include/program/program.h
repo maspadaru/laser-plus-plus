@@ -4,18 +4,16 @@
 #ifndef LASER_PROGRAM_PROGRAM_H
 #define LASER_PROGRAM_PROGRAM_H
 
-
-#include <iostream> // DELETE
-
 namespace laser {
 namespace program {
 
-void print_me(); // DELETE
+class Program {
 
+};
 
 } // namespace program
 } // namespace laser
 
 
 
-#endif //LASER_PROGRAM_PROGRAM_H
+#endif // LASER_PROGRAM_PROGRAM_H
