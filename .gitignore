@@ -1,0 +1,12 @@
+.directory
+.DS_Store
+*.vs*
+.vscode/
+.project
+.settings
+.idea/
+.tags*
+.classpath
+cmake-build-debug/
+build/
+
