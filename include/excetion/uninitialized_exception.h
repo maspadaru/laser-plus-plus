@@ -15,9 +15,10 @@ class UninitializedException : public std::exception {
 private:
     char *message_m = "UninitializedException";
 public:
+    UninitializedException() = default;
     UninitializedException(char *message) : message_m(message) {}
 
-    const char *what() const {
+    const char *what() const noexcept {
         return message_m;
     }
 };

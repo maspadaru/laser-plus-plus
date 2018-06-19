@@ -15,9 +15,10 @@ class WriteException : public std::exception {
 private:
     char *message_m = "WriteException";
 public:
+    WriteException() = default;
     WriteException(char *message) : message_m(message) {}
 
-    const char *what() const {
+    const char *what() const noexcept {
         return message_m;
     }
 };

@@ -7,6 +7,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <tuple>
 #include "formula/formula.h"
 
 namespace laser {
@@ -27,15 +28,17 @@ public:
 
     /**
     * Parses the facts from the raw data stream.
-    *
     * @param raw_data string containing the raw data that must be parsed
-    * @return Unordered Map where the keys are predicates and the
+    * @return
+     *      Tuple: [1] Number of parsed facts.
+ *                 [2] Unordered Map where the keys are predicates and the
     *             values are vectors containing the facts that have the
     *             corresponding key as predicate.
     * @throw FormatException if the input is not in a format that can be
     *      properly parsered.
     */
-    virtual std::unordered_map<std::string, std::vector<formula::Formula *>>
+    virtual std::tuple<int, std::unordered_map<std::string,
+                    std::vector<formula::Formula *>>>
     parse_data(std::vector<std::string> raw_data_vector) const = 0;
 
 };

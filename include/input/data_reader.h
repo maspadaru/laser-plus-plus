@@ -8,7 +8,7 @@
 
 #include <string>
 #include <vector>
-#include <unordered_map>
+#include <tuple>
 
 namespace laser {
 namespace input {
@@ -22,6 +22,13 @@ public:
 // constructors & destructors
     virtual ~DataReader() = default;
 // getters & setters
+
+    virtual bool has_metadata() const = 0;
+
+    virtual long long int get_stream_start_time() const = 0;
+
+    virtual long long int get_stream_end_time() const = 0;
+
 // const methods
 
     /**
@@ -35,15 +42,28 @@ public:
 // methods
 
     /**
-     * Reads data from input up to the next time point. Useful for reading
-     * stream data.
-     * @return Unordered Map where the key is the time point of the data and
-     * the value is a vector of strings containing raw data read from the input.
+     * Reads facts from input coresponding to the requested time point. Useful
+     * for reading stream data.
+     * @param request_time_point
+     * @return
+     *      Tuple: [1] The stream time point of the facts that were read
+     *             [2] A vector of strings containing raw data read from the
+     *                 input.
      * @throw ReadException if any problem occurred while reading the input,
      * e.g.: source file is inaccessible
      */
-    virtual std::unordered_map<long long int, std::vector<std::string>>
-    read_next_data() = 0;
+    virtual std::tuple<long long int, std::vector<std::string>>
+    read_next_data(long long int request_time_point) = 0;
+
+    /**
+     * Attempts to fetch metadata information about the data source, such the
+     * timeline of the stream. This metadata is stored as local state.
+     *
+     * @return True if retrieval of metadata is successful.
+     * @throw ReadException if any problem occurred while reading the input,
+     * e.g.: source file is inaccessible
+     */
+    virtual bool fetch_metadata() = 0;
 
 };
 

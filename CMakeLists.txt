@@ -10,6 +10,13 @@ file(GLOB SOURCES
         "src/output/*.cpp"
         "src/program/*.cpp"
         "src/rule/*.cpp"
+        )
+
+
+include_directories(testapp/include/)
+file(GLOB TESTAPP_SOURCES
+        "testapp/src/*.cpp"
     )
-set(SOURCE_FILES ${SOURCES})
-add_executable(${PROJECT_NAME} main.cpp ${SOURCE_FILES})
+
+set(SOURCE_FILES ${SOURCES} ${TESTAPP_SOURCES})
+add_executable(${PROJECT_NAME} testapp/main.cpp ${SOURCE_FILES})

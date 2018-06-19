@@ -8,6 +8,8 @@
 #include <vector>
 #include <unordered_map>
 #include <string>
+#include <tuple>
+
 #include "formula/formula.h"
 #include "rule/rule.h"
 #include "input/data_reader.h"
@@ -24,6 +26,7 @@ private:
     long long int stream_tuple_counter = 0;
     long long int stream_start_time = 0;
     long long int stream_end_time = 0;
+    bool has_timeline = false;
 
     RuleReader *rule_reader = nullptr;
     RuleParser *rule_parser = nullptr;
@@ -56,14 +59,23 @@ public:
     /**
      * Reads all the rules read by the rule reader.
      * @return Vector of pointers to rule objects.
+     * @throw ReadException if any problem occurred while reading the input,
+     *      e.g.: source file is inaccessible
+     * @throw FormatException if the input is not in a format that can be
+     *      properly parsered.
+     * @throw UninitializedException if the rule reader was not
+     *      initialised by calling initialize_rule_reader() before calling
+     *      get_rules().
      */
     std::vector<rule::Rule *> get_rules() const;
 
     /**
      * Reads all the fact from the background datastore.
-     * @return Unordered Map where the keys are predicates and the
-*             values are vectors containing all facts that have the
-*             corresponding key as predicate.
+     * @return
+     *      Tuple: [1] The number background facts read.
+     *             [2] Unordered Map where the keys are predicates and the
+     *             values are vectors containing all facts that have the
+     *             corresponding key as predicate.
      * @throw ReadException if any problem occurred while reading the input,
      *      e.g.: source file is inaccessible
      * @throw FormatException if the input is not in a format that can be
@@ -72,7 +84,7 @@ public:
      *      initialised by calling initialize_background_reader() before calling
      *      get_background_facts().
      */
-    std::unordered_map<std::string, std::vector<formula::Formula *>>
+    std::tuple<int, std::unordered_map<std::string, std::vector<formula::Formula *>>>
     get_background_facts() const;
 
 // methods
@@ -80,10 +92,10 @@ public:
     /**
      * Reads the facts from the stream that occurred at the requested time point
      * Updates curent time and tuple counters.
-     * @param time_point
+     * @param request_time_point
      * @return
      *      Tuple: [1] The stream time point corresponding to these facts
-     *             [2] The last stream tuple counter after to these facts
+     *             [2] The stream tuple counter of the last fact
      *             [3] Unordered Map where the keys are predicates and the
      *             values are vectors containing facts that have the
      *             corresponding key as predicate.
@@ -92,15 +104,15 @@ public:
      * @throw FormatException if the input is not in a format that can be
      *      properly parsered.
      * @throw RequestException if requested time point is
-     *      not equal or larger to the current time of the stream, i. e. can
+     *      not equal to the next time point of the stream, i. e. can
      *      not read out-of-order or facts from the past.
      * @throw UninitializedException if the stream data reader was not
      *      initialised by calling initialize_stream_reader() before calling
-     *      get_stream_facts_up_to().
+     *      get_stream_facts().
      */
-    std::tuple<long long int, long long int,
-            std::unordered_map<std::string, formula::Formula *>>
-    get_stream_facts_up_to(long long int time_point);
+    std::tuple<long long int, long long int, std::unordered_map<std::string,
+            std::vector<formula::Formula *>>>
+    get_stream_facts(long long int time_point);
 
 
     void initialize_rule_reader(RuleReader *rule_reader,
