@@ -10,6 +10,13 @@ namespace laser {
 namespace input {
 
 class DataInputManager {
+private:
+public:
+    // constructors & destructors
+    virtual ~DataInputManager() = default;
+    // getters & setters
+    // const methods
+    // methods
 
 };
 

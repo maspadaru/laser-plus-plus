@@ -7,6 +7,13 @@
 
 
 class Strata {
+private:
+public:
+    // constructors & destructors
+    virtual ~Strata() = default;
+    // getters & setters
+    // const methods
+    // methods
 
 };
 

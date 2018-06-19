@@ -14,6 +14,13 @@ namespace input {
  *  RuleReader Interface
  */
 class RuleReader {
+private:
+public:
+    // constructors & destructors
+    virtual ~RuleReader() = default;
+    // getters & setters
+    // const methods
+    // methods
 
 };
 

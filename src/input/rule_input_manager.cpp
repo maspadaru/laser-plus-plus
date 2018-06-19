@@ -6,8 +6,14 @@
 
 
 namespace laser {
-    namespace input {
+namespace input {
+
+// constructors & destructors
+
+// getters & setters
+
+// methods
 
 
-    } // namespace input
+} // namespace input
 } // namespace laser

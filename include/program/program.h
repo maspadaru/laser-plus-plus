@@ -8,6 +8,13 @@ namespace laser {
 namespace program {
 
 class Program {
+private:
+public:
+    // constructors & destructors
+    virtual ~Program() = default;
+    // getters & setters
+    // const methods
+    // methods
 
 };
 

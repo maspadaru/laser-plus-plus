@@ -14,6 +14,13 @@ namespace input {
  *  RuleParser Interface
  */
 class RuleParser {
+private:
+public:
+    // constructors & destructors
+    virtual ~RuleParser() = default;
+    // getters & setters
+    // const methods
+    // methods
 
 };
 

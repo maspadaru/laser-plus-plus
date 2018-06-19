@@ -8,6 +8,12 @@
 namespace laser {
 namespace program {
 
+// constructors & destructors
+
+// getters & setters
+
+// methods
+
 
 } // namespace program
 } // namespace laser

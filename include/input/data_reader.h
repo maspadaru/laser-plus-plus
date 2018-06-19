@@ -15,6 +15,13 @@ namespace input {
  */
 
 class DataReader {
+private:
+public:
+    // constructors & destructors
+    virtual ~DataReader() = default;
+    // getters & setters
+    // const methods
+    // methods
 
 };
 

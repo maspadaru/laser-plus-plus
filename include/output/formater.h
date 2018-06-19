@@ -13,6 +13,13 @@ namespace output {
  *  Formater Interface
  */
 class Formater {
+private:
+public:
+    // constructors & destructors
+    virtual ~Formater() = default;
+    // getters & setters
+    // const methods
+    // methods
 
 };
 

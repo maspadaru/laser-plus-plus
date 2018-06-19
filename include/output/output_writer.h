@@ -13,6 +13,13 @@ namespace output {
  *  OutputWriter Interface
  */
 class OutputWriter {
+private:
+public:
+    // constructors & destructors
+    virtual ~OutputWriter() = default;
+    // getters & setters
+    // const methods
+    // methods
 
 };
 

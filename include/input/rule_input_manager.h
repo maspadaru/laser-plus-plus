@@ -11,6 +11,13 @@ namespace laser {
 namespace input {
 
 class RuleInputManager {
+private:
+public:
+    // constructors & destructors
+    virtual ~RuleInputManager() = default;
+    // getters & setters
+    // const methods
+    // methods
 
 };
 

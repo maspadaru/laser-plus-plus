@@ -8,6 +8,13 @@ namespace laser {
 namespace output {
 
 class OutputManager {
+private:
+public:
+    // constructors & destructors
+    virtual ~OutputManager() = default;
+    // getters & setters
+    // const methods
+    // methods
 
 };
 

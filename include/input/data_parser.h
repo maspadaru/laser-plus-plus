@@ -12,6 +12,13 @@ namespace input {
  */
 
 class DataParser {
+private:
+public:
+    // constructors & destructors
+    virtual ~DataParser() = default;
+    // getters & setters
+    // const methods
+    // methods
 
 };
 
