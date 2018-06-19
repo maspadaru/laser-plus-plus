@@ -53,6 +53,7 @@ public:
 
     void accept(std::vector<Formula> facts, long long int current_time,
                 long long int current_tuple_counter) override;
+
 };
 
 } // namespace formula

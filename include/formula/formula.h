@@ -51,6 +51,7 @@ public:
                         long long int current_tuple_counter) = 0;
 };
 
+
 } // namespace formula
 } // namespace laser
 

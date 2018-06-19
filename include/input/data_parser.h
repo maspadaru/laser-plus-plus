@@ -4,6 +4,11 @@
 #ifndef LASER_INPUT_DATA_PARSER_H
 #define LASER_INPUT_DATA_PARSER_H
 
+#include <string>
+#include <unordered_map>
+#include <vector>
+#include "formula/formula.h"
+
 namespace laser {
 namespace input {
 
@@ -14,11 +19,24 @@ namespace input {
 class DataParser {
 private:
 public:
-    // constructors & destructors
+// constructors & destructors
     virtual ~DataParser() = default;
-    // getters & setters
-    // const methods
-    // methods
+// getters & setters
+// const methods
+// methods
+
+    /**
+    * Parses the facts from the raw data stream.
+    *
+    * @param raw_data string containing the raw data that must be parsed
+    * @return Unordered Map where the keys are predicates and the
+    *             values are vectors containing the facts that have the
+    *             corresponding key as predicate.
+    * @throw FormatException if the input is not in a format that can be
+    *      properly parsered.
+    */
+    virtual std::unordered_map<std::string, std::vector<formula::Formula *>>
+    parse_data(std::vector<std::string> raw_data_vector) const = 0;
 
 };
 

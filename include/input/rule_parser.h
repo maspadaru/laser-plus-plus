@@ -6,6 +6,8 @@
 #define LASER_INPUT_RULE_PARSER_H
 
 
+#include <string>
+#include <vector>
 
 namespace laser {
 namespace input {
@@ -16,11 +18,25 @@ namespace input {
 class RuleParser {
 private:
 public:
-    // constructors & destructors
+// constructors & destructors
     virtual ~RuleParser() = default;
-    // getters & setters
-    // const methods
-    // methods
+// getters & setters
+// const methods
+
+    /**
+    * Parses the rules from the raw strings.
+    *
+    * @param raw_data Vector of strings. Each element contains the raw string
+    * of a rule that must be parsed
+    * @return Vector of pointers to Rule objects obtained by parsing the raw
+    * rule strings
+    * @throw FormatException if the input is not in a format that can be
+    * properly parsered.
+    */
+    virtual std::vector<rule::Rule *>
+    parse_data(std::vector<std::string> raw_rule_vector) const = 0;
+
+// methods
 
 };
 
