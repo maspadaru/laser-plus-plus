@@ -27,13 +27,16 @@ private:
     long long int horizon_time = ULLONG_MAX;
     long long int consideration_count = 0;
     long long int horizon_count = ULLONG_MAX;
-    // key: variable; value: constant substitution_map of key in this grounding
-    std::unordered_map<std::string, std::string> substitution_map;
+    bool is_background_fact_m = false;
+    // key: variable index; value: constant substitution_map of key in this grounding
+    std::unordered_map<int, std::string> substitution_map;
 public:
 // constructors & destructors
 
     Grounding(long long int consideration_time, long long int horizon_time,
               long long int consideration_count, long long int horizon_count);
+
+    explicit Grounding(bool is_background_fact_m);
 
 // getters & setters
 
@@ -49,11 +52,11 @@ public:
 
 // const methods
 
-    std::string const &get_substitution(std::string const &variable) const;
+    std::string get_substitution(int variable_index) const;
 
 // methods
 
-    void add_substitution(std::string variable, std::string constant);
+    void add_substitution(int variable_index, std::string constant);
 
 };
 

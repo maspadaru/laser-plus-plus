@@ -17,55 +17,69 @@ private:
     int last_successful_join = -1;
     bool has_negated_atoms_m = false;
 
-    /** All groundings that satisfy the body that are found when calling
+    /* All groundings that satisfy the body that are found when calling
      * the method RuleBody::holds_at() */
-    formula::GroundingTable grounding_table = formula::GroundingTable();
+    formula::GroundingTable body_grounding_table = formula::GroundingTable();
 
     /* For the following Containers:
      * I am using vectors here rather than sets. It should not make sense for
      * the same formula to be present multiple times  in the same rule.
      */
-    /** vector containing all formulas in the rule body */
+
+    /* vector containing all formulas in the rule body */
     std::vector<formula::Formula *> formula_vector;
-    /** vector containing all negated formulas in the rule body */
+
+    /* vector containing all negated formulas in the rule body */
     std::vector<formula::Formula *> negated_formula_vector;
-    /** positive_predicate_map - key: predicate / value: pointer to Formula */
-    std::unordered_map<std::string, std::vector<formula::Formula *>> positive_predicate_map;
-    /** negative_predicate_map - key: predicate / value: pointer to Formula */
-    std::unordered_map<std::string, std::vector<formula::Formula *>> negative_predicate_map;
-    /** predicate_map - key: predicate / value: pointer to Formula */
-    std::unordered_map<std::string, std::vector<formula::Formula *>> predicate_map;
-    /** predicate_map - key: predicate / value: pointer to Formula */
-    std::unordered_map<std::string, std::vector<formula::Formula *>> variable_map;
+
+    /* positive_predicate_map - key: predicate / value: pointer to Formula */
+    std::unordered_map<std::string, std::vector<formula::Formula *>>
+            positive_predicate_map;
+
+    /* negated_predicate_map - key: predicate / value: pointer to Formula */
+    std::unordered_map<std::string, std::vector<formula::Formula *>>
+            negated_predicate_map;
+
+    /* predicate_map - key: predicate / value: pointer to Formula */
+    std::unordered_map<std::string, std::vector<formula::Formula *>>
+            predicate_map;
+
+    /* variable_map - key: variable name /
+     * value: pointer to formula containing the variable */
+    std::unordered_map<std::string, std::vector<formula::Formula *>>
+            variable_map;
 
 // methods
-    // void create_variable_map();
 
     /**
      * Called by constructor. Populates body datastructures:
      * negated_formula_vector, predicate_map, positive_predicate_map,
-     * negative_predicate_map, variable_map.
+     * negated_predicate_map, variable_map.
      */
     void index_body_formulas();
 
+    // TODO this was the join function from python:
     /**
-     * Updates the grounding table of the body by joining with grounding table
-     * of the formula and keeping the groundings that satisfy all  currently
-     * evaluated formulas in the body.
+     * Computes the grounding table by joining with the grounding table
+     * of the formula and keeping the groundings that satisfy both.
      * @param formula
      * @param current_time
      */
-    void evaluate_formula(formula::Formula const &formula,
-                          long long int current_time);
+    formula::GroundingTable evaluate_formula(
+            formula::GroundingTable grounding_table,
+            formula::Formula const &formula,
+            long long int current_time);
 
-    void do_math(formula::Formula const &left_formula,
-                 formula::Formula const &right_formula,
-                 int current_time);
+    formula::GroundingTable do_math(
+            formula::GroundingTable grounding_table,
+            formula::Formula const &formula,
+            int current_time);
 
-    void
-    do_comparison(formula::Formula const &left_formula,
-                  formula::Formula const &right_formula,
-                  int current_time);
+    formula::GroundingTable
+    do_comparison(
+            formula::GroundingTable grounding_table,
+            formula::Formula const &formula,
+            int current_time);
 
     void
     accept_negated_substitution(formula::Formula *formula,
@@ -80,7 +94,7 @@ private:
      * @return Set of constants that are valid groundings for variable in
      * formula
      */
-    std::set<std::string> const &
+    std::set<std::string>
     get_variable_substitutions(std::string variable,
                                formula::Formula *formula) const;
 
@@ -88,14 +102,21 @@ private:
 public:
 
 // constructors & destructors
-    RuleBody(std::vector<formula::Formula *> formula_vector);
+    explicit RuleBody(std::vector<formula::Formula *> formula_vector);
 
     ~RuleBody();
 
 // getters & setters
-    formula::GroundingTable const &get_grounding_table() const;
+    formula::GroundingTable get_grounding_table() const;
 
-// const methods
+    const std::unordered_map<std::string, std::vector<formula::Formula *>>
+    get_variable_map() const;
+
+    const std::unordered_map<std::string, std::vector<formula::Formula *>>
+    get_positive_predicate_map() const;
+
+    const std::unordered_map<std::string, std::vector<formula::Formula *>>
+    get_negated_predicate_map() const;
 
 // methods
 

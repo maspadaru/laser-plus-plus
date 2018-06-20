@@ -16,6 +16,9 @@
 #include "input/data_parser.h"
 #include "input/rule_reader.h"
 #include "input/rule_parser.h"
+#include "excetion/request_exception.h"
+#include "excetion/read_exception.h"
+#include "excetion/uninitialized_exception.h"
 
 namespace laser {
 namespace input {
@@ -26,7 +29,7 @@ private:
     long long int stream_tuple_counter = 0;
     long long int stream_start_time = 0;
     long long int stream_end_time = 0;
-    bool has_timeline = false;
+    bool has_metadata = false;
 
     RuleReader *rule_reader = nullptr;
     RuleParser *rule_parser = nullptr;
@@ -35,9 +38,9 @@ private:
     DataReader *stream_data_reader = nullptr;
     DataParser *stream_data_parser = nullptr;
 
-    bool is_initialised_rule_reader = false;
-    bool is_initialised_background_reader = false;
-    bool is_initialised_stream_reader = false;
+    bool is_initialised_rule_reader_m = false;
+    bool is_initialised_background_reader_m = false;
+    bool is_initialised_stream_reader_m = false;
 
 
 public:
@@ -50,11 +53,13 @@ public:
 // getters & setters
 
     long long int get_stream_start_time() const;
-
     long long int get_stream_end_time() const;
 
-// const methods
+    bool is_initialised_rule_reader() const;
+    bool is_initialised_background_reader() const;
+    bool is_initialised_stream_reader() const;
 
+//methods
 
     /**
      * Reads all the rules read by the rule reader.
@@ -71,6 +76,8 @@ public:
 
     /**
      * Reads all the fact from the background datastore.
+     * A parser that reads background_data should also annotate it as such, i.e.
+     * grounding.is_background_fact := true
      * @return
      *      Tuple: [1] The number background facts read.
      *             [2] Unordered Map where the keys are predicates and the
@@ -86,8 +93,6 @@ public:
      */
     std::tuple<int, std::unordered_map<std::string, std::vector<formula::Formula *>>>
     get_background_facts() const;
-
-// methods
 
     /**
      * Reads the facts from the stream that occurred at the requested time point
@@ -112,7 +117,18 @@ public:
      */
     std::tuple<long long int, long long int, std::unordered_map<std::string,
             std::vector<formula::Formula *>>>
-    get_stream_facts(long long int time_point);
+    get_stream_facts(long long int request_time_point);
+
+
+    /**
+     * return true on successful fetch
+     * @throw ReadException if any problem occurred while reading the input,
+     *      e.g.: source file is inaccessible
+     * @throw UninitializedException if the stream data reader was not
+     *      initialised by calling initialize_stream_reader() before calling
+     *      fetch_stream_metadata().
+     */
+    bool fetch_stream_metadata();
 
 
     void initialize_rule_reader(RuleReader *rule_reader,

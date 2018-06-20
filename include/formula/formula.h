@@ -13,6 +13,8 @@ namespace laser {
 namespace formula {
 
 enum class FormulaType {
+    MATH,
+    COMP,
     ATOM,
     NEGATED_ATOM,
     AT_ATOM,
@@ -41,14 +43,28 @@ public:
 
     virtual bool had_input_already() const = 0;
 
-// const methods
-
-    virtual bool holds(long long int current_time) const = 0;
+    virtual std::vector<std::string> get_variable_names() const = 0;
 
 // methods
 
-    virtual void accept(std::vector<Formula> facts, long long int current_time,
-                        long long int current_tuple_counter) = 0;
+    virtual bool holds(long long int current_time) const = 0;
+
+    virtual size_t get_number_of_variables() const = 0;
+
+    virtual void accept(long long int current_time,
+                        long long int current_tuple_counter,
+                        std::vector<Formula *> facts) = 0;
+
+    virtual void expire_outdated_groundings(long long int current_time,
+                                            long long int current_tuple_counter) = 0;
+
+    // TODO Formula should be final version before starting to implement other
+    // TODO formula classes. Thus: implement working program for Atoms first
+    // Other potentially useful functions
+    // get all substitutionos of variable name
+    // get all substitutionos of variable index
+    // get map variable name to index
+    // copy groundings from formula with same predicate
 };
 
 

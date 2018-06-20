@@ -14,21 +14,13 @@ unsigned long int GroundingTable::get_number_of_groundings() const {
     return grounding_map.size();
 }
 
-unsigned long int GroundingTable::get_number_of_variables() const {
-    return variable_name_set.size();
-}
-
-std::vector<Grounding> const &GroundingTable::get_recent_groundings_vector() const {
+std::vector<Grounding> GroundingTable::get_recent_groundings_vector() const {
     return recent_groundings_vector;
-}
-
-std::set<std::string> const &GroundingTable::get_variable_name_set() const {
-    return variable_name_set;
 }
 
 // const methods
 
-std::vector<Grounding> const &
+std::vector<Grounding>
 GroundingTable::get_groundings(int consideration_time) const {
     return grounding_map.at(consideration_time);
 }
@@ -41,13 +33,10 @@ void GroundingTable::add_grounding(Grounding grounding) {
     groundings.push_back(grounding);
 }
 
-void GroundingTable::add_variable_name(std::string variable_name) {
-    variable_name_set.insert(variable_name);
-}
-
-
 void GroundingTable::expire_outdated_groundings(long long int current_time,
-                                long long int current_tuple_counter) {}
+                                long long int current_tuple_counter) {
+    //TODO
+}
 
 } // namespace formula
 } // namespace laser

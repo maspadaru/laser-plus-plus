@@ -21,15 +21,18 @@ class Atom : public Formula {
 private:
     FormulaType type = FormulaType::ATOM;
     std::string predicate = "Atom";
-    std::vector<std::string> atom_arguments;
     bool is_negated_m = false;
     bool had_input_already_m = false;
+    std::vector<std::string> variable_names;
     GroundingTable grounding_table;
     GroundingTable result_grounding_table;
 public:
 // constructors & destructors
 
     explicit Atom(std::string predicate);
+
+    explicit Atom(std::string predicate,
+                  std::vector<std::string> variable_names);
 
     Atom() = default;
 
@@ -45,14 +48,20 @@ public:
 
     bool had_input_already() const override;
 
-// const methods
-
-    bool holds(long long int current_time) const override;
+    std::vector<std::string> get_variable_names() const override;
 
 // methods
 
-    void accept(std::vector<Formula> facts, long long int current_time,
-                long long int current_tuple_counter) override;
+    bool holds(long long int current_time) const override;
+
+    size_t get_number_of_variables() const override;
+
+    void accept(long long int current_time,
+                long long int current_tuple_counter,
+                std::vector<Formula *> facts) override;
+
+    void expire_outdated_groundings(long long int current_time,
+                                    long long int current_tuple_counter) override;
 
 };
 

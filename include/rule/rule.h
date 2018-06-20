@@ -14,10 +14,11 @@ namespace rule {
 class Rule {
 private:
     formula::Formula *head;
-    RuleBody rule_body;
+    RuleBody body;
 
 
 public:
+
 // constructors & destructors
     explicit Rule(formula::Formula *head,
                   std::vector<formula::Formula *> formula_vector);
@@ -25,11 +26,20 @@ public:
     ~Rule();
 
 // getters & setters
-    formula::Formula &get_head();
-
-// const methods
+    formula::Formula *get_head();
 
 // methods
+
+    std::string get_head_predicate() const;
+
+    const std::unordered_map<std::string, std::vector<formula::Formula *>>
+    get_body_variable_map() const;
+
+    const std::unordered_map<std::string, std::vector<formula::Formula *>>
+    get_body_positive_predicate_map() const;
+
+    const std::unordered_map<std::string, std::vector<formula::Formula *>>
+    get_body_negated_predicate_map() const;
 
     /**
      * Derives new conclusions based on the head of the rule and all groundings
@@ -40,6 +50,9 @@ public:
      */
     bool evaluate(long long int current_time,
                   long long int current_tuple_counter);
+
+    void expire_outdated_groundings(long long int current_time,
+                                    long long int current_tuple_counter);
 
 };
 

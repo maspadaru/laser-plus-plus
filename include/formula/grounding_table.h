@@ -19,10 +19,9 @@ private:
     // TODO should grounding_map value be of type std::set?
     // TODO     std::set -> PRO: unique items; CON: insert complexity O(log n)
     // grounding_map: key: consideration_time
-    //        value: Vector of all groundings sharing consid_time
+    //        value: Vector of all groundings sharing consideration_time
     //  -- value should contain no duplicates
     std::unordered_map<int, std::vector<Grounding>> grounding_map;
-    std::set<std::string> variable_name_set;
     std::vector<Grounding> recent_groundings_vector;
 public:
 // constructors & destructors
@@ -31,25 +30,20 @@ public:
 
     unsigned long int get_number_of_groundings() const;
 
-    unsigned long int get_number_of_variables() const;
-
-    std::set<std::string> const &get_variable_name_set() const;
-
-    std::vector<Grounding> const &get_recent_groundings_vector() const;
+    std::vector<Grounding> get_recent_groundings_vector() const;
 
 // const methods
 
-    std::vector<Grounding> const &get_groundings(
+    std::vector<Grounding> get_groundings(
             int consideration_time) const;
 
 // methods
 
+
     void add_grounding(Grounding grounding);
 
-    void add_variable_name(std::string variable_name);
-
     /**
-     * Removes all annotated grounding that have expired due to horison time
+     * Removes all annotated grounding that have expired due to horizon time
      * or tupple counter
      */
     void expire_outdated_groundings(long long int current_time,
