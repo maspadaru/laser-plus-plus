@@ -9,6 +9,10 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <utility>
+
+#include <excetion/read_exception.h>
+#include <excetion/format_exception.h>
 
 #include <input/data_reader.h>
 #include <input/rule_reader.h>
@@ -17,10 +21,10 @@ class SimpleReader
         : public laser::input::DataReader, public laser::input::RuleReader {
 private:
 
-    constexpr char LINE_KEY = 0;
-    constexpr char LINE_DELIMITER = 1;
-    constexpr char LINE_VALUE = 2;
-    constexpr char EXPECTED_LINE_DELIMITER = ':';
+    static constexpr char LINE_KEY = 0;
+    static constexpr char LINE_DELIMITER = 1;
+    static constexpr char LINE_VALUE = 2;
+    static constexpr char EXPECTED_LINE_DELIMITER = ':';
 
     std::stringstream source;
     bool has_source = false;

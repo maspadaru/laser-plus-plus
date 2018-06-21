@@ -3,10 +3,6 @@
 //
 
 #include "simple_reader.h"
-#include <utility>
-#include <excetion/read_exception.h>
-#include <excetion/request_exception.h>
-#include <excetion/format_exception.h>
 
 bool SimpleReader::has_metadata() const {
     return false;
@@ -55,7 +51,8 @@ std::unordered_map<char, std::string> SimpleReader::parse_latest_line() const {
     std::string key;
     std::string delimiter;
     std::string value;
-    line_stream >> key >> delimiter >> value;
+    line_stream >> key >> delimiter;
+    std::getline(line_stream, value);
     if (!line_stream.fail() && is_valid_line(key, delimiter, value)) {
         result[LINE_KEY] = key;
         result[LINE_DELIMITER] = delimiter;
@@ -112,10 +109,9 @@ SimpleReader::read_next_data(unsigned long long int request_time_point) {
             if (input_time < request_time_point) {
                 // this should never happen, as it is already checked in
                 // InputManager and Program. But let's check anyway
-                throw laser::exception::FormatException("SimpleReader: "
-                                                        "out-of-order read. "
-                                                        "Most likely do to bad "
-                                                        "format of input source");
+                throw laser::exception::FormatException(
+                        "SimpleReader: out-of-order read. Most likely do to bad "
+                        "format of input source");
             } else if (input_time > request_time_point) {
                 keep_going = false;
             }
