@@ -47,16 +47,16 @@ public:
 
 // methods
 
-    virtual bool holds(long long int current_time) const = 0;
+    virtual bool holds(unsigned long long int current_time) const = 0;
 
     virtual size_t get_number_of_variables() const = 0;
 
-    virtual void accept(long long int current_time,
-                        long long int current_tuple_counter,
+    virtual void accept(unsigned long long int current_time,
+                        unsigned long long int current_tuple_counter,
                         std::vector<Formula *> facts) = 0;
 
-    virtual void expire_outdated_groundings(long long int current_time,
-                                            long long int current_tuple_counter) = 0;
+    virtual void expire_outdated_groundings(unsigned long long int current_time,
+                                            unsigned long long int current_tuple_counter) = 0;
 
     // TODO Formula should be final version before starting to implement other
     // TODO formula classes. Thus: implement working program for Atoms first

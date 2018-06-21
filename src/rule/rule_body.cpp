@@ -75,26 +75,26 @@ void RuleBody::index_body_formulas() {
 
 void
 RuleBody::accept_negated_substitution(formula::Formula *formula,
-                                      long long int current_time,
-                                      long long int current_tuple_counter) {}
+                                      unsigned long long int current_time,
+                                      unsigned long long int current_tuple_counter) {}
 
 std::set<std::string>
 RuleBody::get_variable_substitutions(std::string variable,
                                      formula::Formula *formula) const {}
 
 
-bool RuleBody::evaluate(long long int current_time,
-                        long long int current_tuple_counter) {}
+bool RuleBody::evaluate(unsigned long long int current_time,
+                        unsigned long long int current_tuple_counter) {}
 
-void RuleBody::expire_outdated_groundings(long long int current_time,
-                                          long long int current_tuple_counter) {
+void RuleBody::expire_outdated_groundings(unsigned long long int current_time,
+                                          unsigned long long int current_tuple_counter) {
     // TODO
 }
 
 formula::GroundingTable
 RuleBody::evaluate_formula(formula::GroundingTable grounding_table,
                            formula::Formula const &formula,
-                           long long int current_time) {
+                           unsigned long long int current_time) {
     return formula::GroundingTable();
 }
 

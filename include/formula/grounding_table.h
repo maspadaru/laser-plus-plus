@@ -46,8 +46,8 @@ public:
      * Removes all annotated grounding that have expired due to horizon time
      * or tupple counter
      */
-    void expire_outdated_groundings(long long int current_time,
-                                    long long int current_tuple_counter);
+    void expire_outdated_groundings(unsigned long long int current_time,
+                                    unsigned long long int current_tuple_counter);
 
 };
 

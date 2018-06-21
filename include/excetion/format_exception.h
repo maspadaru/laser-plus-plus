@@ -13,10 +13,10 @@ namespace exception {
 
 class FormatException : public std::exception {
 private:
-    char *message_m = "FormatException";
+    char const *message_m = "FormatException";
 public:
     FormatException() = default;
-    FormatException(char *message) : message_m(message) {}
+    FormatException(char const *message) : message_m(message) {}
 
     const char *what() const noexcept {
         return message_m;

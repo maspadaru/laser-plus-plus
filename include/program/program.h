@@ -24,42 +24,61 @@ private:
     input::InputManager input_manager;
     output::OutputManager output_manager;
 
-    long long int current_time = 0;
-    long long int current_tuple_counter = 0;
-    long long int stream_start_time = 0;
-    long long int stream_end_time = 0;
+    unsigned long long int current_time = 0;
+    unsigned long long int current_tuple_counter = 0;
+    unsigned long long int stream_start_time = 0;
+    unsigned long long int stream_end_time = 0;
+    int number_of_new_conclusions = 0;
+    bool has_timeline = false;
 
-    long long int number_of_background_facts = 0;
+    unsigned long long int number_of_background_facts = 0;
 
     Strata strata;
     std::vector<rule::Rule *> rule_vector;
 
 // methods
 
-    bool eval(long long int request_time_point);
+    bool eval(unsigned long long int request_time_point);
 
-    void expire_outdated_groundings(long long int current_time,
-                                    long long int current_tuple_counter);
+    void expire_outdated_groundings(
+            unsigned long long int current_time,
+            unsigned long long int current_tuple_counter);
 
     std::unordered_map<std::string, std::vector<formula::Formula *>>
     get_new_conclusions();
+
+    void write_output(
+            std::unordered_map<std::string, std::vector<formula::Formula *>>
+            new_conclusions);
 
 public:
 
 // constructors & destructors
 
-    Program(input::InputManager input_manager,
+    Program(
+            input::InputManager input_manager,
             output::OutputManager output_manager);
 
     virtual ~Program();
 
 // getters & setters
 
-// const methods
+    unsigned long long int get_current_time() const;
+
+    unsigned long long int get_current_tuple_counter() const;
+
+    int get_number_of_new_conclusions() const;
 
 // methods
 
-    void evaluate(long long int request_time_point);
+    /**
+     *
+     * @return True if new conclusions were derived from the input facts in
+     * the current program time point
+     */
+    bool evaluate();
+
+    bool is_done();
 
 };
 

@@ -28,7 +28,7 @@ public:
      * @throw ReadException if any problem occurred while reading the input,
      * e.g.: source file is inaccessible
      */
-    virtual std::vector<std::string> read_rules() const = 0;
+    virtual std::vector<std::string> read_rules() = 0;
 
 };
 

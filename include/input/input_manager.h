@@ -25,10 +25,10 @@ namespace input {
 
 class InputManager {
 private:
-    long long int stream_current_time = 0;
-    long long int stream_tuple_counter = 0;
-    long long int stream_start_time = 0;
-    long long int stream_end_time = 0;
+    unsigned long long int stream_current_time = 0;
+    unsigned long long int stream_tuple_counter = 0;
+    unsigned long long int stream_start_time = 0;
+    unsigned long long int stream_end_time = 0;
     bool has_metadata = false;
 
     RuleReader *rule_reader = nullptr;
@@ -52,11 +52,14 @@ public:
 
 // getters & setters
 
-    long long int get_stream_start_time() const;
-    long long int get_stream_end_time() const;
+    unsigned long long int get_stream_start_time() const;
+
+    unsigned long long int get_stream_end_time() const;
 
     bool is_initialised_rule_reader() const;
+
     bool is_initialised_background_reader() const;
+
     bool is_initialised_stream_reader() const;
 
 //methods
@@ -115,9 +118,9 @@ public:
      *      initialised by calling initialize_stream_reader() before calling
      *      get_stream_facts().
      */
-    std::tuple<long long int, long long int, std::unordered_map<std::string,
+    std::tuple<unsigned long long int, unsigned long long int, std::unordered_map<std::string,
             std::vector<formula::Formula *>>>
-    get_stream_facts(long long int request_time_point);
+    get_stream_facts(unsigned long long int request_time_point);
 
 
     /**
@@ -131,14 +134,17 @@ public:
     bool fetch_stream_metadata();
 
 
-    void initialize_rule_reader(RuleReader *rule_reader,
-                                RuleParser *rule_parser);
+    void initialize_rule_reader(
+            RuleReader *rule_reader,
+            RuleParser *rule_parser);
 
-    void initialize_background_reader(DataReader *background_data_reader,
-                                      DataParser *background_data_parser);
+    void initialize_background_reader(
+            DataReader *background_data_reader,
+            DataParser *background_data_parser);
 
-    void initialize_stream_reader(DataReader *stream_data_reader,
-                                  DataParser *stream_data_parser);
+    void initialize_stream_reader(
+            DataReader *stream_data_reader,
+            DataParser *stream_data_parser);
 
 
 };

@@ -48,11 +48,11 @@ public:
      * @return True if new conclusions have been derived at the current
      * time point and tuple counter
      */
-    bool evaluate(long long int current_time,
-                  long long int current_tuple_counter);
+    bool evaluate(unsigned long long int current_time,
+                  unsigned long long int current_tuple_counter);
 
-    void expire_outdated_groundings(long long int current_time,
-                                    long long int current_tuple_counter);
+    void expire_outdated_groundings(unsigned long long int current_time,
+                                    unsigned long long int current_tuple_counter);
 
 };
 

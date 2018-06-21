@@ -39,7 +39,7 @@ public:
                                bool is_negated,
                                std::vector<formula::Formula *> formula_vector);
 
-    bool evaluate(long long int time_point, long long int tuple_counter,
+    bool evaluate(unsigned long long int time_point, unsigned long long int tuple_counter,
               std::unordered_map<std::string, std::vector<formula::Formula *>>
               new_facts);
 

@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include "rule/rule.h"
 
 namespace laser {
 namespace input {
@@ -33,7 +34,7 @@ public:
     * @throw FormatException if the input is not in a format that can be
     * properly parsered.
     */
-    virtual std::vector<rule::Rule *>
+    virtual std::vector<laser::rule::Rule *>
     parse_rules(std::vector<std::string> raw_rule_vector) const = 0;
 
 // methods

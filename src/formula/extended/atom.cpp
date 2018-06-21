@@ -34,15 +34,15 @@ std::vector<std::string> Atom::get_variable_names() const {
 
 // const methods
 
-bool Atom::holds(long long int current_time) const {
+bool Atom::holds(unsigned long long int current_time) const {
     // TODO implement
     return true;
 }
 
 // methods
 
-void Atom::accept(long long int current_time,
-                  long long int current_tuple_counter,
+void Atom::accept(unsigned long long int current_time,
+                  unsigned long long int current_tuple_counter,
                   std::vector<Formula *> facts) {
     // TODO implement
 }
@@ -51,8 +51,8 @@ size_t Atom::get_number_of_variables() const {
     return variable_names.size();
 }
 
-void Atom::expire_outdated_groundings(long long int current_time,
-                                      long long int current_tuple_counter) {
+void Atom::expire_outdated_groundings(unsigned long long int current_time,
+                                      unsigned long long int current_tuple_counter) {
     grounding_table.expire_outdated_groundings(current_time,
             current_tuple_counter);
 }

@@ -35,10 +35,10 @@ public:
     *             values are vectors containing the facts that have the
     *             corresponding key as predicate.
     * @throw FormatException if the input is not in a format that can be
-    *      properly parsered.
+    *      properly parsed.
     */
     virtual std::tuple<int, std::unordered_map<std::string,
-                    std::vector<formula::Formula *>>>
+                    std::vector<laser::formula::Formula *>>>
     parse_data(std::vector<std::string> raw_data_vector) const = 0;
 
 };

@@ -68,7 +68,7 @@ private:
     formula::GroundingTable evaluate_formula(
             formula::GroundingTable grounding_table,
             formula::Formula const &formula,
-            long long int current_time);
+            unsigned long long int current_time);
 
     formula::GroundingTable do_math(
             formula::GroundingTable grounding_table,
@@ -83,8 +83,8 @@ private:
 
     void
     accept_negated_substitution(formula::Formula *formula,
-                                long long int current_time,
-                                long long int current_tuple_counter);
+                                unsigned long long int current_time,
+                                unsigned long long int current_tuple_counter);
 
     /**
      * Compiles a list containing all valid substitutions for he specified
@@ -133,15 +133,15 @@ public:
      * @param current_tuple_counter
      * @return True if at least one grounding that satisfies the body is found
      */
-    bool evaluate(long long int current_time,
-                  long long int current_tuple_counter);
+    bool evaluate(unsigned long long int current_time,
+                  unsigned long long int current_tuple_counter);
 
     /**
      * Removes all annotated grounding that have expired due to horizon time
      * or tupple counter
      */
-    void expire_outdated_groundings(long long int current_time,
-                                    long long int current_tuple_counter);
+    void expire_outdated_groundings(unsigned long long int current_time,
+                                    unsigned long long int current_tuple_counter);
 
 };
 

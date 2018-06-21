@@ -9,10 +9,10 @@ namespace formula {
 
 // constructors & destructors
 
-Grounding::Grounding(long long int consideration_time,
-                     long long int horizon_time,
-                     long long int consideration_count,
-                     long long int horizon_count) :
+Grounding::Grounding(unsigned long long int consideration_time,
+                     unsigned long long int horizon_time,
+                     unsigned long long int consideration_count,
+                     unsigned long long int horizon_count) :
         consideration_time(consideration_time),
         horizon_time(horizon_time),
         consideration_count(consideration_count),
@@ -24,23 +24,23 @@ Grounding::Grounding(bool is_background_fact_m) {
 
 // getters & setters
 
-long long int Grounding::get_consideration_time() const {
+unsigned long long int Grounding::get_consideration_time() const {
     return consideration_time;
 }
 
-long long int Grounding::get_horizon_time() const {
+unsigned long long int Grounding::get_horizon_time() const {
     return horizon_time;
 }
 
-long long int Grounding::get_consideration_count() const {
+unsigned long long int Grounding::get_consideration_count() const {
     return consideration_count;
 }
 
-long long int Grounding::get_horizon_count() const {
+unsigned long long int Grounding::get_horizon_count() const {
     return horizon_count;
 }
 
-void Grounding::set_horizon_time(long long int horizon_time) {
+void Grounding::set_horizon_time(unsigned long long int horizon_time) {
     Grounding::horizon_time = horizon_time;
 }
 

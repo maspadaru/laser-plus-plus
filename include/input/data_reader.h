@@ -25,9 +25,9 @@ public:
 
     virtual bool has_metadata() const = 0;
 
-    virtual long long int get_stream_start_time() const = 0;
+    virtual unsigned long long int get_stream_start_time() const = 0;
 
-    virtual long long int get_stream_end_time() const = 0;
+    virtual unsigned long long int get_stream_end_time() const = 0;
 
 // const methods
 
@@ -37,7 +37,7 @@ public:
      * @throw ReadException if any problem occurred while reading the input,
      * e.g.: source file is inaccessible
      */
-    virtual std::vector<std::string> read_all_data() const = 0;
+    virtual std::vector<std::string> read_all_data() = 0;
 
 // methods
 
@@ -52,8 +52,8 @@ public:
      * @throw ReadException if any problem occurred while reading the input,
      * e.g.: source file is inaccessible
      */
-    virtual std::tuple<long long int, std::vector<std::string>>
-    read_next_data(long long int request_time_point) = 0;
+    virtual std::tuple<unsigned long long int, std::vector<std::string>>
+    read_next_data(unsigned long long int request_time_point) = 0;
 
     /**
      * Attempts to fetch metadata information about the data source, such the

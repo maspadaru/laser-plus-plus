@@ -29,8 +29,8 @@ std::string Rule::get_head_predicate() const {
     return head->get_predicate();
 }
 
-bool Rule::evaluate(long long int current_time,
-                    long long int current_tuple_counter) {}
+bool Rule::evaluate(unsigned long long int current_time,
+                    unsigned long long int current_tuple_counter) {}
 
 const std::unordered_map<std::string, std::vector<formula::Formula *>>
 Rule::get_body_variable_map() const {
@@ -47,8 +47,8 @@ Rule::get_body_negated_predicate_map() const {
     return body.get_negated_predicate_map();
 }
 
-void Rule::expire_outdated_groundings(long long int current_time,
-                                      long long int current_tuple_counter) {
+void Rule::expire_outdated_groundings(unsigned long long int current_time,
+                                      unsigned long long int current_tuple_counter) {
     head->expire_outdated_groundings(current_time, current_tuple_counter);
     body.expire_outdated_groundings(current_time, current_tuple_counter);
 

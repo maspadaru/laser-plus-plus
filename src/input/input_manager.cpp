@@ -11,11 +11,11 @@ namespace input {
 
 // getters & setters
 
-long long int InputManager::get_stream_start_time() const {
+unsigned long long int InputManager::get_stream_start_time() const {
     return stream_start_time;
 }
 
-long long int InputManager::get_stream_end_time() const {
+unsigned long long int InputManager::get_stream_end_time() const {
     return stream_end_time;
 }
 
@@ -37,6 +37,15 @@ InputManager::initialize_background_reader(DataReader *background_data_reader,
 }
 
 
+
+
+void InputManager::initialize_stream_reader(DataReader *stream_data_reader,
+                                            DataParser *stream_data_parser) {
+    this->stream_data_reader = stream_data_reader;
+    this->stream_data_parser = stream_data_parser;
+    this->is_initialised_stream_reader_m = true;
+}
+
 bool InputManager::fetch_stream_metadata() {
     if (!is_initialised_stream_reader_m) {
         throw exception::UninitializedException("The background data reader "
@@ -55,13 +64,6 @@ bool InputManager::fetch_stream_metadata() {
         }
     }
     return has_metadata;
-}
-
-void InputManager::initialize_stream_reader(DataReader *stream_data_reader,
-                                            DataParser *stream_data_parser) {
-    this->stream_data_reader = stream_data_reader;
-    this->stream_data_parser = stream_data_parser;
-    this->is_initialised_stream_reader_m = true;
 }
 
 std::vector<rule::Rule *> InputManager::get_rules() const {
@@ -95,9 +97,9 @@ InputManager::get_background_facts() const {
                            parsed_background_facts_map);
 }
 
-std::tuple<long long int, long long int,
+std::tuple<unsigned long long int, unsigned long long int,
         std::unordered_map<std::string, std::vector<formula::Formula *>>>
-InputManager::get_stream_facts(long long int request_time_point) {
+InputManager::get_stream_facts(unsigned long long int request_time_point) {
     if (!is_initialised_stream_reader_m) {
         throw exception::UninitializedException("The background data reader "
                                                 "was not initialised. Call "
