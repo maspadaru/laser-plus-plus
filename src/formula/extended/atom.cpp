@@ -18,6 +18,14 @@ Atom::Atom(std::string predicate, std::vector<std::string> variable_names) {
     this->variable_names = std::move(variable_names);
 }
 
+Atom *Atom::create() const {
+    return new Atom();
+}
+
+Atom *Atom::clone() const {
+    return new Atom(*this);
+}
+
 // getters & setters
 
 FormulaType Atom::get_type() const { return this->type; }

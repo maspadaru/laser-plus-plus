@@ -29,14 +29,24 @@ private:
 public:
 // constructors & destructors
 
+    Atom() = default;
+
+    /* Will be implicitly-defined by the compiler.
+     * Since the class is NOT managing a resource whose handle is an object of
+     * a non-class type (raw pointer, POSIX file descriptor, etc), this
+     * implicitly-defined copy constructor should be good enough
+     */
+    // Atom(Atom const& atom); // Copy constructor
+
     explicit Atom(std::string predicate);
 
     explicit Atom(std::string predicate,
                   std::vector<std::string> variable_names);
 
-    Atom() = default;
-
     ~Atom() override = default;
+
+    Atom * create () const override;
+    Atom * clone () const override;
 
 // getters & setters
 

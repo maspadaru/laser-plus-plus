@@ -15,11 +15,62 @@ namespace rule {
 
 
 RuleBody::RuleBody(std::vector<formula::Formula *> formulas) :
-        formula_vector(std::move(formulas)) {}
+        formula_vector(std::move(formulas)) {
+    index_body_formulas();
+}
 
 RuleBody::~RuleBody() {
     formula_vector.clear();
 }
+
+RuleBody::RuleBody(RuleBody const &other) {
+    this->last_successful_join = other.last_successful_join;
+    this->has_negated_atoms_m = other.has_negated_atoms_m;
+    for (auto formula : other.formula_vector) {
+        this->formula_vector.push_back(formula->clone());
+    }
+    index_body_formulas();
+}
+
+RuleBody::RuleBody(RuleBody &&other) noexcept {
+    this->formula_vector = std::move(other.formula_vector);
+
+    this->negated_formula_vector = std::move(other.negated_formula_vector);
+    this->variable_map = std::move(other.variable_map);
+    this->predicate_map = std::move(other.predicate_map);
+    this->positive_predicate_map = std::move(other.positive_predicate_map);
+    this->negated_predicate_map = std::move(other.negated_predicate_map);
+
+    this->last_successful_join = other.last_successful_join;
+    this->has_negated_atoms_m = other.has_negated_atoms_m;
+}
+
+RuleBody &RuleBody::operator=(RuleBody const &other) {
+    this->last_successful_join = other.last_successful_join;
+    this->has_negated_atoms_m = other.has_negated_atoms_m;
+
+    this->formula_vector.clear();
+    for (auto formula : other.formula_vector) {
+        this->formula_vector.push_back(formula->clone());
+    }
+    index_body_formulas();
+
+    return *this;
+}
+
+RuleBody &RuleBody::operator=(RuleBody &&other) noexcept {
+    this->formula_vector = std::move(other.formula_vector);
+
+    this->negated_formula_vector = std::move(other.negated_formula_vector);
+    this->variable_map = std::move(other.variable_map);
+    this->predicate_map = std::move(other.predicate_map);
+    this->positive_predicate_map = std::move(other.positive_predicate_map);
+    this->negated_predicate_map = std::move(other.negated_predicate_map);
+
+    this->last_successful_join = other.last_successful_join;
+    this->has_negated_atoms_m = other.has_negated_atoms_m;
+}
+
 
 // getters & setters
 
@@ -43,10 +94,15 @@ RuleBody::get_negated_predicate_map() const {
 // methods
 
 void RuleBody::index_body_formulas() {
+    negated_formula_vector.clear();
+    variable_map.clear();
+    predicate_map.clear();
+    positive_predicate_map.clear();
+    negated_predicate_map.clear();
     for (auto formula : formula_vector) {
         auto type = formula->get_type();
         if (type != formula::FormulaType::MATH &&
-            type != formula::FormulaType::COMP) {
+                type != formula::FormulaType::COMP) {
             auto predicate = formula->get_predicate();
 
             auto pos_neg_map = (formula->is_negated()) ? negated_predicate_map
@@ -64,52 +120,54 @@ void RuleBody::index_body_formulas() {
                 variable_map.try_emplace(variable_name);
                 map_vector = variable_map[variable_name];
                 map_vector.push_back(formula);
-
-
             }
-
         }
-
     }
 }
 
 void
-RuleBody::accept_negated_substitution(formula::Formula *formula,
-                                      unsigned long long int current_time,
-                                      unsigned long long int current_tuple_counter) {}
+RuleBody::accept_negated_substitution(
+        formula::Formula *formula,
+        unsigned long long int current_time,
+        unsigned long long int current_tuple_counter) {}
 
 std::set<std::string>
-RuleBody::get_variable_substitutions(std::string variable,
-                                     formula::Formula *formula) const {}
+RuleBody::get_variable_substitutions(
+        std::string variable,
+        formula::Formula *formula) const {}
 
 
-bool RuleBody::evaluate(unsigned long long int current_time,
-                        unsigned long long int current_tuple_counter) {}
+bool RuleBody::evaluate(
+        unsigned long long int current_time,
+        unsigned long long int current_tuple_counter) {}
 
-void RuleBody::expire_outdated_groundings(unsigned long long int current_time,
-                                          unsigned long long int current_tuple_counter) {
+void RuleBody::expire_outdated_groundings(
+        unsigned long long int current_time,
+        unsigned long long int current_tuple_counter) {
     // TODO
 }
 
 formula::GroundingTable
-RuleBody::evaluate_formula(formula::GroundingTable grounding_table,
-                           formula::Formula const &formula,
-                           unsigned long long int current_time) {
+RuleBody::evaluate_formula(
+        formula::GroundingTable grounding_table,
+        formula::Formula const &formula,
+        unsigned long long int current_time) {
     return formula::GroundingTable();
 }
 
 formula::GroundingTable
-RuleBody::do_math(formula::GroundingTable grounding_table,
-                  formula::Formula const &formula, int current_time) {
+RuleBody::do_math(
+        formula::GroundingTable grounding_table,
+        formula::Formula const &formula, int current_time) {
     return formula::GroundingTable();
 }
 
 formula::GroundingTable
-RuleBody::do_comparison(formula::GroundingTable grounding_table,
-                        formula::Formula const &formula, int current_time) {
+RuleBody::do_comparison(
+        formula::GroundingTable grounding_table,
+        formula::Formula const &formula, int current_time) {
     return formula::GroundingTable();
 }
-
 
 } // namespace rule
 } // namespace laser

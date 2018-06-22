@@ -85,7 +85,8 @@ std::vector<Token> SimpleParser::add_token_attempt(
         Token token = recognize(str);
         token_vector.push_back(token);
     }
-    token_stream.clear();token_stream.str("");
+    token_stream.clear();
+    token_stream.str("");
     return token_vector;
 }
 
@@ -114,11 +115,11 @@ std::vector<Token> SimpleParser::tokenize(std::string rule_string) const {
         } else if (c == '(') {
             token_vector = add_token_attempt(token_vector, token_stream);
             token_vector =
-                add_new_token(token_vector, TokenType::OPEN_PARENTHESES, c);
+                    add_new_token(token_vector, TokenType::OPEN_PARENTHESES, c);
         } else if (c == ')') {
             token_vector = add_token_attempt(token_vector, token_stream);
             token_vector =
-                add_new_token(token_vector, TokenType::OPEN_PARENTHESES, c);
+                    add_new_token(token_vector, TokenType::OPEN_PARENTHESES, c);
         } else {
             token_stream << c;
         }
@@ -138,14 +139,17 @@ std::vector<laser::rule::Rule *>
 SimpleParser::parse_rules(std::vector<std::string> raw_rule_vector) const {
     for (const auto &raw_rule_string : raw_rule_vector) {
         auto token_vector = tokenize(raw_rule_string);
-        // laser::rule::Rule rule =
+        laser::rule::Rule rule =
                 parse_rule(token_vector);
     }
     return std::vector<laser::rule::Rule *>();
 }
 
-void SimpleParser::parse_rule(std::vector<Token> token_vector) const {
+laser::rule::Rule SimpleParser::parse_rule(
+        std::vector<Token> token_vector) const {
     for (auto token : token_vector) {
         std::cout << "Token: " << token.value << std::endl;
     }
+
+
 }

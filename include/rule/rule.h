@@ -20,10 +20,17 @@ private:
 public:
 
 // constructors & destructors
-    explicit Rule(formula::Formula *head,
-                  std::vector<formula::Formula *> formula_vector);
+    explicit Rule(
+            formula::Formula *head,
+            std::vector<formula::Formula *> formula_vector);
+
+    Rule(Rule const &other); // copy constructor
+    Rule(Rule &&other) noexcept; // move constructor
 
     ~Rule();
+
+    Rule &operator=(Rule const &other); // copy assignment
+    Rule &operator=(Rule &&other) noexcept; // move assignment
 
 // getters & setters
     formula::Formula *get_head();
@@ -48,11 +55,13 @@ public:
      * @return True if new conclusions have been derived at the current
      * time point and tuple counter
      */
-    bool evaluate(unsigned long long int current_time,
-                  unsigned long long int current_tuple_counter);
+    bool evaluate(
+            unsigned long long int current_time,
+            unsigned long long int current_tuple_counter);
 
-    void expire_outdated_groundings(unsigned long long int current_time,
-                                    unsigned long long int current_tuple_counter);
+    void expire_outdated_groundings(
+            unsigned long long int current_time,
+            unsigned long long int current_tuple_counter);
 
 };
 

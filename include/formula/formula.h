@@ -32,6 +32,9 @@ public:
 // constructors / destructors
 
     virtual ~Formula() = default;
+    virtual Formula * create () const = 0; // Virtual constructor (creation)
+    virtual Formula * clone () const = 0;  // Virtual constructor (copying)
+
 
 // getters / setters
 

@@ -82,9 +82,10 @@ private:
             int current_time);
 
     void
-    accept_negated_substitution(formula::Formula *formula,
-                                unsigned long long int current_time,
-                                unsigned long long int current_tuple_counter);
+    accept_negated_substitution(
+            formula::Formula *formula,
+            unsigned long long int current_time,
+            unsigned long long int current_tuple_counter);
 
     /**
      * Compiles a list containing all valid substitutions for he specified
@@ -95,16 +96,24 @@ private:
      * formula
      */
     std::set<std::string>
-    get_variable_substitutions(std::string variable,
-                               formula::Formula *formula) const;
-
+    get_variable_substitutions(
+            std::string variable,
+            formula::Formula *formula) const;
 
 public:
 
 // constructors & destructors
+    RuleBody(RuleBody const &other); // copy constructor
+
+    RuleBody(RuleBody &&other) noexcept ; // move constructor
+
     explicit RuleBody(std::vector<formula::Formula *> formula_vector);
 
     ~RuleBody();
+
+    RuleBody &operator=(RuleBody const &other);  // copy assignment
+
+    RuleBody &operator=(RuleBody &&other) noexcept;  // move assignment
 
 // getters & setters
     formula::GroundingTable get_grounding_table() const;
@@ -133,15 +142,17 @@ public:
      * @param current_tuple_counter
      * @return True if at least one grounding that satisfies the body is found
      */
-    bool evaluate(unsigned long long int current_time,
-                  unsigned long long int current_tuple_counter);
+    bool evaluate(
+            unsigned long long int current_time,
+            unsigned long long int current_tuple_counter);
 
     /**
      * Removes all annotated grounding that have expired due to horizon time
      * or tupple counter
      */
-    void expire_outdated_groundings(unsigned long long int current_time,
-                                    unsigned long long int current_tuple_counter);
+    void expire_outdated_groundings(
+            unsigned long long int current_time,
+            unsigned long long int current_tuple_counter);
 
 };
 

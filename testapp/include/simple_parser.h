@@ -54,7 +54,7 @@ private:
             std::vector<Token> token_vector,
             TokenType type, char value_char) const;
 
-    /*laser::rule::Rule*/ void parse_rule(std::vector<Token> token_vector) const;
+    laser::rule::Rule parse_rule(std::vector<Token> token_vector) const;
 
 public:
     ~SimpleParser() override = default;
