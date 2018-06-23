@@ -79,13 +79,13 @@ RuleBody::get_variable_map() const {
     return variable_map;
 }
 
-const std::unordered_map<std::string, std::vector<formula::Formula *>>
-RuleBody::get_positive_predicate_map() const {
+std::unordered_map<std::string, std::vector<formula::Formula *>>
+const &RuleBody::get_positive_predicate_map() const {
     return positive_predicate_map;
 }
 
-const std::unordered_map<std::string, std::vector<formula::Formula *>>
-RuleBody::get_negated_predicate_map() const {
+std::unordered_map<std::string, std::vector<formula::Formula *>>
+const &RuleBody::get_negated_predicate_map() const {
     return negated_predicate_map;
 }
 

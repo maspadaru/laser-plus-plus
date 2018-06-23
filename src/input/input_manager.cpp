@@ -66,7 +66,7 @@ bool InputManager::fetch_stream_metadata() {
     return has_metadata;
 }
 
-std::vector<rule::Rule *> InputManager::get_rules() const {
+std::vector<rule::Rule> InputManager::get_rules() const {
     if (!is_initialised_rule_reader_m) {
         throw exception::UninitializedException("The rule reader was not "
                                                 "initialised. Call "

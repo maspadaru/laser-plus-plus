@@ -9,6 +9,7 @@
 #include <tuple>
 #include <vector>
 #include <algorithm>
+#include <stack>
 
 #include <input/data_parser.h>
 #include <input/rule_parser.h>
@@ -30,11 +31,15 @@ struct Token {
 
 // Helper functions:
 
-static inline void rtrim(std::string &s);
+static inline void rtrim(std::string *s);
 
-static inline void ltrim(std::string &s);
+static inline void ltrim(std::string *s);
 
-static inline void trim(std::string &s);
+static inline void trim(std::string *s);
+
+static inline Token pop(std::stack<Token> *stack);
+
+static inline void syntax_error(std::string error_message);
 
 
 class SimpleParser
@@ -57,15 +62,23 @@ private:
     // laser::rule::Rule
     void parse_rule(std::vector<Token> token_vector) const;
 
+    bool is_unary_operator(Token token) const;
+
+    bool is_binary_operator(Token token) const;
+
+    void parse_operator(Token token, std::stack<laser::formula::Formula*> &stack) const;
+
+    std::tuple<size_t, std::string> parse_predicate_arguments(
+            size_t index, std::stack<laser::formula::Formula*> &stack) const;
+
 public:
     ~SimpleParser() override = default;
 
     std::tuple<int, std::unordered_map<std::string, std::vector<laser::formula::Formula *>>>
     parse_data(std::vector<std::string> raw_data_vector) const override;
 
-    std::vector<laser::rule::Rule *>
+    std::vector<laser::rule::Rule>
     parse_rules(std::vector<std::string> raw_rule_vector) const override;
-
 };
 
 

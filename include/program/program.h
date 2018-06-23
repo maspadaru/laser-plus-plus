@@ -51,6 +51,8 @@ private:
             std::unordered_map<std::string, std::vector<formula::Formula *>>
             new_conclusions);
 
+    void init_rules(std::vector<rule::Rule> rules);
+
 public:
 
 // constructors & destructors

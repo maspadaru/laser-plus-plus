@@ -36,7 +36,7 @@ Rule &Rule::operator=(Rule &&other) noexcept {
 }
 
 // getters & setters
-formula::Formula &Rule::get_head() {
+formula::Formula &Rule::get_head() const {
     return head;
 }
 

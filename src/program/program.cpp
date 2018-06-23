@@ -15,12 +15,20 @@ Program::~Program() {
     rule_vector.clear();
 }
 
+void Program::init_rules(std::vector<rule::Rule> rules) {
+    for (auto rule : rules) {
+        auto local_rule = new rule::Rule(std::move(rule));
+        rule_vector.push_back(local_rule);
+    }
+}
+
+
 Program::Program(
         input::InputManager input_manager,
         output::OutputManager output_manager) : input_manager(
         input_manager), output_manager(output_manager) {
 
-    rule_vector = input_manager.get_rules();
+    init_rules(input_manager.get_rules());
     strata.stratify(rule_vector);
 
     if (input_manager.is_initialised_background_reader()) {

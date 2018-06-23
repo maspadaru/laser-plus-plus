@@ -75,7 +75,7 @@ public:
      *      initialised by calling initialize_rule_reader() before calling
      *      get_rules().
      */
-    std::vector<rule::Rule *> get_rules() const;
+    std::vector<rule::Rule> get_rules() const;
 
     /**
      * Reads all the fact from the background datastore.

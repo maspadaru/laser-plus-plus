@@ -159,11 +159,11 @@ public:
 
     bool has_negated_predicates() const;
 
-    const std::unordered_map<std::string, std::vector<formula::Formula *>>
-    get_positive_predicate_map() const;
+    std::unordered_map<std::string, std::vector<formula::Formula *>>
+    const& get_positive_predicate_map() const;
 
-    const std::unordered_map<std::string, std::vector<formula::Formula *>>
-    get_negated_predicate_map() const;
+    std::unordered_map<std::string, std::vector<formula::Formula *>>
+    const& get_negated_predicate_map() const;
 
 
 

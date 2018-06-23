@@ -32,7 +32,7 @@ public:
     Rule &operator=(Rule &&other) noexcept; // move assignment
 
 // getters & setters
-    formula::Formula &get_head();
+    formula::Formula &get_head() const;
 
 // methods
 
