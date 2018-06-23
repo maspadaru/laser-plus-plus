@@ -1,8 +1,9 @@
-//
-// Created by mike on 6/19/18.
-//
-
 #include <iostream>
+
+#include <formula/extended/atom.h>
+#include <formula/formula.h>
+#include <rule/rule.h>
+
 #include <simple_reader.h>
 #include <simple_parser.h>
 #include <input/input_manager.h>
@@ -10,7 +11,23 @@
 #include <simple_formatter.h>
 #include <simple_writer.h>
 
+std::vector<laser::rule::Rule> make_rule_vector(int n);
+
 int main() {
+
+    // ========== First test: memory management =========
+    int n = 5;
+    auto rule_vector = make_rule_vector(n);
+    for (int i = 0; i < n; i++) {
+        laser::rule::Rule rule = rule_vector[i];
+
+        laser::formula::Formula &formula_hello = rule.get_head();
+        laser::formula::Formula &formula_world = rule.get_body_formula(0);
+        std::cout << "THIRD : " << formula_hello.get_predicate() << " "
+                  << formula_world.get_predicate() << "!" << std::endl;
+    }
+
+    // =========== Now test Laser =============
 
     std::string stream_string =
             "1 14"
@@ -62,7 +79,39 @@ int main() {
 
 
 
-
-
     std::cout << "Hello, " << "!" << std::endl;
+}
+
+
+// ======= The folowing funtions are used to test memory management =====
+
+laser::rule::Rule make_rule() {
+    std::string world = "world";
+    laser::formula::Atom local_atom_hello = laser::formula::Atom("hello");
+    laser::formula::Atom local_atom_world = laser::formula::Atom(world);
+    laser::rule::Rule local_rule = laser::rule::Rule(local_atom_hello);
+    local_rule.add_body_formula(local_atom_world);
+
+    laser::formula::Formula &formula_hello = local_rule.get_head();
+    laser::formula::Formula &formula_world = local_rule.get_body_formula(0);
+    std::cout << "FIRST : " << formula_hello.get_predicate() << " "
+              << formula_world.get_predicate() << "!" << std::endl;
+
+    return local_rule;
+}
+
+std::vector<laser::rule::Rule> make_rule_vector(int n) {
+    std::vector<laser::rule::Rule> vector;
+    for (int i = 0; i < n; i++){
+        laser::rule::Rule  rule = make_rule();
+        laser::formula::Formula &formula = rule.get_head();
+
+        laser::formula::Formula &formula_hello = rule.get_head();
+        laser::formula::Formula &formula_world = rule.get_body_formula(0);
+        std::cout << "SECOND : " << formula_hello.get_predicate() << " "
+                  << formula_world.get_predicate() << "!" << std::endl;
+
+        vector.push_back(rule);
+    }
+    return vector;
 }

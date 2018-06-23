@@ -18,7 +18,7 @@ namespace program {
 void Strata::map_head_predicate_to_rule(
         std::vector<rule::Rule *> const &rule_vector) {
     for (auto rule : rule_vector) {
-        auto head_predicate = rule->get_head()->get_predicate();
+        auto head_predicate = rule->get_head().get_predicate();
         head_predicate_map.try_emplace(head_predicate);
         auto map_value = head_predicate_map[head_predicate];
         map_value.push_back(rule);
@@ -33,8 +33,8 @@ void Strata::stratify(std::vector<rule::Rule *> rule_vector) {
     for (auto rule : rule_vector) {
         check_rule_dependencies(stratum_index, rule,
                                 &temp_stratum_vector);
-        auto head = rule->get_head();
-        auto predicate = head->get_predicate();
+        auto &head = rule->get_head();
+        auto predicate = head.get_predicate();
         temp_stratum_vector[stratum_index].add_head_predicate(predicate, head,
                                                               rule);
     }
@@ -51,7 +51,7 @@ void Strata::check_rule_dependencies(size_t stratum_index, rule::Rule *rule,
     bool is_negated = false;
     follow_rule_dependencies(stratum_index, is_negated, rule,
                              temp_stratum_vector);
-    if (!(rule->get_body_negated_predicate_map().empty())) {
+    if (rule->body_has_negated_predicates()) {
         is_negated = true;
         stratum_index++;
         temp_stratum_vector->emplace_back();

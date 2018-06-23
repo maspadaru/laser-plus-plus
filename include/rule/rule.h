@@ -13,7 +13,7 @@ namespace rule {
 
 class Rule {
 private:
-    formula::Formula *head;
+    formula::Formula &head;
     RuleBody body;
 
 
@@ -21,8 +21,7 @@ public:
 
 // constructors & destructors
     explicit Rule(
-            formula::Formula *head,
-            std::vector<formula::Formula *> formula_vector);
+            formula::Formula &head);
 
     Rule(Rule const &other); // copy constructor
     Rule(Rule &&other) noexcept; // move constructor
@@ -33,15 +32,15 @@ public:
     Rule &operator=(Rule &&other) noexcept; // move assignment
 
 // getters & setters
-    formula::Formula *get_head();
+    formula::Formula &get_head();
 
 // methods
 
     std::string get_head_predicate() const;
 
-    const std::unordered_map<std::string, std::vector<formula::Formula *>>
-    get_body_variable_map() const;
-
+//    const std::unordered_map<std::string, std::vector<formula::Formula *>>
+//    get_body_variable_map() const;
+//
     const std::unordered_map<std::string, std::vector<formula::Formula *>>
     get_body_positive_predicate_map() const;
 
@@ -62,6 +61,12 @@ public:
     void expire_outdated_groundings(
             unsigned long long int current_time,
             unsigned long long int current_tuple_counter);
+
+    void add_body_formula(formula::Formula &formula);
+
+    formula::Formula& get_body_formula(size_t index);
+
+    bool body_has_negated_predicates() const;
 
 };
 

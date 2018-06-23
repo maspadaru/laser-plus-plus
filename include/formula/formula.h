@@ -32,8 +32,16 @@ public:
 // constructors / destructors
 
     virtual ~Formula() = default;
-    virtual Formula * create () const = 0; // Virtual constructor (creation)
-    virtual Formula * clone () const = 0;  // Virtual constructor (copying)
+    virtual Formula & create () const = 0; // Virtual constructor (creation)
+    virtual Formula & clone () const = 0;  // Virtual constructor (copying)
+
+    /**
+     * Virtual constructor (moving)
+     *  All the contents of this object are moved to a new object allocated on
+     *  the heap using 'new'.
+     * @return reference to the newly allocated object.
+     */
+    virtual Formula & move () = 0;  //
 
 
 // getters / setters

@@ -13,10 +13,10 @@ namespace program {
 PredicateInformation::PredicateInformation(const std::string predicate,
                                            bool is_head_of_rule,
                                            bool is_negated, rule::Rule *rule,
-                                           formula::Formula *formula)
+                                           formula::Formula &formula)
         : predicate(predicate), is_head_of_rule_m(is_head_of_rule),
           is_negated_m(is_negated), rule(rule) {
-    formula_vector.push_back(formula);
+    formula_vector.push_back(&formula);
 }
 
 PredicateInformation::PredicateInformation(const std::string predicate,

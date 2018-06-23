@@ -5,9 +5,10 @@
 #ifndef LASER_RULE_RULE_BODY_H
 #define LASER_RULE_RULE_BODY_H
 
+#include <unordered_map>
+
 #include "formula/formula.h"
 #include "formula/grounding_table.h"
-#include <unordered_map>
 
 namespace laser {
 namespace rule {
@@ -15,7 +16,7 @@ namespace rule {
 class RuleBody {
 private:
     int last_successful_join = -1;
-    bool has_negated_atoms_m = false;
+    bool is_indexed = false;
 
     /* All groundings that satisfy the body that are found when calling
      * the method RuleBody::holds_at() */
@@ -83,7 +84,7 @@ private:
 
     void
     accept_negated_substitution(
-            formula::Formula *formula,
+            formula::Formula &formula,
             unsigned long long int current_time,
             unsigned long long int current_tuple_counter);
 
@@ -98,7 +99,13 @@ private:
     std::set<std::string>
     get_variable_substitutions(
             std::string variable,
-            formula::Formula *formula) const;
+            formula::Formula &formula) const;
+
+    //DELETE THESE:
+    const std::unordered_map<std::string, std::vector<formula::Formula *>>
+    get_variable_map() const;
+
+    formula::GroundingTable get_grounding_table() const;
 
 public:
 
@@ -107,7 +114,7 @@ public:
 
     RuleBody(RuleBody &&other) noexcept ; // move constructor
 
-    explicit RuleBody(std::vector<formula::Formula *> formula_vector);
+    RuleBody() = default;
 
     ~RuleBody();
 
@@ -116,16 +123,8 @@ public:
     RuleBody &operator=(RuleBody &&other) noexcept;  // move assignment
 
 // getters & setters
-    formula::GroundingTable get_grounding_table() const;
 
-    const std::unordered_map<std::string, std::vector<formula::Formula *>>
-    get_variable_map() const;
 
-    const std::unordered_map<std::string, std::vector<formula::Formula *>>
-    get_positive_predicate_map() const;
-
-    const std::unordered_map<std::string, std::vector<formula::Formula *>>
-    get_negated_predicate_map() const;
 
 // methods
 
@@ -148,13 +147,28 @@ public:
 
     /**
      * Removes all annotated grounding that have expired due to horizon time
-     * or tupple counter
+     * or tuple counter
      */
     void expire_outdated_groundings(
             unsigned long long int current_time,
             unsigned long long int current_tuple_counter);
 
+    void add_formula(formula::Formula &formula);
+
+    formula::Formula& get_formula(size_t index) const;
+
+    bool has_negated_predicates() const;
+
+    const std::unordered_map<std::string, std::vector<formula::Formula *>>
+    get_positive_predicate_map() const;
+
+    const std::unordered_map<std::string, std::vector<formula::Formula *>>
+    get_negated_predicate_map() const;
+
+
+
 };
+
 
 } // namespace rule
 } // namespace laser

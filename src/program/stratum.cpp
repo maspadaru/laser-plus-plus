@@ -20,7 +20,7 @@ Stratum::~Stratum() {
 
 
 void
-Stratum::add_head_predicate(std::string predicate, formula::Formula *rule_head,
+Stratum::add_head_predicate(std::string predicate, formula::Formula &rule_head,
                             rule::Rule *rule) {
     PredicateInformation *pi = new PredicateInformation(
             std::move(predicate), true, false,

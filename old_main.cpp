@@ -158,3 +158,55 @@ int main() {
     }
     // delete &formula; -> error: because rule deconstructor tries to free it.
 }
+
+// ===========================================================================
+/* In this solution we don't need to use 'new' because now Rule and RuleBody
+ * will clone each Formula object. Formula has some new methods "clone()" and
+ * "move()" which are used by Rule and RuleBody to allocate clone objects on
+ * the heap. This way classes can manage their own objects. */
+
+laser::rule::Rule make_rule() {
+    std::string world = "world";
+    laser::formula::Atom local_atom_hello = laser::formula::Atom("hello");
+    laser::formula::Atom local_atom_world = laser::formula::Atom(world);
+    laser::rule::Rule local_rule = laser::rule::Rule(local_atom_hello);
+    local_rule.add_body_fomrula(local_atom_world);
+
+    laser::formula::Formula &formula_hello = local_rule.get_head();
+    laser::formula::Formula &formula_world = local_rule.get_body_formula(0);
+    std::cout << "FIRST : " << formula_hello.get_predicate() << " "
+              << formula_world.get_predicate() << "!" << std::endl;
+
+    return local_rule;
+}
+
+std::vector<laser::rule::Rule> make_rule_vector(int n) {
+    std::vector<laser::rule::Rule> vector;
+    for (int i = 0; i < n; i++){
+        laser::rule::Rule  rule = make_rule();
+        laser::formula::Formula &formula = rule.get_head();
+
+        laser::formula::Formula &formula_hello = rule.get_head();
+        laser::formula::Formula &formula_world = rule.get_body_formula(0);
+        std::cout << "SECOND : " << formula_hello.get_predicate() << " "
+                  << formula_world.get_predicate() << "!" << std::endl;
+
+        vector.push_back(rule);
+    }
+    return vector;
+}
+
+int main() {
+
+    int n = 5;
+    auto rule_vector = make_rule_vector(n);
+    for (int i = 0; i < n; i++) {
+        laser::rule::Rule rule = rule_vector[i];
+
+        laser::formula::Formula &formula_hello = rule.get_head();
+        laser::formula::Formula &formula_world = rule.get_body_formula(0);
+        std::cout << "THIRD : " << formula_hello.get_predicate() << " "
+                  << formula_world.get_predicate() << "!" << std::endl;
+    }
+    // delete &formula; -> error: because rule deconstructor tries to free it.
+}

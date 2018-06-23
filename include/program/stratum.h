@@ -32,7 +32,7 @@ public:
 // methods
 
     void add_head_predicate(std::string predicate,
-                            formula::Formula *rule_head,
+                            formula::Formula &rule_head,
                             rule::Rule *rule);
 
     void add_nonhead_predicate(std::string predicate,

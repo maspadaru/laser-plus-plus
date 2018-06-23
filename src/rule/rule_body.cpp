@@ -14,10 +14,12 @@ namespace rule {
 // constructors & destructors
 
 
-RuleBody::RuleBody(std::vector<formula::Formula *> formulas) :
-        formula_vector(std::move(formulas)) {
-    index_body_formulas();
-}
+//RuleBody::RuleBody(std::vector<formula::Formula &> formulas) :
+//        formula_vector(std::move(formulas)) {
+//    index_body_formulas();
+//}
+
+
 
 RuleBody::~RuleBody() {
     formula_vector.clear();
@@ -25,9 +27,8 @@ RuleBody::~RuleBody() {
 
 RuleBody::RuleBody(RuleBody const &other) {
     this->last_successful_join = other.last_successful_join;
-    this->has_negated_atoms_m = other.has_negated_atoms_m;
     for (auto formula : other.formula_vector) {
-        this->formula_vector.push_back(formula->clone());
+        this->formula_vector.push_back(&formula->clone());
     }
     index_body_formulas();
 }
@@ -42,16 +43,14 @@ RuleBody::RuleBody(RuleBody &&other) noexcept {
     this->negated_predicate_map = std::move(other.negated_predicate_map);
 
     this->last_successful_join = other.last_successful_join;
-    this->has_negated_atoms_m = other.has_negated_atoms_m;
 }
 
 RuleBody &RuleBody::operator=(RuleBody const &other) {
     this->last_successful_join = other.last_successful_join;
-    this->has_negated_atoms_m = other.has_negated_atoms_m;
 
     this->formula_vector.clear();
     for (auto formula : other.formula_vector) {
-        this->formula_vector.push_back(formula->clone());
+        this->formula_vector.push_back(&formula->clone());
     }
     index_body_formulas();
 
@@ -68,7 +67,6 @@ RuleBody &RuleBody::operator=(RuleBody &&other) noexcept {
     this->negated_predicate_map = std::move(other.negated_predicate_map);
 
     this->last_successful_join = other.last_successful_join;
-    this->has_negated_atoms_m = other.has_negated_atoms_m;
 }
 
 
@@ -99,42 +97,44 @@ void RuleBody::index_body_formulas() {
     predicate_map.clear();
     positive_predicate_map.clear();
     negated_predicate_map.clear();
-    for (auto formula : formula_vector) {
-        auto type = formula->get_type();
+    for (auto formula_pointer : formula_vector) {
+        auto &formula = *formula_pointer;
+        auto type = formula.get_type();
         if (type != formula::FormulaType::MATH &&
                 type != formula::FormulaType::COMP) {
-            auto predicate = formula->get_predicate();
+            auto predicate = formula.get_predicate();
 
-            auto pos_neg_map = (formula->is_negated()) ? negated_predicate_map
-                                                       : positive_predicate_map;
+            auto pos_neg_map = (formula.is_negated()) ? negated_predicate_map
+                                                      : positive_predicate_map;
             pos_neg_map.try_emplace(predicate);
             std::vector<laser::formula::Formula *> &map_vector
                     = pos_neg_map[predicate];
-            map_vector.push_back(formula);
+            map_vector.push_back(&formula);
 
             predicate_map.try_emplace(predicate);
             map_vector = predicate_map[predicate];
-            map_vector.push_back(formula);
+            map_vector.push_back(&formula);
 
-            for (auto variable_name :formula->get_variable_names()) {
+            for (auto variable_name :formula.get_variable_names()) {
                 variable_map.try_emplace(variable_name);
                 map_vector = variable_map[variable_name];
-                map_vector.push_back(formula);
+                map_vector.push_back(&formula);
             }
         }
     }
+    is_indexed = true;
 }
 
 void
 RuleBody::accept_negated_substitution(
-        formula::Formula *formula,
+        formula::Formula &formula,
         unsigned long long int current_time,
         unsigned long long int current_tuple_counter) {}
 
 std::set<std::string>
 RuleBody::get_variable_substitutions(
         std::string variable,
-        formula::Formula *formula) const {}
+        formula::Formula &formula) const {}
 
 
 bool RuleBody::evaluate(
@@ -168,6 +168,21 @@ RuleBody::do_comparison(
         formula::Formula const &formula, int current_time) {
     return formula::GroundingTable();
 }
+
+void RuleBody::add_formula(formula::Formula &formula) {
+    formula::Formula &to_add = formula.move();
+    this->formula_vector.push_back(&to_add);
+    is_indexed = false;
+}
+
+formula::Formula& RuleBody::get_formula(size_t index) const {
+    return *formula_vector[index];
+}
+
+bool RuleBody::has_negated_predicates() const {
+    return !(this->negated_predicate_map.empty());
+}
+
 
 } // namespace rule
 } // namespace laser

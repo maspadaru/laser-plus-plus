@@ -139,13 +139,13 @@ std::vector<laser::rule::Rule *>
 SimpleParser::parse_rules(std::vector<std::string> raw_rule_vector) const {
     for (const auto &raw_rule_string : raw_rule_vector) {
         auto token_vector = tokenize(raw_rule_string);
-        laser::rule::Rule rule =
+        // laser::rule::Rule rule =
                 parse_rule(token_vector);
     }
     return std::vector<laser::rule::Rule *>();
 }
-
-laser::rule::Rule SimpleParser::parse_rule(
+//laser::rule::Rule
+void SimpleParser::parse_rule(
         std::vector<Token> token_vector) const {
     for (auto token : token_vector) {
         std::cout << "Token: " << token.value << std::endl;

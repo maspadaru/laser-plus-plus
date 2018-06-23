@@ -18,13 +18,26 @@ Atom::Atom(std::string predicate, std::vector<std::string> variable_names) {
     this->variable_names = std::move(variable_names);
 }
 
-Atom *Atom::create() const {
-    return new Atom();
+Atom &Atom::create() const {
+    auto result = new Atom();
+    return *result;
 }
 
-Atom *Atom::clone() const {
-    return new Atom(*this);
+Atom &Atom::clone() const {
+    auto result = new Atom(*this);
+    return *result;
 }
+
+Atom &Atom::move() {
+    Atom *result = new Atom(this->predicate);
+    result->type = this->type;
+    result->is_negated_m = this->is_negated_m;
+    result->variable_names = std::move(this->variable_names);
+    result->grounding_table = std::move(this->grounding_table);
+    result->result_grounding_table = std::move(result_grounding_table);
+    return *result;
+}
+
 
 // getters & setters
 
@@ -49,9 +62,10 @@ bool Atom::holds(unsigned long long int current_time) const {
 
 // methods
 
-void Atom::accept(unsigned long long int current_time,
-                  unsigned long long int current_tuple_counter,
-                  std::vector<Formula *> facts) {
+void Atom::accept(
+        unsigned long long int current_time,
+        unsigned long long int current_tuple_counter,
+        std::vector<Formula *> facts) {
     // TODO implement
 }
 
@@ -59,12 +73,12 @@ size_t Atom::get_number_of_variables() const {
     return variable_names.size();
 }
 
-void Atom::expire_outdated_groundings(unsigned long long int current_time,
-                                      unsigned long long int current_tuple_counter) {
+void Atom::expire_outdated_groundings(
+        unsigned long long int current_time,
+        unsigned long long int current_tuple_counter) {
     grounding_table.expire_outdated_groundings(current_time,
             current_tuple_counter);
 }
-
 } // namespace formula
 } // namespace laser
 

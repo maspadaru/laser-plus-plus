@@ -42,7 +42,7 @@ public:
 
     PredicateInformation(const std::string predicate, bool is_head_of_rule,
                          bool is_negated, rule::Rule *rule,
-                         formula::Formula *formula);
+                         formula::Formula &formula);
 
     ~PredicateInformation() = default;
 

@@ -45,8 +45,9 @@ public:
 
     ~Atom() override = default;
 
-    Atom * create () const override;
-    Atom * clone () const override;
+    Atom & create () const override;
+    Atom & clone () const override;
+    Atom & move () override;
 
 // getters & setters
 
