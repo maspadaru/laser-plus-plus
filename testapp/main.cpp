@@ -19,13 +19,13 @@ int main() {
     int n = 5;
     auto rule_vector = make_rule_vector(n);
     for (int i = 0; i < n; i++) {
-        laser::rule::Rule rule = rule_vector[i];
+        laser::rule::Rule rule = rule_vector[i]; // Copy constructor is called
 
         laser::formula::Formula &formula_hello = rule.get_head();
         laser::formula::Formula &formula_world = rule.get_body_formula(0);
-        std::cout << "THIRD : " << formula_hello.get_predicate() << " "
+        std::cerr << "THIRD : " << formula_hello.get_predicate() << " "
                   << formula_world.get_predicate() << "!" << std::endl;
-    }
+    } // rule goes out of scope and DELETE is called on it <- at each iteration
 
     // =========== Now test Laser =============
 
@@ -79,39 +79,49 @@ int main() {
 
 
 
-    std::cout << "Hello, " << "!" << std::endl;
-}
+    std::cerr << "Hello, " << "!" << std::endl;
+} // calls Delete on rule_vector, program, simple_writer, simple_formatter,
+// simple_data_reader, simple_rule_reader, simple_parser, rule_string,
+// stream_string
 
 
-// ======= The folowing funtions are used to test memory management =====
+// ======= The following functions are used to test memory management =====
 
 laser::rule::Rule make_rule() {
     std::string world = "world";
     laser::formula::Atom local_atom_hello = laser::formula::Atom("hello");
     laser::formula::Atom local_atom_world = laser::formula::Atom(world);
-    laser::rule::Rule local_rule = laser::rule::Rule(local_atom_hello);
-    local_rule.add_body_formula(local_atom_world);
+    std::vector<laser::formula::Formula*> body_formulas;
+    body_formulas.push_back(&local_atom_world);
+    laser::rule::Rule local_rule = laser::rule::Rule(&local_atom_hello, body_formulas);
 
     laser::formula::Formula &formula_hello = local_rule.get_head();
     laser::formula::Formula &formula_world = local_rule.get_body_formula(0);
-    std::cout << "FIRST : " << formula_hello.get_predicate() << " "
+    std::cerr << "FIRST : " << formula_hello.get_predicate() << " "
               << formula_world.get_predicate() << "!" << std::endl;
 
     return local_rule;
+// calls Delete on local_atom_hello, local_atom_world, body_formulas
+// no move/copy/delete is called on local_rule <- most likely the compiler
+//    optimizes to return by reference
 }
 
 std::vector<laser::rule::Rule> make_rule_vector(int n) {
     std::vector<laser::rule::Rule> vector;
     for (int i = 0; i < n; i++){
         laser::rule::Rule  rule = make_rule();
-        laser::formula::Formula &formula = rule.get_head();
-
         laser::formula::Formula &formula_hello = rule.get_head();
         laser::formula::Formula &formula_world = rule.get_body_formula(0);
-        std::cout << "SECOND : " << formula_hello.get_predicate() << " "
+        std::cerr << "SECOND : " << formula_hello.get_predicate() << " "
                   << formula_world.get_predicate() << "!" << std::endl;
 
         vector.push_back(rule);
-    }
+        /* vector:
+         * On push_back: - Copy constructor called on rule before push_back,
+         * On reallocate: - Copy const called on rule into the reallocated vector
+         *                - Move constructor is called on all elements in old vec
+         *                - delete called on all elements of the old vector
+         */
+    } // rule goes out of scope and DELETE is called on it <- at each iteration
     return vector;
-}
+} // No move/copy/delete gets called on rules when Vector is returned. Ret ref?

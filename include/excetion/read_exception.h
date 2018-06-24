@@ -13,12 +13,13 @@ namespace exception {
 
 class ReadException : public std::exception {
 private:
-    char *message_m = "ReadException";
+    char const *message_m = "ReadException";
 public:
     ReadException() = default;
-    ReadException(char *message) : message_m(message) {}
 
-    const char *what() const noexcept {
+    explicit ReadException(char const *message) : message_m(message) {}
+
+    const char *what() const noexcept override {
         return message_m;
     }
 };

@@ -114,7 +114,7 @@ public:
 
     RuleBody(RuleBody &&other) noexcept ; // move constructor
 
-    RuleBody() = default;
+    explicit RuleBody(std::vector<formula::Formula*> parameter_vector);
 
     ~RuleBody();
 
@@ -152,8 +152,6 @@ public:
     void expire_outdated_groundings(
             unsigned long long int current_time,
             unsigned long long int current_tuple_counter);
-
-    void add_formula(formula::Formula &formula);
 
     formula::Formula& get_formula(size_t index) const;
 

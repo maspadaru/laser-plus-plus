@@ -20,8 +20,10 @@ private:
 public:
 
 // constructors & destructors
+
     explicit Rule(
-            formula::Formula &head);
+            formula::Formula *head_formula,
+            std::vector<formula::Formula*> body_vector);
 
     Rule(Rule const &other); // copy constructor
     Rule(Rule &&other) noexcept; // move constructor
@@ -61,8 +63,6 @@ public:
     void expire_outdated_groundings(
             unsigned long long int current_time,
             unsigned long long int current_tuple_counter);
-
-    void add_body_formula(formula::Formula &formula);
 
     formula::Formula& get_body_formula(size_t index);
 

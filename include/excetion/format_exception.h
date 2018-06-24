@@ -16,9 +16,10 @@ private:
     char const *message_m = "FormatException";
 public:
     FormatException() = default;
-    FormatException(char const *message) : message_m(message) {}
 
-    const char *what() const noexcept {
+    explicit FormatException(char const *message) : message_m(message) {}
+
+    const char *what() const noexcept override {
         return message_m;
     }
 };

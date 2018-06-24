@@ -35,7 +35,7 @@ public:
     * properly parsered.
     */
     virtual std::vector<laser::rule::Rule>
-    parse_rules(std::vector<std::string> raw_rule_vector) const = 0;
+    parse_rules(std::vector<std::string> raw_rule_vector) = 0;
 
 // methods
 

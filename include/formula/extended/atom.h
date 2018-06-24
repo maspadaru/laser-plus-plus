@@ -43,11 +43,11 @@ public:
     explicit Atom(std::string predicate,
                   std::vector<std::string> variable_names);
 
-    ~Atom() override = default;
+    ~Atom() override;
 
-    Atom & create () const override;
-    Atom & clone () const override;
-    Atom & move () override;
+    Formula & create () const override;
+    Formula & clone () const override;
+    Formula & move () override;
 
 // getters & setters
 

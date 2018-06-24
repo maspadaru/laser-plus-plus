@@ -2,6 +2,7 @@
 // Created by mike on 6/15/18.
 //
 
+#include <iostream>
 #include "formula/extended/atom.h"
 
 namespace laser {
@@ -18,17 +19,18 @@ Atom::Atom(std::string predicate, std::vector<std::string> variable_names) {
     this->variable_names = std::move(variable_names);
 }
 
-Atom &Atom::create() const {
+Formula &Atom::create() const {
     auto result = new Atom();
     return *result;
 }
 
-Atom &Atom::clone() const {
+Formula &Atom::clone() const {
     auto result = new Atom(*this);
     return *result;
 }
 
-Atom &Atom::move() {
+Formula &Atom::move() {
+//    auto result = new Atom(std::move(*this));
     Atom *result = new Atom(this->predicate);
     result->type = this->type;
     result->is_negated_m = this->is_negated_m;
@@ -79,6 +81,12 @@ void Atom::expire_outdated_groundings(
     grounding_table.expire_outdated_groundings(current_time,
             current_tuple_counter);
 }
+
+Atom::~Atom() {
+    std::cerr << "DELETE Atom with predicate:  " << this->get_predicate() << std::endl;
+}
+
+
 } // namespace formula
 } // namespace laser
 

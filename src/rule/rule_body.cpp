@@ -3,6 +3,7 @@
 //
 
 #include <utility>
+#include <iostream>
 #include "rule/rule_body.h"
 
 
@@ -23,6 +24,15 @@ namespace rule {
 
 RuleBody::~RuleBody() {
     formula_vector.clear();
+}
+
+RuleBody::RuleBody(std::vector<formula::Formula *> parameter_vector) {
+    std::cerr << "size of parameter vector for body: " << parameter_vector.size() << std::endl;
+    for (auto formula : parameter_vector) {
+        auto &to_add = formula->move();
+        this->formula_vector.push_back(&to_add);
+    }
+    index_body_formulas();
 }
 
 RuleBody::RuleBody(RuleBody const &other) {
@@ -169,13 +179,7 @@ RuleBody::do_comparison(
     return formula::GroundingTable();
 }
 
-void RuleBody::add_formula(formula::Formula &formula) {
-    formula::Formula &to_add = formula.move();
-    this->formula_vector.push_back(&to_add);
-    is_indexed = false;
-}
-
-formula::Formula& RuleBody::get_formula(size_t index) const {
+formula::Formula &RuleBody::get_formula(size_t index) const {
     return *formula_vector[index];
 }
 

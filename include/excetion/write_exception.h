@@ -13,12 +13,13 @@ namespace exception {
 
 class WriteException : public std::exception {
 private:
-    char *message_m = "WriteException";
+    char const *message_m = "WriteException";
 public:
     WriteException() = default;
-    WriteException(char *message) : message_m(message) {}
 
-    const char *what() const noexcept {
+    explicit WriteException(char const *message) : message_m(message) {}
+
+    const char *what() const noexcept override {
         return message_m;
     }
 };

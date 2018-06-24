@@ -3,6 +3,7 @@
 //
 
 #include <utility>
+#include <iostream>
 #include "rule/rule.h"
 
 namespace laser {
@@ -10,26 +11,34 @@ namespace rule {
 
 
 // constructors & destructors
-Rule::Rule(
-        formula::Formula &head_formula) :
-        head(head_formula.clone()), body() {}
+
+
+
+Rule::Rule(formula::Formula *head_formula, std::vector<formula::Formula *> body_vector):
+        head(head_formula->clone()), body(std::move(body_vector)) {}
 
 Rule::~Rule() {
+    std::cerr << "~Rule() -> ";
     delete &head;
 }
 
-Rule::Rule(Rule const &other) : head(other.head.clone()), body(other.body) {}
+Rule::Rule(Rule const &other) : head(other.head.clone()), body(other.body) {
+    std::cerr << "Rule: COPY constructor called" << std::endl;
+}
 
 Rule::Rule(Rule &&other) noexcept  : head(other.head.move()),
-        body(std::move(other.body)) {}
+        body(std::move(other.body)) {
+    std::cerr << "Rule: MOVE constructor called" << std::endl;}
 
 Rule &Rule::operator=(Rule const &other) {
+    std::cerr << "Rule: COPY operator called" << std::endl;
     this->head = other.head.clone();
     this->body = RuleBody(other.body);
     return *this;
 }
 
 Rule &Rule::operator=(Rule &&other) noexcept {
+    std::cerr << "Rule: MOVE operator called" << std::endl;
     this->head = other.head.move();
     this->body = std::move(other.body);
     return *this;
@@ -71,10 +80,6 @@ void Rule::expire_outdated_groundings(
     head.expire_outdated_groundings(current_time, current_tuple_counter);
     body.expire_outdated_groundings(current_time, current_tuple_counter);
 
-}
-
-void Rule::add_body_formula(formula::Formula &formula) {
-    body.add_formula(formula);
 }
 
 formula::Formula &Rule::get_body_formula(size_t index) {

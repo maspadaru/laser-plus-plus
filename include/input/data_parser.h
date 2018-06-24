@@ -39,7 +39,7 @@ public:
     */
     virtual std::tuple<int, std::unordered_map<std::string,
                     std::vector<laser::formula::Formula *>>>
-    parse_data(std::vector<std::string> raw_data_vector) const = 0;
+    parse_data(std::vector<std::string> raw_data_vector) = 0;
 
 };
 

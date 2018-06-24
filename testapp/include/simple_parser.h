@@ -10,11 +10,15 @@
 #include <vector>
 #include <algorithm>
 #include <stack>
+#include <sstream>
+#include <utility>
 
 #include <input/data_parser.h>
 #include <input/rule_parser.h>
 #include <rule/rule.h>
 #include <formula/formula.h>
+#include <excetion/format_exception.h>
+#include <formula/extended/atom.h>
 
 enum class TokenType {
     OPERATOR,
@@ -37,14 +41,18 @@ static inline void ltrim(std::string *s);
 
 static inline void trim(std::string *s);
 
-static inline Token pop(std::stack<Token> *stack);
-
 static inline void syntax_error(std::string error_message);
+
+static inline void push_to_argument_stack(
+        laser::formula::Formula *formula,
+        std::stack<std::vector<laser::formula::Formula *>> *argument_stack);
 
 
 class SimpleParser
         : public laser::input::DataParser, public laser::input::RuleParser {
 private:
+
+    std::vector<std::vector<laser::formula::Formula *>> argument_stack;
 
     Token recognize(std::string token_string) const;
 
@@ -59,26 +67,34 @@ private:
             std::vector<Token> token_vector,
             TokenType type, char value_char) const;
 
-    // laser::rule::Rule
-    void parse_rule(std::vector<Token> token_vector) const;
+    laser::rule::Rule parse_rule(std::vector<Token> token_vector);
 
     bool is_unary_operator(Token token) const;
 
     bool is_binary_operator(Token token) const;
 
-    void parse_operator(Token token, std::stack<laser::formula::Formula*> &stack) const;
+    void parse_operator(Token token, bool is_head = false);
 
-    std::tuple<size_t, std::string> parse_predicate_arguments(
-            size_t index, std::stack<laser::formula::Formula*> &stack) const;
+    std::tuple<size_t, std::vector<std::string>> parse_predicate_arguments(
+            size_t index, std::vector<Token> *tokens) const;
+
+    laser::formula::Formula * argument_stack_pop();
+
+    std::vector<laser::formula::Formula *> argument_stack_pop_vector();
+
+    void argument_stack_push(laser::formula::Formula *formula);
+
+    void argument_stack_push_vector(
+            std::vector<laser::formula::Formula *> formula_vector);
 
 public:
     ~SimpleParser() override = default;
 
     std::tuple<int, std::unordered_map<std::string, std::vector<laser::formula::Formula *>>>
-    parse_data(std::vector<std::string> raw_data_vector) const override;
+    parse_data(std::vector<std::string> raw_data_vector) override;
 
     std::vector<laser::rule::Rule>
-    parse_rules(std::vector<std::string> raw_rule_vector) const override;
+    parse_rules(std::vector<std::string> raw_rule_vector) override;
 };
 
 

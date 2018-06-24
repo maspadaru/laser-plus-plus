@@ -13,12 +13,13 @@ namespace exception {
 
 class UninitializedException : public std::exception {
 private:
-    char *message_m = "UninitializedException";
+    char const *message_m = "UninitializedException";
 public:
     UninitializedException() = default;
-    UninitializedException(char *message) : message_m(message) {}
 
-    const char *what() const noexcept {
+    explicit UninitializedException(char const *message) : message_m(message) {}
+
+    const char *what() const noexcept override {
         return message_m;
     }
 };

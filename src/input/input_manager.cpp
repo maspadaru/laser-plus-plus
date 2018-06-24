@@ -66,7 +66,7 @@ bool InputManager::fetch_stream_metadata() {
     return has_metadata;
 }
 
-std::vector<rule::Rule> InputManager::get_rules() const {
+std::vector<rule::Rule> InputManager::get_rules() {
     if (!is_initialised_rule_reader_m) {
         throw exception::UninitializedException("The rule reader was not "
                                                 "initialised. Call "
@@ -80,7 +80,7 @@ std::vector<rule::Rule> InputManager::get_rules() const {
 
 std::tuple<int,
         std::unordered_map<std::string, std::vector<formula::Formula *>>>
-InputManager::get_background_facts() const {
+InputManager::get_background_facts() {
     if (!is_initialised_background_reader_m) {
         throw exception::UninitializedException("The background data reader "
                                                 "was not initialised. "

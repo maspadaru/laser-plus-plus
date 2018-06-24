@@ -75,7 +75,7 @@ public:
      *      initialised by calling initialize_rule_reader() before calling
      *      get_rules().
      */
-    std::vector<rule::Rule> get_rules() const;
+    std::vector<rule::Rule> get_rules();
 
     /**
      * Reads all the fact from the background datastore.
@@ -95,7 +95,7 @@ public:
      *      get_background_facts().
      */
     std::tuple<int, std::unordered_map<std::string, std::vector<formula::Formula *>>>
-    get_background_facts() const;
+    get_background_facts();
 
     /**
      * Reads the facts from the stream that occurred at the requested time point

@@ -2,13 +2,10 @@
 // Created by mike on 6/21/18.
 //
 
-#include <sstream>
-#include <utility> #include "simple_parser.h"
-#include <simple_parser.h>
+#include "simple_parser.h"
 
 
 #include <iostream> // DELETE THIS
-#include <excetion/format_exception.h>
 
 /* trim from start (in place)
  * source:
@@ -39,12 +36,6 @@ static inline void trim(std::string *s) {
     rtrim(s);
 }
 
-static inline Token pop(std::stack<Token> *stack) {
-    auto result = stack->top();
-    stack->pop();
-    return result;
-}
-
 static inline void syntax_error(std::string error_message) {
     error_message = "Syntax Error in Simple Parser: ", error_message;
     const char *exception_message = error_message.c_str();
@@ -52,11 +43,45 @@ static inline void syntax_error(std::string error_message) {
 
 }
 
+laser::formula::Formula *SimpleParser::argument_stack_pop() {
+    auto head_vector = argument_stack_pop_vector();
+    if (head_vector.size() > 1) {
+        syntax_error("Rule should only have one formula in the head");
+    }
+    return head_vector.back();
+}
+
+std::vector<laser::formula::Formula *> SimpleParser::argument_stack_pop_vector() {
+    std::cerr << "POP -> from stack: " << argument_stack.back().back()->get_predicate() << std::endl;
+    auto vector = argument_stack.back();
+    std::cerr << "POP -> from vector: " << vector.back()->get_predicate() << std::endl;
+    argument_stack.pop_back();
+    std::cerr << "POP -> from vector after pop: " << vector.back()->get_predicate() << std::endl;
+    return vector;
+}
+
+void SimpleParser::argument_stack_push(laser::formula::Formula *formula) {
+    std::cerr << "PUSH -> Pushing: " << formula->get_predicate() << std::endl;
+    std::vector<laser::formula::Formula *> formula_vector;
+    formula_vector.push_back(formula);
+    std::cerr << "PUSH -> Pushed: " << formula_vector.back()->get_predicate() << std::endl;
+    argument_stack_push_vector(formula_vector);
+    std::cerr << "PUSH -> from stack: " << argument_stack.back().back()->get_predicate() << std::endl;
+
+}
+
+void SimpleParser::argument_stack_push_vector(
+        std::vector<laser::formula::Formula *> formula_vector) {
+    std::cerr << "PUSH VECTOR -> Pushing: " << formula_vector.back()->get_predicate() << std::endl;
+    argument_stack.push_back(formula_vector);
+    std::cerr << "PUSH VECTOR -> from stack: " << argument_stack.back().back()->get_predicate() << std::endl;
+}
+
 std::tuple<int, std::unordered_map<std::string,
         std::vector<laser::formula::Formula * >>>
 SimpleParser::parse_data(
         std::vector<std::string>
-        raw_data_vector) const {
+        raw_data_vector) {
     return std::tuple<int, std::unordered_map<std::string,
             std::vector<laser::formula::Formula * >>>();
 }
@@ -165,118 +190,221 @@ bool SimpleParser::is_binary_operator(Token token) const {
 }
 
 std::vector<laser::rule::Rule>
-SimpleParser::parse_rules(std::vector<std::string> raw_rule_vector) const {
+SimpleParser::parse_rules(std::vector<std::string> raw_rule_vector) {
     std::vector<laser::rule::Rule> rule_vector;
     for (const auto &raw_rule_string : raw_rule_vector) {
         auto token_vector = tokenize(raw_rule_string);
-        // laser::rule::Rule rule =
+        laser::rule::Rule rule =
                 parse_rule(token_vector);
-        // rule_vector.push_back(rule);
+        rule_vector.push_back(rule);
     }
     return rule_vector;
 }
 
-// laser::rule::Rule
-void SimpleParser::parse_rule(
-        std::vector<Token> token_vector) const {
+laser::rule::Rule SimpleParser::parse_rule(
+        std::vector<Token> token_vector) {
     for (auto token : token_vector) {
-        std::cout << "Token: " << token.value << std::endl;
+        std::cerr << "Token: " << token.value << std::endl;
     }
 
-//    std::stack<Token> token_stack;
-//    std::stack<laser::formula::Formula*> argument_stack;
-//    laser::formula::Formula *head;
-//    laser::formula::Formula *rule;
-//    size_t index = 0;
-//    while (index < token_vector.size()) {
-//        Token token = token_vector[index];
-//        switch (token.type) {
-//            case TokenType::OPEN_PARENTHESES :
-//                // open parenthesis always has the highest precedence
-//                token_stack.push(token);
-//            case TokenType::OPERATOR :
-//                /* Since left has higher precedence than right,
-//                 * when we see an operator token, we must try to make
-//                 * sure all previously pushed operators on the stack are
-//                 * fully parsed before we push any new operator on the stack.
-//                 * So, we go through previous operators, and
-//                 * try to parse them if we have enough information now. */
-//                while (!token_stack.empty()) {
-//                    auto last_operator = token_stack.top();
-//                    if (is_unary_operator(last_operator) &&
-//                            is_unary_operator(token)) {
-//                        /* It must never happen that two unary operators come
-//                         * immediately after each other, without any binary
-//                         * operator between them. They can nest inside one
-//                         * another, but they cannot appear in the same level,
-//                         * and immediately after each other.
-//                         * That is a syntax error if happens. */
-//                        syntax_error(("error near operator", token.value, "!"));
-//                    } else if ((last_operator.type == TokenType::OPERATOR) &&
-//                            is_binary_operator(token)) {
-//                        /* If a binary, or unary operator is already on top of
-//                         * the stack, and another binary operator shows up, we
-//                         * must first finish the parsing of operator on the
-//                         * stack, and then deal with the new operator */
-//                        token_stack.pop();
-//                        parse_operator(last_operator, argument_stack);
-//                    } else {
-//                        /*If top of stack is occupied with coma, and/or
-//                         * parenthesis, that means we are still parsing
-//                         * arguments of an operator.
-//                         * In such cases, we cannot empty the stack, because
-//                         * current parsing is not done yet.
-//                         * We need to look into next tokens.
-//                         * So, we break the loop and continue to receive
-//                         * future tokens. */
-//                        break;
-//                    }
-//                }
-//                token_stack.push(token);
-//            case TokenType::IDENTIFIER :
-//                size_t next_index = index + 1;
-//                if (next_index < token_vector.size()) {
-//                    Token next_token = token_vector[next_index];
-//                    if (next_token.type == TokenType::OPEN_PARENTHESES) {
-//                        size_t first_argument_index = index + 2;
-//                        std::vector<std::string> test;
-//                        std::string arguments;
-//                        std::tie(index, arguments) =
-//                                parse_predicate_arguments(first_argument_index,
-//                                        argument_stack);
-//                        std::string predicate = token.value;
-//                        if (predicate == "MATH") {
-//                            if (arguments.length() != 4) {
-//                                syntax_error(("Expected four parameters for "
-//                                              "function MATH"));
-//                            }
-//                                // TODO argument_stack.push()
-//                        } else if (predicate == "COMP") {
-//                            if (arguments.length() != 3) {
-//                                syntax_error(("Expected three parameters for "
-//                                              "function COMP"));
-//                                // TODO argument_stack.push()
-//                            }
-//                        } else {
-//                            auto atom = new laser::formula::Atom();
-//                            argument_stack.push(Atom())
-//                        }
-//                    }
-//
-//                }
-//
-//        }
-//    }
+    std::stack<Token> token_stack;
+    auto atom = laser::formula::Atom("nothing");
+    laser::formula::Formula *head = &atom;
+    std::vector<laser::formula::Formula *> body;
+    argument_stack.clear();
+    size_t index = 0;
+    while (index < token_vector.size()) {
+        Token token = token_vector[index];
+        switch (token.type) {
+            case TokenType::OPEN_PARENTHESES : {
+                // open parenthesis always has the highest precedence
+                token_stack.push(token);
+            } break;
+            case TokenType::OPERATOR : {
+                /* Since left has higher precedence than right,
+                 * when we see an operator token, we must try to make
+                 * sure all previously pushed operators on the stack are
+                 * fully parsed before we push any new operator on the stack.
+                 * So, we go through previous operators, and
+                 * try to parse them if we have enough information now. */
+                while (!token_stack.empty()) {
+                    auto last_operator = token_stack.top();
+                    if (is_unary_operator(last_operator) &&
+                            is_unary_operator(token)) {
+                        /* It must never happen that two unary operators come
+                         * immediately after each other, without any binary
+                         * operator between them. They can nest inside one
+                         * another, but they cannot appear in the same level,
+                         * and immediately after each other.
+                         * That is a syntax error if happens. */
+                        syntax_error(("error near operator", token.value, "!"));
+                    } else if ((last_operator.type == TokenType::OPERATOR) &&
+                            is_binary_operator(token)) {
+                        /* If a binary, or unary operator is already on top of
+                         * the stack, and another binary operator shows up, we
+                         * must first finish the parsing of operator on the
+                         * stack, and then deal with the new operator */
+                        token_stack.pop();
+                        parse_operator(last_operator);
+                    } else {
+                        /*If top of stack is occupied with coma, and/or
+                         * parenthesis, that means we are still parsing
+                         * arguments of an operator.
+                         * In such cases, we cannot empty the stack, because
+                         * current parsing is not done yet.
+                         * We need to look into next tokens.
+                         * So, we break the loop and continue to receive
+                         * future tokens. */
+                        break;
+                    }
+                }
+                token_stack.push(token);
+            } break;
+            case TokenType::IDENTIFIER : {
+                size_t next_index = index + 1;
+                if (next_index < token_vector.size()) {
+                    Token next_token = token_vector[next_index];
+                    if (next_token.type == TokenType::OPEN_PARENTHESES) {
+                        size_t first_argument_index = index + 2;
+                        std::vector<std::string> arguments;
+                        std::tie(index, arguments) =
+                                parse_predicate_arguments(first_argument_index,
+                                        &token_vector);
+                        std::string predicate = token.value;
+                        if (predicate == "MATH") {
+                            if (arguments.size() != 4) {
+                                syntax_error(("Expected four parameters for "
+                                              "function MATH"));
+                            }
+                            // TODO argument_stack.push()
+                        } else if (predicate == "COMP") {
+                            if (arguments.size() != 3) {
+                                syntax_error(("Expected three parameters for "
+                                              "function COMP"));
+                                // TODO argument_stack.push()
+                            }
+                        } else {
+                            auto atom = new laser::formula::Atom(predicate,
+                                    arguments);
+                            std::cerr << atom->get_predicate() << std::endl;
+                            argument_stack_push(atom);
+                            std::cerr << "POP in main -> from stack: " << argument_stack.back().back()->get_predicate() << std::endl;
+                        }
+                    }
+
+                } else {
+                    std::string predicate = token.value;
+                    std::vector<std::string> arguments;
+                    auto atom = new laser::formula::Atom(predicate, arguments);
+                    argument_stack_push(atom);
+                }
+            } break;
+            case TokenType::CLOSED_PARENTHESES : {
+                bool keep_going = true;
+                while (keep_going) {
+                    if (argument_stack.empty()) {
+                        syntax_error("Expected operand or '('");
+                    }
+                    Token operator_token = token_stack.top();
+                    token_stack.pop();
+                    if (operator_token.type == TokenType::OPEN_PARENTHESES) {
+                        keep_going = false;
+                    }
+                    parse_operator(operator_token);
+                }
+            }
+            break;
+            case TokenType::ENTAILMENT_SIGN : {
+                if (!argument_stack.empty()) {
+                    /*Before parsing the body of the rule we must make sure all operators in the
+                     * head are dealt with. So, we go through the operator stack, and make sure
+                     * that all of them are processed. */
+                    while (!token_stack.empty()) {
+                        Token operator_token = token_stack.top();
+                        token_stack.pop();
+                        parse_operator(operator_token, true);
+
+                    }
+                    head = argument_stack_pop();
+                }
+            }
+        }
+        index++;
+    }
+    std::cerr << "POP in main2 -> from stack: " << argument_stack.back().back()->get_predicate() << std::endl;
+    while (!token_stack.empty()) {
+        Token operator_token = token_stack.top();
+        token_stack.pop();
+        if (operator_token.type == TokenType::OPEN_PARENTHESES) {
+            syntax_error("Missing ')' in rule ");
+        }
+        parse_operator(operator_token);
+    }
+    body = argument_stack_pop_vector();
+
+    // TODO In the python version they reverse(body). Does the order matter?
+
+
+    std::cerr << "body vector size:" << body.size() <<std::endl;
+    for(auto formula : body) {
+        std::cerr << formula->get_predicate() << std::endl;
+    }
+    std::cerr << "blabla" << std::endl;
+
+    auto result = laser::rule::Rule(head, body);
+
+
+    std::cerr << "Should start clearing" << std::endl;
+
+    std::cerr << "clear body size before : " << body.size() << std::endl;
+    body.clear();
+    std::cerr << "clear body size after: " << body.size() << std::endl;
+
+    for (auto vector : argument_stack) {
+        std::cerr << "clear vec size before : " << vector.size() << std::endl;
+        vector.clear();
+        std::cerr << "clear vec size after: " << vector.size() << std::endl;
+    }
+    argument_stack.clear();
+    std::cerr << "Done clearing" << std::endl;
+
+    return result;
 }
 
-void SimpleParser::parse_operator(
-        Token token, std::stack<laser::formula::Formula*> &stack) const {
+void SimpleParser::parse_operator(Token token, bool is_head) {
+
 
 }
 
 
-
-std::tuple<size_t, std::string> SimpleParser::parse_predicate_arguments(
-        size_t index, std::stack<laser::formula::Formula*> &stack) const {
-    return std::tuple<size_t, std::string>();
+std::tuple<size_t, std::vector<std::string>>
+SimpleParser::parse_predicate_arguments(
+        size_t index, std::vector<Token> *tokens) const {
+    std::vector<std::string> arguments;
+    if (index > tokens->size()) {
+        syntax_error("Expected constant, or variable after token '('");
+    }
+    while (index < tokens->size()) {
+        Token token = tokens->at(index);
+        if (token.type == TokenType::IDENTIFIER) {
+            arguments.push_back(token.value);
+            size_t next_index = index + 1;
+            if (next_index < tokens->size()) {
+                Token next_token = tokens->at(next_index);
+                if (next_token.value == ",") {
+                    index++;
+                }
+            } else {
+                syntax_error("Expected ',' or ')' after '" + token.value);
+            }
+        } else if (token.type == TokenType::CLOSED_PARENTHESES) {
+            if (arguments.empty()) {
+                syntax_error("Expected at least one constant, or variable "
+                             "after token '('");
+            }
+            break;
+        }
+        index++;
+    }
+    return std::make_tuple(index, arguments);
 }
