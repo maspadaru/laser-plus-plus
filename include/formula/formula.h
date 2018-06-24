@@ -41,7 +41,7 @@ public:
      *  the heap using 'new'.
      * @return reference to the newly allocated object.
      */
-    virtual Formula & move () = 0;  //
+    virtual Formula & move () = 0;
 
 
 // getters / setters

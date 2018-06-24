@@ -68,6 +68,8 @@ public:
 
     bool body_has_negated_predicates() const;
 
+    size_t get_body_size() const;
+
 };
 
 

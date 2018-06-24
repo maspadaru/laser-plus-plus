@@ -23,9 +23,20 @@ namespace rule {
 
 
 RuleBody::~RuleBody() {
+    std::cerr << "RuleBody delete: " << std::endl;
+    for (auto formula : formula_vector){
+        delete formula;
+    }
     formula_vector.clear();
+    std::cerr << "// RuleBody" << std::endl;
 }
-
+/*
+ * Currently this calls Atom.move on all atoms in the body. It's more efficient
+ * to clone the array. In the current version the atoms allocated with 'new'
+ * need to be freed after creating the Rule, but in the optimized version, they
+ * will be directly copied in the body, and no 'delete' will be necesarry.
+ */
+// TODO: optimization ->  : formula_vector(parameter_vector)
 RuleBody::RuleBody(std::vector<formula::Formula *> parameter_vector) {
     std::cerr << "size of parameter vector for body: " << parameter_vector.size() << std::endl;
     for (auto formula : parameter_vector) {
@@ -36,6 +47,7 @@ RuleBody::RuleBody(std::vector<formula::Formula *> parameter_vector) {
 }
 
 RuleBody::RuleBody(RuleBody const &other) {
+    std::cerr << "[RuleBody clone] ";
     this->last_successful_join = other.last_successful_join;
     for (auto formula : other.formula_vector) {
         this->formula_vector.push_back(&formula->clone());
@@ -44,6 +56,7 @@ RuleBody::RuleBody(RuleBody const &other) {
 }
 
 RuleBody::RuleBody(RuleBody &&other) noexcept {
+    std::cerr << "[RuleBody move] ";
     this->formula_vector = std::move(other.formula_vector);
 
     this->negated_formula_vector = std::move(other.negated_formula_vector);
@@ -56,6 +69,7 @@ RuleBody::RuleBody(RuleBody &&other) noexcept {
 }
 
 RuleBody &RuleBody::operator=(RuleBody const &other) {
+    std::cerr << "[RuleBody clone assignment] ";
     this->last_successful_join = other.last_successful_join;
 
     this->formula_vector.clear();
@@ -68,6 +82,7 @@ RuleBody &RuleBody::operator=(RuleBody const &other) {
 }
 
 RuleBody &RuleBody::operator=(RuleBody &&other) noexcept {
+    std::cerr << "[RuleBody move assignment] ";
     this->formula_vector = std::move(other.formula_vector);
 
     this->negated_formula_vector = std::move(other.negated_formula_vector);
@@ -185,6 +200,10 @@ formula::Formula &RuleBody::get_formula(size_t index) const {
 
 bool RuleBody::has_negated_predicates() const {
     return !(this->negated_predicate_map.empty());
+}
+
+size_t RuleBody::get_size() const {
+    return formula_vector.size();
 }
 
 

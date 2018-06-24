@@ -52,29 +52,21 @@ laser::formula::Formula *SimpleParser::argument_stack_pop() {
 }
 
 std::vector<laser::formula::Formula *> SimpleParser::argument_stack_pop_vector() {
-    std::cerr << "POP -> from stack: " << argument_stack.back().back()->get_predicate() << std::endl;
     auto vector = argument_stack.back();
-    std::cerr << "POP -> from vector: " << vector.back()->get_predicate() << std::endl;
     argument_stack.pop_back();
-    std::cerr << "POP -> from vector after pop: " << vector.back()->get_predicate() << std::endl;
     return vector;
 }
 
 void SimpleParser::argument_stack_push(laser::formula::Formula *formula) {
-    std::cerr << "PUSH -> Pushing: " << formula->get_predicate() << std::endl;
     std::vector<laser::formula::Formula *> formula_vector;
     formula_vector.push_back(formula);
-    std::cerr << "PUSH -> Pushed: " << formula_vector.back()->get_predicate() << std::endl;
     argument_stack_push_vector(formula_vector);
-    std::cerr << "PUSH -> from stack: " << argument_stack.back().back()->get_predicate() << std::endl;
 
 }
 
 void SimpleParser::argument_stack_push_vector(
         std::vector<laser::formula::Formula *> formula_vector) {
-    std::cerr << "PUSH VECTOR -> Pushing: " << formula_vector.back()->get_predicate() << std::endl;
     argument_stack.push_back(formula_vector);
-    std::cerr << "PUSH VECTOR -> from stack: " << argument_stack.back().back()->get_predicate() << std::endl;
 }
 
 std::tuple<int, std::unordered_map<std::string,
@@ -157,7 +149,7 @@ std::vector<Token> SimpleParser::tokenize(std::string rule_string) const {
         } else if (c == ')') {
             token_vector = add_token_attempt(token_vector, token_stream);
             token_vector =
-                    add_new_token(token_vector, TokenType::OPEN_PARENTHESES, c);
+                    add_new_token(token_vector, TokenType::CLOSED_PARENTHESES, c);
         } else {
             token_stream << c;
         }
@@ -194,22 +186,29 @@ SimpleParser::parse_rules(std::vector<std::string> raw_rule_vector) {
     std::vector<laser::rule::Rule> rule_vector;
     for (const auto &raw_rule_string : raw_rule_vector) {
         auto token_vector = tokenize(raw_rule_string);
+        std::cerr << std::endl << "=== CALL: SimpleParser->parse_rule() ==" << std::endl << std::endl;
+        std::cerr << "Rule String: " << raw_rule_string << std::endl;
+        std::cerr << std::endl;
         laser::rule::Rule rule =
                 parse_rule(token_vector);
+        std::cerr << "== DONE: parse_rule() ==" << std::endl << std::endl;
+        // if I don't explicitly write std::move(rule), it will just push a copy
+        // TODO: optimization std::move(rule)
         rule_vector.push_back(rule);
+        // rule gets deleted here, when it goes out of scope
     }
+    std::cerr << "======== DONE Parser. Returning rule_vector ======" << std::endl;
     return rule_vector;
 }
 
 laser::rule::Rule SimpleParser::parse_rule(
         std::vector<Token> token_vector) {
-    for (auto token : token_vector) {
-        std::cerr << "Token: " << token.value << std::endl;
-    }
+//    for (auto token : token_vector) {
+//        std::cerr << "Token: " << token.value << std::endl;
+//    }
 
     std::stack<Token> token_stack;
-    auto atom = laser::formula::Atom("nothing");
-    laser::formula::Formula *head = &atom;
+    laser::formula::Formula *head = nullptr;
     std::vector<laser::formula::Formula *> body;
     argument_stack.clear();
     size_t index = 0;
@@ -286,9 +285,7 @@ laser::rule::Rule SimpleParser::parse_rule(
                         } else {
                             auto atom = new laser::formula::Atom(predicate,
                                     arguments);
-                            std::cerr << atom->get_predicate() << std::endl;
                             argument_stack_push(atom);
-                            std::cerr << "POP in main -> from stack: " << argument_stack.back().back()->get_predicate() << std::endl;
                         }
                     }
 
@@ -331,7 +328,6 @@ laser::rule::Rule SimpleParser::parse_rule(
         }
         index++;
     }
-    std::cerr << "POP in main2 -> from stack: " << argument_stack.back().back()->get_predicate() << std::endl;
     while (!token_stack.empty()) {
         Token operator_token = token_stack.top();
         token_stack.pop();
@@ -344,36 +340,78 @@ laser::rule::Rule SimpleParser::parse_rule(
 
     // TODO In the python version they reverse(body). Does the order matter?
 
-
-    std::cerr << "body vector size:" << body.size() <<std::endl;
+    std::cerr << std::endl;
+    std::cerr << std::endl;
+    std::cerr << std::endl;
+    std::cerr << std::endl;
+    std::cerr << "Body predicates: ";
     for(auto formula : body) {
-        std::cerr << formula->get_predicate() << std::endl;
+        std::cerr << formula->get_predicate() << ", ";
     }
-    std::cerr << "blabla" << std::endl;
+    std::cerr << std::endl;
 
+    if (!head) {
+        syntax_error("Head can't be empty");
+        // TODO: Or can it?
+    }
     auto result = laser::rule::Rule(head, body);
 
-
-    std::cerr << "Should start clearing" << std::endl;
-
-    std::cerr << "clear body size before : " << body.size() << std::endl;
-    body.clear();
-    std::cerr << "clear body size after: " << body.size() << std::endl;
-
-    for (auto vector : argument_stack) {
-        std::cerr << "clear vec size before : " << vector.size() << std::endl;
-        vector.clear();
-        std::cerr << "clear vec size after: " << vector.size() << std::endl;
+    std::cerr << "Before FREE Body.size = " << body.size()<<"; predicates: ";
+    for(auto formula : body) {
+        std::cerr << formula->get_predicate() << ", ";
     }
-    argument_stack.clear();
-    std::cerr << "Done clearing" << std::endl;
+    std::cerr << std::endl;
+    std::cerr << std::endl;
+
+    std::cerr << "Before FREE. In RULE Body.size = " << result.get_body_size() << "; predicates: ";
+    for(size_t i = 0; i < result.get_body_size(); i++) {
+        auto &formula = result.get_body_formula(i);
+        std::cerr << formula.get_predicate() << ", ";
+    }
+    std::cerr << "// Rule " << std::endl;
+    std::cerr << std::endl;
+
+    // freeing allocations:
+    delete head;
+    for(auto formula : body) {
+        delete formula;
+    }
+    body.clear();
+
+    std::cerr << "After FREE Body.size = " << body.size()<<"; predicates: ";
+    for(auto formula : body) {
+        std::cerr << formula->get_predicate() << ", ";
+    }
+    std::cerr << std::endl;
+    std::cerr << std::endl;
+
+    std::cerr << "After FREE. In RULE Body.size = " << result.get_body_size() << "; predicates: ";
+    for(size_t i = 0; i < result.get_body_size(); i++) {
+        auto &formula = result.get_body_formula(i);
+        std::cerr << formula.get_predicate() << ", ";
+    }
+    std::cerr << "// Rule " << std::endl;
+    std::cerr << std::endl;
+    std::cerr << std::endl;
+    std::cerr << std::endl;
+
+
 
     return result;
 }
 
 void SimpleParser::parse_operator(Token token, bool is_head) {
-
-
+    if (token.value == "and") {
+        if (argument_stack.size() < 2) {
+            syntax_error("Expected two operands for JOIN operation");
+        }
+        std::vector<laser::formula::Formula*> operand1 =
+                argument_stack_pop_vector();
+        std::vector<laser::formula::Formula*> operand2 =
+                argument_stack_pop_vector();
+        operand1.insert(operand1.end(), operand2.begin(), operand2.end());
+        argument_stack_push_vector(operand1);
+    }
 }
 
 

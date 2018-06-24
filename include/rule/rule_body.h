@@ -163,6 +163,8 @@ public:
     std::unordered_map<std::string, std::vector<formula::Formula *>>
     const& get_negated_predicate_map() const;
 
+    size_t get_size() const;
+
 
 
 };

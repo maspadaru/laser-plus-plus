@@ -3,6 +3,7 @@
 //
 
 #include <utility>
+#include <iostream>
 #include "program/program.h"
 
 
@@ -16,10 +17,22 @@ Program::~Program() {
 }
 
 void Program::init_rules(std::vector<rule::Rule> rules) {
+    std::cerr << std::endl << std::endl << std::endl;
+    std::cerr << "init_rules()" << std::endl << std::endl << std::endl;
+
     for (auto rule : rules) {
-        auto local_rule = new rule::Rule(std::move(rule));
+        // At each iteration, a rule is Cloned and deleted at the end of the loop
+        // TODO optimization: get reference - auto &rule
+        std::cerr << "init_rules(): before local_rule = new Rule" << std::endl << std::endl;
+        // Each rule here is Cloned TODO: std::move(rule)
+        auto local_rule = new rule::Rule(rule);
+        std::cerr << "init_rules(): after local_rule = new Rule" << std::endl;
         rule_vector.push_back(local_rule);
+        std::cerr << "init_rules(): after push_back(local_rule)" << std::endl << std::endl;
     }
+
+    std::cerr << std::endl << std::endl << std::endl;
+    std::cerr << "init_rules(): before returning " << std::endl;
 }
 
 
@@ -27,8 +40,18 @@ Program::Program(
         input::InputManager input_manager,
         output::OutputManager output_manager) : input_manager(
         input_manager), output_manager(output_manager) {
+    std::cerr << std::endl << std::endl << std::endl;
+    std::cerr << "===== CALL: InputManager->get_rules() =====" << std::endl << std::endl;
+    auto rules = input_manager.get_rules();
+    std::cerr << "===== DONE: Program->get_rules() =====" << std::endl << std::endl;
+    std::cerr << std::endl << std::endl << std::endl;
+    std::cerr << "===== CALL: Program->init_rules() =====" << std::endl << std::endl;
+    //TODO: optimization: std::move(rules)
+    init_rules(rules); // all rules are Cloned here, all clones are deleted on return
+    std::cerr << "===== DONE: Program->init_rules() =====" << std::endl << std::endl;
+    std::cerr << std::endl << std::endl << std::endl;
+    std::cerr << std::endl << std::endl << std::endl;
 
-    init_rules(input_manager.get_rules());
     strata.stratify(rule_vector);
 
     if (input_manager.is_initialised_background_reader()) {
