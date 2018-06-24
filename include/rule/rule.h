@@ -4,6 +4,8 @@
 #ifndef LASER_RULE_RULE_H
 #define LASER_RULE_RULE_H
 
+#include <iostream>
+
 #include "formula/formula.h"
 #include "rule/rule_body.h"
 
@@ -69,6 +71,8 @@ public:
     bool body_has_negated_predicates() const;
 
     size_t get_body_size() const;
+
+    void debug_print() const;
 
 };
 

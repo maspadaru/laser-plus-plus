@@ -107,6 +107,10 @@ private:
 
     formula::GroundingTable get_grounding_table() const;
 
+    void clear_rule_formulas();
+
+    void copy_rule_formulas(std::vector<formula::Formula *> other_vector);
+
 public:
 
 // constructors & destructors

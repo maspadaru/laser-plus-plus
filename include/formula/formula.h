@@ -76,6 +76,8 @@ public:
     // get all substitutionos of variable index
     // get map variable name to index
     // copy groundings from formula with same predicate
+
+    virtual void debug_print() const = 0;
 };
 
 

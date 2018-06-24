@@ -4,9 +4,6 @@
 
 #include "simple_parser.h"
 
-
-#include <iostream> // DELETE THIS
-
 /* trim from start (in place)
  * source:
  * https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
@@ -104,12 +101,6 @@ Token SimpleParser::recognize(std::string token_string) const {
 std::vector<Token> SimpleParser::add_token_attempt(
         std::vector<Token> token_vector,
         std::ostringstream &token_stream) const {
-
-    /* TODO:
-     * What happens to these Token items created on the stack?
-     * Will they be lost at the end of the function, and token_vector
-     * will just have orphan references?
-     */
     std::string str = token_stream.str();
     if (!str.empty()) {
         Token token = recognize(str);
@@ -186,27 +177,15 @@ SimpleParser::parse_rules(std::vector<std::string> raw_rule_vector) {
     std::vector<laser::rule::Rule> rule_vector;
     for (const auto &raw_rule_string : raw_rule_vector) {
         auto token_vector = tokenize(raw_rule_string);
-        std::cerr << std::endl << "=== CALL: SimpleParser->parse_rule() ==" << std::endl << std::endl;
-        std::cerr << "Rule String: " << raw_rule_string << std::endl;
-        std::cerr << std::endl;
         laser::rule::Rule rule =
                 parse_rule(token_vector);
-        std::cerr << "== DONE: parse_rule() ==" << std::endl << std::endl;
-        // if I don't explicitly write std::move(rule), it will just push a copy
-        // TODO: optimization std::move(rule)
-        rule_vector.push_back(rule);
-        // rule gets deleted here, when it goes out of scope
+        rule_vector.push_back(std::move(rule));
     }
-    std::cerr << "======== DONE Parser. Returning rule_vector ======" << std::endl;
     return rule_vector;
 }
 
 laser::rule::Rule SimpleParser::parse_rule(
         std::vector<Token> token_vector) {
-//    for (auto token : token_vector) {
-//        std::cerr << "Token: " << token.value << std::endl;
-//    }
-
     std::stack<Token> token_stack;
     laser::formula::Formula *head = nullptr;
     std::vector<laser::formula::Formula *> body;
@@ -339,63 +318,17 @@ laser::rule::Rule SimpleParser::parse_rule(
     body = argument_stack_pop_vector();
 
     // TODO In the python version they reverse(body). Does the order matter?
-
-    std::cerr << std::endl;
-    std::cerr << std::endl;
-    std::cerr << std::endl;
-    std::cerr << std::endl;
-    std::cerr << "Body predicates: ";
-    for(auto formula : body) {
-        std::cerr << formula->get_predicate() << ", ";
-    }
-    std::cerr << std::endl;
-
     if (!head) {
         syntax_error("Head can't be empty");
         // TODO: Or can it?
     }
     auto result = laser::rule::Rule(head, body);
-
-    std::cerr << "Before FREE Body.size = " << body.size()<<"; predicates: ";
-    for(auto formula : body) {
-        std::cerr << formula->get_predicate() << ", ";
-    }
-    std::cerr << std::endl;
-    std::cerr << std::endl;
-
-    std::cerr << "Before FREE. In RULE Body.size = " << result.get_body_size() << "; predicates: ";
-    for(size_t i = 0; i < result.get_body_size(); i++) {
-        auto &formula = result.get_body_formula(i);
-        std::cerr << formula.get_predicate() << ", ";
-    }
-    std::cerr << "// Rule " << std::endl;
-    std::cerr << std::endl;
-
     // freeing allocations:
     delete head;
     for(auto formula : body) {
         delete formula;
     }
     body.clear();
-
-    std::cerr << "After FREE Body.size = " << body.size()<<"; predicates: ";
-    for(auto formula : body) {
-        std::cerr << formula->get_predicate() << ", ";
-    }
-    std::cerr << std::endl;
-    std::cerr << std::endl;
-
-    std::cerr << "After FREE. In RULE Body.size = " << result.get_body_size() << "; predicates: ";
-    for(size_t i = 0; i < result.get_body_size(); i++) {
-        auto &formula = result.get_body_formula(i);
-        std::cerr << formula.get_predicate() << ", ";
-    }
-    std::cerr << "// Rule " << std::endl;
-    std::cerr << std::endl;
-    std::cerr << std::endl;
-    std::cerr << std::endl;
-
-
 
     return result;
 }

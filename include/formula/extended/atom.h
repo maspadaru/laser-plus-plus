@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <string>
+#include <iostream>
 
 #include "formula/formula.h"
 #include "formula/grounding_table.h"
@@ -31,19 +32,12 @@ public:
 
     Atom() = default;
 
-    /* Will be implicitly-defined by the compiler.
-     * Since the class is NOT managing a resource whose handle is an object of
-     * a non-class type (raw pointer, POSIX file descriptor, etc), this
-     * implicitly-defined copy constructor should be good enough
-     */
-    // Atom(Atom const& atom); // Copy constructor
-
     explicit Atom(std::string predicate);
 
     explicit Atom(std::string predicate,
                   std::vector<std::string> variable_names);
 
-    ~Atom() override;
+    ~Atom() override = default;
 
     Formula & create () const override;
     Formula & clone () const override;
@@ -73,6 +67,8 @@ public:
 
     void expire_outdated_groundings(unsigned long long int current_time,
                                     unsigned long long int current_tuple_counter) override;
+
+    void debug_print() const override;
 
 };
 

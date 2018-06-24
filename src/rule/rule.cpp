@@ -3,7 +3,6 @@
 //
 
 #include <utility>
-#include <iostream>
 #include "rule/rule.h"
 
 namespace laser {
@@ -17,51 +16,28 @@ namespace rule {
 Rule::Rule(
         formula::Formula *head_formula,
         std::vector<formula::Formula *> body_vector) :
-        head(head_formula->move()),
-        body(std::move(body_vector)) {
-    std::cerr << "Rule-CREATE -> head: " << head.get_predicate() << "; body size = "
-              << body.get_size() << std::endl;
-
-    std::cerr << "Body predicates: ";
-    for(size_t i = 0; i < body.get_size(); i++) {
-        auto &formula = body.get_formula(i);
-        std::cerr << formula.get_predicate() << ", ";
-    }
-    std::cerr << "// Rule " << std::endl;
-}
+        head(head_formula->clone()),
+        body(std::move(body_vector)) {}
 
 Rule::~Rule() {
-    std::cerr << "~Rule() -> ";
     delete &head;
-    std::cerr << "// Rule " << std::endl;
 }
 
-Rule::Rule(Rule const &other) : head(other.head.clone()), body(other.body) {
-    std::cerr << "Rule-COPY -> head: " << head.get_predicate() << "; body size = "
-              << body.get_size() << std::endl;
-    std::cerr << "// Rule " << std::endl;
-}
+Rule::Rule(Rule const &other) : head(other.head.clone()), body(other.body) {}
 
 Rule::Rule(Rule &&other) noexcept  : head(other.head.move()),
         body(std::move(other.body)) {
-    std::cerr << "Rule-MOVE -> head: " << head.get_predicate() << "; body size = "
-              << body.get_size() << std::endl;
-    std::cerr << "// Rule " << std::endl;
 }
 
 Rule &Rule::operator=(Rule const &other) {
-    std::cerr << "Rule: COPY operator called" << std::endl;
     this->head = other.head.clone();
     this->body = RuleBody(other.body);
-    std::cerr << "// Rule " << std::endl;
     return *this;
 }
 
 Rule &Rule::operator=(Rule &&other) noexcept {
-    std::cerr << "Rule: MOVE operator called" << std::endl;
     this->head = other.head.move();
     this->body = std::move(other.body);
-    std::cerr << "// Rule " << std::endl;
     return *this;
 }
 
@@ -113,6 +89,22 @@ bool Rule::body_has_negated_predicates() const {
 
 size_t Rule::get_body_size() const {
     return body.get_size();
+}
+
+void Rule::debug_print() const {
+    std::cerr << std::endl;
+    std::cerr << "Rule -> head: ";
+    head.debug_print();
+    std::cerr <<  "Rule body size = "  << body.get_size() ;
+
+    std::cerr << "; Body predicates: " << std::endl;
+    for(size_t i = 0; i < body.get_size(); i++) {
+        auto &formula = body.get_formula(i);
+        formula.debug_print();
+    }
+    std::cerr << "// Rule " << std::endl;
+    std::cerr << std::endl;
+
 }
 
 

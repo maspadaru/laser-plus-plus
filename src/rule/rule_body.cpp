@@ -14,83 +14,51 @@ namespace rule {
 
 // constructors & destructors
 
-
-//RuleBody::RuleBody(std::vector<formula::Formula &> formulas) :
-//        formula_vector(std::move(formulas)) {
-//    index_body_formulas();
-//}
-
-
-
 RuleBody::~RuleBody() {
-    std::cerr << "RuleBody delete: " << std::endl;
-    for (auto formula : formula_vector){
-        delete formula;
-    }
-    formula_vector.clear();
-    std::cerr << "// RuleBody" << std::endl;
+    clear_rule_formulas();
 }
-/*
- * Currently this calls Atom.move on all atoms in the body. It's more efficient
- * to clone the array. In the current version the atoms allocated with 'new'
- * need to be freed after creating the Rule, but in the optimized version, they
- * will be directly copied in the body, and no 'delete' will be necesarry.
- */
-// TODO: optimization ->  : formula_vector(parameter_vector)
+
 RuleBody::RuleBody(std::vector<formula::Formula *> parameter_vector) {
-    std::cerr << "size of parameter vector for body: " << parameter_vector.size() << std::endl;
-    for (auto formula : parameter_vector) {
-        auto &to_add = formula->move();
-        this->formula_vector.push_back(&to_add);
-    }
+    /* Because parameter_vector contains items that might have been allocated
+     * on the stack, it's safest to clone all Formula* using formula.clone().*/
+    copy_rule_formulas(std::move(parameter_vector));
     index_body_formulas();
 }
 
-RuleBody::RuleBody(RuleBody const &other) {
-    std::cerr << "[RuleBody clone] ";
-    this->last_successful_join = other.last_successful_join;
-    for (auto formula : other.formula_vector) {
-        this->formula_vector.push_back(&formula->clone());
-    }
-    index_body_formulas();
+RuleBody::RuleBody(RuleBody const &other) :
+        last_successful_join(other.last_successful_join)
+
+{
+    /* Formula* need to be reallocated using formula.clone(), otherwise, they
+     * might go out of scope along with &other. */
+    copy_rule_formulas(other.formula_vector);
 }
 
-RuleBody::RuleBody(RuleBody &&other) noexcept {
-    std::cerr << "[RuleBody move] ";
-    this->formula_vector = std::move(other.formula_vector);
-
-    this->negated_formula_vector = std::move(other.negated_formula_vector);
-    this->variable_map = std::move(other.variable_map);
-    this->predicate_map = std::move(other.predicate_map);
-    this->positive_predicate_map = std::move(other.positive_predicate_map);
-    this->negated_predicate_map = std::move(other.negated_predicate_map);
-
-    this->last_successful_join = other.last_successful_join;
-}
+RuleBody::RuleBody(RuleBody &&other) noexcept :
+        last_successful_join(other.last_successful_join),
+        formula_vector(std::move(other.formula_vector)),
+        negated_formula_vector(std::move(other.negated_formula_vector)),
+        predicate_map(std::move(other.predicate_map)),
+        positive_predicate_map(std::move(other.positive_predicate_map)),
+        negated_predicate_map(std::move(other.negated_predicate_map)),
+        variable_map(std::move(other.variable_map)) {}
 
 RuleBody &RuleBody::operator=(RuleBody const &other) {
-    std::cerr << "[RuleBody clone assignment] ";
+    clear_rule_formulas();
+    copy_rule_formulas(other.formula_vector);
     this->last_successful_join = other.last_successful_join;
-
-    this->formula_vector.clear();
-    for (auto formula : other.formula_vector) {
-        this->formula_vector.push_back(&formula->clone());
-    }
     index_body_formulas();
-
     return *this;
 }
 
 RuleBody &RuleBody::operator=(RuleBody &&other) noexcept {
-    std::cerr << "[RuleBody move assignment] ";
+    clear_rule_formulas();
     this->formula_vector = std::move(other.formula_vector);
-
     this->negated_formula_vector = std::move(other.negated_formula_vector);
     this->variable_map = std::move(other.variable_map);
     this->predicate_map = std::move(other.predicate_map);
     this->positive_predicate_map = std::move(other.positive_predicate_map);
     this->negated_predicate_map = std::move(other.negated_predicate_map);
-
     this->last_successful_join = other.last_successful_join;
 }
 
@@ -204,6 +172,21 @@ bool RuleBody::has_negated_predicates() const {
 
 size_t RuleBody::get_size() const {
     return formula_vector.size();
+}
+
+void RuleBody::clear_rule_formulas() {
+    for (auto formula : formula_vector){
+        delete formula;
+    }
+    formula_vector.clear();
+}
+
+void RuleBody::copy_rule_formulas(
+        std::vector<formula::Formula *> other_vector) {
+    for (auto formula : other_vector) {
+        this->formula_vector.push_back(&formula->clone());
+    }
+    index_body_formulas();
 }
 
 
