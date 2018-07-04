@@ -11,11 +11,11 @@ namespace input {
 
 // getters & setters
 
-unsigned long long int InputManager::get_stream_start_time() const {
+uint64_t InputManager::get_stream_start_time() const {
     return stream_start_time;
 }
 
-unsigned long long int InputManager::get_stream_end_time() const {
+uint64_t InputManager::get_stream_end_time() const {
     return stream_end_time;
 }
 
@@ -97,9 +97,9 @@ InputManager::get_background_facts() {
                            parsed_background_facts_map);
 }
 
-std::tuple<unsigned long long int, unsigned long long int,
+std::tuple<uint64_t, uint64_t,
         std::unordered_map<std::string, std::vector<formula::Formula *>>>
-InputManager::get_stream_facts(unsigned long long int request_time_point) {
+InputManager::get_stream_facts(uint64_t request_time_point) {
     if (!is_initialised_stream_reader_m) {
         throw exception::UninitializedException("The background data reader "
                                                 "was not initialised. Call "

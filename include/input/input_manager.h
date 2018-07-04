@@ -25,10 +25,10 @@ namespace input {
 
 class InputManager {
 private:
-    unsigned long long int stream_current_time = 0;
-    unsigned long long int stream_tuple_counter = 0;
-    unsigned long long int stream_start_time = 0;
-    unsigned long long int stream_end_time = 0;
+    uint64_t stream_current_time = 0;
+    uint64_t stream_tuple_counter = 0;
+    uint64_t stream_start_time = 0;
+    uint64_t stream_end_time = 0;
     bool has_metadata = false;
 
     RuleReader *rule_reader = nullptr;
@@ -52,9 +52,9 @@ public:
 
 // getters & setters
 
-    unsigned long long int get_stream_start_time() const;
+    uint64_t get_stream_start_time() const;
 
-    unsigned long long int get_stream_end_time() const;
+    uint64_t get_stream_end_time() const;
 
     bool is_initialised_rule_reader() const;
 
@@ -118,9 +118,9 @@ public:
      *      initialised by calling initialize_stream_reader() before calling
      *      get_stream_facts().
      */
-    std::tuple<unsigned long long int, unsigned long long int, std::unordered_map<std::string,
+    std::tuple<uint64_t, uint64_t, std::unordered_map<std::string,
             std::vector<formula::Formula *>>>
-    get_stream_facts(unsigned long long int request_time_point);
+    get_stream_facts(uint64_t request_time_point);
 
 
     /**

@@ -57,16 +57,22 @@ public:
 
 // methods
 
-    bool holds(unsigned long long int current_time) const override;
+    bool holds(uint64_t current_time) const override;
 
     size_t get_number_of_variables() const override;
 
-    void accept(unsigned long long int current_time,
-                unsigned long long int current_tuple_counter,
+    void accept(uint64_t current_time,
+                uint64_t current_tuple_counter,
                 std::vector<Formula *> facts) override;
 
-    void expire_outdated_groundings(unsigned long long int current_time,
-                                    unsigned long long int current_tuple_counter) override;
+    void expire_outdated_groundings(uint64_t current_time,
+                                    uint64_t current_tuple_counter) override;
+
+
+    void add_grounding(
+            uint64_t consideration_time, uint64_t horizon_time,
+            uint64_t consideration_count, uint64_t horizon_count,
+            std::vector<std::string> arguments) override;
 
     void debug_print() const override;
 

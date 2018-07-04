@@ -67,7 +67,7 @@ public:
 // getters & setters
 
 // methods
-    bool evaluate(unsigned long long int time_point, unsigned long long int tuple_counter,
+    bool evaluate(uint64_t time_point, uint64_t tuple_counter,
               std::unordered_map<std::string, std::vector<formula::Formula *>>
               new_facts);
 

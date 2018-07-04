@@ -99,7 +99,7 @@ void Strata::deduplicate(size_t stratum_index) {
     // TODO should call stratum.deduplicate instead of deDup(self, strata)
 }
 
-bool Strata::evaluate(unsigned long long int time_point, unsigned long long int tuple_counter,
+bool Strata::evaluate(uint64_t time_point, uint64_t tuple_counter,
           std::unordered_map<std::string, std::vector<formula::Formula *>>
           new_facts) {
     if (!is_stratified) {

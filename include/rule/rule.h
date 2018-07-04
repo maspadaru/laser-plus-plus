@@ -59,12 +59,12 @@ public:
      * time point and tuple counter
      */
     bool evaluate(
-            unsigned long long int current_time,
-            unsigned long long int current_tuple_counter);
+            uint64_t current_time,
+            uint64_t current_tuple_counter);
 
     void expire_outdated_groundings(
-            unsigned long long int current_time,
-            unsigned long long int current_tuple_counter);
+            uint64_t current_time,
+            uint64_t current_tuple_counter);
 
     formula::Formula& get_body_formula(size_t index);
 

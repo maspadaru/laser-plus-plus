@@ -40,7 +40,7 @@ void Stratum::add_nonhead_predicate(std::string predicate, bool is_negated,
     predicate_vector.push_back(pi);
 }
 
-bool Stratum::evaluate(unsigned long long int time_point, unsigned long long int tuple_counter,
+bool Stratum::evaluate(uint64_t time_point, uint64_t tuple_counter,
                std::unordered_map<std::string, std::vector<formula::Formula *>>
                new_facts) {
     //TODO

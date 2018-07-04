@@ -105,9 +105,14 @@ private:
     std::tuple<PseudoFormula, std::vector<PseudoFormula>>
     parse_token_vector(std::vector<Token> token_vector);
 
-    std::unordered_map<std::string, std::vector<laser::formula::Formula *>>
-    build_fact_map(
-            std::vector<PseudoFormula> pseudo_formulas);
+    void append_new_data(
+            std::vector<PseudoFormula> pseudo_formulas,
+            std::unordered_map<std::string, std::vector<laser::formula::Formula *>>
+            *formula_map);
+
+    laser::formula::Formula *find_or_add_formula(
+            PseudoFormula pseudo_formula,
+            std::vector<laser::formula::Formula *> *formula_vector);
 
 public:
     ~SimpleParser() override = default;

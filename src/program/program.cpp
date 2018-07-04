@@ -55,11 +55,11 @@ Program::Program(
 
 // getters & setters
 
-unsigned long long int Program::get_current_time() const {
+uint64_t Program::get_current_time() const {
     return current_time;
 }
 
-unsigned long long int Program::get_current_tuple_counter() const {
+uint64_t Program::get_current_tuple_counter() const {
     return current_tuple_counter;
 }
 
@@ -76,14 +76,14 @@ bool Program::is_done() {
 }
 
 void Program::expire_outdated_groundings(
-        unsigned long long int current_time,
-        unsigned long long int current_tuple_counter) {
+        uint64_t current_time,
+        uint64_t current_tuple_counter) {
     for (auto rule :rule_vector) {
         rule->expire_outdated_groundings(current_time, current_tuple_counter);
     }
 }
 
-bool Program::eval(unsigned long long int request_time_point) {
+bool Program::eval(uint64_t request_time_point) {
     bool has_derived_new_conclusions = false;
     std::unordered_map<std::string, std::vector<formula::Formula *>>
             stream_facts;
@@ -112,7 +112,7 @@ void Program::write_output(
 }
 
 bool Program::evaluate() {
-    unsigned long long int request_time_point = current_time + 1;
+    uint64_t request_time_point = current_time + 1;
     bool has_derived_new_conclusions = eval(request_time_point);
     if (has_derived_new_conclusions) {
         auto new_conclusions = get_new_conclusions();

@@ -33,8 +33,8 @@ void GroundingTable::add_grounding(Grounding grounding) {
     groundings.push_back(grounding);
 }
 
-void GroundingTable::expire_outdated_groundings(unsigned long long int current_time,
-                                unsigned long long int current_tuple_counter) {
+void GroundingTable::expire_outdated_groundings(uint64_t current_time,
+                                uint64_t current_tuple_counter) {
     //TODO
 }
 

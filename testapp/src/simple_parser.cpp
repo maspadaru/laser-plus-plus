@@ -190,8 +190,8 @@ SimpleParser::parse_rules(std::vector<std::string> raw_rule_vector) {
     return rule_vector;
 }
 
-laser::formula::Formula * build_rule_formula(PseudoFormula pseudo_formula) {
-    laser::formula::Formula * result = nullptr;
+laser::formula::Formula *build_rule_formula(PseudoFormula pseudo_formula) {
+    laser::formula::Formula *result = nullptr;
     switch (pseudo_formula.type) {
         case laser::formula::FormulaType::ATOM : {
             auto atom = new laser::formula::Atom(pseudo_formula.predicate,
@@ -199,13 +199,20 @@ laser::formula::Formula * build_rule_formula(PseudoFormula pseudo_formula) {
             result = atom;
             break;
         }
-        case laser::formula::FormulaType::MATH:break;
-        case laser::formula::FormulaType::COMP:break;
-        case laser::formula::FormulaType::NEGATED_ATOM:break;
-        case laser::formula::FormulaType::AT_ATOM:break;
-        case laser::formula::FormulaType::AT_NEGATED_ATOM:break;
-        case laser::formula::FormulaType::AT_VAR_ATOM:break;
-        case laser::formula::FormulaType::AT_VAR_NEGATED_ATOM:break;
+        case laser::formula::FormulaType::MATH:
+            break;
+        case laser::formula::FormulaType::COMP:
+            break;
+        case laser::formula::FormulaType::NEGATED_ATOM:
+            break;
+        case laser::formula::FormulaType::AT_ATOM:
+            break;
+        case laser::formula::FormulaType::AT_NEGATED_ATOM:
+            break;
+        case laser::formula::FormulaType::AT_VAR_ATOM:
+            break;
+        case laser::formula::FormulaType::AT_VAR_NEGATED_ATOM:
+            break;
     }
     return result;
 }
@@ -384,7 +391,7 @@ SimpleParser::parse_token_vector(
 }
 
 void SimpleParser::parse_operator(Token token, bool is_head) {
-    if (token.value == "and") {
+    if (token.value == "and" || token.value == ",") {
         if (argument_stack.size() < 2) {
             syntax_error("Expected two operands for JOIN operation");
         }
@@ -441,66 +448,91 @@ SimpleParser::parse_data(
     std::unordered_map<std::string,
             std::vector<laser::formula::Formula * >> formula_map;
     size_t fact_count = 0;
-    std::vector<Token> token_vector;
     for (const auto &raw_string : raw_data_vector) {
 //        std::cerr << raw_string << std::endl;
-        auto current_vector = tokenize(raw_string);
-        token_vector.insert(token_vector.end(), current_vector.begin(),
-                current_vector.end());
+        auto token_vector = tokenize(raw_string);
+        if (!token_vector.empty()) {
+
+            std::vector<PseudoFormula> pseudo_formulas;
+            std::tie(std::ignore, pseudo_formulas) =
+                    parse_token_vector(std::move(token_vector));
+            fact_count += pseudo_formulas.size();
+            append_new_data(pseudo_formulas, &formula_map);
+        }
     }
-
-    std::vector<PseudoFormula> pseudo_formulas;
-    std::tie(std::ignore, pseudo_formulas) =
-            parse_token_vector(std::move(token_vector));
-    fact_count = pseudo_formulas.size();
-
-    formula_map = build_fact_map(pseudo_formulas);
 //    std::cerr << "fact_count: " << fact_count << std::endl;
 //    std::cerr << "==============================================" << std::endl;
 
     // fact_count,
-    return std::tuple<size_t, std::unordered_map<std::string,
-            std::vector<laser::formula::Formula * >>>();
+    auto result = std::make_tuple(fact_count, formula_map);
+    return result;
 }
 
 
-laser::formula::Formula * build_data_formula(PseudoFormula pseudo_formula) {
-    laser::formula::Formula * result;
+laser::formula::Formula *build_data_formula(PseudoFormula pseudo_formula) {
+    laser::formula::Formula *result = nullptr;
     switch (pseudo_formula.type) {
         case laser::formula::FormulaType::ATOM : {
-            auto atom = new laser::formula::Atom(pseudo_formula.predicate,
-                    pseudo_formula.arguments);
+            auto atom = new laser::formula::Atom(pseudo_formula.predicate);
+            // TODO add groundings: pseudo_formula.arguments
+            result = atom;
             break;
         }
-        case laser::formula::FormulaType::MATH:break;
-        case laser::formula::FormulaType::COMP:break;
-        case laser::formula::FormulaType::NEGATED_ATOM:break;
-        case laser::formula::FormulaType::AT_ATOM:break;
-        case laser::formula::FormulaType::AT_NEGATED_ATOM:break;
-        case laser::formula::FormulaType::AT_VAR_ATOM:break;
-        case laser::formula::FormulaType::AT_VAR_NEGATED_ATOM:break;
+        case laser::formula::FormulaType::MATH:
+            break;
+        case laser::formula::FormulaType::COMP:
+            break;
+        case laser::formula::FormulaType::NEGATED_ATOM:
+            break;
+        case laser::formula::FormulaType::AT_ATOM:
+            break;
+        case laser::formula::FormulaType::AT_NEGATED_ATOM:
+            break;
+        case laser::formula::FormulaType::AT_VAR_ATOM:
+            break;
+        case laser::formula::FormulaType::AT_VAR_NEGATED_ATOM:
+            break;
     }
+    return result;
 }
 
-std::unordered_map<std::string, std::vector<laser::formula::Formula *>>
-SimpleParser::build_fact_map(
-        std::vector<PseudoFormula> pseudo_formulas) {
-    std::unordered_map<std::string, std::vector<laser::formula::Formula *>>
-            formula_map;
+void
+SimpleParser::append_new_data(
+        std::vector<PseudoFormula> pseudo_formulas,
+        std::unordered_map<std::string, std::vector<laser::formula::Formula *>>
+        *formula_map) {
+
+    // TODO current time and tuple counter need to be passed at parser::parse_data
+    uint64_t consideration_time = 1;
+    uint64_t horizon_time = 1;
+    uint64_t consideration_count = 1;
+    uint64_t horizon_count = 1;
+
     for (const auto &pseudo_formula : pseudo_formulas) {
-        // TODO check if predicate in map
         // Vector of facts should have only one formula of each type, so the
         // list is short and iterable.
         // Once I found a matching FormulaType, I add a new substitution to it
-
-
-        //TODO Delte this
-//        laser::formula::Formula * formula = build_data_formula(pseudo_formula);
-//        std::string predicate = formula->get_predicate();
-//        formula_map.try_emplace(predicate);
-//        std::vector<laser::formula::Formula *>& map_value = formula_map[predicate];
-//        map_value.push_back(formula);
+        // if I don't find it, then I create one using build_data_formula
+        formula_map->try_emplace(pseudo_formula.predicate);
+        std::vector<laser::formula::Formula *>
+                &map_value = (*formula_map)[pseudo_formula.predicate];
+        laser::formula::Formula *formula =
+                find_or_add_formula(pseudo_formula, &map_value);
+        formula->add_grounding(consideration_time, horizon_time,
+                consideration_count, horizon_count, pseudo_formula.arguments);
     }
-    return formula_map;
+}
+
+laser::formula::Formula *SimpleParser::find_or_add_formula(
+        PseudoFormula pseudo_formula,
+        std::vector<laser::formula::Formula *> *formula_vector) {
+    for (auto *formula : *formula_vector) {
+        if (formula->get_type() == pseudo_formula.type) {
+            return formula;
+        }
+    }
+    auto result = build_data_formula(pseudo_formula);
+    formula_vector->push_back(result);
+    return result;
 }
 

@@ -121,8 +121,8 @@ void RuleBody::index_body_formulas() {
 void
 RuleBody::accept_negated_substitution(
         formula::Formula &formula,
-        unsigned long long int current_time,
-        unsigned long long int current_tuple_counter) {}
+        uint64_t current_time,
+        uint64_t current_tuple_counter) {}
 
 std::set<std::string>
 RuleBody::get_variable_substitutions(
@@ -131,12 +131,12 @@ RuleBody::get_variable_substitutions(
 
 
 bool RuleBody::evaluate(
-        unsigned long long int current_time,
-        unsigned long long int current_tuple_counter) {}
+        uint64_t current_time,
+        uint64_t current_tuple_counter) {}
 
 void RuleBody::expire_outdated_groundings(
-        unsigned long long int current_time,
-        unsigned long long int current_tuple_counter) {
+        uint64_t current_time,
+        uint64_t current_tuple_counter) {
     // TODO
 }
 
@@ -144,7 +144,7 @@ formula::GroundingTable
 RuleBody::evaluate_formula(
         formula::GroundingTable grounding_table,
         formula::Formula const &formula,
-        unsigned long long int current_time) {
+        uint64_t current_time) {
     return formula::GroundingTable();
 }
 

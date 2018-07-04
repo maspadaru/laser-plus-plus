@@ -23,32 +23,32 @@ namespace formula {
 class Grounding {
 
 private:
-    unsigned long long int consideration_time = 0;
-    unsigned long long int horizon_time = ULLONG_MAX;
-    unsigned long long int consideration_count = 0;
-    unsigned long long int horizon_count = ULLONG_MAX;
+    uint64_t consideration_time = 0;
+    uint64_t horizon_time = ULLONG_MAX;
+    uint64_t consideration_count = 0;
+    uint64_t horizon_count = ULLONG_MAX;
     bool is_background_fact_m = false;
     // key: variable index; value: constant substitution_map of key in this grounding
     std::unordered_map<int, std::string> substitution_map;
 public:
 // constructors & destructors
 
-    Grounding(unsigned long long int consideration_time, unsigned long long int horizon_time,
-              unsigned long long int consideration_count, unsigned long long int horizon_count);
+    Grounding(uint64_t consideration_time, uint64_t horizon_time,
+              uint64_t consideration_count, uint64_t horizon_count);
 
     explicit Grounding(bool is_background_fact_m);
 
 // getters & setters
 
-    unsigned long long int get_consideration_time() const;
+    uint64_t get_consideration_time() const;
 
-    unsigned long long int get_horizon_time() const;
+    uint64_t get_horizon_time() const;
 
-    unsigned long long int get_consideration_count() const;
+    uint64_t get_consideration_count() const;
 
-    unsigned long long int get_horizon_count() const;
+    uint64_t get_horizon_count() const;
 
-    void set_horizon_time(unsigned long long int horizon_time);
+    void set_horizon_time(uint64_t horizon_time);
 
 // const methods
 

@@ -28,8 +28,8 @@ private:
 
     std::stringstream source;
     bool has_source = false;
-    unsigned long long int start_time;
-    unsigned long long int end_time;
+    uint64_t start_time;
+    uint64_t end_time;
     bool has_metadata_m = false;
     std::string latest_read_line;
 
@@ -53,14 +53,14 @@ public:
 
     bool has_metadata() const override;
 
-    unsigned long long int get_stream_start_time() const override;
+    uint64_t get_stream_start_time() const override;
 
-    unsigned long long int get_stream_end_time() const override;
+    uint64_t get_stream_end_time() const override;
 
     std::vector<std::string> read_all_data() override;
 
-    std::tuple<unsigned long long int, std::vector<std::string>>
-    read_next_data(unsigned long long int request_time_point) override;
+    std::tuple<uint64_t, std::vector<std::string>>
+    read_next_data(uint64_t request_time_point) override;
 
     bool fetch_metadata() override;
 

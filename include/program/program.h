@@ -24,25 +24,25 @@ private:
     input::InputManager input_manager;
     output::OutputManager output_manager;
 
-    unsigned long long int current_time = 0;
-    unsigned long long int current_tuple_counter = 0;
-    unsigned long long int stream_start_time = 0;
-    unsigned long long int stream_end_time = 0;
+    uint64_t current_time = 0;
+    uint64_t current_tuple_counter = 0;
+    uint64_t stream_start_time = 0;
+    uint64_t stream_end_time = 0;
     int number_of_new_conclusions = 0;
     bool has_timeline = false;
 
-    unsigned long long int number_of_background_facts = 0;
+    uint64_t number_of_background_facts = 0;
 
     Strata strata;
     std::vector<rule::Rule *> rule_vector;
 
 // methods
 
-    bool eval(unsigned long long int request_time_point);
+    bool eval(uint64_t request_time_point);
 
     void expire_outdated_groundings(
-            unsigned long long int current_time,
-            unsigned long long int current_tuple_counter);
+            uint64_t current_time,
+            uint64_t current_tuple_counter);
 
     std::unordered_map<std::string, std::vector<formula::Formula *>>
     get_new_conclusions();
@@ -65,9 +65,9 @@ public:
 
 // getters & setters
 
-    unsigned long long int get_current_time() const;
+    uint64_t get_current_time() const;
 
-    unsigned long long int get_current_tuple_counter() const;
+    uint64_t get_current_tuple_counter() const;
 
     int get_number_of_new_conclusions() const;
 

@@ -54,7 +54,7 @@ std::vector<std::string> Atom::get_variable_names() const {
 
 // const methods
 
-bool Atom::holds(unsigned long long int current_time) const {
+bool Atom::holds(uint64_t current_time) const {
     // TODO implement
     return true;
 }
@@ -62,8 +62,8 @@ bool Atom::holds(unsigned long long int current_time) const {
 // methods
 
 void Atom::accept(
-        unsigned long long int current_time,
-        unsigned long long int current_tuple_counter,
+        uint64_t current_time,
+        uint64_t current_tuple_counter,
         std::vector<Formula *> facts) {
     // TODO implement
 }
@@ -73,8 +73,8 @@ size_t Atom::get_number_of_variables() const {
 }
 
 void Atom::expire_outdated_groundings(
-        unsigned long long int current_time,
-        unsigned long long int current_tuple_counter) {
+        uint64_t current_time,
+        uint64_t current_tuple_counter) {
     grounding_table.expire_outdated_groundings(current_time,
             current_tuple_counter);
 }
@@ -87,6 +87,19 @@ void Atom::debug_print() const {
         std::cerr << name << ", ";
     }
     std::cerr << "/" << std::endl;
+}
+
+void Atom::add_grounding(
+        uint64_t consideration_time, uint64_t horizon_time,
+        uint64_t consideration_count, uint64_t horizon_count,
+        std::vector<std::string> arguments) {
+        laser::formula::Grounding grounding(consideration_time, horizon_time,
+                consideration_count, horizon_count);
+        for (int i=0; i < arguments.size(); i++) {
+            grounding.add_substitution(i, arguments.at(i));
+        }
+        this->grounding_table.add_grounding(grounding);
+
 }
 
 

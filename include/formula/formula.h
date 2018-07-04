@@ -32,8 +32,9 @@ public:
 // constructors / destructors
 
     virtual ~Formula() = default;
-    virtual Formula & create () const = 0; // Virtual constructor (creation)
-    virtual Formula & clone () const = 0;  // Virtual constructor (copying)
+
+    virtual Formula &create() const = 0; // Virtual constructor (creation)
+    virtual Formula &clone() const = 0;  // Virtual constructor (copying)
 
     /**
      * Virtual constructor (moving)
@@ -41,7 +42,7 @@ public:
      *  the heap using 'new'.
      * @return reference to the newly allocated object.
      */
-    virtual Formula & move () = 0;
+    virtual Formula &move() = 0;
 
 
 // getters / setters
@@ -58,16 +59,23 @@ public:
 
 // methods
 
-    virtual bool holds(unsigned long long int current_time) const = 0;
+    virtual bool holds(uint64_t current_time) const = 0;
 
     virtual size_t get_number_of_variables() const = 0;
 
-    virtual void accept(unsigned long long int current_time,
-                        unsigned long long int current_tuple_counter,
-                        std::vector<Formula *> facts) = 0;
+    virtual void accept(
+            uint64_t current_time,
+            uint64_t current_tuple_counter,
+            std::vector<Formula *> facts) = 0;
 
-    virtual void expire_outdated_groundings(unsigned long long int current_time,
-                                            unsigned long long int current_tuple_counter) = 0;
+    virtual void expire_outdated_groundings(
+            uint64_t current_time,
+            uint64_t current_tuple_counter) = 0;
+
+    virtual void add_grounding(
+            uint64_t consideration_time, uint64_t horizon_time,
+            uint64_t consideration_count, uint64_t horizon_count,
+            std::vector<std::string> arguments) = 0;
 
     // TODO Formula should be final version before starting to implement other
     // TODO formula classes. Thus: implement working program for Atoms first

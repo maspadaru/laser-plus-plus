@@ -9,11 +9,11 @@ bool SimpleReader::has_metadata() const {
     return false;
 }
 
-unsigned long long int SimpleReader::get_stream_start_time() const {
+uint64_t SimpleReader::get_stream_start_time() const {
     return this->start_time;
 }
 
-unsigned long long int SimpleReader::get_stream_end_time() const {
+uint64_t SimpleReader::get_stream_end_time() const {
     return this->end_time;
 }
 
@@ -83,8 +83,8 @@ std::vector<std::string> SimpleReader::read_all_data() {
     return read_all_lines();
 }
 
-std::tuple<unsigned long long int, std::vector<std::string>>
-SimpleReader::read_next_data(unsigned long long int request_time_point) {
+std::tuple<uint64_t, std::vector<std::string>>
+SimpleReader::read_next_data(uint64_t request_time_point) {
     check_source();
     std::vector<std::string> fact_vector;
     bool keep_going = true;
@@ -106,7 +106,7 @@ SimpleReader::read_next_data(unsigned long long int request_time_point) {
         if (line_map.empty()) {
             keep_going = false;
         } else {
-            unsigned long long int input_time = stoull(line_map.at(LINE_KEY));
+            uint64_t input_time = stoull(line_map.at(LINE_KEY));
             if (input_time == request_time_point) {
                 fact_vector.push_back(line_map[LINE_VALUE]);
                 latest_read_line.clear();
