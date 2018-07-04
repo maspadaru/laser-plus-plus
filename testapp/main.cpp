@@ -13,7 +13,7 @@
 
 int main() {
     std::string stream_string =
-            "1 14"
+            "1 14 "
             "1 : \n"
             "2 : c(x4, z)\n"
             "2 : d(x5, z)\n"

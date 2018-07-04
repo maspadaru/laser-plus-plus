@@ -66,11 +66,18 @@ void SimpleParser::argument_stack_push_vector(
     argument_stack.push_back(formula_vector);
 }
 
-std::tuple<int, std::unordered_map<std::string,
-        std::vector<laser::formula::Formula * >>>
+std::tuple<int, std::unordered_map<std::string, std::vector<laser::formula::Formula *>>>
 SimpleParser::parse_data(
         std::vector<std::string>
         raw_data_vector) {
+    int fact_count = 0;
+    for (const auto &raw : raw_data_vector) {
+        std::cerr << raw << std::endl;
+        fact_count++;
+    }
+    std::cerr << "fact_count: " << fact_count << std::endl;
+    std::cerr << "==============================================" << std::endl;
+
     return std::tuple<int, std::unordered_map<std::string,
             std::vector<laser::formula::Formula * >>>();
 }

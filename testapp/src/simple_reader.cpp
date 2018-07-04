@@ -2,6 +2,7 @@
 // Created by mike on 6/21/18.
 //
 
+#include <iostream>
 #include "simple_reader.h"
 
 bool SimpleReader::has_metadata() const {
@@ -9,11 +10,11 @@ bool SimpleReader::has_metadata() const {
 }
 
 unsigned long long int SimpleReader::get_stream_start_time() const {
-    return 0;
+    return this->start_time;
 }
 
 unsigned long long int SimpleReader::get_stream_end_time() const {
-    return 0;
+    return this->end_time;
 }
 
 void SimpleReader::check_source() const {
@@ -106,17 +107,18 @@ SimpleReader::read_next_data(unsigned long long int request_time_point) {
             keep_going = false;
         } else {
             unsigned long long int input_time = stoull(line_map.at(LINE_KEY));
-            if (input_time < request_time_point) {
+            if (input_time == request_time_point) {
+                fact_vector.push_back(line_map[LINE_VALUE]);
+                latest_read_line.clear();
+            } else if (input_time > request_time_point) {
+                keep_going = false;
+            } else {
                 // this should never happen, as it is already checked in
                 // InputManager and Program. But let's check anyway
                 throw laser::exception::FormatException(
                         "SimpleReader: out-of-order read. Most likely do to bad "
                         "format of input source");
-            } else if (input_time > request_time_point) {
-                keep_going = false;
             }
-            fact_vector.push_back(line_map[LINE_VALUE]);
-            latest_read_line.clear();
         }
     }
     auto result = std::make_tuple(request_time_point, fact_vector);
@@ -128,5 +130,6 @@ bool SimpleReader::fetch_metadata() {
     if (!has_metadata_m) {
         source >> start_time;
         source >> end_time;
+        has_metadata_m = true;
     }
 }
