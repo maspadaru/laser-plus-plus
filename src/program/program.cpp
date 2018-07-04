@@ -48,9 +48,9 @@ Program::Program(
         has_timeline = true;
     }
 
-//    for(auto rule : rule_vector) {
-//        rule->debug_print();
-//    }
+    for(auto rule : rule_vector) {
+        rule->debug_print();
+    }
 }
 
 // getters & setters
@@ -87,7 +87,7 @@ bool Program::eval(unsigned long long int request_time_point) {
     bool has_derived_new_conclusions = false;
     std::unordered_map<std::string, std::vector<formula::Formula *>>
             stream_facts;
-    std::cerr << "current_time: " << current_time << std::endl;
+//    std::cerr << "current_time: " << current_time << std::endl;
     std::tie(current_time, current_tuple_counter, stream_facts)
             = input_manager.get_stream_facts(request_time_point);
     expire_outdated_groundings(current_time, current_tuple_counter);
@@ -119,7 +119,7 @@ bool Program::evaluate() {
         write_output(new_conclusions);
     }
     return has_derived_new_conclusions;
-}hh
+}
 
 } // namespace program
 } // namespace laser

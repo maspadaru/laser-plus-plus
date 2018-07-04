@@ -3,6 +3,7 @@
 //
 
 #include "simple_parser.h"
+#include <utility>
 
 /* trim from start (in place)
  * source:
@@ -34,13 +35,13 @@ static inline void trim(std::string *s) {
 }
 
 static inline void syntax_error(std::string error_message) {
-    error_message = "Syntax Error in Simple Parser: ", error_message;
-    const char *exception_message = error_message.c_str();
+    std::string message = "Syntax Error in Simple Parser: " + error_message;
+    const char *exception_message = message.c_str();
     throw laser::exception::FormatException(exception_message);
 
 }
 
-laser::formula::Formula *SimpleParser::argument_stack_pop() {
+PseudoFormula SimpleParser::argument_stack_pop() {
     auto head_vector = argument_stack_pop_vector();
     if (head_vector.size() > 1) {
         syntax_error("Rule should only have one formula in the head");
@@ -48,39 +49,31 @@ laser::formula::Formula *SimpleParser::argument_stack_pop() {
     return head_vector.back();
 }
 
-std::vector<laser::formula::Formula *> SimpleParser::argument_stack_pop_vector() {
+std::vector<PseudoFormula>
+SimpleParser::argument_stack_pop_vector() {
     auto vector = argument_stack.back();
     argument_stack.pop_back();
     return vector;
 }
 
-void SimpleParser::argument_stack_push(laser::formula::Formula *formula) {
-    std::vector<laser::formula::Formula *> formula_vector;
+void SimpleParser::argument_stack_push(PseudoFormula formula) {
+    std::vector<PseudoFormula> formula_vector;
     formula_vector.push_back(formula);
     argument_stack_push_vector(formula_vector);
 
 }
 
 void SimpleParser::argument_stack_push_vector(
-        std::vector<laser::formula::Formula *> formula_vector) {
+        std::vector<PseudoFormula> formula_vector) {
     argument_stack.push_back(formula_vector);
 }
 
-std::tuple<int, std::unordered_map<std::string, std::vector<laser::formula::Formula *>>>
-SimpleParser::parse_data(
-        std::vector<std::string>
-        raw_data_vector) {
-    int fact_count = 0;
-    for (const auto &raw : raw_data_vector) {
-        std::cerr << raw << std::endl;
-        fact_count++;
-    }
-    std::cerr << "fact_count: " << fact_count << std::endl;
-    std::cerr << "==============================================" << std::endl;
 
-    return std::tuple<int, std::unordered_map<std::string,
-            std::vector<laser::formula::Formula * >>>();
-}
+PseudoFormula::PseudoFormula(
+        laser::formula::FormulaType type, std::string predicate,
+        std::vector<std::string> arguments)
+        : type(type), predicate(std::move(predicate)), arguments(
+        std::move(arguments)) {}
 
 // === Tokenization ===
 
@@ -147,7 +140,8 @@ std::vector<Token> SimpleParser::tokenize(std::string rule_string) const {
         } else if (c == ')') {
             token_vector = add_token_attempt(token_vector, token_stream);
             token_vector =
-                    add_new_token(token_vector, TokenType::CLOSED_PARENTHESES, c);
+                    add_new_token(token_vector, TokenType::CLOSED_PARENTHESES,
+                            c);
         } else {
             token_stream << c;
         }
@@ -184,18 +178,70 @@ SimpleParser::parse_rules(std::vector<std::string> raw_rule_vector) {
     std::vector<laser::rule::Rule> rule_vector;
     for (const auto &raw_rule_string : raw_rule_vector) {
         auto token_vector = tokenize(raw_rule_string);
+
+        PseudoFormula pseudo_head;
+        std::vector<PseudoFormula> pseudo_body;
+        std::tie(pseudo_head, pseudo_body) =
+                parse_token_vector(std::move(token_vector));
         laser::rule::Rule rule =
-                parse_rule(token_vector);
+                build_rule(pseudo_head, pseudo_body);
         rule_vector.push_back(std::move(rule));
     }
     return rule_vector;
 }
 
-laser::rule::Rule SimpleParser::parse_rule(
-        std::vector<Token> token_vector) {
-    std::stack<Token> token_stack;
-    laser::formula::Formula *head = nullptr;
+laser::formula::Formula * build_rule_formula(PseudoFormula pseudo_formula) {
+    laser::formula::Formula * result = nullptr;
+    switch (pseudo_formula.type) {
+        case laser::formula::FormulaType::ATOM : {
+            auto atom = new laser::formula::Atom(pseudo_formula.predicate,
+                    pseudo_formula.arguments);
+            result = atom;
+            break;
+        }
+        case laser::formula::FormulaType::MATH:break;
+        case laser::formula::FormulaType::COMP:break;
+        case laser::formula::FormulaType::NEGATED_ATOM:break;
+        case laser::formula::FormulaType::AT_ATOM:break;
+        case laser::formula::FormulaType::AT_NEGATED_ATOM:break;
+        case laser::formula::FormulaType::AT_VAR_ATOM:break;
+        case laser::formula::FormulaType::AT_VAR_NEGATED_ATOM:break;
+    }
+    return result;
+}
+
+laser::rule::Rule SimpleParser::build_rule(
+        PseudoFormula pseudo_head,
+        std::vector<PseudoFormula> pseudo_body) {
+    // TODO In the python version they reverse(body). Does the order matter?
+    if (pseudo_head.predicate.empty()) {
+        syntax_error("Head can't be empty");
+        // TODO: Or can it?
+    }
+    laser::formula::Formula *head = build_rule_formula(std::move(pseudo_head));
     std::vector<laser::formula::Formula *> body;
+    for (const auto &pseudo_formula : pseudo_body) {
+        body.push_back(build_rule_formula(pseudo_formula));
+    }
+    auto result = laser::rule::Rule(head, body);
+    // freeing allocations:
+    delete head;
+    for (auto formula : body) {
+        delete formula;
+    }
+    body.clear();
+    return result;
+}
+
+std::tuple<PseudoFormula, std::vector<PseudoFormula>>
+SimpleParser::parse_token_vector(
+        std::vector<Token> token_vector) {
+
+    // TODO implementation
+
+    std::stack<Token> token_stack;
+    PseudoFormula head;
+    std::vector<PseudoFormula> body;
     argument_stack.clear();
     size_t index = 0;
     while (index < token_vector.size()) {
@@ -204,7 +250,8 @@ laser::rule::Rule SimpleParser::parse_rule(
             case TokenType::OPEN_PARENTHESES : {
                 // open parenthesis always has the highest precedence
                 token_stack.push(token);
-            } break;
+                break;
+            }
             case TokenType::OPERATOR : {
                 /* Since left has higher precedence than right,
                  * when we see an operator token, we must try to make
@@ -244,7 +291,8 @@ laser::rule::Rule SimpleParser::parse_rule(
                     }
                 }
                 token_stack.push(token);
-            } break;
+                break;
+            }
             case TokenType::IDENTIFIER : {
                 size_t next_index = index + 1;
                 if (next_index < token_vector.size()) {
@@ -269,8 +317,11 @@ laser::rule::Rule SimpleParser::parse_rule(
                                 // TODO argument_stack.push()
                             }
                         } else {
-                            auto atom = new laser::formula::Atom(predicate,
-                                    arguments);
+//                            auto atom = new laser::formula::Atom(predicate,
+//                                    arguments);
+                            PseudoFormula
+                                    atom(laser::formula::FormulaType::ATOM,
+                                    predicate, arguments);
                             argument_stack_push(atom);
                         }
                     }
@@ -278,10 +329,14 @@ laser::rule::Rule SimpleParser::parse_rule(
                 } else {
                     std::string predicate = token.value;
                     std::vector<std::string> arguments;
-                    auto atom = new laser::formula::Atom(predicate, arguments);
+//                    auto atom = new laser::formula::Atom(predicate, arguments);
+                    PseudoFormula
+                            atom(laser::formula::FormulaType::ATOM,
+                            predicate, arguments);
                     argument_stack_push(atom);
                 }
-            } break;
+                break;
+            }
             case TokenType::CLOSED_PARENTHESES : {
                 bool keep_going = true;
                 while (keep_going) {
@@ -295,8 +350,8 @@ laser::rule::Rule SimpleParser::parse_rule(
                     }
                     parse_operator(operator_token);
                 }
+                break;
             }
-            break;
             case TokenType::ENTAILMENT_SIGN : {
                 if (!argument_stack.empty()) {
                     /*Before parsing the body of the rule we must make sure all operators in the
@@ -311,6 +366,7 @@ laser::rule::Rule SimpleParser::parse_rule(
                     head = argument_stack_pop();
                 }
             }
+                break;
         }
         index++;
     }
@@ -324,20 +380,7 @@ laser::rule::Rule SimpleParser::parse_rule(
     }
     body = argument_stack_pop_vector();
 
-    // TODO In the python version they reverse(body). Does the order matter?
-    if (!head) {
-        syntax_error("Head can't be empty");
-        // TODO: Or can it?
-    }
-    auto result = laser::rule::Rule(head, body);
-    // freeing allocations:
-    delete head;
-    for(auto formula : body) {
-        delete formula;
-    }
-    body.clear();
-
-    return result;
+    return std::make_tuple(head, body);
 }
 
 void SimpleParser::parse_operator(Token token, bool is_head) {
@@ -345,9 +388,9 @@ void SimpleParser::parse_operator(Token token, bool is_head) {
         if (argument_stack.size() < 2) {
             syntax_error("Expected two operands for JOIN operation");
         }
-        std::vector<laser::formula::Formula*> operand1 =
+        std::vector<PseudoFormula> operand1 =
                 argument_stack_pop_vector();
-        std::vector<laser::formula::Formula*> operand2 =
+        std::vector<PseudoFormula> operand2 =
                 argument_stack_pop_vector();
         operand1.insert(operand1.end(), operand2.begin(), operand2.end());
         argument_stack_push_vector(operand1);
@@ -386,3 +429,78 @@ SimpleParser::parse_predicate_arguments(
     }
     return std::make_tuple(index, arguments);
 }
+
+// ==== Parse Data ====
+
+
+
+std::tuple<size_t, std::unordered_map<std::string, std::vector<laser::formula::Formula *>>>
+SimpleParser::parse_data(
+        std::vector<std::string>
+        raw_data_vector) {
+    std::unordered_map<std::string,
+            std::vector<laser::formula::Formula * >> formula_map;
+    size_t fact_count = 0;
+    std::vector<Token> token_vector;
+    for (const auto &raw_string : raw_data_vector) {
+//        std::cerr << raw_string << std::endl;
+        auto current_vector = tokenize(raw_string);
+        token_vector.insert(token_vector.end(), current_vector.begin(),
+                current_vector.end());
+    }
+
+    std::vector<PseudoFormula> pseudo_formulas;
+    std::tie(std::ignore, pseudo_formulas) =
+            parse_token_vector(std::move(token_vector));
+    fact_count = pseudo_formulas.size();
+
+    formula_map = build_fact_map(pseudo_formulas);
+//    std::cerr << "fact_count: " << fact_count << std::endl;
+//    std::cerr << "==============================================" << std::endl;
+
+    // fact_count,
+    return std::tuple<size_t, std::unordered_map<std::string,
+            std::vector<laser::formula::Formula * >>>();
+}
+
+
+laser::formula::Formula * build_data_formula(PseudoFormula pseudo_formula) {
+    laser::formula::Formula * result;
+    switch (pseudo_formula.type) {
+        case laser::formula::FormulaType::ATOM : {
+            auto atom = new laser::formula::Atom(pseudo_formula.predicate,
+                    pseudo_formula.arguments);
+            break;
+        }
+        case laser::formula::FormulaType::MATH:break;
+        case laser::formula::FormulaType::COMP:break;
+        case laser::formula::FormulaType::NEGATED_ATOM:break;
+        case laser::formula::FormulaType::AT_ATOM:break;
+        case laser::formula::FormulaType::AT_NEGATED_ATOM:break;
+        case laser::formula::FormulaType::AT_VAR_ATOM:break;
+        case laser::formula::FormulaType::AT_VAR_NEGATED_ATOM:break;
+    }
+}
+
+std::unordered_map<std::string, std::vector<laser::formula::Formula *>>
+SimpleParser::build_fact_map(
+        std::vector<PseudoFormula> pseudo_formulas) {
+    std::unordered_map<std::string, std::vector<laser::formula::Formula *>>
+            formula_map;
+    for (const auto &pseudo_formula : pseudo_formulas) {
+        // TODO check if predicate in map
+        // Vector of facts should have only one formula of each type, so the
+        // list is short and iterable.
+        // Once I found a matching FormulaType, I add a new substitution to it
+
+
+        //TODO Delte this
+//        laser::formula::Formula * formula = build_data_formula(pseudo_formula);
+//        std::string predicate = formula->get_predicate();
+//        formula_map.try_emplace(predicate);
+//        std::vector<laser::formula::Formula *>& map_value = formula_map[predicate];
+//        map_value.push_back(formula);
+    }
+    return formula_map;
+}
+

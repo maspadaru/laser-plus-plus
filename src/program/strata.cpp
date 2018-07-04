@@ -20,6 +20,9 @@ void Strata::map_head_predicate_to_rule(
     for (auto rule : rule_vector) {
         auto head_predicate = rule->get_head().get_predicate();
         head_predicate_map.try_emplace(head_predicate);
+        // TODO the next line probably gets a copy of the vector
+        // TODO so pushing to it has no permanent effect
+        // TODO use auto& or vect<blabla>&
         auto map_value = head_predicate_map[head_predicate];
         map_value.push_back(rule);
     }

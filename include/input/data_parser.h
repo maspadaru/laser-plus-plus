@@ -37,7 +37,7 @@ public:
     * @throw FormatException if the input is not in a format that can be
     *      properly parsed.
     */
-    virtual std::tuple<int, std::unordered_map<std::string,
+    virtual std::tuple<size_t, std::unordered_map<std::string,
                     std::vector<laser::formula::Formula *>>>
     parse_data(std::vector<std::string> raw_data_vector) = 0;
 
