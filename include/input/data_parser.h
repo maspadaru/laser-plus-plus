@@ -8,7 +8,8 @@
 #include <unordered_map>
 #include <vector>
 #include <tuple>
-#include "formula/formula.h"
+
+#include "formula/pseudo_formula.h"
 
 namespace laser {
 namespace input {
@@ -37,8 +38,7 @@ public:
     * @throw FormatException if the input is not in a format that can be
     *      properly parsed.
     */
-    virtual std::tuple<size_t, std::unordered_map<std::string,
-                    std::vector<laser::formula::Formula *>>>
+    virtual std::vector<laser::formula::PseudoFormula>
     parse_data(std::vector<std::string> raw_data_vector) = 0;
 
 };

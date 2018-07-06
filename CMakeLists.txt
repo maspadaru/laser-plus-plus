@@ -18,5 +18,5 @@ file(GLOB TESTAPP_SOURCES
         "testapp/src/*.cpp"
     )
 
-set(SOURCE_FILES ${SOURCES} ${TESTAPP_SOURCES})
+set(SOURCE_FILES ${SOURCES} ${TESTAPP_SOURCES} src/formula/pseudo_formula.cpp include/formula/pseudo_formula.h include/formula/formula_type.h)
 add_executable(${PROJECT_NAME} testapp/main.cpp ${SOURCE_FILES})

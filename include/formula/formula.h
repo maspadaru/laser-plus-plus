@@ -8,20 +8,10 @@
 #include <string>
 
 #include "formula/grounding_table.h"
+#include "formula_type.h"
 
 namespace laser {
 namespace formula {
-
-enum class FormulaType {
-    MATH,
-    COMP,
-    ATOM,
-    NEGATED_ATOM,
-    AT_ATOM,
-    AT_NEGATED_ATOM,
-    AT_VAR_ATOM,
-    AT_VAR_NEGATED_ATOM,
-};
 
 /**
  * Formula Interface

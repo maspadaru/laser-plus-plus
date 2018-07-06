@@ -42,6 +42,27 @@ private:
     bool is_initialised_background_reader_m = false;
     bool is_initialised_stream_reader_m = false;
 
+    std::unordered_map<std::string, std::vector<formula::Formula *>>
+    make_formula_map(
+            std::vector<formula::PseudoFormula> pseudo_formulas);
+
+    laser::formula::Formula *find_or_add_formula(
+            formula::PseudoFormula pseudo_formula,
+            std::vector<laser::formula::Formula *> *formula_vector);
+
+    laser::formula::Formula *
+    build_data_formula(formula::PseudoFormula pseudo_formula);
+
+    std::vector<rule::Rule> make_rule_vector(
+            std::vector<std::tuple<formula::PseudoFormula,
+                    std::vector<formula::PseudoFormula>>>
+            pseudo_rule_vector);
+
+    laser::formula::Formula *build_rule_formula(formula::PseudoFormula pseudo_formula);
+
+    laser::rule::Rule build_rule(
+            formula::PseudoFormula pseudo_head,
+            std::vector<formula::PseudoFormula> pseudo_body);
 
 public:
 // constructors & destructors
@@ -94,7 +115,7 @@ public:
      *      initialised by calling initialize_background_reader() before calling
      *      get_background_facts().
      */
-    std::tuple<int, std::unordered_map<std::string, std::vector<formula::Formula *>>>
+    std::tuple<uint64_t, std::unordered_map<std::string, std::vector<formula::Formula *>>>
     get_background_facts();
 
     /**

@@ -8,7 +8,10 @@
 
 #include <string>
 #include <vector>
+#include <tuple>
+
 #include "rule/rule.h"
+#include "formula/pseudo_formula.h"
 
 namespace laser {
 namespace input {
@@ -34,7 +37,10 @@ public:
     * @throw FormatException if the input is not in a format that can be
     * properly parsered.
     */
-    virtual std::vector<laser::rule::Rule>
+    virtual std::vector<
+            std::tuple<
+                    laser::formula::PseudoFormula,
+                    std::vector<laser::formula::PseudoFormula>>>
     parse_rules(std::vector<std::string> raw_rule_vector) = 0;
 
 // methods
