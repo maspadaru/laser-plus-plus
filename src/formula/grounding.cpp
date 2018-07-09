@@ -2,6 +2,7 @@
 // Created by mike on 6/17/18.
 //
 
+#include <utility>
 #include "formula/grounding.h"
 
 namespace laser {
@@ -45,21 +46,28 @@ void Grounding::set_horizon_time(uint64_t horizon_time) {
 }
 
 
-// const methods
+// methods
 
 std::string Grounding::get_substitution(
-        int variable_index) const {
+        size_t variable_index) const {
     return substitution_vector.at(variable_index);
 }
 
-// methods
 
-void Grounding::add_substitution(int variable_index,
+bool Grounding::has_expired(uint64_t time, uint64_t tuple_counter) const {
+    // grounding expires when:
+    // - At time point t, remove all groundings that expire at time t-1, so
+    //   a grounding [1,1] will expire at time 2 : ht < time
+    // - TODO hc <= tuple_counter?
+    return horizon_time < time && horizon_count <= tuple_counter;
+}
+
+void Grounding::add_substitution(size_t variable_index,
                                  std::string constant) {
     if (substitution_vector.size() <= variable_index) {
         substitution_vector.resize(variable_index+5);
     }
-    substitution_vector.at(variable_index) = constant;
+    substitution_vector.at(variable_index) = std::move(constant);
 }
 
 } // namespace formula

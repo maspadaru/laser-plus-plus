@@ -137,7 +137,11 @@ bool RuleBody::evaluate(
 void RuleBody::expire_outdated_groundings(
         uint64_t current_time,
         uint64_t current_tuple_counter) {
-    // TODO
+    for(auto formula :formula_vector) {
+        formula->expire_outdated_groundings(current_time, current_tuple_counter);
+    }
+    body_grounding_table.expire_outdated_groundings(
+            current_time, current_tuple_counter);
 }
 
 formula::GroundingTable

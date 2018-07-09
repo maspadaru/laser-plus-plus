@@ -22,12 +22,13 @@ private:
     //  -- value should contain no duplicates
     std::unordered_map<uint64_t, std::list<Grounding>> grounding_map;
     std::vector<Grounding> recent_groundings_vector;
+    size_t size = 0;
 public:
 // constructors & destructors
 
 // getters & setters
 
-    size_t get_number_of_groundings() const;
+    size_t get_size() const;
 
     std::vector<Grounding> get_recent_groundings_vector() const;
 

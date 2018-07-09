@@ -51,14 +51,13 @@ public:
 
     void set_horizon_time(uint64_t horizon_time);
 
-// const methods
-
-    std::string get_substitution(int variable_index) const;
-
 // methods
 
-    void add_substitution(int variable_index, std::string constant);
+    std::string get_substitution(size_t variable_index) const;
 
+    void add_substitution(size_t variable_index, std::string constant);
+
+    bool has_expired(uint64_t time, uint64_t tuple_counter) const;
 };
 
 

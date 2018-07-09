@@ -10,8 +10,8 @@ namespace formula {
 
 // getters & setters
 
-size_t GroundingTable::get_number_of_groundings() const {
-    return grounding_map.size();
+size_t GroundingTable::get_size() const {
+    return size;
 }
 
 std::vector<Grounding> GroundingTable::get_recent_groundings_vector() const {
@@ -28,14 +28,29 @@ GroundingTable::get_groundings(uint64_t consideration_time) const {
 // methods
 
 void GroundingTable::add_grounding(Grounding grounding) {
-    std::list<Grounding> groundings =
+    std::list<Grounding> &groundings =
             grounding_map[grounding.get_consideration_time()];
     groundings.push_back(grounding);
+    size += 1;
 }
 
-void GroundingTable::expire_outdated_groundings(uint64_t current_time,
-                                uint64_t current_tuple_counter) {
-    // TODO
+
+void GroundingTable::expire_outdated_groundings(
+        uint64_t current_time,
+        uint64_t current_tuple_counter) {
+    for (auto &map_iterator : grounding_map) {
+        uint64_t key = map_iterator.first;
+        std::list<Grounding> &grounding_list = grounding_map[key];
+        for (auto list_iterator = grounding_list.begin();
+                list_iterator != grounding_list.end();) {
+            Grounding const &grounding = *list_iterator;
+            if (grounding.has_expired(current_time, current_tuple_counter)) {
+                list_iterator = grounding_list.erase(list_iterator);
+            } else {
+                ++list_iterator;
+            }
+        }
+    }
 }
 
 } // namespace formula
