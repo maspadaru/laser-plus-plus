@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "formula/formula.h"
-#include "program/predicate-information.h"
+#include "program/predicate_information.h"
 
 namespace laser {
 namespace program {
@@ -31,17 +31,21 @@ public:
 
 // methods
 
-    void add_head_predicate(std::string predicate,
-                            formula::Formula &rule_head,
-                            rule::Rule *rule);
+    void add_head_predicate(
+            std::string predicate,
+            formula::Formula &rule_head,
+            rule::Rule *rule, std::vector<rule::Rule *> rule_vector);
 
-    void add_nonhead_predicate(std::string predicate,
-                               bool is_negated,
-                               std::vector<formula::Formula *> formula_vector);
+    void add_nonhead_predicate(
+            std::string predicate,
+            bool is_negated,
+            std::vector<formula::Formula *> formula_vector,
+            std::vector<rule::Rule *> rule_vector);
 
-    bool evaluate(uint64_t time_point, uint64_t tuple_counter,
-              std::unordered_map<std::string, std::vector<formula::Formula *>>
-              new_facts);
+    bool evaluate(
+            uint64_t time_point, uint64_t tuple_counter,
+            std::unordered_map<std::string, std::vector<formula::Formula *>>
+            new_facts);
 
     size_t size();
 

@@ -108,7 +108,7 @@ void RuleBody::index_body_formulas() {
             map_vector = predicate_map[predicate];
             map_vector.push_back(&formula);
 
-            for (auto variable_name :formula.get_variable_names()) {
+            for (auto const& variable_name :formula.get_variable_names()) {
                 variable_map.try_emplace(variable_name);
                 map_vector = variable_map[variable_name];
                 map_vector.push_back(&formula);
