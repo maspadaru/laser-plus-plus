@@ -39,6 +39,7 @@ void GroundingTable::add_grounding(Grounding grounding) {
 void GroundingTable::expire_outdated_groundings(
         uint64_t current_time,
         uint64_t current_tuple_counter) {
+    // std::unordered_map<uint64_t, std::list<Grounding>>::const_iterator
     for (auto map_iterator = grounding_map.begin();
             map_iterator != grounding_map.end(); ) {
         uint64_t key = map_iterator->first;

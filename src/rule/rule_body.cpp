@@ -132,7 +132,10 @@ RuleBody::get_variable_substitutions(
 
 bool RuleBody::evaluate(
         uint64_t current_time,
-        uint64_t current_tuple_counter) {}
+        uint64_t current_tuple_counter) {
+    // TODO
+    return false;
+}
 
 void RuleBody::expire_outdated_groundings(
         uint64_t current_time,

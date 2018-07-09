@@ -54,7 +54,13 @@ std::string Rule::get_head_predicate() const {
 
 bool Rule::evaluate(
         uint64_t current_time,
-        uint64_t current_tuple_counter) {}
+        uint64_t current_tuple_counter) {
+    // TODO implement
+    // if body.evaluate() == true:
+    //      derive new conclusions from the head.
+    //      Return true if new conclusions were derived.
+    return false;
+}
 
 //const std::unordered_map<std::string, std::vector<formula::Formula *>>
 //Rule::get_body_variable_map() const {

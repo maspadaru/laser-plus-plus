@@ -65,7 +65,14 @@ public:
 
     rule::Rule *get_rule() const;
 
-    const std::vector<formula::Formula *> get_formula_vector() const;
+    std::vector<formula::Formula *> const &get_formula_vector() const;
+
+    /**
+     * Returns a list of rules where this->predicate is the predicate of the
+     * head of the rule.
+     * @return
+     */
+    std::vector<rule::Rule *> const &get_rule_vector() const;
 
 // methods
 

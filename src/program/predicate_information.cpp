@@ -53,7 +53,7 @@ rule::Rule *PredicateInformation::get_rule() const {
     return rule;
 }
 
-const std::vector<formula::Formula *>
+std::vector<formula::Formula *> const &
 PredicateInformation::get_formula_vector() const {
     return formula_vector;
 }
@@ -62,6 +62,10 @@ PredicateInformation::get_formula_vector() const {
 
 void PredicateInformation::add_formula(formula::Formula *formula) {
     formula_vector.push_back(formula);
+}
+
+std::vector<rule::Rule *> const &PredicateInformation::get_rule_vector() const {
+    return this->rule_vector;
 }
 
 

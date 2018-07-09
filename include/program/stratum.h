@@ -17,13 +17,24 @@ namespace program {
 class Stratum {
 private:
 
-    std::vector<PredicateInformation *> predicate_vector;
+    std::vector<PredicateInformation> predicate_vector;
+
+
+    void evaluate_non_head(
+            PredicateInformation predicate_information, uint64_t time_point,
+            uint64_t tuple_counter,
+            std::vector<formula::Formula *> new_facts);
+
+
+    void evaluate_head_of_other_rule(
+            PredicateInformation predicate_information, uint64_t time_point,
+            uint64_t tuple_counter);
 
 public:
 
 // constructors & destructors
 
-    ~Stratum();
+    ~Stratum() = default;
 
 // getters & setters
 
