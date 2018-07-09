@@ -143,13 +143,12 @@ void RuleBody::expire_outdated_groundings(
     for(auto formula :formula_vector) {
         formula->expire_outdated_groundings(current_time, current_tuple_counter);
     }
-    body_grounding_table.expire_outdated_groundings(
+    grounding_table.expire_outdated_groundings(
             current_time, current_tuple_counter);
 }
 
 formula::GroundingTable
 RuleBody::evaluate_formula(
-        formula::GroundingTable grounding_table,
         formula::Formula const &formula,
         uint64_t current_time) {
     return formula::GroundingTable();

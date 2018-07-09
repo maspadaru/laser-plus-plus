@@ -21,7 +21,7 @@ private:
 
     /* All groundings that satisfy the body that are found when calling
      * the method RuleBody::holds_at() */
-    formula::GroundingTable body_grounding_table = formula::GroundingTable();
+    formula::GroundingTable grounding_table;
 
     /* For the following Containers:
      * I am using vectors here rather than sets. It should not make sense for
@@ -68,7 +68,6 @@ private:
      * @param current_time
      */
     formula::GroundingTable evaluate_formula(
-            formula::GroundingTable grounding_table,
             formula::Formula const &formula,
             uint64_t current_time);
 
@@ -90,7 +89,7 @@ private:
             uint64_t current_tuple_counter);
 
     /**
-     * Compiles a list containing all valid substitutions for he specified
+     * Compiles a list containing all valid substitutions for the specified
      * variable in the groundings_table of the formula
      * @param variable
      * @param formula
@@ -102,15 +101,14 @@ private:
             std::string variable,
             formula::Formula &formula) const;
 
-    //DELETE THESE:
-    const std::unordered_map<std::string, std::vector<formula::Formula *>>
-    get_variable_map() const;
-
-    formula::GroundingTable get_grounding_table() const;
-
     void clear_rule_formulas();
 
     void copy_rule_formulas(std::vector<formula::Formula *> other_vector);
+
+    //DELETE THESE:
+    const std::unordered_map<std::string, std::vector<formula::Formula *>>
+    get_variable_map() const;
+    formula::GroundingTable get_grounding_table() const;
 
 public:
 
