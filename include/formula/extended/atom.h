@@ -65,6 +65,10 @@ public:
                 uint64_t current_tuple_counter,
                 std::vector<Formula *> facts) override;
 
+    void accept(uint64_t current_time,
+            uint64_t current_tuple_counter,
+            std::vector<Grounding> facts) override;
+
     void expire_outdated_groundings(uint64_t current_time,
                                     uint64_t current_tuple_counter) override;
 
@@ -73,6 +77,9 @@ public:
             uint64_t consideration_time, uint64_t horizon_time,
             uint64_t consideration_count, uint64_t horizon_count,
             std::vector<std::string> arguments) override;
+
+    std::vector<Grounding> get_recent_groundings() override;
+    std::vector<Grounding> get_all_groundings() override;
 
     void debug_print() const override;
 

@@ -58,6 +58,11 @@ public:
             uint64_t current_tuple_counter,
             std::vector<Formula *> facts) = 0;
 
+    virtual void accept(
+            uint64_t current_time,
+            uint64_t current_tuple_counter,
+            std::vector<Grounding> facts) = 0;
+
     virtual void expire_outdated_groundings(
             uint64_t current_time,
             uint64_t current_tuple_counter) = 0;
@@ -70,10 +75,13 @@ public:
     // TODO Formula should be final version before starting to implement other
     // TODO formula classes. Thus: implement working program for Atoms first
     // Other potentially useful functions
-    // get all substitutionos of variable name
-    // get all substitutionos of variable index
+    // get all substitutions of variable name
+    // get all substitutions of variable index
     // get map variable name to index
     // copy groundings from formula with same predicate
+
+    virtual std::vector<Grounding> get_recent_groundings() = 0;
+    virtual std::vector<Grounding> get_all_groundings() = 0;
 
     virtual void debug_print() const = 0;
 };

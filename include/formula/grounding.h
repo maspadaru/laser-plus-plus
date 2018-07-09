@@ -58,6 +58,8 @@ public:
     void add_substitution(size_t variable_index, std::string constant);
 
     bool has_expired(uint64_t time, uint64_t tuple_counter) const;
+
+    size_t get_size() const;
 };
 
 

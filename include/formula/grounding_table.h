@@ -37,6 +37,8 @@ public:
     std::list<Grounding> get_groundings(
             uint64_t consideration_time) const;
 
+    std::vector<Grounding> get_all_groundings() const;
+
 // methods
 
 

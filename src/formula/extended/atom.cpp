@@ -52,21 +52,13 @@ std::vector<std::string> Atom::get_variable_names() const {
     return variable_names;
 }
 
-// const methods
-
-bool Atom::holds(uint64_t current_time) const {
-    // TODO implement
-    return true;
-}
-
 // methods
 
-void Atom::accept(
-        uint64_t current_time,
-        uint64_t current_tuple_counter,
-        std::vector<Formula *> facts) {
-    // TODO implement
+bool Atom::holds(uint64_t current_time) const {
+    return !grounding_table.get_groundings(current_time).empty();
 }
+
+
 
 size_t Atom::get_number_of_variables() const {
     return variable_names.size();
@@ -95,12 +87,45 @@ void Atom::add_grounding(
         std::vector<std::string> arguments) {
         laser::formula::Grounding grounding(consideration_time, horizon_time,
                 consideration_count, horizon_count);
-        for (int i=0; i < arguments.size(); i++) {
+        for (size_t i = 0; i < arguments.size(); i++) {
             grounding.add_substitution(i, arguments.at(i));
         }
         this->grounding_table.add_grounding(grounding);
 
 }
+
+std::vector<Grounding> Atom::get_recent_groundings() {
+    grounding_table.get_recent_groundings_vector();
+
+
+}
+
+std::vector<Grounding> Atom::get_all_groundings() {
+    return grounding_table.get_all_groundings();
+}
+
+void Atom::accept(
+        uint64_t current_time,
+        uint64_t current_tuple_counter,
+        std::vector<Formula *> facts) {
+    for (auto formula : facts) {
+        accept(current_time, current_tuple_counter,
+                formula->get_all_groundings());
+    }
+}
+
+void Atom::accept(
+        uint64_t current_time, uint64_t current_tuple_counter,
+        std::vector<Grounding> facts) {
+    for (auto grounding : facts) {
+        if (grounding.get_consideration_time() == current_time
+                && grounding.get_size() == get_number_of_variables()) {
+            grounding.set_horizon_time(current_time);
+            grounding_table.add_grounding(grounding);
+        }
+    }
+}
+
 
 
 } // namespace formula

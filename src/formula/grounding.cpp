@@ -70,5 +70,9 @@ void Grounding::add_substitution(size_t variable_index,
     substitution_vector.at(variable_index) = std::move(constant);
 }
 
+size_t Grounding::get_size() const {
+    return substitution_vector.size();
+}
+
 } // namespace formula
 } // namespace laser
