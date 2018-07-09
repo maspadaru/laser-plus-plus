@@ -49,14 +49,17 @@ void Grounding::set_horizon_time(uint64_t horizon_time) {
 
 std::string Grounding::get_substitution(
         int variable_index) const {
-    return substitution_map.at(variable_index);
+    return substitution_vector.at(variable_index);
 }
 
 // methods
 
 void Grounding::add_substitution(int variable_index,
                                  std::string constant) {
-    substitution_map.insert_or_assign(variable_index, constant);
+    if (substitution_vector.size() <= variable_index) {
+        substitution_vector.resize(variable_index+5);
+    }
+    substitution_vector.at(variable_index) = constant;
 }
 
 } // namespace formula

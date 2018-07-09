@@ -35,7 +35,7 @@ void GroundingTable::add_grounding(Grounding grounding) {
 
 void GroundingTable::expire_outdated_groundings(uint64_t current_time,
                                 uint64_t current_tuple_counter) {
-    //TODO
+    // TODO
 }
 
 } // namespace formula

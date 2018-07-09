@@ -58,5 +58,5 @@ int main() {
     }
 
 
-    std::cerr << "Hello, " << "!" << std::endl;
+    std::cerr << " ============== DONE! ============== " << std::endl;
 }

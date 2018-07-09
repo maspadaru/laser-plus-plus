@@ -48,9 +48,9 @@ Program::Program(
         has_timeline = true;
     }
 
-    for(auto rule : rule_vector) {
-        rule->debug_print();
-    }
+//    for(auto rule : rule_vector) {
+//        rule->debug_print();
+//    }
 }
 
 // getters & setters
