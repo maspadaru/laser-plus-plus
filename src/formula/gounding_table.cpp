@@ -10,7 +10,7 @@ namespace formula {
 
 // getters & setters
 
-unsigned long int GroundingTable::get_number_of_groundings() const {
+size_t GroundingTable::get_number_of_groundings() const {
     return grounding_map.size();
 }
 
@@ -20,15 +20,15 @@ std::vector<Grounding> GroundingTable::get_recent_groundings_vector() const {
 
 // const methods
 
-std::vector<Grounding>
-GroundingTable::get_groundings(int consideration_time) const {
+std::list<Grounding>
+GroundingTable::get_groundings(uint64_t consideration_time) const {
     return grounding_map.at(consideration_time);
 }
 
 // methods
 
 void GroundingTable::add_grounding(Grounding grounding) {
-    std::vector<Grounding> groundings =
+    std::list<Grounding> groundings =
             grounding_map[grounding.get_consideration_time()];
     groundings.push_back(grounding);
 }

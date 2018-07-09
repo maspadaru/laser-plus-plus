@@ -6,8 +6,7 @@
 
 #include <string>
 #include <unordered_map>
-#include <vector>
-#include <set>
+#include <list>
 
 #include "formula/grounding.h"
 
@@ -21,21 +20,21 @@ private:
     // grounding_map: key: consideration_time
     //        value: Vector of all groundings sharing consideration_time
     //  -- value should contain no duplicates
-    std::unordered_map<int, std::vector<Grounding>> grounding_map;
+    std::unordered_map<uint64_t, std::list<Grounding>> grounding_map;
     std::vector<Grounding> recent_groundings_vector;
 public:
 // constructors & destructors
 
 // getters & setters
 
-    unsigned long int get_number_of_groundings() const;
+    size_t get_number_of_groundings() const;
 
     std::vector<Grounding> get_recent_groundings_vector() const;
 
 // const methods
 
-    std::vector<Grounding> get_groundings(
-            int consideration_time) const;
+    std::list<Grounding> get_groundings(
+            uint64_t consideration_time) const;
 
 // methods
 

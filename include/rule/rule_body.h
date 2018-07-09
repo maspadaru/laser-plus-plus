@@ -6,6 +6,7 @@
 #define LASER_RULE_RULE_BODY_H
 
 #include <unordered_map>
+#include <set>
 
 #include "formula/formula.h"
 #include "formula/grounding_table.h"
