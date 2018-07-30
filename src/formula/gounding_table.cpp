@@ -35,6 +35,22 @@ void GroundingTable::add_grounding(Grounding grounding) {
     size += 1;
 }
 
+std::vector<Grounding> GroundingTable::get_all_groundings() const {
+    // Merges all lists together
+    std::vector<Grounding> all_groundings;
+    for (auto const &map_iterator : grounding_map) {
+        auto grounding_list = map_iterator.second;
+        all_groundings.insert( all_groundings.end(),
+                grounding_list.begin(), grounding_list.end() );
+    }
+    return all_groundings;
+}
+
+
+int GroundingTable::get_variable_index(std::string variable_name) const {
+    return variable_index.at(variable_name);
+}
+
 
 void GroundingTable::expire_outdated_groundings(
         uint64_t current_time,
@@ -63,16 +79,24 @@ void GroundingTable::expire_outdated_groundings(
     recent_groundings_vector.clear();
 }
 
-std::vector<Grounding> GroundingTable::get_all_groundings() const {
-    // Merges all lists together
-    std::vector<Grounding> all_groundings;
-    for (auto const &map_iterator : grounding_map) {
-        auto grounding_list = map_iterator.second;
-        all_groundings.insert( all_groundings.end(),
-                grounding_list.begin(), grounding_list.end() );
-    }
-    return all_groundings;
+std::vector<std::string> GroundingTable::get_variable_names() const {
+    return variable_names;
 }
+
+void GroundingTable::set_variable_names(
+        std::vector<std::string> variable_names) {
+    this->variable_names = std::move(variable_names);
+    variable_index.clear();
+    for (int i = 0; i < this->variable_names.size(); i++) {
+        auto variable_name = this->variable_names.at(i);
+        variable_index.at(variable_name) = i;
+    }
+}
+
+size_t GroundingTable::get_number_of_variables() const {
+    return variable_names.size();
+}
+
 
 } // namespace formula
 } // namespace laser

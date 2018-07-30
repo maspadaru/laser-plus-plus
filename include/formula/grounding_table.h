@@ -22,6 +22,8 @@ private:
     //  -- value should contain no duplicates
     std::unordered_map<uint64_t, std::list<Grounding>> grounding_map;
     std::vector<Grounding> recent_groundings_vector;
+    std::vector<std::string> variable_names;
+    std::unordered_map<std::string, int> variable_index;
     size_t size = 0;
 public:
 // constructors & destructors
@@ -32,15 +34,20 @@ public:
 
     std::vector<Grounding> get_recent_groundings_vector() const;
 
-// const methods
+    std::vector<std::string> get_variable_names() const;
+
+    void set_variable_names(std::vector<std::string> variable_names);
+
+// methods
+
+    size_t get_number_of_variables() const;
+
+    int get_variable_index(std::string variable_name) const;
 
     std::list<Grounding> get_groundings(
             uint64_t consideration_time) const;
 
     std::vector<Grounding> get_all_groundings() const;
-
-// methods
-
 
     void add_grounding(Grounding grounding);
 

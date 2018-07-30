@@ -12,14 +12,16 @@ namespace formula {
 
 
 enum class FormulaType {
-    MATH,
-    COMP,
     ATOM,
-    NEGATED_ATOM,
-    AT_ATOM,
-    AT_NEGATED_ATOM,
-    AT_VAR_ATOM,
-    AT_VAR_NEGATED_ATOM,
+    CONJUNCTION,
+    DISJUNCTION,
+    IMPLICATION,
+    NEGATION,
+    EXACT_TIME,
+    TUPLE_WINDOW,
+    TIME_WINDOW,
+    BOX,
+    DIAMOND
 };
 
 

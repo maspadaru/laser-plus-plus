@@ -86,7 +86,7 @@ InputManager::get_stream_facts(uint64_t request_time_point) {
 
     if (!pseudo_formula_vector.empty()) {
         parsed_stream_facts_map = make_formula_map(pseudo_formula_vector);
-        stream_tuple_counter += pseudo_formula_vector.size();
+        // stream_tuple_counter += pseudo_formula_vector.size();
     }
 
 
@@ -102,24 +102,19 @@ InputManager::build_data_formula(formula::PseudoFormula pseudo_formula) {
     switch (pseudo_formula.type) {
         case laser::formula::FormulaType::ATOM : {
             auto atom = new laser::formula::Atom(pseudo_formula.predicate);
-            // TODO add groundings: pseudo_formula.arguments
+            // TODO add groundings: pseudo_formula.argument_vector
             result = atom;
             break;
         }
-        case laser::formula::FormulaType::MATH:
-            break;
-        case laser::formula::FormulaType::COMP:
-            break;
-        case laser::formula::FormulaType::NEGATED_ATOM:
-            break;
-        case laser::formula::FormulaType::AT_ATOM:
-            break;
-        case laser::formula::FormulaType::AT_NEGATED_ATOM:
-            break;
-        case laser::formula::FormulaType::AT_VAR_ATOM:
-            break;
-        case laser::formula::FormulaType::AT_VAR_NEGATED_ATOM:
-            break;
+        case formula::FormulaType::CONJUNCTION:break;
+        case formula::FormulaType::DISJUNCTION:break;
+        case formula::FormulaType::IMPLICATION:break;
+        case formula::FormulaType::NEGATION:break;
+        case formula::FormulaType::EXACT_TIME:break;
+        case formula::FormulaType::TUPLE_WINDOW:break;
+        case formula::FormulaType::TIME_WINDOW:break;
+        case formula::FormulaType::BOX:break;
+        case formula::FormulaType::DIAMOND:break;
     }
     return result;
 }
@@ -142,9 +137,10 @@ InputManager::make_formula_map(
         std::vector<formula::PseudoFormula> pseudo_formulas) {
     std::unordered_map<std::string,
             std::vector<laser::formula::Formula * >> formula_map;
-    uint64_t formula_count = this->stream_tuple_counter;
-    uint64_t consideration_time = this->stream_current_time;
-    uint64_t horizon_time = ULLONG_MAX;
+    uint64_t formula_count = stream_tuple_counter;
+    stream_tuple_counter++;
+    uint64_t consideration_time = stream_current_time;
+    uint64_t horizon_time = stream_current_time;
     uint64_t horizon_count = ULLONG_MAX;
 
     for (const auto &pseudo_formula : pseudo_formulas) {
@@ -263,20 +259,15 @@ InputManager::build_rule_formula(formula::PseudoFormula pseudo_formula) {
             result = atom;
             break;
         }
-        case laser::formula::FormulaType::MATH:
-            break;
-        case laser::formula::FormulaType::COMP:
-            break;
-        case laser::formula::FormulaType::NEGATED_ATOM:
-            break;
-        case laser::formula::FormulaType::AT_ATOM:
-            break;
-        case laser::formula::FormulaType::AT_NEGATED_ATOM:
-            break;
-        case laser::formula::FormulaType::AT_VAR_ATOM:
-            break;
-        case laser::formula::FormulaType::AT_VAR_NEGATED_ATOM:
-            break;
+        case formula::FormulaType::CONJUNCTION:break;
+        case formula::FormulaType::DISJUNCTION:break;
+        case formula::FormulaType::IMPLICATION:break;
+        case formula::FormulaType::NEGATION:break;
+        case formula::FormulaType::EXACT_TIME:break;
+        case formula::FormulaType::TUPLE_WINDOW:break;
+        case formula::FormulaType::TIME_WINDOW:break;
+        case formula::FormulaType::BOX:break;
+        case formula::FormulaType::DIAMOND:break;
     }
     return result;
 }

@@ -2,6 +2,7 @@
 // Created by mike on 6/15/18.
 //
 
+#include <utility>
 #include "formula/extended/atom.h"
 
 namespace laser {
@@ -15,8 +16,7 @@ Atom::Atom(std::string predicate) {
 
 Atom::Atom(std::string predicate, std::vector<std::string> variable_names) {
     this->predicate = std::move(predicate);
-    this->variable_names = std::move(variable_names);
-
+    this->grounding_table.set_variable_names(std::move(variable_names));
 }
 
 Formula &Atom::create() const {
@@ -30,11 +30,9 @@ Formula &Atom::clone() const {
 }
 
 Formula &Atom::move() {
-    Atom *result = new Atom(std::move(this->predicate), std::move(this->variable_names));
+    Atom *result = new Atom(std::move(this->predicate));
     result->type = this->type;
-    result->is_negated_m = this->is_negated_m;
     result->grounding_table = std::move(this->grounding_table);
-    result->result_grounding_table = std::move(result_grounding_table);
     return *result;
 }
 
@@ -42,26 +40,19 @@ Formula &Atom::move() {
 
 FormulaType Atom::get_type() const { return this->type; }
 
-std::string Atom::get_predicate() const { return predicate; }
-
-bool Atom::is_negated() const { return is_negated_m; }
-
-bool Atom::had_input_already() const { return had_input_already_m; }
+std::vector<std::string> Atom::get_predicate_vector() const {
+    // TODO
+}
 
 std::vector<std::string> Atom::get_variable_names() const {
-    return variable_names;
+    return grounding_table.get_variable_names();
 }
 
 // methods
 
-bool Atom::holds(uint64_t current_time) const {
-    return !grounding_table.get_groundings(current_time).empty();
-}
-
-
 
 size_t Atom::get_number_of_variables() const {
-    return variable_names.size();
+    return grounding_table.get_number_of_variables();
 }
 
 void Atom::expire_outdated_groundings(
@@ -73,10 +64,9 @@ void Atom::expire_outdated_groundings(
 
 void Atom::debug_print() const {
     std::cerr << "ATOM -> predicate:  " << this->predicate ;
-    std::cerr << "; variable_names.size=: " << this->variable_names.size() << "; Names: ";
-    for(size_t i = 0; i < this->variable_names.size(); i++) {
-        auto name = this->variable_names.at(i);
-        std::cerr << name << ", ";
+    std::cerr << "; variable_names.size=: " << this->get_number_of_variables() << "; Names: ";
+    for(auto const &variable : this->get_variable_names()) {
+        std::cerr << variable << ", ";
     }
     std::cerr << "/" << std::endl;
 }
@@ -94,38 +84,38 @@ void Atom::add_grounding(
 
 }
 
-std::vector<Grounding> Atom::get_recent_groundings() {
-    grounding_table.get_recent_groundings_vector();
-
-
+void Atom::add_grounding(Grounding grounding) {
+    grounding_table.add_grounding(std::move(grounding));
 }
 
-std::vector<Grounding> Atom::get_all_groundings() {
+std::vector<Grounding> Atom::get_groundings() {
     return grounding_table.get_all_groundings();
 }
 
-void Atom::accept(
+bool Atom::is_satisfied() const {
+    return grounding_table.get_size() > 0;
+}
+
+bool Atom::evaluate(
         uint64_t current_time,
         uint64_t current_tuple_counter,
-        std::vector<Formula *> facts) {
-    for (auto formula : facts) {
-        accept(current_time, current_tuple_counter,
-                formula->get_all_groundings());
-    }
-}
-
-void Atom::accept(
-        uint64_t current_time, uint64_t current_tuple_counter,
-        std::vector<Grounding> facts) {
-    for (auto grounding : facts) {
-        if (grounding.get_consideration_time() == current_time
-                && grounding.get_size() == get_number_of_variables()) {
-            grounding.set_horizon_time(current_time);
-            grounding_table.add_grounding(grounding);
+        std::unordered_map<std::string, std::vector<formula::Formula *>>
+        facts) {
+    bool result = false;
+    auto formula_vector = facts.at(predicate);
+    for (auto other_formula : formula_vector) {
+        auto groundings_vector = other_formula->get_groundings();
+        result = !groundings_vector.empty();
+        for (auto grounding : groundings_vector) {
+            grounding_table.add_grounding(std::move(grounding));
         }
     }
+    return result;
 }
 
+int Atom::get_variable_index(std::string variable_name) const {
+    return grounding_table.get_variable_index(variable_name);
+}
 
 
 } // namespace formula

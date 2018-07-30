@@ -5,9 +5,12 @@
 #ifndef TEST_SIMPLE_WRITER_H
 #define TEST_SIMPLE_WRITER_H
 
-#include <output/output_writer.h>
+#include <iostream>
+#include <sstream>
 
-class SimpleWriter : public laser::output::OutputWriter {
+#include <io/data_atom.h>
+
+class SimpleWriter {
 private:
 
 // methods
@@ -22,7 +25,10 @@ public:
 
 // methods
 
-    void write_output(std::string formatted_output_string) override;
+    void write_output(std::string formatted_output_string) const;
+
+    std::string format_output(uint64_t time,
+            std::vector<laser::io::DataAtom> output_vector) const;
 };
 
 #endif // TEST_SIMPLE_FORMATTER_H

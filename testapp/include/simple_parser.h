@@ -14,13 +14,8 @@
 #include <utility>
 #include <string>
 
-#include <input/data_parser.h>
-#include <input/rule_parser.h>
-#include <rule/rule.h>
-#include <formula/formula.h>
 #include <excetion/format_exception.h>
-#include <formula/extended/atom.h>
-#include <formula/pseudo_formula.h>
+#include <io/data_atom.h>
 
 enum class TokenType {
     OPERATOR,
@@ -47,16 +42,10 @@ static inline void trim(std::string *s);
 
 static inline void syntax_error(std::string error_message);
 
-static inline void push_to_argument_stack(
-        laser::formula::Formula *formula,
-        std::stack<std::vector<laser::formula::Formula *>> *argument_stack);
-
-
-class SimpleParser
-        : public laser::input::DataParser, public laser::input::RuleParser {
+class SimpleParser {
 private:
 
-    std::vector<std::vector<laser::formula::PseudoFormula>> argument_stack;
+    std::vector<laser::io::DataAtom> argument_stack;
 
     Token recognize(std::string token_string) const;
 
@@ -80,26 +69,14 @@ private:
     std::tuple<size_t, std::vector<std::string>> parse_predicate_arguments(
             size_t index, std::vector<Token> *tokens) const;
 
-    laser::formula::PseudoFormula argument_stack_pop();
-
-    std::vector<laser::formula::PseudoFormula> argument_stack_pop_vector();
-
-    void argument_stack_push(laser::formula::PseudoFormula const &formula);
-
-    void argument_stack_push_vector(
-            std::vector<laser::formula::PseudoFormula> const &formula_vector);
-
     std::tuple<laser::formula::PseudoFormula, std::vector<laser::formula::PseudoFormula>>
     parse_token_vector(std::vector<Token> token_vector);
 
 public:
-    ~SimpleParser() override = default;
+    ~SimpleParser() = default;
 
-    std::vector<laser::formula::PseudoFormula>
-    parse_data(std::vector<std::string> raw_data_vector) override;
-
-    std::vector<std::tuple<laser::formula::PseudoFormula, std::vector<laser::formula::PseudoFormula>>>
-    parse_rules(std::vector<std::string> raw_rule_vector) override;
+    std::vector<laser::io::DataAtom>
+    parse_data(std::vector<std::string> raw_data_vector);
 
 };
 

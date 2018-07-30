@@ -17,8 +17,7 @@
 #include <input/data_reader.h>
 #include <input/rule_reader.h>
 
-class SimpleReader
-        : public laser::input::DataReader, public laser::input::RuleReader {
+class SimpleReader {
 private:
 
     static constexpr char LINE_KEY = 0;
@@ -47,27 +46,22 @@ private:
     std::vector<std::string> read_all_lines();
 
 public:
-    ~SimpleReader() override = default;
+    ~SimpleReader() = default;
 
 // from laser::input::DataReader
 
-    bool has_metadata() const override;
+    bool has_metadata() const;
 
-    uint64_t get_stream_start_time() const override;
+    bool fetch_metadata();
 
-    uint64_t get_stream_end_time() const override;
+    uint64_t get_stream_start_time() const;
 
-    std::vector<std::string> read_all_data() override;
+    uint64_t get_stream_end_time() const;
 
-    std::tuple<uint64_t, std::vector<std::string>>
-    read_next_data(uint64_t request_time_point) override;
+    std::vector<std::string> read_all_data();
 
-    bool fetch_metadata() override;
-
-
-// laser::input::RuleReader
-
-    std::vector<std::string> read_rules() override;
+    std::vector<std::string>
+    read_next_data(uint64_t request_time_point);
 
 // Own Methods:
 

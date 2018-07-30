@@ -28,7 +28,6 @@ private:
     uint64_t consideration_count = 0;
     uint64_t horizon_count = ULLONG_MAX;
     bool is_background_fact_m = false;
-    // key: variable index; value: constant substitution_vector of key in this grounding
     // TODO try setting an initial size to avoid allocations
     std::vector<std::string> substitution_vector;
 public:

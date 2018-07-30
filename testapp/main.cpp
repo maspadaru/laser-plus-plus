@@ -15,27 +15,29 @@ int main() {
     std::string stream_string =
             "1 14 "
             "1 : \n"
-            "2 : c(x4, z)\n"
-            "2 : d(x5, z)\n"
+            "2 : c(x2, y2)\n"
+            "2 : d(x2, z2)\n"
             "4 : \n"
             "5 : \n"
-            "5 : e(x7, y), e(z, x7), e(x9, y)\n"
-            "5 : e(x1, y)"
-            "6 : a(x1, y)\n"
+            "5 : e(x5, y5), e(z5, x5), e(x5, y5)\n"
+            "5 : e(x5, y5)"
+            "6 : a(x6, y6, z6)\n"
             "7 : \n"
-            "8 : a(x2, y), b(y, z)\n"
+            "8 : a(x8, y8, z8), b(y8, z8)\n"
             "9 : \n"
-            "10 : a(x3, y)\n"
-            "11 : \n"
+            "10 : a(x10, y10, z10)\n"
+            "11 : f(a11)\n"
             "12 : \n"
             "13 : \n"
             "14 : \n";
 
     std::string rule_string =
-            "r1 : q(X, Y, Z) :- a(X, Y) and b(Y, Z)\n"
-            "r2 : r(X, Y) :- c(X, Y)\n"
-            "r3 : s(Z, Y) :- e(X, Y) and e(Z, X)\n"
-            "r4 : t(X, Y) :- a(X, Y)\n";
+            "r1 : q(X, Y, Z) :- a(X, Y, Z)\n"
+            "r2 : r(Y) :- c(X, Y)\n"
+            "r3 : s(X) :- e(X, X)\n"
+            "r4 : t(Y, X) :- d(X, Y)\n"
+            "r5 : u(X, X) :- f(X)\n";
+
 
     auto simple_data_reader = SimpleReader();
     simple_data_reader.set_source(stream_string);

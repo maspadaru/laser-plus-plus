@@ -22,11 +22,7 @@ class Atom : public Formula {
 private:
     FormulaType type = FormulaType::ATOM;
     std::string predicate = "Atom";
-    bool is_negated_m = false;
-    bool had_input_already_m = false;
-    std::vector<std::string> variable_names;
     GroundingTable grounding_table;
-    GroundingTable result_grounding_table;
 public:
 // constructors & destructors
 
@@ -47,27 +43,23 @@ public:
 
     FormulaType get_type() const override;
 
-    std::string get_predicate() const override;
-
-    bool is_negated() const override;
-
-    bool had_input_already() const override;
-
-    std::vector<std::string> get_variable_names() const override;
+    std::vector<std::string> get_predicate_vector() const override;
 
 // methods
 
-    bool holds(uint64_t current_time) const override;
+    std::vector<std::string> get_variable_names() const override;
+
+    int get_variable_index(std::string variable_name) const override;
+
+    bool is_satisfied() const override;
+
+    bool evaluate(
+            uint64_t current_time,
+            uint64_t current_tuple_counter,
+            std::unordered_map<std::string, std::vector<formula::Formula *>>
+            facts) override;
 
     size_t get_number_of_variables() const override;
-
-    void accept(uint64_t current_time,
-                uint64_t current_tuple_counter,
-                std::vector<Formula *> facts) override;
-
-    void accept(uint64_t current_time,
-            uint64_t current_tuple_counter,
-            std::vector<Grounding> facts) override;
 
     void expire_outdated_groundings(uint64_t current_time,
                                     uint64_t current_tuple_counter) override;
@@ -78,8 +70,9 @@ public:
             uint64_t consideration_count, uint64_t horizon_count,
             std::vector<std::string> arguments) override;
 
-    std::vector<Grounding> get_recent_groundings() override;
-    std::vector<Grounding> get_all_groundings() override;
+    void add_grounding(Grounding grounding) override;
+
+    std::vector<Grounding> get_groundings() override;
 
     void debug_print() const override;
 

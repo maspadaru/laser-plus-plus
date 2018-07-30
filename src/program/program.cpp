@@ -3,6 +3,7 @@
 //
 
 #include <utility>
+#include <rule/default_rule_reader.h>
 #include "program/program.h"
 
 
@@ -22,6 +23,16 @@ void Program::init_rules(std::vector<rule::Rule> rules) {
     }
 }
 
+void Program::evaluate_rule_vector(
+        uint64_t current_time,
+        uint64_t current_tuple_counter,
+        std::unordered_map<std::string, std::vector<formula::Formula *>>
+        facts) {
+    for (auto rule : rule_vector) {
+        rule->evaluate(current_time, current_tuple_counter,
+                facts);
+    }
+}
 
 Program::Program(
         input::InputManager input_manager,
@@ -29,7 +40,6 @@ Program::Program(
         input_manager), output_manager(output_manager) {
     auto rules = input_manager.get_rules();
     init_rules(std::move(rules));
-    strata.stratify(rule_vector);
 
     if (input_manager.is_initialised_background_reader()) {
         std::unordered_map<std::string, std::vector<formula::Formula *>>
@@ -37,7 +47,7 @@ Program::Program(
         std::tie(number_of_background_facts, background_facts)
                 = input_manager.get_background_facts();
         if (number_of_background_facts > 0) {
-            strata.evaluate(current_time, current_tuple_counter,
+            evaluate_rule_vector(current_time, current_tuple_counter,
                     background_facts);
         }
     }
@@ -91,19 +101,9 @@ bool Program::eval(uint64_t request_time_point) {
     std::tie(current_time, current_tuple_counter, stream_facts)
             = input_manager.get_stream_facts(request_time_point);
     expire_outdated_groundings(current_time, current_tuple_counter);
-    has_derived_new_conclusions = strata.evaluate(current_time,
-            current_tuple_counter,
-            stream_facts);
+    evaluate_rule_vector(current_time, current_tuple_counter, stream_facts);
     return has_derived_new_conclusions;
 }
-
-std::unordered_map<std::string, std::vector<formula::Formula *>>
-Program::get_new_conclusions() {
-    // TODO Get new conclusions from each rule as facts of type Formula*
-    // TODO combine them in a map
-    return std::unordered_map<std::string, std::vector<formula::Formula *>>();
-}
-
 
 void Program::write_output(
         std::unordered_map<std::string, std::vector<formula::Formula *>>
@@ -120,6 +120,37 @@ bool Program::evaluate() {
     }
     return has_derived_new_conclusions;
 }
+
+
+
+void Program::accept_new_facts(
+        uint64_t current_time,
+        uint64_t current_tuple_counter,
+        std::unordered_map<std::string, std::vector<formula::Formula *>>
+        stream_facts) {
+    for (auto &rule : rule_vector) {
+        // TODO rule body accept
+    }
+}
+
+std::unordered_map<std::string, std::vector<formula::Formula *>>
+Program::get_new_conclusions() {
+    // TODO Get new conclusions from each rule as facts of type Formula*
+    // TODO combine them in a map
+    return std::unordered_map<std::string, std::vector<formula::Formula *>>();
+}
+
+Program::Program(std::vector<std::string> rule_string_vector, laser::io::IOManager ioManager) :
+        ioManager(ioManager) {
+    rule::DefaultRuleReader rule_reader(std::move(rule_string_vector));
+    rule_vector = rule_reader.get_rules();
+}
+
+Program::Program(laser::rule::RuleReader rule_reader, laser::io::IOManager ioManager) :
+    ioManager(ioManager) {
+    rule_vector = rule_reader.get_rules();
+}
+
 
 } // namespace program
 } // namespace laser

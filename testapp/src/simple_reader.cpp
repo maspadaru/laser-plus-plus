@@ -75,15 +75,11 @@ std::vector<std::string> SimpleReader::read_all_lines() {
     return result;
 }
 
-std::vector<std::string> SimpleReader::read_rules() {
-    return read_all_lines();
-}
-
 std::vector<std::string> SimpleReader::read_all_data() {
     return read_all_lines();
 }
 
-std::tuple<uint64_t, std::vector<std::string>>
+std::vector<std::string>
 SimpleReader::read_next_data(uint64_t request_time_point) {
     check_source();
     std::vector<std::string> fact_vector;
@@ -121,8 +117,7 @@ SimpleReader::read_next_data(uint64_t request_time_point) {
             }
         }
     }
-    auto result = std::make_tuple(request_time_point, fact_vector);
-    return result;
+    return fact_vector;
 }
 
 bool SimpleReader::fetch_metadata() {

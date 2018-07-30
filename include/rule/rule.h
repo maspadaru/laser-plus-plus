@@ -7,7 +7,6 @@
 #include <iostream>
 
 #include "formula/formula.h"
-#include "rule/rule_body.h"
 
 namespace laser {
 namespace rule {
@@ -16,7 +15,7 @@ namespace rule {
 class Rule {
 private:
     formula::Formula &head;
-    RuleBody body;
+    formula::Formula &body;
 
 
 public:
@@ -25,7 +24,7 @@ public:
 
     explicit Rule(
             formula::Formula *head_formula,
-            std::vector<formula::Formula*> body_vector);
+            formula::Formula *body_formula);
 
     Rule(Rule const &other); // copy constructor
     Rule(Rule &&other) noexcept; // move constructor
@@ -36,20 +35,8 @@ public:
     Rule &operator=(Rule &&other) noexcept; // move assignment
 
 // getters & setters
-    formula::Formula &get_head() const;
 
 // methods
-
-    std::string get_head_predicate() const;
-
-//    const std::unordered_map<std::string, std::vector<formula::Formula *>>
-//    get_body_variable_map() const;
-//
-    const std::unordered_map<std::string, std::vector<formula::Formula *>>
-    get_body_positive_predicate_map() const;
-
-    const std::unordered_map<std::string, std::vector<formula::Formula *>>
-    get_body_negated_predicate_map() const;
 
     /**
      * Derives new conclusions based on the head of the rule and all groundings
@@ -60,17 +47,14 @@ public:
      */
     bool evaluate(
             uint64_t current_time,
-            uint64_t current_tuple_counter);
+            uint64_t current_tuple_counter,
+            std::unordered_map<std::string, std::vector<formula::Formula *>>
+            facts
+    );
 
     void expire_outdated_groundings(
             uint64_t current_time,
             uint64_t current_tuple_counter);
-
-    formula::Formula& get_body_formula(size_t index);
-
-    bool body_has_negated_predicates() const;
-
-    size_t get_body_size() const;
 
     void debug_print() const;
 

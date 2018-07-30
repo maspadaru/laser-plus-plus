@@ -1,48 +1,33 @@
 //
-// Created by mike on 6/21/18.
+// Created by mike on 7/17/18.
 //
 
-#include "simple_parser.h"
+#include <formula/extended/atom.h>
+#include "excetion/format_exception.h"
+#include "rule/default_rule_reader.h"
 
-/* trim from start (in place)
- * source:
- * https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
- */
-static inline void ltrim(std::string *s) {
-    s->erase(s->begin(), std::find_if(s->begin(), s->end(), [](int ch) {
-        return !std::isspace(ch);
-    }));
-}
 
-/* trim from end (in place)
- * source:
- * https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
- */
-static inline void rtrim(std::string *s) {
-    s->erase(std::find_if(s->rbegin(), s->rend(), [](int ch) {
-        return !std::isspace(ch);
-    }).base(), s->end());
-}
+namespace laser {
+namespace rule {
 
-/* trim from both ends (in place)
- * source:
- * https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
- */
-static inline void trim(std::string *s) {
-    ltrim(s);
-    rtrim(s);
-}
+DefaultRuleReader::DefaultRuleReader(
+        std::vector<std::string>
+        rule_string_vector) :
+        rule_string_vector(std::move(rule_string_vector)) {}
 
-static inline void syntax_error(std::string error_message) {
-    std::string message = "Syntax Error in Simple Parser: " + error_message;
-    const char *exception_message = message.c_str();
-    throw laser::exception::FormatException(exception_message);
 
+std::vector<Rule> DefaultRuleReader::get_rules() {
+    std::vector<Rule> rule_vector;
+    for (const auto &rule_string : rule_string_vector) {
+        auto token_vector = tokenize(rule_string);
+        rule_vector.push_back(parse_token_vector(std::move(token_vector)));
+    }
+    return rule_vector;
 }
 
 // === Tokenizer ===
 
-Token SimpleParser::recognize(std::string token_string) const {
+Token DefaultRuleReader::recognize(std::string token_string) const {
     trim(&token_string);
     Token token;
     token.value = token_string;
@@ -63,7 +48,18 @@ Token SimpleParser::recognize(std::string token_string) const {
     return token;
 }
 
-std::vector<Token> SimpleParser::add_token_attempt(
+std::vector<Token> DefaultRuleReader::add_new_token(
+        std::vector<Token> token_vector,
+        TokenType type, char value_char) const {
+    Token token;
+    token.type = type;
+    std::string value_string(1, value_char);
+    token.value = value_string;
+    token_vector.push_back(token);
+    return token_vector;
+}
+
+std::vector<Token> DefaultRuleReader::add_token_attempt(
         std::vector<Token> token_vector,
         std::ostringstream &token_stream) const {
     std::string str = token_stream.str();
@@ -76,18 +72,7 @@ std::vector<Token> SimpleParser::add_token_attempt(
     return token_vector;
 }
 
-std::vector<Token> SimpleParser::add_new_token(
-        std::vector<Token> token_vector,
-        TokenType type, char value_char) const {
-    Token token;
-    token.type = type;
-    std::string value_string(1, value_char);
-    token.value = value_string;
-    token_vector.push_back(token);
-    return token_vector;
-}
-
-std::vector<Token> SimpleParser::tokenize(std::string rule_string) const {
+std::vector<Token> DefaultRuleReader::tokenize(std::string rule_string) const {
     std::vector<Token> token_vector;
     std::istringstream rule_stream(rule_string);
     std::ostringstream token_stream;
@@ -119,9 +104,10 @@ std::vector<Token> SimpleParser::tokenize(std::string rule_string) const {
     return token_vector;
 }
 
+
 // ======== Parser =========
 
-bool SimpleParser::is_unary_operator(Token token) const {
+bool DefaultRuleReader::is_unary_operator(Token token) const {
     auto value = token.value;
     return (value == "@") ||
             (value == "not") ||
@@ -132,17 +118,69 @@ bool SimpleParser::is_unary_operator(Token token) const {
 
 }
 
-bool SimpleParser::is_binary_operator(Token token) const {
+bool DefaultRuleReader::is_binary_operator(Token token) const {
     auto value = token.value;
     return (value == "and") || (value == "or");
 }
 
-std::vector<laser::io::DataAtom>
-SimpleParser::parse_token_vector(
+
+std::tuple<size_t, std::vector<std::string>>
+DefaultRuleReader::parse_predicate_arguments(
+        size_t index, std::vector<Token> *tokens) const {
+    std::vector<std::string> arguments;
+    if (index > tokens->size()) {
+        syntax_error("Expected constant, or variable after token '('");
+    }
+    while (index < tokens->size()) {
+        Token token = tokens->at(index);
+        if (token.type == TokenType::IDENTIFIER) {
+            arguments.push_back(token.value);
+            size_t next_index = index + 1;
+            if (next_index < tokens->size()) {
+                Token next_token = tokens->at(next_index);
+                if (next_token.value == ",") {
+                    index++;
+                }
+            } else {
+                syntax_error("Expected ',' or ')' after '" + token.value);
+            }
+        } else if (token.type == TokenType::CLOSED_PARENTHESES) {
+            if (arguments.empty()) {
+                syntax_error("Expected at least one constant, or variable "
+                             "after token '('");
+            }
+            break;
+        }
+        index++;
+    }
+    return std::make_tuple(index, arguments);
+}
+
+void DefaultRuleReader::parse_operator(Token token, bool is_head) {
+    if (token.value == "and" || token.value == ",") {
+        if (argument_stack.size() < 2) {
+            syntax_error("Expected two operands for JOIN operation");
+        }
+        formula::Formula* operand1 =
+                argument_stack.top();
+        argument_stack.pop();
+        formula::Formula* operand2 =
+                argument_stack.top();
+        argument_stack.pop();
+        // TODO Formula *conjunction = new conjunction(operand1, operand2);
+        formula::Formula *conjunction = new formula::Atom("placeholder");
+        argument_stack.push(conjunction);
+    }
+}
+
+rule::Rule
+DefaultRuleReader::parse_token_vector(
         std::vector<Token> token_vector) {
+
     std::stack<Token> token_stack;
-    std::vector<laser::io::DataAtom> result;
-    argument_stack.clear();
+    formula::Formula* head;
+    formula::Formula* body;
+    argument_stack = std::stack<formula::Formula*>();
     size_t index = 0;
     while (index < token_vector.size()) {
         Token token = token_vector[index];
@@ -217,23 +255,21 @@ SimpleParser::parse_token_vector(
                                 // TODO argument_stack.push()
                             }
                         } else {
-//                            auto atom = new laser::formula::Atom(predicate,
+//                            auto atom = new formula::Atom(predicate,
 //                                    argument_vector);
-                            PseudoFormula
-                                    atom(laser::formula::FormulaType::ATOM,
-                                    predicate, arguments);
-                            argument_stack_push(atom);
+                            formula::Formula *atom =
+                                    new formula::Atom(predicate, arguments);
+                            argument_stack.push(atom);
                         }
                     }
 
                 } else {
                     std::string predicate = token.value;
                     std::vector<std::string> arguments;
-//                    auto atom = new laser::formula::Atom(predicate, argument_vector);
-                    PseudoFormula
-                            atom(laser::formula::FormulaType::ATOM,
-                            predicate, arguments);
-                    argument_stack_push(atom);
+//                    auto atom = new formula::Atom(predicate, argument_vector);
+                    formula::Formula *atom =
+                            new formula::Atom(predicate, arguments);
+                    argument_stack.push(atom);
                 }
                 break;
             }
@@ -263,7 +299,8 @@ SimpleParser::parse_token_vector(
                         parse_operator(operator_token, true);
 
                     }
-                    head = argument_stack_pop();
+                    head = argument_stack.top();
+                    argument_stack.pop();
                 }
             }
                 break;
@@ -278,77 +315,51 @@ SimpleParser::parse_token_vector(
         }
         parse_operator(operator_token);
     }
-    body = argument_stack_pop_vector();
+    body = argument_stack.top();
+    argument_stack.pop();
 
-    return std::make_tuple(head, body);
+    // TODO discard rule with empty head.
+
+    return rule::Rule(head, body);
 }
 
-void SimpleParser::parse_operator(Token token, bool is_head) {
-    if (token.value == "and" || token.value == ",") {
-        if (argument_stack.size() < 2) {
-            syntax_error("Expected two operands for JOIN operation");
-        }
-        std::vector<PseudoFormula> operand1 =
-                argument_stack_pop_vector();
-        std::vector<PseudoFormula> operand2 =
-                argument_stack_pop_vector();
-        operand1.insert(operand1.end(), operand2.begin(), operand2.end());
-        argument_stack_push_vector(operand1);
-    }
+// === Helper functions ===
+
+/* trim from start (in place)
+ * source:
+ * https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+ */
+static inline void ltrim(std::string *s) {
+    s->erase(s->begin(), std::find_if(s->begin(), s->end(), [](int ch) {
+        return !std::isspace(ch);
+    }));
 }
 
-
-std::tuple<size_t, std::vector<std::string>>
-SimpleParser::parse_predicate_arguments(
-        size_t index, std::vector<Token> *tokens) const {
-    std::vector<std::string> arguments;
-    if (index > tokens->size()) {
-        syntax_error("Expected constant, or variable after token '('");
-    }
-    while (index < tokens->size()) {
-        Token token = tokens->at(index);
-        if (token.type == TokenType::IDENTIFIER) {
-            arguments.push_back(token.value);
-            size_t next_index = index + 1;
-            if (next_index < tokens->size()) {
-                Token next_token = tokens->at(next_index);
-                if (next_token.value == ",") {
-                    index++;
-                }
-            } else {
-                syntax_error("Expected ',' or ')' after '" + token.value);
-            }
-        } else if (token.type == TokenType::CLOSED_PARENTHESES) {
-            if (arguments.empty()) {
-                syntax_error("Expected at least one constant, or variable "
-                             "after token '('");
-            }
-            break;
-        }
-        index++;
-    }
-    return std::make_tuple(index, arguments);
-}
-// ==== Parse Data ====
-
-std::vector<laser::io::DataAtom>
-SimpleParser::parse_data(
-        std::vector<std::string>
-        raw_data_vector) {
-    std::vector<laser::io::DataAtom> data_atom_vector;
-    for (const auto &raw_string : raw_data_vector) {
-        auto token_vector = tokenize(raw_string);
-        if (!token_vector.empty()) {
-            std::vector<laser::io::DataAtom> temp_vector;
-            std::tie(std::ignore, temp_vector) =
-                    parse_token_vector(std::move(token_vector));
-            data_atom_vector
-                    .insert(data_atom_vector.end(), temp_vector.begin(),
-                            temp_vector.end());
-        }
-    }
-    return data_atom_vector;
+/* trim from end (in place)
+ * source:
+ * https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+ */
+static inline void rtrim(std::string *s) {
+    s->erase(std::find_if(s->rbegin(), s->rend(), [](int ch) {
+        return !std::isspace(ch);
+    }).base(), s->end());
 }
 
+/* trim from both ends (in place)
+ * source:
+ * https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
+ */
+static inline void trim(std::string *s) {
+    ltrim(s);
+    rtrim(s);
+}
 
+static inline void syntax_error(std::string const &error_message) {
+    std::string message = "Syntax Error in Simple Parser: " + error_message;
+    const char *exception_message = message.c_str();
+    throw exception::FormatException(exception_message);
 
+}
+
+} // namespace rule
+} // namespace laser

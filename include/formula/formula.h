@@ -39,29 +39,23 @@ public:
 
     virtual FormulaType get_type() const = 0;
 
-    virtual std::string get_predicate() const = 0;
-
-    virtual bool is_negated() const = 0;
-
-    virtual bool had_input_already() const = 0;
-
-    virtual std::vector<std::string> get_variable_names() const = 0;
+    virtual std::vector<std::string> get_predicate_vector() const = 0;
 
 // methods
 
-    virtual bool holds(uint64_t current_time) const = 0;
+    virtual std::vector<std::string> get_variable_names() const = 0;
+
+    virtual int get_variable_index(std::string variable_name) const = 0;
+
+    virtual bool is_satisfied() const = 0;
+
+    virtual bool evaluate(
+            uint64_t current_time,
+            uint64_t current_tuple_counter,
+            std::unordered_map<std::string, std::vector<formula::Formula *>>
+            facts) = 0;
 
     virtual size_t get_number_of_variables() const = 0;
-
-    virtual void accept(
-            uint64_t current_time,
-            uint64_t current_tuple_counter,
-            std::vector<Formula *> facts) = 0;
-
-    virtual void accept(
-            uint64_t current_time,
-            uint64_t current_tuple_counter,
-            std::vector<Grounding> facts) = 0;
 
     virtual void expire_outdated_groundings(
             uint64_t current_time,
@@ -72,16 +66,9 @@ public:
             uint64_t consideration_count, uint64_t horizon_count,
             std::vector<std::string> arguments) = 0;
 
-    // TODO Formula should be final version before starting to implement other
-    // TODO formula classes. Thus: implement working program for Atoms first
-    // Other potentially useful functions
-    // get all substitutions of variable name
-    // get all substitutions of variable index
-    // get map variable name to index
-    // copy groundings from formula with same predicate
+    virtual void add_grounding(Grounding grounding) = 0;
 
-    virtual std::vector<Grounding> get_recent_groundings() = 0;
-    virtual std::vector<Grounding> get_all_groundings() = 0;
+    virtual std::vector<Grounding> get_groundings() = 0;
 
     virtual void debug_print() const = 0;
 };

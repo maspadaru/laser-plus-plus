@@ -7,13 +7,14 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
+#include <rule/rule_reader.h>
+#include <io/io_manager.h>
 
 #include "excetion/request_exception.h"
 #include "input/input_manager.h"
 #include "output/output_manager.h"
 #include "formula/formula.h"
 #include "rule/rule.h"
-#include "strata.h"
 
 namespace laser {
 namespace program {
@@ -21,8 +22,7 @@ namespace program {
 class Program {
 private:
 
-    input::InputManager input_manager;
-    output::OutputManager output_manager;
+    laser::io::IOManager ioManager;
 
     uint64_t current_time = 0;
     uint64_t current_tuple_counter = 0;
@@ -33,10 +33,15 @@ private:
 
     uint64_t number_of_background_facts = 0;
 
-    Strata strata;
-    std::vector<rule::Rule *> rule_vector;
+    std::vector<rule::Rule> rule_vector;
 
 // methods
+
+    void evaluate_rule_vector(
+            uint64_t current_time,
+            uint64_t current_tuple_counter,
+            std::unordered_map<std::string, std::vector<formula::Formula *>>
+            facts);
 
     bool eval(uint64_t request_time_point);
 
@@ -53,13 +58,19 @@ private:
 
     void init_rules(std::vector<rule::Rule> rules);
 
+    void accept_new_facts(
+            uint64_t current_time,
+            uint64_t current_tuple_counter,
+            std::unordered_map<std::string, std::vector<formula::Formula *>>
+            stream_facts);
+
+
 public:
 
 // constructors & destructors
 
-    Program(
-            input::InputManager input_manager,
-            output::OutputManager output_manager);
+    Program(std::vector<std::string> rule_string_vector, laser::io::IOManager ioManager);
+    Program(laser::rule::RuleReader rule_reader, laser::io::IOManager ioManager);
 
     virtual ~Program();
 
