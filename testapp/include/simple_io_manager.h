@@ -15,22 +15,24 @@ class SimpleIOManager : public laser::io::IOManager {
 private:
     SimpleWriter simple_writer;
     SimpleReader simple_stream_reader;
-    SimpleReader simple_background_reader;
     SimpleParser simple_parser;
+
 public:
+
+    explicit SimpleIOManager(std::string stream_string);
 
     ~SimpleIOManager() override = default;
 
-uint64_t read_stream_start_time() override;
+    uint64_t read_stream_start_time() override;
 
-uint64_t read_stream_end_time() override;
+    uint64_t read_stream_end_time() override;
 
-std::vector<laser::io::DataAtom> read_stream_data(uint64_t time) override;
+    std::vector<laser::io::DataAtom> read_stream_data(uint64_t time) override;
 
-std::vector<laser::io::DataAtom> read_background_data() override;
+    std::vector<laser::io::DataAtom> read_background_data() override;
 
-void write_output_data(
-        uint64_t time, std::vector<laser::io::DataAtom> output_vector) override;
+    void write_output_data(
+            uint64_t time, std::vector<laser::io::DataAtom> output_vector) override;
 };
 
 

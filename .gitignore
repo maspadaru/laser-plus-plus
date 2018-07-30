@@ -7,9 +7,8 @@
 .idea/
 .tags*
 .classpath
-cmake-build-debug/
 cmake-build/
-build/
+cmake-build-debug/
 compile_commands.json
 Session.vim
 

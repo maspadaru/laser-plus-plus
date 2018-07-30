@@ -14,8 +14,6 @@
 #include <excetion/read_exception.h>
 #include <excetion/format_exception.h>
 
-#include <input/data_reader.h>
-#include <input/rule_reader.h>
 
 class SimpleReader {
 private:
