@@ -127,4 +127,5 @@ bool SimpleReader::fetch_metadata() {
         source >> end_time;
         has_metadata_m = true;
     }
+    return has_metadata_m;
 }

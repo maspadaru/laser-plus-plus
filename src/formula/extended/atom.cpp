@@ -41,7 +41,9 @@ Formula &Atom::move() {
 FormulaType Atom::get_type() const { return this->type; }
 
 std::vector<std::string> Atom::get_predicate_vector() const {
-    // TODO
+    std::vector<std::string> result;
+    result.push_back(this->predicate);
+    return result;
 }
 
 std::vector<std::string> Atom::get_variable_names() const {
