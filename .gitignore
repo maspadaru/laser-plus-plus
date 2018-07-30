@@ -8,5 +8,8 @@
 .tags*
 .classpath
 cmake-build-debug/
+cmake-build/
 build/
+compile_commands.json
+Session.vim
 

@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.7)
 project(LaserPP VERSION 0.0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 include_directories(include/)
 file(GLOB SOURCES
         "src/formula/*.cpp"
