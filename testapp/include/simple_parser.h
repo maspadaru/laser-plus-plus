@@ -21,7 +21,6 @@ enum class TokenType {
     OPERATOR,
     OPEN_PARENTHESES,
     CLOSED_PARENTHESES,
-    ENTAILMENT_SIGN,
     IDENTIFIER
 };
 
@@ -60,19 +59,11 @@ private:
             std::vector<Token> token_vector,
             TokenType type, char value_char) const;
 
-    bool is_unary_operator(Token token) const;
-
-    bool is_binary_operator(Token token) const;
-
-    void parse_operator(Token token, bool is_head = false);
-
-    std::tuple<size_t, std::vector<std::string>> parse_predicate_arguments(
-            size_t index, std::vector<Token> *tokens) const;
-
-    std::tuple<laser::formula::PseudoFormula, std::vector<laser::formula::PseudoFormula>>
-    parse_token_vector(std::vector<Token> token_vector);
+    std::vector<laser::io::DataAtom>
+    parse_token_vector(std::vector<Token> input_token_vector);
 
 public:
+
     ~SimpleParser() = default;
 
     std::vector<laser::io::DataAtom>

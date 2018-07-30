@@ -11,15 +11,27 @@ namespace laser {
 namespace rule {
 
 DefaultRuleReader::DefaultRuleReader(
-        std::vector<std::string>
-        rule_string_vector) :
-        rule_string_vector(std::move(rule_string_vector)) {}
+        std::string rule_string) :
+        rule_string(std::move(rule_string)) {
 
+}
+
+std::vector<std::string> split_lines(std::string const& input) {
+    std::vector<std::string> result;
+    std::stringstream ss(input);
+    std::string token;
+    while(std::getline(ss,token,'\n')){
+        result.push_back(token);
+    }
+    return result;
+}
 
 std::vector<Rule> DefaultRuleReader::get_rules() {
     std::vector<Rule> rule_vector;
-    for (const auto &rule_string : rule_string_vector) {
-        auto token_vector = tokenize(rule_string);
+    std::vector<std::string> string_vector = split_lines(rule_string);
+
+    for (const auto &string_rule : string_vector) {
+        auto token_vector = tokenize(string_rule);
         rule_vector.push_back(parse_token_vector(std::move(token_vector)));
     }
     return rule_vector;
@@ -329,7 +341,7 @@ DefaultRuleReader::parse_token_vector(
  * source:
  * https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
  */
-static inline void ltrim(std::string *s) {
+inline void DefaultRuleReader::ltrim(std::string *s) const {
     s->erase(s->begin(), std::find_if(s->begin(), s->end(), [](int ch) {
         return !std::isspace(ch);
     }));
@@ -339,7 +351,7 @@ static inline void ltrim(std::string *s) {
  * source:
  * https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
  */
-static inline void rtrim(std::string *s) {
+inline void DefaultRuleReader::rtrim(std::string *s) const {
     s->erase(std::find_if(s->rbegin(), s->rend(), [](int ch) {
         return !std::isspace(ch);
     }).base(), s->end());
@@ -349,12 +361,12 @@ static inline void rtrim(std::string *s) {
  * source:
  * https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
  */
-static inline void trim(std::string *s) {
+inline void DefaultRuleReader::trim(std::string *s) const {
     ltrim(s);
     rtrim(s);
 }
 
-static inline void syntax_error(std::string const &error_message) {
+inline void DefaultRuleReader::syntax_error(std::string const &error_message) const {
     std::string message = "Syntax Error in Simple Parser: " + error_message;
     const char *exception_message = message.c_str();
     throw exception::FormatException(exception_message);

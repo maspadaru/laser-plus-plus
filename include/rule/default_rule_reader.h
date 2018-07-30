@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <stack>
 
-#include "rule/rule_reader.h"
+#include "io/rule_reader.h"
 
 // Helper functions:
 
@@ -34,16 +34,23 @@ struct Token {
     std::string value;
 };
 
+
 namespace laser {
 namespace rule {
+
 
 /**
  *
  */
 class DefaultRuleReader : public laser::rule::RuleReader {
 private:
-    std::vector<std::string> rule_string_vector;
+    std::string rule_string;
     std::stack<laser::formula::Formula *> argument_stack;
+// Helper functions:
+    inline void rtrim(std::string *s) const;
+    inline void ltrim(std::string *s) const;
+    inline void trim(std::string *s) const;
+    inline void syntax_error(std::string const &error_message) const;
 
 // methods
 
@@ -74,7 +81,7 @@ private:
 public:
 
 // constructors & destructors
-    explicit DefaultRuleReader(std::vector<std::string>  rule_string_vector);
+    explicit DefaultRuleReader(std::string  rule_string);
     ~DefaultRuleReader() override = default;
 
 // methods

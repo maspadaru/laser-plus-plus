@@ -15,10 +15,10 @@
 std::string SimpleWriter::format_output(
         uint64_t time, std::vector<laser::io::DataAtom> output_vector) const {
     std::stringstream result_stream;
-    constexpr std::string TIME_SEPARATOR = " -> ";
-    constexpr std::string ARGUMENTS_START = "(";
-    constexpr std::string ARGUMENTS_END = ")";
-    constexpr std::string DELIMITER = ", ";
+    const std::string TIME_SEPARATOR = " -> ";
+    const std::string ARGUMENTS_START = "(";
+    const std::string ARGUMENTS_END = ")";
+    const std::string DELIMITER = ", ";
     result_stream << time << TIME_SEPARATOR;
     for (size_t atom_index = 0; atom_index < output_vector.size(); atom_index++) {
         auto const& data_atom = output_vector.at(atom_index);
