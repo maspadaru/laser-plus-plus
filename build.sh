@@ -3,8 +3,7 @@
 PROJECT_NAME=LaserPP
 
 build_release () {
-    rm -rf cmake-build-release
-    mkdir cmake-build-release
+    mkdir -p cmake-build-release
     cd cmake-build-release
     cmake -DCMAKE_BUILD_TYPE=Release ..
     make
@@ -12,8 +11,7 @@ build_release () {
 }
 
 build_debug () {
-    rm -rf cmake-build-debug
-    mkdir cmake-build-debug
+    mkdir -p cmake-build-debug
     cd cmake-build-debug
     cmake -DCMAKE_BUILD_TYPE=Debug ..
     make
@@ -29,21 +27,24 @@ run_project () {
     cmake-build-debug/$PROJECT_NAME
 }
 
-if [ $1 = "b" ]; then
-    echo b
+debug_project () {
+    gdb cmake-build-debug/$PROJECT_NAME --tui
+}
+
+if [ $1 = "br" ]; then
     build_release
 fi
-if [ $1 = "d" ]; then
-    echo d
+if [ $1 = "bd" ]; then
     build_debug
 fi
 if [ $1 = "c" ]; then
-    echo c
     clean_up
 fi
 if [ $1 = "r" ]; then
-    echo r
     run_project
+fi
+if [ $1 = "d" ]; then
+    debug_project
 fi
 
 

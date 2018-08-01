@@ -88,7 +88,8 @@ void GroundingTable::set_variable_names(
     this->variable_names = std::move(variable_names);
     variable_index.clear();
     for (int i = 0; i < this->variable_names.size(); i++) {
-        auto variable_name = this->variable_names.at(i);
+        std::string variable_name = this->variable_names.at(i);
+        variable_index.try_emplace(variable_name);
         variable_index.at(variable_name) = i;
     }
 }

@@ -17,8 +17,6 @@ Program::~Program() {
 }
 
 void Program::evaluate_rule_vector(
-        uint64_t current_time,
-        uint64_t current_tuple_counter,
         std::unordered_map<std::string, std::vector<formula::Formula *>>
         facts) {
     for (auto rule : rule_vector) {
@@ -42,28 +40,34 @@ int Program::get_number_of_new_conclusions() const {
 }
 
 // methods
-
-bool Program::is_done() {
-    bool result = false;
-    result = has_timeline && current_time >= stream_end_time;
-    return result;
+void Program::set_start_time(uint64_t start_time) {
+    current_time = start_time;
 }
 
-void Program::expire_outdated_groundings(
-        uint64_t current_time,
-        uint64_t current_tuple_counter) {
+
+bool Program::is_done() {
+    if (!has_timeline) {
+        stream_start_time = ioManager->read_stream_start_time();
+        stream_end_time = ioManager->read_stream_end_time();
+    }
+    bool keep_going = false;
+    keep_going = has_timeline && current_time <= stream_end_time;
+    return !keep_going;
+}
+
+void Program::expire_outdated_groundings() {
     for (auto rule :rule_vector) {
         rule.expire_outdated_groundings(current_time, current_tuple_counter);
     }
 }
 
-bool Program::eval(uint64_t request_time_point) {
+bool Program::eval() {
     bool has_derived_new_conclusions = false;
     std::unordered_map<std::string, std::vector<formula::Formula *>>
             stream_facts
-            = ioHandler.get_stream_data(request_time_point);
-    expire_outdated_groundings(current_time, current_tuple_counter);
-    evaluate_rule_vector(current_time, current_tuple_counter, stream_facts);
+            = ioHandler.get_stream_data(current_time);
+    expire_outdated_groundings();
+    evaluate_rule_vector(stream_facts);
     return has_derived_new_conclusions;
 }
 
@@ -74,20 +78,19 @@ void Program::write_output(
 }
 
 bool Program::evaluate() {
-    uint64_t request_time_point = current_time + 1;
-    bool has_derived_new_conclusions = eval(request_time_point);
+    bool has_derived_new_conclusions = eval();
     if (has_derived_new_conclusions) {
         auto new_conclusions = get_new_conclusions();
         write_output(new_conclusions);
     }
+    std::cout << current_time << std::endl;
+    current_time++;
     return has_derived_new_conclusions;
 }
 
 
 
 void Program::accept_new_facts(
-        uint64_t current_time,
-        uint64_t current_tuple_counter,
         std::unordered_map<std::string, std::vector<formula::Formula *>>
         stream_facts) {
     for (auto &rule : rule_vector) {

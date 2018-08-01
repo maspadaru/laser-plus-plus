@@ -32,15 +32,16 @@ int main() {
             "14 : \n";
 
     std::string rule_string =
-            "r1 : q(X, Y, Z) :- a(X, Y, Z)\n"
-            "r2 : r(Y) :- c(X, Y)\n"
-            "r3 : s(X) :- e(X, X)\n"
-            "r4 : t(Y, X) :- d(X, Y)\n"
-            "r5 : u(X, X) :- f(X)\n";
+            "q(X, Y, Z) :- a(X, Y, Z)\n"
+            "r(Y) :- c(X, Y)\n"
+            "s(X) :- e(X, X)\n"
+            "t(Y, X) :- d(X, Y)\n"
+            "u(X, X) :- f(X)\n";
 
 
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
+    program.set_start_time(1);
 
     while (!program.is_done()) {
         program.evaluate();

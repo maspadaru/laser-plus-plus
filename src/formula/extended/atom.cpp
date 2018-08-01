@@ -104,12 +104,17 @@ bool Atom::evaluate(
         std::unordered_map<std::string, std::vector<formula::Formula *>>
         facts) {
     bool result = false;
-    auto formula_vector = facts.at(predicate);
-    for (auto other_formula : formula_vector) {
-        auto groundings_vector = other_formula->get_groundings();
-        result = !groundings_vector.empty();
-        for (auto grounding : groundings_vector) {
-            grounding_table.add_grounding(std::move(grounding));
+
+    auto search = facts.find(predicate);
+    auto found = search != facts.end();
+    if (found) { 
+        auto formula_vector = facts.at(predicate);
+        for (auto other_formula : formula_vector) {
+            auto groundings_vector = other_formula->get_groundings();
+            result = !groundings_vector.empty();
+            for (auto grounding : groundings_vector) {
+                grounding_table.add_grounding(std::move(grounding));
+            }
         }
     }
     return result;

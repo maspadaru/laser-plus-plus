@@ -24,7 +24,7 @@ Rule::~Rule() {
     delete &body;
 }
 
-Rule::Rule(Rule const &other) : head(other.head.clone()), body(other.body) {}
+Rule::Rule(Rule const &other) : head(other.head.clone()), body(other.body.clone()) {}
 
 Rule::Rule(Rule &&other) noexcept  : head(other.head.move()),
         body(other.body.move()) {
@@ -38,7 +38,7 @@ Rule &Rule::operator=(Rule const &other) {
 
 Rule &Rule::operator=(Rule &&other) noexcept {
     this->head = other.head.move();
-    this->body = std::move(other.body);
+    this->body = other.body.move();
     return *this;
 }
 

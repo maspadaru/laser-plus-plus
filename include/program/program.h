@@ -38,16 +38,12 @@ private:
 // methods
 
     void evaluate_rule_vector(
-            uint64_t current_time,
-            uint64_t current_tuple_counter,
             std::unordered_map<std::string, std::vector<formula::Formula *>>
             facts);
 
-    bool eval(uint64_t request_time_point);
+    bool eval();
 
-    void expire_outdated_groundings(
-            uint64_t current_time,
-            uint64_t current_tuple_counter);
+    void expire_outdated_groundings();
 
     std::vector<formula::Formula *> get_new_conclusions();
 
@@ -57,8 +53,6 @@ private:
 
 
     void accept_new_facts(
-            uint64_t current_time,
-            uint64_t current_tuple_counter,
             std::unordered_map<std::string, std::vector<formula::Formula *>>
             stream_facts);
 
@@ -90,6 +84,8 @@ public:
     bool evaluate();
 
     bool is_done();
+
+    void set_start_time(uint64_t start_time);
 
 };
 
