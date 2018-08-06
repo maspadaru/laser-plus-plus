@@ -11,18 +11,19 @@ namespace program {
 laser::program::IOHandler::IOHandler(io::IOManager *ioManager) : ioManager(
         ioManager) {}
 
-std::unordered_map<std::string, std::vector<formula::Formula *>>
+std::unordered_map<std::string, std::vector<formula::Grounding>>
 laser::program::IOHandler::get_stream_data(uint64_t time) {
-    std::unordered_map<std::string, std::vector<laser::formula::Formula *>> result;
+    std::unordered_map<std::string, std::vector<formula::Grounding>> result;
     auto data_vector = ioManager->read_stream_data(time);
     for (auto const& data : data_vector) {
         std::string predicate = data.get_predicate();
         result.try_emplace(predicate);
-        std::vector<formula::Formula *> &map_vector = result.at(predicate);
-        formula::Formula* formula = new formula::Atom(data.get_predicate(),
-                data.get_arguments());
+        std::vector<formula::Grounding> &map_vector = result.at(predicate);
         // TODO !!! SET TUPLE COUNTER VALUES !!!!
-        map_vector.push_back(formula);
+        formula::Grounding grounding(time, time, 0, 9999);
+        grounding.set_as_fact();
+        grounding.add_substitution_vector(data.get_arguments());
+        map_vector.push_back(grounding);
     }
     return result;
 }

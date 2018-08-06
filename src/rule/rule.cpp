@@ -66,7 +66,7 @@ void Rule::debug_print() const {
 
 bool Rule::evaluate(
         uint64_t current_time, uint64_t current_tuple_counter,
-        std::unordered_map<std::string, std::vector<formula::Formula *>> facts) {
+        std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
     return body.evaluate(current_time, current_tuple_counter, facts);
 }
 

@@ -26,7 +26,6 @@ private:
     std::unordered_map<std::string, int> variable_index;
     size_t size = 0;
 public:
-// constructors & destructors
 
 // getters & setters
 
@@ -38,7 +37,10 @@ public:
 
     void set_variable_names(std::vector<std::string> variable_names);
 
+
 // methods
+    
+    void add_variable_name(std::string const& variable_name);
 
     size_t get_number_of_variables() const;
 

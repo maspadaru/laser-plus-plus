@@ -48,7 +48,7 @@ public:
     bool evaluate(
             uint64_t current_time,
             uint64_t current_tuple_counter,
-            std::unordered_map<std::string, std::vector<formula::Formula *>>
+            std::unordered_map<std::string, std::vector<formula::Grounding>>
             facts
     );
 

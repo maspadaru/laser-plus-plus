@@ -28,6 +28,7 @@ private:
     uint64_t consideration_count = 0;
     uint64_t horizon_count = ULLONG_MAX;
     bool is_background_fact_m = false;
+    bool is_fact_m = false;
     // TODO try setting an initial size to avoid allocations
     std::vector<std::string> substitution_vector;
 public:
@@ -36,7 +37,7 @@ public:
     Grounding(uint64_t consideration_time, uint64_t horizon_time,
               uint64_t consideration_count, uint64_t horizon_count);
 
-    explicit Grounding(bool is_background_fact_m);
+    Grounding() = default;
 
 // getters & setters
 
@@ -50,11 +51,21 @@ public:
 
     void set_horizon_time(uint64_t horizon_time);
 
+    bool is_background_fact();
+
+    bool is_fact();
+
+    void set_as_fact();
+
+    void set_as_background_fact();
+
 // methods
 
     std::string get_substitution(size_t variable_index) const;
 
     void add_substitution(size_t variable_index, std::string constant);
+
+    void add_substitution_vector(std::vector<std::string> vector);
 
     bool has_expired(uint64_t time, uint64_t tuple_counter) const;
 

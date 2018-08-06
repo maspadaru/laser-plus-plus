@@ -19,9 +19,6 @@ Grounding::Grounding(uint64_t consideration_time,
         consideration_count(consideration_count),
         horizon_count(horizon_count) {}
 
-Grounding::Grounding(bool is_background_fact_m) {
-    this->is_background_fact_m = is_background_fact_m;
-}
 
 // getters & setters
 
@@ -45,7 +42,21 @@ void Grounding::set_horizon_time(uint64_t horizon_time) {
     Grounding::horizon_time = horizon_time;
 }
 
+bool Grounding::is_background_fact() {
+    return is_background_fact_m;
+}
 
+bool Grounding::is_fact() {
+    return is_fact_m;
+}
+
+void Grounding::set_as_fact() {
+    this->is_fact_m = true;
+}
+
+void Grounding::set_as_background_fact() {
+    this->is_background_fact_m = true;
+}
 // methods
 
 std::string Grounding::get_substitution(
@@ -68,6 +79,12 @@ void Grounding::add_substitution(size_t variable_index,
         substitution_vector.resize(variable_index+5);
     }
     substitution_vector.at(variable_index) = std::move(constant);
+}
+
+void Grounding::add_substitution_vector(std::vector<std::string> vector) {
+    substitution_vector.clear();
+    substitution_vector.insert( substitution_vector.end(),
+            vector.begin(), vector.end() );
 }
 
 size_t Grounding::get_size() const {

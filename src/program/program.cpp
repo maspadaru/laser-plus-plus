@@ -16,13 +16,15 @@ Program::~Program() {
     rule_vector.clear();
 }
 
-void Program::evaluate_rule_vector(
-        std::unordered_map<std::string, std::vector<formula::Formula *>>
+bool Program::evaluate_rule_vector(
+        std::unordered_map<std::string, std::vector<formula::Grounding>>
         facts) {
+    bool result = false;
     for (auto rule : rule_vector) {
-        rule.evaluate(current_time, current_tuple_counter,
+        result |= rule.evaluate(current_time, current_tuple_counter,
                 facts);
     }
+    return result;
 }
 
 // getters & setters
@@ -62,12 +64,11 @@ void Program::expire_outdated_groundings() {
 }
 
 bool Program::eval() {
-    bool has_derived_new_conclusions = false;
-    std::unordered_map<std::string, std::vector<formula::Formula *>>
+    std::unordered_map<std::string, std::vector<formula::Grounding>>
             stream_facts
             = ioHandler.get_stream_data(current_time);
     expire_outdated_groundings();
-    evaluate_rule_vector(stream_facts);
+    bool has_derived_new_conclusions = evaluate_rule_vector(stream_facts);
     return has_derived_new_conclusions;
 }
 
@@ -77,7 +78,7 @@ void Program::write_output(
     ioHandler.put_conclusions(current_time, std::move(new_conclusions));
 }
 
-bool Program::evaluate() {
+void Program::evaluate() {
     bool has_derived_new_conclusions = eval();
     if (has_derived_new_conclusions) {
         auto new_conclusions = get_new_conclusions();
@@ -85,23 +86,16 @@ bool Program::evaluate() {
     }
     std::cout << current_time << std::endl;
     current_time++;
-    return has_derived_new_conclusions;
 }
 
 
 
 void Program::accept_new_facts(
-        std::unordered_map<std::string, std::vector<formula::Formula *>>
+        std::unordered_map<std::string, std::vector<formula::Grounding>>
         stream_facts) {
     for (auto &rule : rule_vector) {
-        // TODO rule body accept
+        rule.evaluate(current_time, current_tuple_counter, stream_facts);
     }
-}
-
-std::vector<formula::Formula *> Program::get_new_conclusions() {
-    // TODO Get new conclusions from each rule as facts of type Formula*
-    // TODO combine them in a map
-    return std::vector<formula::Formula *>();
 }
 
 Program::Program(std::string rule_string, laser::io::IOManager *ioManager) :

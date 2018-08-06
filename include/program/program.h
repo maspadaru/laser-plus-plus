@@ -38,22 +38,17 @@ private:
 // methods
 
     void evaluate_rule_vector(
-            std::unordered_map<std::string, std::vector<formula::Formula *>>
+            std::unordered_map<std::string, std::vector<formula::Grounding>>
             facts);
 
     bool eval();
-
+    
     void expire_outdated_groundings();
 
     std::vector<formula::Formula *> get_new_conclusions();
 
-    void write_output(
-            std::vector<formula::Formula *>
-            new_conclusions);
-
-
     void accept_new_facts(
-            std::unordered_map<std::string, std::vector<formula::Formula *>>
+            std::unordered_map<std::string, std::vector<formula::Grounding>>
             stream_facts);
 
 

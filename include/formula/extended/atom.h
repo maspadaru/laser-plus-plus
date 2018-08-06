@@ -23,6 +23,28 @@ private:
     FormulaType type = FormulaType::ATOM;
     std::string predicate = "Atom";
     GroundingTable grounding_table;
+    std::vector<std::string> variable_names;
+
+
+    /**
+     *
+     */
+    std::vector<size_t> first_position_vector;
+
+    /** 
+     * Position -> position where I can find the first occurance of this bound 
+     * variable
+     */ 
+    std::unordered_map<size_t, size_t> binding_map;
+    
+    void set_variable_names(std::vector<std::string> const& variable_names);
+
+    void accept(Grounding const& grounding);
+
+    bool is_valid_fact(Grounding const& grounding) const;
+
+    Grounding remove_duplicate_variables(Grounding const& grounding); 
+
 public:
 // constructors & destructors
 
@@ -31,7 +53,7 @@ public:
     explicit Atom(std::string predicate);
 
     explicit Atom(std::string predicate,
-                  std::vector<std::string> variable_names);
+                  std::vector<std::string> const& variable_names);
 
     ~Atom() override = default;
 
@@ -56,7 +78,7 @@ public:
     bool evaluate(
             uint64_t current_time,
             uint64_t current_tuple_counter,
-            std::unordered_map<std::string, std::vector<formula::Formula *>>
+            std::unordered_map<std::string, std::vector<formula::Grounding>>
             facts) override;
 
     size_t get_number_of_variables() const override;
@@ -72,7 +94,7 @@ public:
 
     void add_grounding(Grounding grounding) override;
 
-    std::vector<Grounding> get_groundings() override;
+    std::vector<Grounding> get_groundings() const override;
 
     void debug_print() const override;
 

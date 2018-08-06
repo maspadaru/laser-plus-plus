@@ -7,7 +7,7 @@
 
 #include <unordered_map>
 
-#include "formula/formula.h"
+#include "formula/grounding.h"
 #include "formula/extended/atom.h"
 #include "io/io_manager.h"
 
@@ -24,7 +24,7 @@ public:
     explicit IOHandler(io::IOManager *ioManager);
 
 // methods
-    std::unordered_map<std::string, std::vector<formula::Formula *>>
+    std::unordered_map<std::string, std::vector<formula::Grounding>>
     get_stream_data(uint64_t time);
 
     void put_conclusions(

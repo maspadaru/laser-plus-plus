@@ -52,7 +52,7 @@ public:
     virtual bool evaluate(
             uint64_t current_time,
             uint64_t current_tuple_counter,
-            std::unordered_map<std::string, std::vector<formula::Formula *>>
+            std::unordered_map<std::string, std::vector<formula::Grounding>>
             facts) = 0;
 
     virtual size_t get_number_of_variables() const = 0;
@@ -68,7 +68,7 @@ public:
 
     virtual void add_grounding(Grounding grounding) = 0;
 
-    virtual std::vector<Grounding> get_groundings() = 0;
+    virtual std::vector<Grounding> get_groundings() const = 0;
 
     virtual void debug_print() const = 0;
 };
