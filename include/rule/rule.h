@@ -16,8 +16,10 @@ class Rule {
 private:
     formula::Formula &head;
     formula::Formula &body;
+    std::unordered_map<size_t, size_t> variable_map;
 
 
+    void compute_variable_map();
 public:
 
 // constructors & destructors
@@ -35,6 +37,8 @@ public:
     Rule &operator=(Rule &&other) noexcept; // move assignment
 
 // getters & setters
+
+formula::Formula const& get_head();
 
 // methods
 
@@ -55,6 +59,11 @@ public:
     void expire_outdated_groundings(
             uint64_t current_time,
             uint64_t current_tuple_counter);
+    
+    bool derive_conclusions(
+        uint64_t current_time, uint64_t current_tuple_counter); 
+
+    formula::Grounding convert_to_head_grounding(formula::Grounding grounding);
 
     void debug_print() const;
 

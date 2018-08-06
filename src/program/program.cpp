@@ -21,8 +21,8 @@ bool Program::evaluate_rule_vector(
         facts) {
     bool result = false;
     for (auto rule : rule_vector) {
-        result |= rule.evaluate(current_time, current_tuple_counter,
-                facts);
+        rule.evaluate(current_time, current_tuple_counter, facts);
+        result |= rule.derive_conclusions(current_time, current_tuple_counter); 
     }
     return result;
 }
@@ -81,8 +81,7 @@ void Program::write_output(
 void Program::evaluate() {
     bool has_derived_new_conclusions = eval();
     if (has_derived_new_conclusions) {
-        auto new_conclusions = get_new_conclusions();
-        write_output(new_conclusions);
+        write_output();
     }
     std::cout << current_time << std::endl;
     current_time++;
