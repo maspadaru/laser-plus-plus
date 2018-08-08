@@ -2,12 +2,12 @@
 // Created by mike on 6/17/18.
 //
 
-
 #ifndef LASER_FORMULA_GROUNDING_H
 #define LASER_FORMULA_GROUNDING_H
 
 #include <climits>
 #include <string>
+#include <sstream>
 #include <vector>
 
 namespace laser {
@@ -22,7 +22,7 @@ namespace formula {
  */
 class Grounding {
 
-private:
+  private:
     uint64_t consideration_time = 0;
     uint64_t horizon_time = ULLONG_MAX;
     uint64_t consideration_count = 0;
@@ -31,15 +31,16 @@ private:
     bool is_fact_m = false;
     // TODO try setting an initial size to avoid allocations
     std::vector<std::string> substitution_vector;
-public:
-// constructors & destructors
+
+  public:
+    // constructors & destructors
 
     Grounding(uint64_t consideration_time, uint64_t horizon_time,
               uint64_t consideration_count, uint64_t horizon_count);
 
     Grounding() = default;
 
-// getters & setters
+    // getters & setters
 
     uint64_t get_consideration_time() const;
 
@@ -59,7 +60,7 @@ public:
 
     void set_as_background_fact();
 
-// methods
+    // methods
 
     std::string get_substitution(size_t variable_index) const;
 
@@ -70,11 +71,11 @@ public:
     bool has_expired(uint64_t time, uint64_t tuple_counter) const;
 
     size_t get_size() const;
-};
 
+    std::string debug_string() const;
+};
 
 } // namespace formula
 } // namespace laser
-
 
 #endif // LASER_FORMULA_GROUNDING_H

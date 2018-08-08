@@ -10,6 +10,8 @@
 #include <stack>
 
 #include "io/rule_reader.h"
+#include "formula/extended/atom.h"
+#include "excetion/format_exception.h"
 
 // Helper functions:
 
@@ -20,6 +22,9 @@ static inline void ltrim(std::string *s);
 static inline void trim(std::string *s);
 
 static inline void syntax_error(std::string error_message);
+
+namespace laser {
+namespace rule {
 
 enum class TokenType {
     OPERATOR,
@@ -33,11 +38,6 @@ struct Token {
     TokenType type;
     std::string value;
 };
-
-
-namespace laser {
-namespace rule {
-
 
 /**
  *

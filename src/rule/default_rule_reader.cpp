@@ -2,8 +2,6 @@
 // Created by mike on 7/17/18.
 //
 
-#include <formula/extended/atom.h>
-#include "excetion/format_exception.h"
 #include "rule/default_rule_reader.h"
 
 

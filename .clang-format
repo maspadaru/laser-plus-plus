@@ -1,0 +1,5 @@
+# We'll use defaults from the LLVM style
+# Too see all options run:  clang-format -style=llvm -dump-config | less
+BasedOnStyle: LLVM
+# Use 4 columns indentation
+IndentWidth: 4

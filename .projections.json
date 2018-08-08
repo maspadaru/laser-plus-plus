@@ -1,0 +1,67 @@
+{
+    "include/exception/*.h": {
+        "type": "laser-exception-header",
+        "alternate": "src/exception/{}.cpp"
+    },
+    "include/formula/*.h": {
+        "type": "laser-formula-header",
+        "alternate": "src/formula/{}.cpp"
+    },
+    "include/formula/extended/*.h": {
+        "type": "laser-formula-extended-header",
+        "alternate": "src/formula/extended/{}.cpp"
+    },
+    "include/io/*.h": {
+        "type": "laser-io-header",
+        "alternate": "src/io/{}.cpp"
+    },
+    "include/program/*.h": {
+        "type": "laser-program-header",
+        "alternate": "src/program/{}.cpp"
+    },
+    "include/rule/*.h": {
+        "type": "laser-rule-header",
+        "alternate": "src/rule/{}.cpp"
+    },
+
+
+
+    "src/exception/*.cpp": {
+        "type": "laser-exception-source",
+        "alternate": "include/exception/{}.h"
+    },
+    "src/formula/*.cpp": {
+        "type": "laser-formula-source",
+        "alternate": "include/formula/{}.h"
+    },
+    "src/formula/extended/*.cpp": {
+        "type": "laser-formula-extended-source",
+        "alternate": "include/formula/extended/{}.h"
+    },
+    "src/io/*.cpp": {
+        "type": "laser-io-source",
+        "alternate": "include/io/{}.h"
+    },
+    "src/program/*.cpp": {
+        "type": "laser-program-source",
+        "alternate": "include/program/{}.h"
+    },
+    "src/rule/*.cpp": {
+        "type": "laser-rule-source",
+        "alternate": "include/rule/{}.h"
+    },
+
+
+
+
+
+
+    "testapp/include/*.h": {
+        "type": "testapp-header",
+        "alternate": "testapp/src/{}.cpp"
+    },
+    "testapp/src/*.cpp": {
+        "type": "testapp-source",
+        "alternate": "testapp/include/{}.h"
+    },
+}

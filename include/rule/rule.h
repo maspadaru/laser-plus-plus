@@ -11,36 +11,33 @@
 namespace laser {
 namespace rule {
 
-
 class Rule {
-private:
+  private:
     formula::Formula &head;
     formula::Formula &body;
     std::unordered_map<size_t, size_t> variable_map;
 
-
     void compute_variable_map();
-public:
 
-// constructors & destructors
+  public:
+    // constructors & destructors
 
-    explicit Rule(
-            formula::Formula *head_formula,
-            formula::Formula *body_formula);
+    explicit Rule(formula::Formula *head_formula,
+                  formula::Formula *body_formula);
 
-    Rule(Rule const &other); // copy constructor
+    Rule(Rule const &other);     // copy constructor
     Rule(Rule &&other) noexcept; // move constructor
 
     ~Rule();
 
-    Rule &operator=(Rule const &other); // copy assignment
+    Rule &operator=(Rule const &other);     // copy assignment
     Rule &operator=(Rule &&other) noexcept; // move assignment
 
-// getters & setters
+    // getters & setters
 
-formula::Formula const& get_head();
+    formula::Formula &get_head() const;
 
-// methods
+    // methods
 
     /**
      * Derives new conclusions based on the head of the rule and all groundings
@@ -50,29 +47,25 @@ formula::Formula const& get_head();
      * time point and tuple counter
      */
     bool evaluate(
-            uint64_t current_time,
-            uint64_t current_tuple_counter,
-            std::unordered_map<std::string, std::vector<formula::Grounding>>
-            facts
-    );
+        uint64_t current_time, uint64_t current_tuple_counter,
+        std::unordered_map<std::string, std::vector<formula::Grounding>> facts);
 
-    void expire_outdated_groundings(
-            uint64_t current_time,
-            uint64_t current_tuple_counter);
-    
-    bool derive_conclusions(
-        uint64_t current_time, uint64_t current_tuple_counter); 
+    void expire_outdated_groundings(uint64_t current_time,
+                                    uint64_t current_tuple_counter);
 
-    formula::Grounding convert_to_head_grounding(formula::Grounding grounding);
+    bool derive_conclusions(uint64_t current_time,
+                            uint64_t current_tuple_counter);
+
+    formula::Grounding
+    convert_to_head_grounding(formula::Grounding const &grounding);
 
     void debug_print() const;
 
+    template <typename T>
+    void debug_print(std::string const &message, T const &value) const;
 };
-
 
 } // namespace rule
 } // namespace laser
 
-
-
-#endif //LASER_RULE_RULE_H
+#endif // LASER_RULE_RULE_H

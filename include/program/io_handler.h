@@ -7,8 +7,8 @@
 
 #include <unordered_map>
 
-#include "formula/grounding.h"
 #include "formula/extended/atom.h"
+#include "formula/grounding.h"
 #include "io/io_manager.h"
 
 namespace laser {
@@ -16,23 +16,21 @@ namespace program {
 
 class IOHandler {
 
-private:
+  private:
+    io::IOManager *ioManager;
 
-io::IOManager *ioManager;
-
-public:
+  public:
     explicit IOHandler(io::IOManager *ioManager);
 
-// methods
+    // methods
     std::unordered_map<std::string, std::vector<formula::Grounding>>
     get_stream_data(uint64_t time);
 
-    void put_conclusions(
-            uint64_t time,std::vector<formula::Formula *> conclusions);
+    void put_conclusions(uint64_t time,
+                         std::vector<formula::Formula *> const &conclusions);
 };
 
 } // namespace program
 } // namespace laser
-
 
 #endif // LASER_PROGRAM_IO_HANDLER_H

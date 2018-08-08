@@ -4,9 +4,10 @@
 #ifndef LASER_FORMULA_GROUNDING_TABLE_H
 #define LASER_FORMULA_GROUNDING_TABLE_H
 
+#include <list>
 #include <string>
 #include <unordered_map>
-#include <list>
+#include <iostream>
 
 #include "formula/grounding.h"
 
@@ -14,7 +15,7 @@ namespace laser {
 namespace formula {
 
 class GroundingTable {
-private:
+  private:
     // TODO should grounding_map value be of type std::set?
     // TODO     std::set -> PRO: unique items; CON: insert complexity O(log n)
     // grounding_map: key: consideration_time
@@ -25,9 +26,11 @@ private:
     std::vector<std::string> variable_names;
     std::unordered_map<std::string, int> variable_index;
     size_t size = 0;
-public:
 
-// getters & setters
+    template <typename T>
+    void debug_print(std::string const &message, T const &value) const;
+  public:
+    // getters & setters
 
     size_t get_size() const;
 
@@ -37,21 +40,19 @@ public:
 
     void set_variable_names(std::vector<std::string> variable_names);
 
+    // methods
 
-// methods
-    
-    void add_variable_name(std::string const& variable_name);
+    void add_variable_name(std::string const &variable_name);
 
     size_t get_number_of_variables() const;
 
-    int get_variable_index(std::string variable_name) const;
+    int get_variable_index(std::string const& variable_name) const;
 
-    std::list<Grounding> get_groundings(
-            uint64_t consideration_time) const;
+    std::list<Grounding> get_groundings(uint64_t consideration_time) const;
 
     std::vector<Grounding> get_all_groundings() const;
 
-    void add_grounding(Grounding grounding);
+    void add_grounding(Grounding const &grounding);
 
     /**
      * Removes all annotated grounding that have expired due to horizon time
@@ -62,9 +63,7 @@ public:
 
 };
 
-
 } // namespace formula
 } // namespace laser
-
 
 #endif // LASER_FORMULA_GROUNDING_TABLE_H

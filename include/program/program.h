@@ -4,23 +4,26 @@
 #ifndef LASER_PROGRAM_PROGRAM_H
 #define LASER_PROGRAM_PROGRAM_H
 
-#include <vector>
 #include <string>
 #include <unordered_map>
+#include <vector>
+#include <utility>
+#include <any>
+#include <iostream>
 
-#include "io/io_manager.h"
-#include "io/rule_reader.h"
-#include "rule/rule.h"
 #include "excetion/request_exception.h"
 #include "formula/formula.h"
+#include "io/io_manager.h"
+#include "io/rule_reader.h"
 #include "program/io_handler.h"
+#include "rule/rule.h"
+#include "rule/default_rule_reader.h"
 
 namespace laser {
 namespace program {
 
 class Program {
-private:
-
+  private:
     laser::io::IOManager *ioManager;
     IOHandler ioHandler;
 
@@ -35,33 +38,37 @@ private:
 
     std::vector<rule::Rule> rule_vector;
 
-// methods
+    // methods
 
-    void evaluate_rule_vector(
-            std::unordered_map<std::string, std::vector<formula::Grounding>>
-            facts);
+    bool evaluate_rule_vector(
+        std::unordered_map<std::string, std::vector<formula::Grounding>> const
+            &facts);
 
     bool eval();
-    
+
     void expire_outdated_groundings();
 
     std::vector<formula::Formula *> get_new_conclusions();
 
     void accept_new_facts(
-            std::unordered_map<std::string, std::vector<formula::Grounding>>
-            stream_facts);
+        std::unordered_map<std::string, std::vector<formula::Grounding>> const
+            &stream_facts);
 
+    void write_output();
 
-public:
+    template<typename T>
+    void debug_print(std::string const& message, T const& value) const;
 
-// constructors & destructors
+  public:
+    // constructors & destructors
 
     Program(std::string rule_string, laser::io::IOManager *ioManager);
-    Program(laser::rule::RuleReader *rule_reader, laser::io::IOManager *ioManager);
+    Program(laser::rule::RuleReader *rule_reader,
+            laser::io::IOManager *ioManager);
 
     virtual ~Program();
 
-// getters & setters
+    // getters & setters
 
     uint64_t get_current_time() const;
 
@@ -69,24 +76,21 @@ public:
 
     int get_number_of_new_conclusions() const;
 
-// methods
+    // methods
 
     /**
      *
      * @return True if new conclusions were derived from the input facts in
      * the current program time point
      */
-    bool evaluate();
+    void evaluate();
 
     bool is_done();
 
     void set_start_time(uint64_t start_time);
-
 };
 
 } // namespace program
 } // namespace laser
-
-
 
 #endif // LASER_PROGRAM_PROGRAM_H

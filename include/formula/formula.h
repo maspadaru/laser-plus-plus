@@ -17,9 +17,9 @@ namespace formula {
  * Formula Interface
  */
 class Formula {
-private:
-public:
-// constructors / destructors
+  private:
+  public:
+    // constructors / destructors
 
     virtual ~Formula() = default;
 
@@ -34,14 +34,13 @@ public:
      */
     virtual Formula &move() = 0;
 
-
-// getters / setters
+    // getters / setters
 
     virtual FormulaType get_type() const = 0;
 
     virtual std::vector<std::string> get_predicate_vector() const = 0;
 
-// methods
+    // methods
 
     virtual std::vector<std::string> get_variable_names() const = 0;
 
@@ -49,30 +48,28 @@ public:
 
     virtual bool is_satisfied() const = 0;
 
-    virtual bool evaluate(
-            uint64_t current_time,
-            uint64_t current_tuple_counter,
-            std::unordered_map<std::string, std::vector<formula::Grounding>>
-            facts) = 0;
+    virtual bool
+    evaluate(uint64_t current_time, uint64_t current_tuple_counter,
+             std::unordered_map<std::string, std::vector<formula::Grounding>>
+                 facts) = 0;
 
     virtual size_t get_number_of_variables() const = 0;
 
-    virtual void expire_outdated_groundings(
-            uint64_t current_time,
-            uint64_t current_tuple_counter) = 0;
+    virtual void expire_outdated_groundings(uint64_t current_time,
+                                            uint64_t current_tuple_counter) = 0;
 
-    virtual void add_grounding(
-            uint64_t consideration_time, uint64_t horizon_time,
-            uint64_t consideration_count, uint64_t horizon_count,
-            std::vector<std::string> arguments) = 0;
+    virtual void add_grounding(uint64_t consideration_time,
+                               uint64_t horizon_time,
+                               uint64_t consideration_count,
+                               uint64_t horizon_count,
+                               std::vector<std::string> arguments) = 0;
 
     virtual void add_grounding(Grounding grounding) = 0;
 
     virtual std::vector<Grounding> get_groundings() const = 0;
 
-    virtual void debug_print() const = 0;
+    virtual std::string debug_string() const = 0;
 };
-
 
 } // namespace formula
 } // namespace laser

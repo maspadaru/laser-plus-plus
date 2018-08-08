@@ -7,15 +7,14 @@
 namespace laser {
 namespace program {
 
-
-laser::program::IOHandler::IOHandler(io::IOManager *ioManager) : ioManager(
-        ioManager) {}
+laser::program::IOHandler::IOHandler(io::IOManager *ioManager)
+    : ioManager(ioManager) {}
 
 std::unordered_map<std::string, std::vector<formula::Grounding>>
 laser::program::IOHandler::get_stream_data(uint64_t time) {
     std::unordered_map<std::string, std::vector<formula::Grounding>> result;
     auto data_vector = ioManager->read_stream_data(time);
-    for (auto const& data : data_vector) {
+    for (auto const &data : data_vector) {
         std::string predicate = data.get_predicate();
         result.try_emplace(predicate);
         std::vector<formula::Grounding> &map_vector = result.at(predicate);
@@ -29,15 +28,23 @@ laser::program::IOHandler::get_stream_data(uint64_t time) {
 }
 
 void IOHandler::put_conclusions(
-        uint64_t time,std::vector<formula::Formula *> conclusions) {
+    uint64_t time, std::vector<formula::Formula *> const &conclusions) {
     std::vector<io::DataAtom> data_vector;
     for (auto formula : conclusions) {
         std::string predicate = formula->get_predicate_vector().at(0);
         size_t number_variables = formula->get_number_of_variables();
-        for (auto const& grounding : formula->get_groundings()) {
+        std::cerr << "IOHandler -> nr groundings: " 
+            << formula->get_groundings().size()
+            << std::endl;
+        std::cerr << formula->debug_string() << std::endl;
+        for (auto const &grounding : formula->get_groundings()) {
+            std::cerr << "IOHandler -> grounding: " << grounding.debug_string()
+                << std::endl;
             std::vector<std::string> argument_vector;
-            for (size_t variable_index = 0; variable_index < number_variables; variable_index++) {
-                std::string argument = grounding.get_substitution(variable_index);
+            for (size_t variable_index = 0; variable_index < number_variables;
+                 variable_index++) {
+                std::string argument =
+                    grounding.get_substitution(variable_index);
                 argument_vector.push_back(argument);
             }
             auto data_atom = io::DataAtom(predicate, argument_vector);
@@ -46,7 +53,6 @@ void IOHandler::put_conclusions(
     }
     ioManager->write_output_data(time, data_vector);
 }
-
 
 } // namespace program
 } // namespace laser
