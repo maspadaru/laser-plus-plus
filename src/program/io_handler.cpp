@@ -34,13 +34,7 @@ void IOHandler::put_conclusions(
         std::string predicate = formula->get_predicate_vector().at(0);
         auto variable_names = formula->get_full_variable_names();
         size_t number_variables = variable_names.size();
-        std::cerr << "IOHandler -> nr groundings: " 
-            << formula->get_groundings().size()
-            << std::endl;
-        std::cerr << formula->debug_string() << std::endl;
         for (auto const &grounding : formula->get_groundings()) {
-            std::cerr << "IOHandler -> grounding: " << grounding.debug_string()
-                << std::endl;
             std::vector<std::string> argument_vector;
             for (auto variable_name : variable_names) {
                size_t variable_index = formula->get_variable_index(variable_name);

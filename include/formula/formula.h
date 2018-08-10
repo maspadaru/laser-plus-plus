@@ -45,14 +45,14 @@ class Formula {
     /**
      * Return a list of unique variable names
      * E.g.: p(X, X, Y) -> ["X", "Y"]
-     */ 
+     */
     virtual std::vector<std::string> get_variable_names() const = 0;
 
     /**
-     * Return a list of all variable names, including duplicates. 
+     * Return a list of all variable names, including duplicates.
      * Useful for formating the output of a program.
      * E.g.: p(X, X, Y) -> ["X", "X", "Y"]
-     */ 
+     */
     virtual std::vector<std::string> get_full_variable_names() const = 0;
 
     virtual int get_variable_index(std::string variable_name) const = 0;
@@ -68,14 +68,6 @@ class Formula {
 
     virtual void expire_outdated_groundings(uint64_t current_time,
                                             uint64_t current_tuple_counter) = 0;
-
-    virtual void add_grounding(uint64_t consideration_time,
-                               uint64_t horizon_time,
-                               uint64_t consideration_count,
-                               uint64_t horizon_count,
-                               std::vector<std::string> arguments) = 0;
-
-    virtual void add_grounding(Grounding grounding) = 0;
 
     virtual std::vector<Grounding> get_groundings() const = 0;
 

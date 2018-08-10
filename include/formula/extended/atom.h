@@ -111,12 +111,6 @@ class Atom : public Formula {
     void expire_outdated_groundings(uint64_t current_time,
                                     uint64_t current_tuple_counter) override;
 
-    void add_grounding(uint64_t consideration_time, uint64_t horizon_time,
-                       uint64_t consideration_count, uint64_t horizon_count,
-                       std::vector<std::string> arguments) override;
-
-    void add_grounding(Grounding grounding) override;
-
     std::vector<Grounding> get_groundings() const override;
 
     std::string debug_string() const override;

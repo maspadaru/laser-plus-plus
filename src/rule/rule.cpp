@@ -48,7 +48,6 @@ Rule &Rule::operator=(Rule &&other) noexcept {
 // getters & setters
 
 formula::Formula &Rule::get_head() const {
-    debug_print("get_head() ", head.debug_string());
     return this->head;
 }
 
@@ -92,7 +91,6 @@ Rule::convert_to_head_grounding(formula::Grounding const &grounding) {
         grounding.get_consideration_time(), grounding.get_horizon_time(),
         grounding.get_consideration_count(), grounding.get_horizon_count());
     std::vector<std::string> result_vector;
-    debug_print("Head", head.debug_string());
     for (size_t head_index = 0; head_index < head.get_number_of_variables();
          head_index++) {
         result_vector.push_back(
@@ -104,26 +102,23 @@ Rule::convert_to_head_grounding(formula::Grounding const &grounding) {
 
 bool Rule::derive_conclusions(uint64_t current_time,
                               uint64_t current_tuple_counter) {
-    std::vector<formula::Grounding> predicate_facts;
-    std::vector<formula::Grounding> body_groundings = body.get_groundings();
-    debug_print("size of body groundings", body_groundings.size());
-    debug_print("\n", "Printing all body groundings");
-    for (auto const &grounding : body_groundings) {
-        debug_print("Body Grounding", grounding.debug_string());
-        auto head_grounding = convert_to_head_grounding(grounding);
-        debug_print("Head Grounding", head_grounding.debug_string());
-        predicate_facts.push_back(head_grounding);
+    if (body.is_satisfied()) {
+        std::vector<formula::Grounding> predicate_facts;
+        std::vector<formula::Grounding> body_groundings = body.get_groundings();
+        for (auto const &grounding : body_groundings) {
+            auto head_grounding = convert_to_head_grounding(grounding);
+            predicate_facts.push_back(head_grounding);
+        }
+        std::unordered_map<std::string, std::vector<formula::Grounding>> body_facts;
+        // a bit overcomplicated, but this will allow more flexibility in the head
+        for (auto predicate : head.get_predicate_vector()) {
+            body_facts.insert({predicate, predicate_facts});
+        }
+        auto result =
+            head.evaluate(current_time, current_tuple_counter, body_facts);
+        return result;
     }
-    debug_print("size of predicate facts", predicate_facts.size());
-    std::unordered_map<std::string, std::vector<formula::Grounding>> body_facts;
-    // a bit overcomplicated, but this will allow more flexibility in the head
-    for (auto predicate : head.get_predicate_vector()) {
-        body_facts.insert({predicate, predicate_facts});
-    }
-    auto result =
-        head.evaluate(current_time, current_tuple_counter, body_facts);
-    debug_print("derive_conclusions()", head.debug_string());
-    return result;
+    return false;
 }
 
 template <typename T>

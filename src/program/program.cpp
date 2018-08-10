@@ -49,11 +49,8 @@ bool Program::is_done() {
         stream_start_time = ioManager->read_stream_start_time();
         stream_end_time = ioManager->read_stream_end_time();
         has_timeline = true;
-        debug_print("start time", stream_start_time);
-        debug_print("end time", stream_end_time);
     }
     bool keep_going = has_timeline && current_time <= stream_end_time;
-    debug_print("keep going:", keep_going);
     return !keep_going;
 }
 
@@ -66,7 +63,6 @@ void Program::expire_outdated_groundings() {
 bool Program::eval() {
     std::unordered_map<std::string, std::vector<formula::Grounding>>
         stream_facts = ioHandler.get_stream_data(current_time);
-    debug_print("New facts", stream_facts.size());
     expire_outdated_groundings();
     bool has_derived_new_conclusions = evaluate_rule_vector(stream_facts);
     return has_derived_new_conclusions;
@@ -76,7 +72,6 @@ void Program::write_output() {
     std::vector<formula::Formula *> new_conclusions;
     for (auto const &rule : rule_vector) {
         formula::Formula *head = &rule.get_head();
-        debug_print("RuleHead as onclusion: ", head->debug_string());
         new_conclusions.push_back(head);
     }
     ioHandler.put_conclusions(current_time, new_conclusions);

@@ -36,7 +36,7 @@
  * - Refactor Program::evaluate() & Program::eval() [P46-L10]
  * - Structure project as a library.
  * - Make use of Unit Tests
- *
+ * - Move debug_print() functions to new LOG module [P52-L10]
  *
  */
 
