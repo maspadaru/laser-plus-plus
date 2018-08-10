@@ -47,9 +47,10 @@ Rule &Rule::operator=(Rule &&other) noexcept {
 
 // getters & setters
 
-formula::Formula &Rule::get_head() const { 
+formula::Formula &Rule::get_head() const {
     debug_print("get_head() ", head.debug_string());
-    return this->head; }
+    return this->head;
+}
 
 // methods
 
@@ -91,9 +92,11 @@ Rule::convert_to_head_grounding(formula::Grounding const &grounding) {
         grounding.get_consideration_time(), grounding.get_horizon_time(),
         grounding.get_consideration_count(), grounding.get_horizon_count());
     std::vector<std::string> result_vector;
+    debug_print("Head", head.debug_string());
     for (size_t head_index = 0; head_index < head.get_number_of_variables();
          head_index++) {
-        result_vector.push_back(grounding.get_substitution(head_index));
+        result_vector.push_back(
+            grounding.get_substitution(variable_map.at(head_index)));
     }
     result.add_substitution_vector(result_vector);
     return result;
@@ -117,15 +120,16 @@ bool Rule::derive_conclusions(uint64_t current_time,
     for (auto predicate : head.get_predicate_vector()) {
         body_facts.insert({predicate, predicate_facts});
     }
-    auto result = head.evaluate(current_time, current_tuple_counter, body_facts);
+    auto result =
+        head.evaluate(current_time, current_tuple_counter, body_facts);
     debug_print("derive_conclusions()", head.debug_string());
     return result;
 }
 
 template <typename T>
 void Rule::debug_print(std::string const &message, T const &value) const {
-    std::cerr << "Rule -> head predicate: " << 
-        this->head.get_predicate_vector().at(0) << " -> ";
+    std::cerr << "Rule -> head predicate: "
+              << this->head.get_predicate_vector().at(0) << " -> ";
     std::cerr << message << " : " << value << std::endl;
 }
 

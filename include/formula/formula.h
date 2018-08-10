@@ -42,7 +42,18 @@ class Formula {
 
     // methods
 
+    /**
+     * Return a list of unique variable names
+     * E.g.: p(X, X, Y) -> ["X", "Y"]
+     */ 
     virtual std::vector<std::string> get_variable_names() const = 0;
+
+    /**
+     * Return a list of all variable names, including duplicates. 
+     * Useful for formating the output of a program.
+     * E.g.: p(X, X, Y) -> ["X", "X", "Y"]
+     */ 
+    virtual std::vector<std::string> get_full_variable_names() const = 0;
 
     virtual int get_variable_index(std::string variable_name) const = 0;
 

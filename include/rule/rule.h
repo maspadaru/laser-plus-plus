@@ -15,6 +15,12 @@ class Rule {
   private:
     formula::Formula &head;
     formula::Formula &body;
+
+    /**
+     * Maps variables positions in the head's Grounding Table to positions in 
+     * the body's Grounding Table.
+     * E.g.: p(X, Y) :- q(Y, Z, X) -> { [0, 2], [1, 0] }
+     */  
     std::unordered_map<size_t, size_t> variable_map;
 
     void compute_variable_map();

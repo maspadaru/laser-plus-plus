@@ -119,7 +119,6 @@ SimpleParser::parse_token_vector(
     std::vector<std::string> token_list;
     std::string predicate;
     std::vector<laser::io::DataAtom> result;
-    size_t index = 0;
     for (auto token : input_token_vector) {
         switch (token.type) {
             case TokenType::OPEN_PARENTHESES : {
@@ -129,7 +128,7 @@ SimpleParser::parse_token_vector(
                 break;
             }
             case TokenType::OPERATOR : {
-                // ignore for now, use later for syntax check
+                // TODO: ignore for now, use later for syntax check
                 break;
             }
             case TokenType::IDENTIFIER : {
@@ -137,7 +136,8 @@ SimpleParser::parse_token_vector(
                 break;
             }
             case TokenType::CLOSED_PARENTHESES : {
-                result.push_back(laser::io::DataAtom(predicate, token_list));
+                result.emplace_back(predicate, token_list);
+                token_list.clear();
                 break;
             }
         }

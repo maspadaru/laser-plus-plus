@@ -32,7 +32,8 @@ void IOHandler::put_conclusions(
     std::vector<io::DataAtom> data_vector;
     for (auto formula : conclusions) {
         std::string predicate = formula->get_predicate_vector().at(0);
-        size_t number_variables = formula->get_number_of_variables();
+        auto variable_names = formula->get_full_variable_names();
+        size_t number_variables = variable_names.size();
         std::cerr << "IOHandler -> nr groundings: " 
             << formula->get_groundings().size()
             << std::endl;
@@ -41,11 +42,10 @@ void IOHandler::put_conclusions(
             std::cerr << "IOHandler -> grounding: " << grounding.debug_string()
                 << std::endl;
             std::vector<std::string> argument_vector;
-            for (size_t variable_index = 0; variable_index < number_variables;
-                 variable_index++) {
-                std::string argument =
-                    grounding.get_substitution(variable_index);
-                argument_vector.push_back(argument);
+            for (auto variable_name : variable_names) {
+               size_t variable_index = formula->get_variable_index(variable_name);
+               std::string argument = grounding.get_substitution(variable_index);
+               argument_vector.push_back(argument);
             }
             auto data_atom = io::DataAtom(predicate, argument_vector);
             data_vector.push_back(data_atom);

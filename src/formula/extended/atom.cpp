@@ -15,25 +15,26 @@ Atom::Atom(std::string predicate,
            std::vector<std::string> const &variable_names) {
     this->predicate = std::move(predicate);
     set_variable_names(variable_names);
+    debug_print("Constructed ATOM:", this->debug_string());
 }
 
 void Atom::set_variable_names(std::vector<std::string> const &variable_names) {
-    this->variable_names = variable_names;
+    this->full_variable_names = variable_names;
     std::vector<std::string> result;
     std::unordered_map<std::string, int> temp;
     for (size_t index = 0; index < variable_names.size(); index++) {
         std::string name = variable_names.at(index);
         temp.try_emplace(name, -1);
-        if (temp.at(name) > 0) {
+        if (temp.at(name) >= 0) {
             debug_print("Variable Name ", name);
-            debug_print("inserting in dinding map, index: ", index);
-            debug_print("inserting in dinding map, temp: ", temp.at(name));
+            debug_print("inserting in binding map, index: ", index);
+            debug_print("inserting in binding map, temp: ", temp.at(name));
             binding_map.insert({index, temp.at(name)});
         } else {
             first_position_vector.push_back(index);
+            result.push_back(name);
+            temp.at(name) = index;
         }
-        result.push_back(name);
-        temp.at(name) = index;
     }
     grounding_table.set_variable_names(result);
 }
@@ -52,7 +53,7 @@ Formula &Atom::clone() const {
 Formula &Atom::move() {
     Atom *result = new Atom(std::move(this->predicate));
     result->type = this->type;
-    result->variable_names = std::move(this->variable_names);
+    result->full_variable_names = std::move(this->full_variable_names);
     result->binding_map = std::move(this->binding_map);
     result->first_position_vector = std::move(this->first_position_vector);
     result->grounding_table = std::move(this->grounding_table);
@@ -72,6 +73,11 @@ std::vector<std::string> Atom::get_predicate_vector() const {
 std::vector<std::string> Atom::get_variable_names() const {
     return grounding_table.get_variable_names();
 }
+
+
+std::vector<std::string> Atom::get_full_variable_names() const {
+    return full_variable_names;
+} 
 
 // methods
 

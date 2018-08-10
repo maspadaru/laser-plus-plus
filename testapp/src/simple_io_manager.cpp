@@ -25,7 +25,8 @@ uint64_t SimpleIOManager::read_stream_end_time() {
 std::vector<laser::io::DataAtom> SimpleIOManager::read_stream_data(
         uint64_t time) {
     auto data_vector = simple_stream_reader.read_next_data(time);
-    return simple_parser.parse_data(data_vector);
+    auto parsed_data = simple_parser.parse_data(data_vector);
+    return parsed_data;
 }
 
 std::vector<laser::io::DataAtom> SimpleIOManager::read_background_data() {

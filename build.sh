@@ -24,6 +24,10 @@ clean_up () {
 }
 
 run_project () {
+    cmake-build-debug/$PROJECT_NAME 2> /dev/null
+}
+
+run_project_with_debug () {
     cmake-build-debug/$PROJECT_NAME
 }
 
@@ -42,6 +46,9 @@ if [ $1 = "c" ]; then
 fi
 if [ $1 = "r" ]; then
     run_project
+fi
+if [ $1 = "rd" ]; then
+    run_project_with_debug
 fi
 if [ $1 = "d" ]; then
     debug_project

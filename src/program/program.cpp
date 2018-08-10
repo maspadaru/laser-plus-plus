@@ -66,6 +66,7 @@ void Program::expire_outdated_groundings() {
 bool Program::eval() {
     std::unordered_map<std::string, std::vector<formula::Grounding>>
         stream_facts = ioHandler.get_stream_data(current_time);
+    debug_print("New facts", stream_facts.size());
     expire_outdated_groundings();
     bool has_derived_new_conclusions = evaluate_rule_vector(stream_facts);
     return has_derived_new_conclusions;
