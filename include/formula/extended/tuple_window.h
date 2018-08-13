@@ -1,5 +1,5 @@
-#ifndef LASER_FORMULA_EXTENDED_TIME_WINDOW_H
-#define LASER_FORMULA_EXTENDED_TIME_WINDOW_H
+#ifndef LASER_FORMULA_EXTENDED_TUPLE_WINDOW_H
+#define LASER_FORMULA_EXTENDED_TUPLE_WINDOW_H
 
 #include <string>
 
@@ -10,22 +10,20 @@ namespace laser {
 namespace formula {
 
 /**
- * Time Window Formula
+ * Tuple Window Formula
  */
-class TimeWindow : public Formula {
+class TupleWindow : public Formula {
   private:
     uint64_t past_size;
     uint64_t future_size;
     uint64_t step_size;
     uint64_t pivot_time;
-    Formula* child;
-
-    Grounding adjust_annotations(Grounding grounding) const;
+    Formula *child;
 
   public:
     // constructors / destructors
 
-    ~TimeWindow() override;
+    ~TupleWindow() override;
 
     Formula &create() const override;
     Formula &clone() const override;
@@ -66,4 +64,4 @@ class TimeWindow : public Formula {
 } // namespace formula
 } // namespace laser
 
-#endif // LASER_FORMULA_EXTENDED_TIME_WINDOW_H
+#endif // LASER_FORMULA_EXTENDED_TUPLE_WINDOW_H
