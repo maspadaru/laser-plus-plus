@@ -1,6 +1,7 @@
 #!/bin/bash
 
-PROJECT_NAME=LaserPP
+EXECUTABLE=testapp
+TEST_EXECUTABLE=run_test
 
 build_release () {
     mkdir -p cmake-build-release
@@ -24,15 +25,19 @@ clean_up () {
 }
 
 run_project () {
-    cmake-build-debug/$PROJECT_NAME 2> /dev/null
+    cmake-build-debug/$EXECUTABLE 2> /dev/null
 }
 
 run_project_with_debug () {
-    cmake-build-debug/$PROJECT_NAME
+    cmake-build-debug/$EXECUTABLE
+}
+
+test_project () {
+    cmake-build-debug/$TEST_EXECUTABLE
 }
 
 debug_project () {
-    gdb cmake-build-debug/$PROJECT_NAME --tui
+    gdb cmake-build-debug/$EXECUTABLE --tui
 }
 
 print_help () {
@@ -43,6 +48,7 @@ print_help () {
     echo "r: Run project "
     echo "rd: Run project and print all errors"
     echo "d: Debug project using GDB"
+    echo "t: run all tests"
     echo "h: Print help"
 
 }
@@ -61,6 +67,8 @@ elif [ $1 = "rd" ]; then
     run_project_with_debug
 elif [ $1 = "d" ]; then
     debug_project
+elif [ $1 = "t" ]; then
+    test_project
 elif [ $1 = "h" ]; then
     print_help
 else
