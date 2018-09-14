@@ -29,7 +29,7 @@ laser::program::IOHandler::get_stream_data(uint64_t time) {
 
 void IOHandler::put_conclusions(
     uint64_t time, std::vector<formula::Formula *> const &conclusions) {
-    std::vector<io::DataAtom> data_vector;
+    std::vector<util::DataAtom> data_vector;
     for (auto formula : conclusions) {
         std::string predicate = formula->get_predicate_vector().at(0);
         auto variable_names = formula->get_full_variable_names();
@@ -41,7 +41,7 @@ void IOHandler::put_conclusions(
                std::string argument = grounding.get_substitution(variable_index);
                argument_vector.push_back(argument);
             }
-            auto data_atom = io::DataAtom(predicate, argument_vector);
+            auto data_atom = util::DataAtom(predicate, argument_vector);
             data_vector.push_back(data_atom);
         }
     }

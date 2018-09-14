@@ -7,6 +7,7 @@
 #include <iostream>
 
 #include "formula/formula.h"
+#include "util/timeline.h"
 
 namespace laser {
 namespace rule {
@@ -53,14 +54,12 @@ class Rule {
      * time point and tuple counter
      */
     bool evaluate(
-        uint64_t current_time, uint64_t current_tuple_counter,
+        util::Timeline timeline,
         std::unordered_map<std::string, std::vector<formula::Grounding>> facts);
 
-    void expire_outdated_groundings(uint64_t current_time,
-                                    uint64_t current_tuple_counter);
+    void expire_outdated_groundings(util::Timeline timeline);
 
-    bool derive_conclusions(uint64_t current_time,
-                            uint64_t current_tuple_counter);
+    bool derive_conclusions(util::Timeline timeline);
 
     formula::Grounding
     convert_to_head_grounding(formula::Grounding const &grounding);

@@ -9,6 +9,7 @@
 
 #include "formula/grounding_table.h"
 #include "formula_type.h"
+#include "util/timeline.h"
 
 namespace laser {
 namespace formula {
@@ -60,14 +61,13 @@ class Formula {
     virtual bool is_satisfied() const = 0;
 
     virtual bool
-    evaluate(uint64_t current_time, uint64_t current_tuple_counter,
+    evaluate(util::Timeline timeline,
              std::unordered_map<std::string, std::vector<formula::Grounding>>
                  facts) = 0;
 
     virtual size_t get_number_of_variables() const = 0;
 
-    virtual void expire_outdated_groundings(uint64_t current_time,
-                                            uint64_t current_tuple_counter) = 0;
+    virtual void expire_outdated_groundings(util::Timeline timeline) = 0;
 
     virtual std::vector<Grounding> get_groundings() const = 0;
 

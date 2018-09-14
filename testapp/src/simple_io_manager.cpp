@@ -4,8 +4,6 @@
 // Created by mike on 7/17/18.
 //
 
-#include <simple_io_manager.h>
-
 #include "simple_io_manager.h"
 
 uint64_t SimpleIOManager::read_stream_start_time() {
@@ -22,21 +20,21 @@ uint64_t SimpleIOManager::read_stream_end_time() {
     return simple_stream_reader.get_stream_end_time();
 }
 
-std::vector<laser::io::DataAtom> SimpleIOManager::read_stream_data(
+std::vector<laser::util::DataAtom> SimpleIOManager::read_stream_data(
         uint64_t time) {
     auto data_vector = simple_stream_reader.read_next_data(time);
     auto parsed_data = simple_parser.parse_data(data_vector);
     return parsed_data;
 }
 
-std::vector<laser::io::DataAtom> SimpleIOManager::read_background_data() {
+std::vector<laser::util::DataAtom> SimpleIOManager::read_background_data() {
 //    auto data_vector = simple_background_reader.read_all_data();
 //    return simple_parser.parse_data(data_vector);
-    return std::vector<laser::io::DataAtom>();
+    return std::vector<laser::util::DataAtom>();
 }
 
 void SimpleIOManager::write_output_data(
-        uint64_t time, std::vector<laser::io::DataAtom> output_vector) {
+        uint64_t time, std::vector<laser::util::DataAtom> output_vector) {
     std::string formated_output = simple_writer.format_output(time, output_vector);
     simple_writer.write_output(formated_output);
 }

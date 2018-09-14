@@ -81,10 +81,9 @@ size_t Atom::get_number_of_variables() const {
     return grounding_table.get_number_of_variables();
 }
 
-void Atom::expire_outdated_groundings(uint64_t current_time,
-                                      uint64_t current_tuple_counter) {
-    grounding_table.expire_outdated_groundings(current_time,
-                                               current_tuple_counter);
+void Atom::expire_outdated_groundings(util::Timeline timeline) {
+    grounding_table.expire_outdated_groundings(timeline.get_time(),
+                                               timeline.get_tuple_count());
 }
 
 std::string Atom::debug_string() const {
@@ -106,7 +105,7 @@ std::vector<Grounding> Atom::get_groundings() const {
 bool Atom::is_satisfied() const { return grounding_table.get_size() > 0; }
 
 bool Atom::evaluate(
-    uint64_t current_time, uint64_t current_tuple_counter,
+    util::Timeline timeline,
     std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
     if (facts.count(predicate) > 0) {
         auto grounding_vector = facts.at(predicate);

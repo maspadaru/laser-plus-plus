@@ -11,13 +11,14 @@
 #include <any>
 #include <iostream>
 
-#include "excetion/request_exception.h"
+#include "util/request_exception.h"
 #include "formula/formula.h"
 #include "io/io_manager.h"
 #include "io/rule_reader.h"
 #include "program/io_handler.h"
 #include "rule/rule.h"
 #include "rule/default_rule_reader.h"
+#include "util/timeline.h"
 
 namespace laser {
 namespace program {
@@ -27,10 +28,11 @@ class Program {
     laser::io::IOManager *ioManager;
     IOHandler ioHandler;
 
-    uint64_t current_time = 0;
-    uint64_t current_tuple_counter = 0;
-    uint64_t stream_start_time = 0;
-    uint64_t stream_end_time = 0;
+    laser::util::Timeline timeline;
+    //uint64_t current_time = 0;
+    //uint64_t current_tuple_counter = 0;
+    //uint64_t stream_start_time = 0;
+    //uint64_t stream_end_time = 0;
     int number_of_new_conclusions = 0;
     bool has_timeline = false;
 

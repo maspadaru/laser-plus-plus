@@ -367,7 +367,7 @@ inline void DefaultRuleReader::trim(std::string *s) const {
 inline void DefaultRuleReader::syntax_error(std::string const &error_message) const {
     std::string message = "Syntax Error in Simple Parser: " + error_message;
     const char *exception_message = message.c_str();
-    throw exception::FormatException(exception_message);
+    throw util::FormatException(exception_message);
 
 }
 

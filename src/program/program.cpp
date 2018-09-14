@@ -16,18 +16,18 @@ bool Program::evaluate_rule_vector(
         &facts) {
     bool result = false;
     for (auto &rule : rule_vector) {
-        rule.evaluate(current_time, current_tuple_counter, facts);
-        result |= rule.derive_conclusions(current_time, current_tuple_counter);
+        rule.evaluate(timeline, facts);
+        result |= rule.derive_conclusions(timeline);
     }
     return result;
 }
 
 // getters & setters
 
-uint64_t Program::get_current_time() const { return current_time; }
+uint64_t Program::get_current_time() const { return timeline.get_time(); }
 
 uint64_t Program::get_current_tuple_counter() const {
-    return current_tuple_counter;
+    return timeline.get_tuple_count(); 
 }
 
 int Program::get_number_of_new_conclusions() const {
@@ -38,31 +38,32 @@ int Program::get_number_of_new_conclusions() const {
 
 template <typename T>
 void Program::debug_print(std::string const &message, T const &value) const {
-    std::cerr << "Program -> current time: " << current_time << " -> ";
+    std::cerr << "Program -> current time: " << timeline.get_time() << " -> ";
     std::cerr << message << " : " << value << std::endl;
 }
 
-void Program::set_start_time(uint64_t start_time) { current_time = start_time; }
+void Program::set_start_time(uint64_t start_time) { 
+    timeline.set_min_time(start_time); }
 
 bool Program::is_done() {
     if (!has_timeline) {
-        stream_start_time = ioManager->read_stream_start_time();
-        stream_end_time = ioManager->read_stream_end_time();
+        timeline.set_min_time(ioManager->read_stream_start_time());
+        timeline.set_max_time(ioManager->read_stream_end_time());
         has_timeline = true;
     }
-    bool keep_going = has_timeline && current_time <= stream_end_time;
+    bool keep_going = has_timeline && !timeline.is_past_max_time();
     return !keep_going;
 }
 
 void Program::expire_outdated_groundings() {
     for (auto &rule : rule_vector) {
-        rule.expire_outdated_groundings(current_time, current_tuple_counter);
+        rule.expire_outdated_groundings(timeline);
     }
 }
 
 bool Program::eval() {
     std::unordered_map<std::string, std::vector<formula::Grounding>>
-        stream_facts = ioHandler.get_stream_data(current_time);
+        stream_facts = ioHandler.get_stream_data(timeline.get_time());
     expire_outdated_groundings();
     bool has_derived_new_conclusions = evaluate_rule_vector(stream_facts);
     return has_derived_new_conclusions;
@@ -74,7 +75,7 @@ void Program::write_output() {
         formula::Formula *head = &rule.get_head();
         new_conclusions.push_back(head);
     }
-    ioHandler.put_conclusions(current_time, new_conclusions);
+    ioHandler.put_conclusions(timeline.get_time(), new_conclusions);
 }
 
 void Program::evaluate() {
@@ -82,14 +83,14 @@ void Program::evaluate() {
     if (has_derived_new_conclusions) {
         write_output();
     }
-    current_time++;
+    timeline.increment_time();
 }
 
 void Program::accept_new_facts(
     std::unordered_map<std::string, std::vector<formula::Grounding>> const
         &stream_facts) {
     for (auto &rule : rule_vector) {
-        rule.evaluate(current_time, current_tuple_counter, stream_facts);
+        rule.evaluate(timeline, stream_facts);
     }
 }
 

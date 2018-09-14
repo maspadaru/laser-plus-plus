@@ -7,7 +7,7 @@ include_directories(include/)
 file(GLOB SOURCES
         "src/formula/*.cpp"
         "src/formula/extended/*.cpp"
-        "src/io/*.cpp"
+        "src/util/*.cpp"
         "src/program/*.cpp"
         "src/rule/*.cpp"
         )

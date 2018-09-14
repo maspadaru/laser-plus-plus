@@ -11,7 +11,7 @@
 
 #include "io/rule_reader.h"
 #include "formula/extended/atom.h"
-#include "excetion/format_exception.h"
+#include "util/format_exception.h"
 
 // Helper functions:
 

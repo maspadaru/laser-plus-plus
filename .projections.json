@@ -1,7 +1,7 @@
 {
-    "include/exception/*.h": {
-        "type": "laser-exception-header",
-        "alternate": "src/exception/{}.cpp"
+    "include/util/*.h": {
+        "type": "laser-util-header",
+        "alternate": "src/util/{}.cpp"
     },
     "include/formula/*.h": {
         "type": "laser-formula-header",
@@ -26,9 +26,9 @@
 
 
 
-    "src/exception/*.cpp": {
-        "type": "laser-exception-source",
-        "alternate": "include/exception/{}.h"
+    "src/util/*.cpp": {
+        "type": "laser-util-source",
+        "alternate": "include/util/{}.h"
     },
     "src/formula/*.cpp": {
         "type": "laser-formula-source",

@@ -53,10 +53,9 @@ formula::Formula &Rule::get_head() const {
 
 // methods
 
-void Rule::expire_outdated_groundings(uint64_t current_time,
-                                      uint64_t current_tuple_counter) {
-    head.expire_outdated_groundings(current_time, current_tuple_counter);
-    body.expire_outdated_groundings(current_time, current_tuple_counter);
+void Rule::expire_outdated_groundings(util::Timeline timeline) {
+    head.expire_outdated_groundings(timeline);
+    body.expire_outdated_groundings(timeline);
 }
 
 void Rule::debug_print() const {
@@ -70,9 +69,9 @@ void Rule::debug_print() const {
 }
 
 bool Rule::evaluate(
-    uint64_t current_time, uint64_t current_tuple_counter,
+    util::Timeline timeline,
     std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
-    return body.evaluate(current_time, current_tuple_counter, std::move(facts));
+    return body.evaluate(timeline, std::move(facts));
 }
 
 void Rule::compute_variable_map() {
@@ -100,8 +99,7 @@ Rule::convert_to_head_grounding(formula::Grounding const &grounding) {
     return result;
 }
 
-bool Rule::derive_conclusions(uint64_t current_time,
-                              uint64_t current_tuple_counter) {
+bool Rule::derive_conclusions(util::Timeline timeline) {
     if (body.is_satisfied()) {
         std::vector<formula::Grounding> predicate_facts;
         std::vector<formula::Grounding> body_groundings = body.get_groundings();
@@ -115,7 +113,7 @@ bool Rule::derive_conclusions(uint64_t current_time,
             body_facts.insert({predicate, predicate_facts});
         }
         auto result =
-            head.evaluate(current_time, current_tuple_counter, body_facts);
+            head.evaluate(timeline, body_facts);
         return result;
     }
     return false;

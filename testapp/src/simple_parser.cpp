@@ -36,7 +36,7 @@ static inline void trim(std::string *s) {
 static inline void syntax_error(std::string error_message) {
     std::string message = "Syntax Error in Simple Parser: " + error_message;
     const char *exception_message = message.c_str();
-    throw laser::exception::FormatException(exception_message);
+    throw laser::util::FormatException(exception_message);
 
 }
 
@@ -113,12 +113,12 @@ std::vector<Token> SimpleParser::tokenize(std::string rule_string) const {
 // ======== Parser =========
 
 
-std::vector<laser::io::DataAtom>
+std::vector<laser::util::DataAtom>
 SimpleParser::parse_token_vector(
         std::vector<Token> input_token_vector) {
     std::vector<std::string> token_list;
     std::string predicate;
-    std::vector<laser::io::DataAtom> result;
+    std::vector<laser::util::DataAtom> result;
     for (auto token : input_token_vector) {
         switch (token.type) {
             case TokenType::OPEN_PARENTHESES : {
@@ -145,11 +145,11 @@ SimpleParser::parse_token_vector(
     return result;
 }
 
-std::vector<laser::io::DataAtom>
+std::vector<laser::util::DataAtom>
 SimpleParser::parse_data(
         std::vector<std::string>
         raw_data_vector) {
-    std::vector<laser::io::DataAtom> data_atom_vector;
+    std::vector<laser::util::DataAtom> data_atom_vector;
     for (const auto &raw_string : raw_data_vector) {
         auto token_vector = tokenize(raw_string);
         if (!token_vector.empty()) {

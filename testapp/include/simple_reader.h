@@ -11,8 +11,8 @@
 #include <vector>
 #include <utility>
 
-#include <excetion/read_exception.h>
-#include <excetion/format_exception.h>
+#include <util/read_exception.h>
+#include <util/format_exception.h>
 
 
 class SimpleReader {

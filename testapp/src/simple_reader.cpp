@@ -19,7 +19,7 @@ uint64_t SimpleReader::get_stream_end_time() const {
 
 void SimpleReader::check_source() const {
     if (!has_source) {
-        throw laser::exception::ReadException("Input source was not "
+        throw laser::util::ReadException("Input source was not "
                                               "initialized");
     }
 }
@@ -111,7 +111,7 @@ SimpleReader::read_next_data(uint64_t request_time_point) {
             } else {
                 // this should never happen, as it is already checked in
                 // InputManager and Program. But let's check anyway
-                throw laser::exception::FormatException(
+                throw laser::util::FormatException(
                         "SimpleReader: out-of-order read. Most likely do to bad "
                         "format of input source");
             }

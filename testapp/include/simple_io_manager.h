@@ -27,12 +27,12 @@ public:
 
     uint64_t read_stream_end_time() override;
 
-    std::vector<laser::io::DataAtom> read_stream_data(uint64_t time) override;
+    std::vector<laser::util::DataAtom> read_stream_data(uint64_t time) override;
 
-    std::vector<laser::io::DataAtom> read_background_data() override;
+    std::vector<laser::util::DataAtom> read_background_data() override;
 
     void write_output_data(
-            uint64_t time, std::vector<laser::io::DataAtom> output_vector) override;
+            uint64_t time, std::vector<laser::util::DataAtom> output_vector) override;
 };
 
 

@@ -11,7 +11,7 @@
 // methods
 
 std::string SimpleWriter::format_output(
-    uint64_t time, std::vector<laser::io::DataAtom> output_vector) const {
+    uint64_t time, std::vector<laser::util::DataAtom> output_vector) const {
     std::stringstream result_stream;
     const std::string TIME_SEPARATOR = " -> ";
     const std::string ARGUMENTS_START = "(";

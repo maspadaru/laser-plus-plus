@@ -14,8 +14,8 @@
 #include <utility>
 #include <string>
 
-#include <excetion/format_exception.h>
-#include <io/data_atom.h>
+#include <util/format_exception.h>
+#include <util/data_atom.h>
 
 enum class TokenType {
     OPERATOR,
@@ -44,7 +44,7 @@ static inline void syntax_error(std::string error_message);
 class SimpleParser {
 private:
 
-    std::vector<laser::io::DataAtom> argument_stack;
+    std::vector<laser::util::DataAtom> argument_stack;
 
     Token recognize(std::string token_string) const;
 
@@ -59,14 +59,14 @@ private:
             std::vector<Token> token_vector,
             TokenType type, char value_char) const;
 
-    std::vector<laser::io::DataAtom>
+    std::vector<laser::util::DataAtom>
     parse_token_vector(std::vector<Token> input_token_vector);
 
 public:
 
     ~SimpleParser() = default;
 
-    std::vector<laser::io::DataAtom>
+    std::vector<laser::util::DataAtom>
     parse_data(std::vector<std::string> raw_data_vector);
 
 };
