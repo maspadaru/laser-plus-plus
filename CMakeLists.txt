@@ -30,14 +30,14 @@ add_executable(testapp testapp/main.cpp ${TESTAPP_LASER_SOURCES})
 find_package(GTest)
 if(GTEST_FOUND)
     file(GLOB TEST_SOURCES
-        "src/formula/*.cpp"
-        "src/formula/extended/*.cpp"
-        "src/util/*.cpp"
-        "src/program/*.cpp"
-        "src/rule/*.cpp"
+        "test/formula/*.cpp"
+        "test/formula/extended/*.cpp"
+        "test/util/*.cpp"
+        "test/program/*.cpp"
+        "test/rule/*.cpp"
     )
     include_directories(${GTEST_INCLUDE_DIRS})
-    add_executable(run_test test/test.cpp ${LASER_SOURCES})
+    add_executable(run_test test/test.cpp ${LASER_SOURCES} ${TEST_SOURCES})
     target_link_libraries(run_test ${GTEST_LIBRARIES} pthread)
 endif(GTEST_FOUND)
 

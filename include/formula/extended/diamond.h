@@ -1,5 +1,5 @@
-#ifndef LASER_FORMULA_EXTENDED_TIME_WINDOW_H
-#define LASER_FORMULA_EXTENDED_TIME_WINDOW_H
+#ifndef LASER_FORMULA_EXTENDED_DIAMOND_H
+#define LASER_FORMULA_EXTENDED_DIAMOND_H
 
 #include <string>
 
@@ -12,20 +12,15 @@ namespace formula {
 /**
  * Time Window Formula
  */
-class TimeWindow : public Formula {
+class Diamond : public Formula {
   private:
-    uint64_t past_size;
-    uint64_t future_size;
-    uint64_t step_size;
-    uint64_t pivot_time;
-    Formula* child;
-
-    Grounding adjust_annotations(Grounding grounding) const;
+    Formula *child;
 
   public:
     // constructors / destructors
 
-    ~TimeWindow() override;
+    Diamond() = default;
+    ~Diamond() override;
 
     Formula &create() const override;
     Formula &clone() const override;
@@ -48,22 +43,23 @@ class TimeWindow : public Formula {
 
     bool is_satisfied() const override;
 
-    bool
-    evaluate(uint64_t current_time, uint64_t current_tuple_counter,
-             std::unordered_map<std::string, std::vector<formula::Grounding>>
-                 facts) override;
-
     size_t get_number_of_variables() const override;
-
-    void expire_outdated_groundings(uint64_t current_time,
-                                    uint64_t current_tuple_counter) override;
 
     std::vector<Grounding> get_groundings() const override;
 
     std::string debug_string() const override;
+    
+    bool
+    evaluate(util::Timeline timeline,
+             std::unordered_map<std::string, std::vector<formula::Grounding>>
+                 facts) override;
+
+    void expire_outdated_groundings(util::Timeline timeline) override;
+
+    explicit Diamond(Formula* child);
 };
 
 } // namespace formula
 } // namespace laser
 
-#endif // LASER_FORMULA_EXTENDED_TIME_WINDOW_H
+#endif // LASER_FORMULA_EXTENDED_DIAMOND_H

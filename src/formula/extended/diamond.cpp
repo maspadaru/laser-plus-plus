@@ -12,11 +12,13 @@ Formula &Diamond::create() const {
 
 Formula &Diamond::clone() const {
     auto result = new Diamond(*this);
+    // TODO
     return *result;
 }
 
 Formula &Diamond::move() {
     auto result = new Diamond(std::move(*this));
+    // TODO
     return *result;
 }
 
@@ -44,19 +46,8 @@ int Diamond::get_variable_index(std::string variable_name) const {
 
 bool Diamond::is_satisfied() const { return child->is_satisfied(); }
 
-bool Diamond::evaluate(
-    uint64_t current_time, uint64_t current_tuple_counter,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
-    return child->evaluate(current_time, current_tuple_counter, facts);
-}
-
 size_t Diamond::get_number_of_variables() const {
     return child->get_number_of_variables();
-}
-
-void Diamond::expire_outdated_groundings(uint64_t current_time,
-                                         uint64_t current_tuple_counter) {
-    child->expire_outdated_groundings(current_time, current_tuple_counter);
 }
 
 std::vector<Grounding> Diamond::get_groundings() const {
@@ -64,6 +55,30 @@ std::vector<Grounding> Diamond::get_groundings() const {
 }
 
 std::string Diamond::debug_string() const { return child->debug_string(); }
+
+bool Diamond::evaluate(
+    util::Timeline timeline,
+    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    auto predicate_vector = child->get_predicate_vector();
+    for (auto &predicate : predicate_vector) {
+        auto &fact_vector = facts[predicate];
+        for (auto &fact: fact_vector) {
+            if (fact.get_horizon_time() == timeline.get_time()) {
+                fact.set_horizon_time(timeline.get_max_time());
+            }
+        }
+    }
+    return child->evaluate(timeline, facts);
+}
+
+void Diamond::expire_outdated_groundings(util::Timeline timeline) {
+    child->expire_outdated_groundings(timeline);
+}
+
+Diamond::Diamond(Formula* child) {
+    this->child = &child->move();
+}
+
 
 } // namespace formula
 } // namespace laser

@@ -15,11 +15,13 @@ Formula &TimeWindow::create() const {
 
 Formula &TimeWindow::clone() const {
     auto result = new TimeWindow(*this);
+    // TODO
     return *result;
 }
 
 Formula &TimeWindow::move() {
    auto result = new TimeWindow(std::move(*this));
+   // TODO
    return *result;
 }
 
@@ -51,19 +53,22 @@ bool TimeWindow::is_satisfied() const {
     return child->is_satisfied();
 }
 
-bool TimeWindow::evaluate(
-    uint64_t current_time, uint64_t current_tuple_counter,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
-    return child->evaluate(current_time, current_tuple_counter, facts);
-}
-
 size_t TimeWindow::get_number_of_variables() const {
     return child->get_number_of_variables();
 }
 
-void TimeWindow::expire_outdated_groundings(uint64_t current_time,
-                                        uint64_t current_tuple_counter) {
-    child->expire_outdated_groundings(current_time, current_tuple_counter);
+bool TimeWindow::evaluate(
+    util::Timeline timeline,
+    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    uint64_t window_max_time = timeline.get_time() + past_size;
+    if (timeline.get_max_time() > window_max_time) { 
+        timeline.set_max_time(window_max_time);
+    }
+    return child->evaluate(timeline, facts);
+}
+
+void TimeWindow::expire_outdated_groundings(util::Timeline timeline) {
+    child->expire_outdated_groundings(timeline);
 }
 
 std::vector<Grounding> TimeWindow::get_groundings() const {
@@ -73,6 +78,20 @@ std::vector<Grounding> TimeWindow::get_groundings() const {
 std::string TimeWindow::debug_string() const {
     return child->debug_string();
 }
+
+TimeWindow::TimeWindow(uint64_t size, Formula* child) {
+    this->past_size = size;  
+    this->child = &child->move();
+}
+
+TimeWindow::TimeWindow(uint64_t past_size, uint64_t future_size, 
+        uint64_t step_size, Formula* child) {
+    this->past_size = past_size;
+    this->future_size = future_size;
+    this->step_size = step_size;
+    this->child = &child->move();
+}
+
 
 
 } // namespace formula
