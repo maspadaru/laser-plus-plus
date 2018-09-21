@@ -15,29 +15,8 @@
 
 // Helper functions:
 
-static inline void rtrim(std::string *s);
-
-static inline void ltrim(std::string *s);
-
-static inline void trim(std::string *s);
-
-static inline void syntax_error(std::string error_message);
-
 namespace laser {
 namespace rule {
-
-enum class TokenType {
-    OPERATOR,
-    OPEN_PARENTHESES,
-    CLOSED_PARENTHESES,
-    ENTAILMENT_SIGN,
-    IDENTIFIER
-};
-
-struct Token {
-    TokenType type;
-    std::string value;
-};
 
 /**
  *
@@ -45,38 +24,25 @@ struct Token {
 class DefaultRuleReader : public laser::rule::RuleReader {
 private:
     std::string rule_string;
-    std::stack<laser::formula::Formula *> argument_stack;
+    std::stringstream input;
+    size_t line_counter = 0;
 // Helper functions:
-    inline void rtrim(std::string *s) const;
-    inline void ltrim(std::string *s) const;
-    inline void trim(std::string *s) const;
     inline void syntax_error(std::string const &error_message) const;
 
 // methods
+    void skip_spaces();
+    char read_next_char(); 
+    void read_expected_char(char c); 
+    char peek_next_char(); 
+    bool is_next_char_letter(); 
+    bool is_next_char_digit();
+    bool is_next_char(char c); 
+    bool is_next_char_letter_or_digit();
 
-    bool is_unary_operator(Token token) const;
-
-    bool is_binary_operator(Token token) const;
-
-    Token recognize(std::string token_string) const;
-
-    std::vector<Token> add_token_attempt(
-            std::vector<Token> token_vector,
-            std::ostringstream &token_stream
-    ) const;
-
-    std::vector<Token> add_new_token(
-            std::vector<Token> token_vector,
-            TokenType type, char value_char) const;
-
-    std::vector<Token> tokenize(std::string rule_string) const;
-
-    void parse_operator(Token token, bool is_head = false);
-
-    std::tuple<size_t, std::vector<std::string>> parse_predicate_arguments(
-            size_t index, std::vector<Token> *tokens) const;
-
-    rule::Rule parse_token_vector(std::vector<Token> token_vector);
+    void parse_eoln();
+    laser::formula::Formula* parse_head();
+    laser::formula::Formula* parse_body();
+    laser::rule::Rule parse_rule(); 
 
 public:
 
