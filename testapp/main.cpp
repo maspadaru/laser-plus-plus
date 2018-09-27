@@ -64,12 +64,12 @@ void test_atoms() {
                                 "13 : \n"
                                 "14 : \n";
 
-    std::string rule_string = "q(X, Y, Z) :- a(X, Y, Z)\n"
-                              "r(Y) :- c(X, Y)\n"
-                              "s(X) :- e(X, X)\n"
-                              "t(Y, X) :- d(X, Y)\n"
-                              "u(X, X) :- f(X)\n"
-                              "v(X, Y, X, Y) :- e(X, Y)\n";
+    std::string rule_string = "q(X, Y, Z) := a(X, Y, Z)\n"
+                              "r(Y) := c(X, Y)\n"
+                              "s(X) := e(X, X)\n"
+                              "t(Y, X) := d(X, Y)\n"
+                              "u(X, X) := f(X)\n"
+                              "v(X, Y, X, Y) := e(X, Y)\n";
 
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);

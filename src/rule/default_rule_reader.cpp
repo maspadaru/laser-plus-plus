@@ -26,12 +26,15 @@ void DefaultRuleReader::skip_next_char() { input.get(); }
 char DefaultRuleReader::read_next_char() { return input.get(); }
 
 void DefaultRuleReader::skip_expected_char(char c) {
-    if (peek_next_char() != c) {
-        std::string error_message = "Expected character = ";
-        error_message.push_back(c);
+    char input_char = read_next_char();
+    if (input_char != c) {
+        std::stringstream error_stream;
+        error_stream << "Expected character [" << c 
+            << "] but actual caracter was ["
+            << input_char << "].";
+        std::string error_message = error_stream.str();
         syntax_error(error_message);
     }
-    skip_next_char();
 }
 
 char DefaultRuleReader::peek_next_char() { return input.peek(); }
@@ -103,11 +106,17 @@ char DefaultRuleReader::parse_diggit() {
 }
 
 char DefaultRuleReader::parse_letter() {
-    char result = read_next_char();
-    if(std::isalpha(result) == 0) {
-        syntax_error("Expected letter");
+    char input_char = read_next_char();
+    if(std::isalpha(input_char) == 0) {
+        std::stringstream error_stream;
+        error_stream << "Expected letter " 
+            << " but actual caracter was ["
+            << input_char << "], hex=" 
+            << std::hex << (unsigned short int) input_char  << ".";
+        std::string error_message = error_stream.str();
+        syntax_error(error_message);
     }
-    return result;
+    return input_char;
 }
 
 std::string DefaultRuleReader::parse_positive_number() {
@@ -182,7 +191,7 @@ std::vector<laser::rule::Rule> DefaultRuleReader::parse_program() {
     line_counter = 0;
     while (std::getline(program_stream, line, '\n')) {
         line_counter++;
-        input.str(std::string()); // clearing input stream - not sure if needed
+        input.clear();
         input.str(line);
         auto rule = parse_rule();
         result.push_back(rule);
@@ -204,7 +213,8 @@ laser::rule::Rule DefaultRuleReader::parse_rule() {
 laser::formula::Formula *DefaultRuleReader::parse_head() {
     laser::formula::Formula *result;
     skip_spaces();
-    if (is_next_char('(')) {
+    if (is_next_char('[')) {
+        skip_next_char();
         result = parse_exact_time();
     } else {
         result = parse_predicate_atom();
@@ -236,7 +246,7 @@ laser::formula::Formula *DefaultRuleReader::parse_complex_formula() {
 }
 
 laser::formula::Formula *DefaultRuleReader::parse_binary_formula() {
-    auto left_term = parse_formula();
+    auto left_term = parse_term();
     skip_spaces();
     while (is_next_char_binary_operator()) {
         auto binary_formula = parse_binary_operator();
@@ -290,24 +300,27 @@ laser::formula::Formula *DefaultRuleReader::parse_atom() {
 }
 
 laser::formula::Formula *DefaultRuleReader::parse_predicate_atom() {
-    laser::formula::Formula *result;
+    std::vector<std::string> argument_vector;
     std::string predicate = parse_identifier();
     skip_spaces();
     if (is_next_char('(')) {
-        std::vector<std::string> argument_vector;
         skip_next_char();
         skip_spaces();
-        while (is_next_char(',')) {
-            skip_next_char();
-            skip_spaces();
-            std::string argument = parse_float();
+        if(is_next_char_letter_or_digit()) {
+            std::string argument = parse_float_argument();
             argument_vector.push_back(argument);
+            skip_spaces();
+            while (is_next_char(',')) {
+                skip_next_char();
+                skip_spaces();
+                std::string argument = parse_float_argument();
+                argument_vector.push_back(argument);
+                skip_spaces();
+            }
         }
-        result = new laser::formula::Atom(predicate, argument_vector);
-    } else {
-        result = new laser::formula::Atom(predicate);
+        skip_expected_char(')');
     }
-    return result;
+    return new laser::formula::Atom(predicate, argument_vector);
 }
 
 laser::formula::Formula *DefaultRuleReader::parse_comparison_atom() {
