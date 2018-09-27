@@ -43,6 +43,8 @@ class Formula {
 
     // methods
 
+    virtual void add_child(formula::Formula* child) = 0;
+
     /**
      * Return a list of unique variable names
      * E.g.: p(X, X, Y) -> ["X", "Y"]

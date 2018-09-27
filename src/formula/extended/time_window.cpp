@@ -93,6 +93,7 @@ TimeWindow::TimeWindow(uint64_t past_size, uint64_t future_size,
 }
 
 
+void TimeWindow::add_child(formula::Formula* child) {}
 
 } // namespace formula
 } // namespace laser

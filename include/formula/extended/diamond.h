@@ -55,6 +55,8 @@ class Diamond : public Formula {
                  facts) override;
 
     void expire_outdated_groundings(util::Timeline timeline) override;
+    
+    void add_child(formula::Formula* child) override;
 
     explicit Diamond(Formula* child);
 };

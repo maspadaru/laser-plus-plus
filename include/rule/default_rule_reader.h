@@ -11,6 +11,8 @@
 
 #include "io/rule_reader.h"
 #include "formula/extended/atom.h"
+#include "formula/extended/diamond.h"
+#include "formula/extended/time_window.h"
 #include "util/format_exception.h"
 
 // Helper functions:
@@ -32,8 +34,9 @@ private:
 
     // Parser helper methods
     void skip_spaces();
+    void skip_next_char(); 
     char read_next_char(); 
-    void read_expected_char(char c); 
+    void skip_expected_char(char c); 
     char peek_next_char(); 
     bool is_next_char_letter(); 
     bool is_next_char_digit();
@@ -50,7 +53,7 @@ private:
     std::string parse_math_sign();
     std::string parse_comparison_sign();
     char parse_nonzero();
-    char parse_zero();
+    std::string parse_zero();
     char parse_diggit();
     char parse_letter();
     std::string parse_positive_number();
@@ -75,7 +78,7 @@ private:
     laser::formula::Formula* parse_predicate_atom();
     laser::formula::Formula* parse_comparison_atom();
     laser::formula::Formula* parse_math_atom();
-    laser::formula::Formula* parse_usary_formula();
+    laser::formula::Formula* parse_unary_formula();
     laser::formula::Formula* parse_diamond();
     laser::formula::Formula* parse_box();
     laser::formula::Formula* parse_negation();

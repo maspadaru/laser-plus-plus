@@ -75,6 +75,7 @@ void Diamond::expire_outdated_groundings(util::Timeline timeline) {
     child->expire_outdated_groundings(timeline);
 }
 
+void Diamond::add_child(formula::Formula* child) {} 
 Diamond::Diamond(Formula* child) {
     this->child = &child->move();
 }

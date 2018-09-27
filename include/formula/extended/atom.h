@@ -112,6 +112,8 @@ class Atom : public Formula {
 
     std::vector<Grounding> get_groundings() const override;
 
+    void add_child(formula::Formula* child) override;
+
     std::string debug_string() const override;
 };
 

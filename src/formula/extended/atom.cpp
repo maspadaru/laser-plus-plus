@@ -155,6 +155,8 @@ Grounding Atom::remove_duplicate_variables(Grounding const &grounding) {
     return result;
 }
 
+void Atom::add_child(formula::Formula* child) {} 
+
 template <typename T>
 void Atom::debug_print(std::string const &message, T const &value) const {
     std::cerr << "ATOM -> predicate: " << this->predicate << " -> ";

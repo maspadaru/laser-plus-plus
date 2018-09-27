@@ -61,6 +61,8 @@ class TimeWindow : public Formula {
     std::vector<Grounding> get_groundings() const override;
 
     std::string debug_string() const override;
+    
+    void add_child(formula::Formula* child) override;
 
     // Own methodds, not inherited from Formula interface:
 

@@ -22,24 +22,26 @@ void DefaultRuleReader::skip_spaces() {
     input >> std::ws; // eats-up any leadin whitespaces.
 }
 
+void DefaultRuleReader::skip_next_char() { input.get(); }
 char DefaultRuleReader::read_next_char() { return input.get(); }
 
-void DefaultRuleReader::read_expected_char(char c) {
-    if (read_next_char() != c) {
+void DefaultRuleReader::skip_expected_char(char c) {
+    if (peek_next_char() != c) {
         std::string error_message = "Expected character = ";
         error_message.push_back(c);
         syntax_error(error_message);
     }
+    skip_next_char();
 }
 
 char DefaultRuleReader::peek_next_char() { return input.peek(); }
 
 bool DefaultRuleReader::is_next_char_letter() {
-    return std::isalpha(peek_next_char());
+    return std::isalpha(peek_next_char()) > 0;
 }
 
 bool DefaultRuleReader::is_next_char_digit() {
-    return std::isdigit(peek_next_char());
+    return std::isdigit(peek_next_char()) > 0;
 }
 
 bool DefaultRuleReader::is_next_char_letter_or_digit() {
@@ -53,13 +55,13 @@ bool DefaultRuleReader::is_next_char_binary_operator() {
 }
 
 bool DefaultRuleReader::is_next_char_math_operator() {
-    return is_next_char('+') || is_next_char('-') || is_next_char('*') 
-        || is_next_char('/');
+    return is_next_char('+') || is_next_char('-') || is_next_char('*') ||
+           is_next_char('/');
 }
 
 bool DefaultRuleReader::is_next_char_comparison_operator() {
-    return is_next_char('<') || is_next_char('>') || is_next_char('=') 
-        || is_next_char('!');
+    return is_next_char('<') || is_next_char('>') || is_next_char('=') ||
+           is_next_char('!');
 }
 
 void DefaultRuleReader::parse_eoln() {
@@ -69,31 +71,108 @@ void DefaultRuleReader::parse_eoln() {
     }
 }
 
-std::string DefaultRuleReader::parse_math_sign() {}
+std::string DefaultRuleReader::parse_math_sign() {
+    // TODO
+    return "";
+}
 
-std::string DefaultRuleReader::parse_comparison_sign() {}
+std::string DefaultRuleReader::parse_comparison_sign() {
+    // TODO
+    return "";
+}
 
-char DefaultRuleReader::parse_nonzero() {}
+char DefaultRuleReader::parse_nonzero() {
+    char result = read_next_char();
+    if(std::isdigit(result) == 0 || result == '0') {
+        syntax_error("Expected non-zero digit");
+    }
+    return result;
+}
 
-char DefaultRuleReader::parse_zero() {}
+std::string DefaultRuleReader::parse_zero() {
+    skip_next_char();
+    return "0";
+}
 
-char DefaultRuleReader::parse_diggit() {}
+char DefaultRuleReader::parse_diggit() {
+    char result = read_next_char();
+    if(std::isdigit(result) == 0) {
+        syntax_error("Expected digit");
+    }
+    return result;
+}
 
-char DefaultRuleReader::parse_letter() {}
+char DefaultRuleReader::parse_letter() {
+    char result = read_next_char();
+    if(std::isalpha(result) == 0) {
+        syntax_error("Expected letter");
+    }
+    return result;
+}
 
-std::string DefaultRuleReader::parse_positive_number() {}
+std::string DefaultRuleReader::parse_positive_number() {
+    std::stringstream result_stream;
+    result_stream << parse_nonzero();
+    while(is_next_char_digit()) {
+        result_stream << read_next_char(); 
+    }
+    return result_stream.str();
+}
 
-std::string DefaultRuleReader::parse_natural_number() {}
+std::string DefaultRuleReader::parse_natural_number() {
+    if (is_next_char('0')) {
+        return parse_zero();
+    }
+    return parse_positive_number();
+}
 
-std::string DefaultRuleReader::parse_integer() {}
+std::string DefaultRuleReader::parse_integer() {
+    if (is_next_char('0')) {
+        return parse_zero();
+    }
+    std::stringstream result_stream;
+    if (is_next_char('-')) {
+        result_stream << read_next_char();
+        skip_spaces();
+    }
+    result_stream << parse_positive_number();
+    return result_stream.str();
+}
 
-std::string DefaultRuleReader::parse_float() {}
+std::string DefaultRuleReader::parse_float() {
+    std::stringstream result_stream;
+    result_stream << parse_integer();
+    if (is_next_char('.')) {
+        skip_next_char();
+        do {
+            result_stream << parse_diggit();
+        } while(is_next_char_digit());
+    }
+    return result_stream.str();
+}
 
-std::string DefaultRuleReader::parse_identifier() {}
+std::string DefaultRuleReader::parse_identifier() {
+    std::stringstream result_stream;
+    result_stream << parse_letter();
+    while(is_next_char_letter_or_digit()) {
+        result_stream << read_next_char(); 
+    }
+    return result_stream.str();
+}
 
-std::string DefaultRuleReader::parse_argument() {}
+std::string DefaultRuleReader::parse_argument() {
+    if(is_next_char_letter()) {
+        return parse_identifier();
+    }
+    return parse_integer();
+}
 
-std::string DefaultRuleReader::parse_float_argument() {}
+std::string DefaultRuleReader::parse_float_argument() {
+    if(is_next_char_letter()) {
+        return parse_identifier();
+    }
+    return parse_float();
+}
 
 std::vector<laser::rule::Rule> DefaultRuleReader::parse_program() {
     std::vector<laser::rule::Rule> result;
@@ -114,8 +193,8 @@ std::vector<laser::rule::Rule> DefaultRuleReader::parse_program() {
 laser::rule::Rule DefaultRuleReader::parse_rule() {
     auto head = parse_head();
     skip_spaces();
-    read_expected_char(':');
-    read_expected_char('=');
+    skip_expected_char(':');
+    skip_expected_char('=');
     auto body = parse_body();
     parse_eoln();
     auto result = laser::rule::Rule(head, body);
@@ -149,10 +228,10 @@ laser::formula::Formula *DefaultRuleReader::parse_formula() {
 }
 
 laser::formula::Formula *DefaultRuleReader::parse_complex_formula() {
-    read_expected_char('(');
+    skip_expected_char('(');
     auto result = parse_formula();
     skip_spaces();
-    read_expected_char(')');
+    skip_expected_char(')');
     return result;
 }
 
@@ -162,9 +241,10 @@ laser::formula::Formula *DefaultRuleReader::parse_binary_formula() {
     while (is_next_char_binary_operator()) {
         auto binary_formula = parse_binary_operator();
         auto right_term = parse_term();
-        binary_formula.add_child(left_term);
-        binary_formula.add_child(right_term);
+        binary_formula->add_child(left_term);
+        binary_formula->add_child(right_term);
         left_term = binary_formula;
+        skip_spaces();
     }
     return left_term;
 }
@@ -172,12 +252,12 @@ laser::formula::Formula *DefaultRuleReader::parse_binary_formula() {
 laser::formula::Formula *DefaultRuleReader::parse_binary_operator() {
     laser::formula::Formula *result;
     if (is_next_char('&')) {
-        read_expected_char('&');
-        read_expected_char('&');
+        skip_expected_char('&');
+        skip_expected_char('&');
         // result = new Conjunction();
     } else {
-        read_expected_char('|');
-        read_expected_char('|');
+        skip_expected_char('|');
+        skip_expected_char('|');
         // result = new Disjunction();
     }
     return result;
@@ -187,9 +267,9 @@ laser::formula::Formula *DefaultRuleReader::parse_term() {
     laser::formula::Formula *result;
     skip_spaces();
     if (is_next_char('(')) {
-        result = parser_atom();
+        result = parse_atom();
     } else if (is_next_char('[')) {
-        result = parser_unary_formula();
+        result = parse_unary_formula();
     } else {
         result = parse_predicate_atom();
     }
@@ -200,37 +280,130 @@ laser::formula::Formula *DefaultRuleReader::parse_atom() {
     laser::formula::Formula *result;
     skip_spaces();
     if (is_next_char_math_operator()) {
-        result = parser_math_atom();
+        result = parse_math_atom();
     } else if (is_next_char_comparison_operator()) {
-        result = parser_comparison_atom();
+        result = parse_comparison_atom();
     } else {
         result = parse_predicate_atom();
     }
     return result;
-
 }
 
 laser::formula::Formula *DefaultRuleReader::parse_predicate_atom() {
-    
+    laser::formula::Formula *result;
+    std::string predicate = parse_identifier();
+    skip_spaces();
+    if (is_next_char('(')) {
+        std::vector<std::string> argument_vector;
+        skip_next_char();
+        skip_spaces();
+        while (is_next_char(',')) {
+            skip_next_char();
+            skip_spaces();
+            std::string argument = parse_float();
+            argument_vector.push_back(argument);
+        }
+        result = new laser::formula::Atom(predicate, argument_vector);
+    } else {
+        result = new laser::formula::Atom(predicate);
+    }
+    return result;
 }
 
-laser::formula::Formula *DefaultRuleReader::parse_comparison_atom() {}
+laser::formula::Formula *DefaultRuleReader::parse_comparison_atom() {
+    // TODO
+    return new laser::formula::Atom("TODO");
+}
 
-laser::formula::Formula *DefaultRuleReader::parse_math_atom() {}
+laser::formula::Formula *DefaultRuleReader::parse_math_atom() {
+    // TODO
+    return new laser::formula::Atom("TODO");
+}
 
-laser::formula::Formula *DefaultRuleReader::parse_usary_formula() {}
+laser::formula::Formula *DefaultRuleReader::parse_unary_formula() {
+    laser::formula::Formula *result;
+    skip_expected_char('[');
+    skip_spaces();
+    char unary_operator = peek_next_char();
+    switch (unary_operator) {
+    case 'D':
+        result = parse_diamond();
+        break;
+    case 'B':
+        result = parse_box();
+        break;
+    case '!':
+        result = parse_negation();
+        break;
+    case '@':
+        result = parse_exact_time();
+        break;
+    case '$':
+        result = parse_time_window();
+        break;
+    case '#':
+        result = parse_tuple_window();
+        break;
+    default :
+        syntax_error("Not a valid unary operator");
+    }
+    return result;
+}
 
-laser::formula::Formula *DefaultRuleReader::parse_diamond() {}
+laser::formula::Formula *DefaultRuleReader::parse_diamond() {
+    skip_expected_char('D');
+    skip_spaces();
+    skip_expected_char(']');
+    auto child = parse_formula();
+    return new laser::formula::Diamond(child);
+}
 
-laser::formula::Formula *DefaultRuleReader::parse_box() {}
+laser::formula::Formula *DefaultRuleReader::parse_box() {
+    // skip_expected_char("B");
+    // skip_spaces();
+    // skip_expected_char("]");
+    // auto child = parse_formula();
+    // return new Box(child);
+    // TODO
+    return new laser::formula::Atom("TODO");
+}
 
-laser::formula::Formula *DefaultRuleReader::parse_negation() {}
+laser::formula::Formula *DefaultRuleReader::parse_negation() {
+    // TODO
+    return new laser::formula::Atom("TODO");
+}
 
-laser::formula::Formula *DefaultRuleReader::parse_exact_time() {}
+laser::formula::Formula *DefaultRuleReader::parse_exact_time() {
+    // skip_expected_char("@");
+    // skip_spaces();
+    // skip_expected_char(",");
+    // skip_spaces();
+    // std::string argument = parse_argument();
+    // skip_spaces();
+    // skip_expected_char("]");
+    // auto child = parse_formula();
+    // return new laser::Formula::Exact_Time(argument, child);
+    // TODO
+    return new laser::formula::Atom("TODO");
+}
 
-laser::formula::Formula *DefaultRuleReader::parse_time_window() {}
+laser::formula::Formula *DefaultRuleReader::parse_time_window() {
+    skip_expected_char('$');
+    skip_spaces();
+    skip_expected_char(',');
+    skip_spaces();
+    std::string argument = parse_natural_number();
+    skip_spaces();
+    skip_expected_char(']');
+    auto child = parse_formula();
+    uint64_t window_size = std::stoull(argument);  
+    return new laser::formula::TimeWindow(window_size, child);
+}
 
-laser::formula::Formula *DefaultRuleReader::parse_tuple_window() {}
+laser::formula::Formula *DefaultRuleReader::parse_tuple_window() {
+    // TODO
+    return new laser::formula::Atom("TODO");
+}
 
 std::vector<laser::rule::Rule> DefaultRuleReader::get_rules() {
     return parse_program();
