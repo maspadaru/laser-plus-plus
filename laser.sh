@@ -41,12 +41,12 @@ debug_project () {
 }
 
 print_help () {
-    echo "Usage: laser [br bd c r rd d h]"
+    echo "Usage: laser [br b c rr r d h]"
     echo "br: Build Release"
-    echo "bd: Build Debug"
+    echo "b: Build Debug"
     echo "c: Clean project"
-    echo "r: Run project "
-    echo "rd: Run project and print all errors"
+    echo "rr: Run project without printing any errors"
+    echo "r: Run project and print all errors"
     echo "d: Debug project using GDB"
     echo "t: run all tests"
     echo "h: Print help"
@@ -57,13 +57,13 @@ if [ $# -eq 0 ]; then
 	print_help
 elif [ $1 = "br" ]; then
     build_release
-elif [ $1 = "bd" ]; then
+elif [ $1 = "b" ]; then
     build_debug
 elif [ $1 = "c" ]; then
     clean_up
-elif [ $1 = "r" ]; then
+elif [ $1 = "rr" ]; then
     run_project
-elif [ $1 = "rd" ]; then
+elif [ $1 = "r" ]; then
     run_project_with_debug
 elif [ $1 = "d" ]; then
     debug_project

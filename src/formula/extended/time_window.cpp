@@ -14,14 +14,16 @@ Formula &TimeWindow::create() const {
 }
 
 Formula &TimeWindow::clone() const {
-    auto result = new TimeWindow(*this);
-    // TODO
+    auto *result = new TimeWindow(past_size, future_size, step_size, 
+            &this->child->clone());
+   result->pivot_time = this->pivot_time;
     return *result;
 }
 
 Formula &TimeWindow::move() {
-   auto result = new TimeWindow(std::move(*this));
-   // TODO
+   auto result = new TimeWindow(past_size, future_size, step_size,
+           &this->child->move());
+   result->pivot_time = this->pivot_time;
    return *result;
 }
 
