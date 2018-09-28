@@ -5,20 +5,22 @@ namespace formula {
 
 Diamond::~Diamond() { delete child; }
 
+Diamond::Diamond(Formula* child) {
+    this->child = &child->move();
+}
+
 Formula &Diamond::create() const {
     auto result = new Diamond();
     return *result;
 }
 
 Formula &Diamond::clone() const {
-    auto result = new Diamond(*this);
-    // TODO
+    auto result = new Diamond(&this->child->clone());
     return *result;
 }
 
 Formula &Diamond::move() {
-    auto result = new Diamond(std::move(*this));
-    // TODO
+    auto result = new Diamond(&this->child->move());
     return *result;
 }
 
@@ -76,9 +78,6 @@ void Diamond::expire_outdated_groundings(util::Timeline timeline) {
 }
 
 void Diamond::add_child(formula::Formula* child) {} 
-Diamond::Diamond(Formula* child) {
-    this->child = &child->move();
-}
 
 
 } // namespace formula

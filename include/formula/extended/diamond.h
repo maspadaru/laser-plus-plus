@@ -20,6 +20,7 @@ class Diamond : public Formula {
     // constructors / destructors
 
     Diamond() = default;
+    explicit Diamond(Formula* child);
     ~Diamond() override;
 
     Formula &create() const override;
@@ -58,7 +59,6 @@ class Diamond : public Formula {
     
     void add_child(formula::Formula* child) override;
 
-    explicit Diamond(Formula* child);
 };
 
 } // namespace formula

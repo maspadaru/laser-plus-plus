@@ -60,10 +60,10 @@ void Rule::expire_outdated_groundings(util::Timeline timeline) {
 
 void Rule::debug_print() const {
     std::cerr << std::endl;
-    std::cerr << "Rule -> head: ";
-    head.debug_string();
-    std::cerr << "Rule body:";
-    body.debug_string();
+    std::cerr << "Rule -> head: "
+        << head.debug_string();
+    std::cerr << "Rule body:"
+        << body.debug_string();
     std::cerr << "// Rule " << std::endl;
     std::cerr << std::endl;
 }

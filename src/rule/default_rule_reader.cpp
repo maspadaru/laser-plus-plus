@@ -277,7 +277,7 @@ laser::formula::Formula *DefaultRuleReader::parse_term() {
     laser::formula::Formula *result;
     skip_spaces();
     if (is_next_char('(')) {
-        result = parse_atom();
+        result = parse_complex_formula();
     } else if (is_next_char('[')) {
         result = parse_unary_formula();
     } else {
