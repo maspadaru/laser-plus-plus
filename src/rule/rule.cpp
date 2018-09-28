@@ -85,10 +85,11 @@ void Rule::compute_variable_map() {
 }
 
 formula::Grounding
-Rule::convert_to_head_grounding(formula::Grounding const &grounding) {
+Rule::convert_to_head_grounding(formula::Grounding const &grounding, 
+        util::Timeline timeline) {
     auto result = formula::Grounding(
-        grounding.get_consideration_time(), grounding.get_horizon_time(),
-        grounding.get_consideration_count(), grounding.get_horizon_count());
+        timeline.get_time(), timeline.get_time(),
+        timeline.get_tuple_count(), timeline.get_tuple_count());
     std::vector<std::string> result_vector;
     for (size_t head_index = 0; head_index < head.get_number_of_variables();
          head_index++) {
@@ -104,7 +105,7 @@ bool Rule::derive_conclusions(util::Timeline timeline) {
         std::vector<formula::Grounding> predicate_facts;
         std::vector<formula::Grounding> body_groundings = body.get_groundings();
         for (auto const &grounding : body_groundings) {
-            auto head_grounding = convert_to_head_grounding(grounding);
+            auto head_grounding = convert_to_head_grounding(grounding, timeline);
             predicate_facts.push_back(head_grounding);
         }
         std::unordered_map<std::string, std::vector<formula::Grounding>> body_facts;

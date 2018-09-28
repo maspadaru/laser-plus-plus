@@ -24,6 +24,10 @@ class Rule {
      */  
     std::unordered_map<size_t, size_t> variable_map;
 
+    formula::Grounding
+    convert_to_head_grounding(formula::Grounding const &grounding, 
+            util::Timeline timeline);
+
     void compute_variable_map();
 
   public:
@@ -60,9 +64,6 @@ class Rule {
     void expire_outdated_groundings(util::Timeline timeline);
 
     bool derive_conclusions(util::Timeline timeline);
-
-    formula::Grounding
-    convert_to_head_grounding(formula::Grounding const &grounding);
 
     void debug_print() const;
 

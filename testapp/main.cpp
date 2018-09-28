@@ -84,7 +84,7 @@ void test_atoms() {
 
 void test_diamond() {
     std::cout << std::endl;
-    const std::string test_name = "Atoms";
+    const std::string test_name = "Diamond";
     std::cout << " Test: " << test_name << std::endl;
     std::cout << " =================================== " << std::endl;
 
