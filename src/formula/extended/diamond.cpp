@@ -5,9 +5,7 @@ namespace formula {
 
 Diamond::~Diamond() { delete child; }
 
-Diamond::Diamond(Formula* child) {
-    this->child = &child->move();
-}
+Diamond::Diamond(Formula *child) { this->child = &child->move(); }
 
 Formula &Diamond::create() const {
     auto result = new Diamond();
@@ -52,12 +50,18 @@ size_t Diamond::get_number_of_variables() const {
     return child->get_number_of_variables();
 }
 
-std::vector<Grounding> Diamond::get_groundings() const {
-    return child->get_groundings();
+std::vector<Grounding> Diamond::get_groundings(util::Timeline timeline) const {
+     auto grounding_vector = grounding_table.get_all_groundings();
+     for (auto &grounding : grounding_vector) {
+         grounding.set_consideration_time(timeline.get_time());
+         grounding.set_horizon_time(timeline.get_time());
+     } 
+     return grounding_vector;
 }
 
 std::string Diamond::debug_string() const { return child->debug_string(); }
 
+/*
 bool Diamond::evaluate(
     util::Timeline timeline,
     std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
@@ -72,13 +76,24 @@ bool Diamond::evaluate(
     }
     return child->evaluate(timeline, facts);
 }
+*/
+
+bool Diamond::evaluate(
+    util::Timeline timeline,
+    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    bool result = child->evaluate(timeline, facts);
+    auto child_facts = child->get_groundings(timeline);
+    grounding_table.add_grounding_vector(child_facts);
+    return result;
+}
 
 void Diamond::expire_outdated_groundings(util::Timeline timeline) {
     child->expire_outdated_groundings(timeline);
+    grounding_table.expire_outdated_groundings(timeline.get_min_time(),
+                                               timeline.get_min_tuple_count());
 }
 
-void Diamond::add_child(formula::Formula* child) {} 
-
+void Diamond::add_child(formula::Formula *child) {}
 
 } // namespace formula
 } // namespace laser

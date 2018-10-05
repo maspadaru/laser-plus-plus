@@ -71,7 +71,7 @@ class Formula {
 
     virtual void expire_outdated_groundings(util::Timeline timeline) = 0;
 
-    virtual std::vector<Grounding> get_groundings() const = 0;
+    virtual std::vector<Grounding> get_groundings(util::Timeline timeline) const = 0;
 
     virtual std::string debug_string() const = 0;
 };

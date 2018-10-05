@@ -3,6 +3,7 @@
 namespace laser {
 namespace util {
 
+const uint64_t Timeline::INFINITE_TIME = ULLONG_MAX;   
 
 uint64_t Timeline::get_time() const {
     return time;

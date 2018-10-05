@@ -33,6 +33,10 @@ void Grounding::set_horizon_time(uint64_t horizon_time) {
     Grounding::horizon_time = horizon_time;
 }
 
+void Grounding::set_consideration_time(uint64_t consideration_time) {
+    Grounding::consideration_time = consideration_time;
+}
+
 bool Grounding::is_background_fact() { return is_background_fact_m; }
 
 bool Grounding::is_fact() { return is_fact_m; }

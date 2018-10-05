@@ -52,6 +52,8 @@ class Grounding {
 
     void set_horizon_time(uint64_t horizon_time);
 
+    void set_consideration_time(uint64_t horizon_time);
+
     bool is_background_fact();
 
     bool is_fact();

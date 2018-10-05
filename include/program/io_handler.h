@@ -10,6 +10,7 @@
 #include "formula/extended/atom.h"
 #include "formula/grounding.h"
 #include "io/io_manager.h"
+#include "util/timeline.h"
 
 namespace laser {
 namespace program {
@@ -26,7 +27,7 @@ class IOHandler {
     std::unordered_map<std::string, std::vector<formula::Grounding>>
     get_stream_data(uint64_t time);
 
-    void put_conclusions(uint64_t time,
+    void put_conclusions(util::Timeline timeline,
                          std::vector<formula::Formula *> const &conclusions);
 };
 

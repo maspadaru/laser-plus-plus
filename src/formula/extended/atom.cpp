@@ -98,7 +98,7 @@ std::string Atom::debug_string() const {
     return os.str();
 }
 
-std::vector<Grounding> Atom::get_groundings() const {
+std::vector<Grounding> Atom::get_groundings(util::Timeline timeline) const {
     return grounding_table.get_all_groundings();
 }
 

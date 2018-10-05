@@ -21,6 +21,7 @@ class TimeWindow : public Formula {
     Formula* child;
 
     Grounding adjust_annotations(Grounding grounding) const;
+    util::Timeline alter_timeline(util::Timeline timeline) const;
 
   public:
     // constructors / destructors
@@ -58,7 +59,7 @@ class TimeWindow : public Formula {
 
     void expire_outdated_groundings(util::Timeline timeline) override;
 
-    std::vector<Grounding> get_groundings() const override;
+    std::vector<Grounding> get_groundings(util::Timeline timeline) const override;
 
     std::string debug_string() const override;
     

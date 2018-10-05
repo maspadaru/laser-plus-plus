@@ -75,7 +75,7 @@ void Program::write_output() {
         formula::Formula *head = &rule.get_head();
         new_conclusions.push_back(head);
     }
-    ioHandler.put_conclusions(timeline.get_time(), new_conclusions);
+    ioHandler.put_conclusions(timeline, new_conclusions);
 }
 
 void Program::evaluate() {

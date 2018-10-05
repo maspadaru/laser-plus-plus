@@ -32,6 +32,12 @@ void GroundingTable::add_grounding(Grounding const &grounding) {
     recent_groundings_vector.push_back(grounding);
     size += 1;
 }
+    
+void GroundingTable::add_grounding_vector(std::vector<Grounding> const &grounding_vector) {
+    for (auto const &grounding : grounding_vector) {
+        add_grounding(grounding);
+    }
+}
 
 std::vector<Grounding> GroundingTable::get_all_groundings() const {
     // Merges all lists together

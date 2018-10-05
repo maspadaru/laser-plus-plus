@@ -59,22 +59,33 @@ size_t TimeWindow::get_number_of_variables() const {
     return child->get_number_of_variables();
 }
 
-bool TimeWindow::evaluate(
-    util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
-    uint64_t window_max_time = timeline.get_time() + past_size;
+util::Timeline TimeWindow::alter_timeline(util::Timeline timeline) const {
+    uint64_t window_min_time = timeline.get_time() - past_size;
+    if (timeline.get_min_time() < window_min_time) { 
+        timeline.set_min_time(window_min_time);
+    }
+    uint64_t window_max_time = timeline.get_time() + future_size;
     if (timeline.get_max_time() > window_max_time) { 
         timeline.set_max_time(window_max_time);
     }
-    return child->evaluate(timeline, facts);
+    return timeline;
+}
+
+bool TimeWindow::evaluate(
+    util::Timeline timeline,
+    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    auto window_timeline = alter_timeline(timeline);
+    return child->evaluate(window_timeline, facts);
 }
 
 void TimeWindow::expire_outdated_groundings(util::Timeline timeline) {
-    child->expire_outdated_groundings(timeline);
+    auto window_timeline = alter_timeline(timeline);
+    child->expire_outdated_groundings(window_timeline);
 }
 
-std::vector<Grounding> TimeWindow::get_groundings() const {
-    return child->get_groundings();
+std::vector<Grounding> TimeWindow::get_groundings(util::Timeline timeline) const {
+    auto window_timeline = alter_timeline(timeline);
+    return child->get_groundings(window_timeline);
 }
 
 std::string TimeWindow::debug_string() const {
@@ -83,6 +94,9 @@ std::string TimeWindow::debug_string() const {
 
 TimeWindow::TimeWindow(uint64_t size, Formula* child) {
     this->past_size = size;  
+    this->future_size = 0;
+    this->step_size = 0; 
+    this->pivot_time = 0;
     this->child = &child->move();
 }
 
@@ -91,6 +105,7 @@ TimeWindow::TimeWindow(uint64_t past_size, uint64_t future_size,
     this->past_size = past_size;
     this->future_size = future_size;
     this->step_size = step_size;
+    this->pivot_time = 0;
     this->child = &child->move();
 }
 

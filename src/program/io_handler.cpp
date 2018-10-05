@@ -28,15 +28,15 @@ laser::program::IOHandler::get_stream_data(uint64_t time) {
 }
 
 void IOHandler::put_conclusions(
-    uint64_t time, std::vector<formula::Formula *> const &conclusions) {
+    util::Timeline timeline, std::vector<formula::Formula *> const &conclusions) {
     std::vector<util::DataAtom> data_vector;
     for (auto formula : conclusions) {
         std::string predicate = formula->get_predicate_vector().at(0);
         auto variable_names = formula->get_full_variable_names();
         size_t number_variables = variable_names.size();
-        for (auto const &grounding : formula->get_groundings()) {
+        for (auto const &grounding : formula->get_groundings(timeline)) {
             std::vector<std::string> argument_vector;
-            for (auto variable_name : variable_names) {
+            for (auto const&variable_name : variable_names) {
                size_t variable_index = formula->get_variable_index(variable_name);
                std::string argument = grounding.get_substitution(variable_index);
                argument_vector.push_back(argument);
@@ -45,7 +45,7 @@ void IOHandler::put_conclusions(
             data_vector.push_back(data_atom);
         }
     }
-    ioManager->write_output_data(time, data_vector);
+    ioManager->write_output_data(timeline.get_time(), data_vector);
 }
 
 } // namespace program

@@ -5,6 +5,7 @@
 
 #include "formula/formula.h"
 #include "formula/grounding.h"
+#include "formula/grounding_table.h"
 
 namespace laser {
 namespace formula {
@@ -15,6 +16,7 @@ namespace formula {
 class Diamond : public Formula {
   private:
     Formula *child;
+    GroundingTable grounding_table;
 
   public:
     // constructors / destructors
@@ -46,7 +48,7 @@ class Diamond : public Formula {
 
     size_t get_number_of_variables() const override;
 
-    std::vector<Grounding> get_groundings() const override;
+    std::vector<Grounding> get_groundings(util::Timeline timeline) const override;
 
     std::string debug_string() const override;
     

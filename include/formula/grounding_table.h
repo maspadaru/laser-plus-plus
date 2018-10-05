@@ -54,12 +54,14 @@ class GroundingTable {
 
     void add_grounding(Grounding const &grounding);
 
+    void add_grounding_vector(std::vector<Grounding> const &grounding_vector);
+
     /**
      * Removes all annotated grounding that have expired due to horizon time
      * or tupple counter
      */
-    void expire_outdated_groundings(uint64_t current_time,
-                                    uint64_t current_tuple_counter);
+    void expire_outdated_groundings(uint64_t expiration_time,
+                                    uint64_t expiration_tuple_counter);
 
 };
 

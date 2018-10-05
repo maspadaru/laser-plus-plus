@@ -21,6 +21,7 @@ class Timeline {
     uint64_t max_tuple_count = ULLONG_MAX;
 
   public:
+    static const uint64_t INFINITE_TIME;
 
     Timeline() = default;
 

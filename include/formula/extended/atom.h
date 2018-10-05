@@ -110,7 +110,7 @@ class Atom : public Formula {
 
     void expire_outdated_groundings(util::Timeline timeline) override;
 
-    std::vector<Grounding> get_groundings() const override;
+    std::vector<Grounding> get_groundings(util::Timeline timeline) const override;
 
     void add_child(formula::Formula* child) override;
 

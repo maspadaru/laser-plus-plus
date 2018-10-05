@@ -101,9 +101,11 @@ Rule::convert_to_head_grounding(formula::Grounding const &grounding,
 }
 
 bool Rule::derive_conclusions(util::Timeline timeline) {
-    if (body.is_satisfied()) {
-        std::vector<formula::Grounding> predicate_facts;
-        std::vector<formula::Grounding> body_groundings = body.get_groundings();
+    bool is_body_satisfied = false;
+    std::vector<formula::Grounding> predicate_facts;
+    std::vector<formula::Grounding> body_groundings = body.get_groundings(timeline);
+    is_body_satisfied = !body_groundings.empty();
+    if (is_body_satisfied) {
         for (auto const &grounding : body_groundings) {
             auto head_grounding = convert_to_head_grounding(grounding, timeline);
             predicate_facts.push_back(head_grounding);
