@@ -14,14 +14,15 @@ namespace formula {
  */
 class TimeWindow : public Formula {
   private:
-    uint64_t past_size = 0; // L
+    uint64_t past_size = 0;   // L
     uint64_t future_size = 0; // U
-    uint64_t step_size = 0; // D
+    uint64_t step_size = 0;   // D
     uint64_t pivot_time = 0;
-    Formula* child;
+    Formula *child;
 
-    Grounding adjust_annotations(Grounding grounding) const;
     util::Timeline alter_timeline(util::Timeline timeline) const;
+    uint64_t compute_horizon_time(uint64_t grounding_time,
+                                  uint64_t current_time) const;
 
   public:
     // constructors / destructors
@@ -59,19 +60,19 @@ class TimeWindow : public Formula {
 
     void expire_outdated_groundings(util::Timeline timeline) override;
 
-    std::vector<Grounding> get_groundings(util::Timeline timeline) const override;
+    std::vector<Grounding>
+    get_groundings(util::Timeline timeline) const override;
 
     std::string debug_string() const override;
-    
-    void add_child(formula::Formula* child) override;
+
+    void add_child(formula::Formula *child) override;
 
     // Own methodds, not inherited from Formula interface:
 
-    explicit TimeWindow(uint64_t size, Formula* child);
+    explicit TimeWindow(uint64_t size, Formula *child);
 
-    explicit TimeWindow(uint64_t past_size, uint64_t future_size, 
-            uint64_t step_size, Formula* child);
-
+    explicit TimeWindow(uint64_t past_size, uint64_t future_size,
+                        uint64_t step_size, Formula *child);
 };
 
 } // namespace formula

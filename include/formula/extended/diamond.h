@@ -11,7 +11,7 @@ namespace laser {
 namespace formula {
 
 /**
- * Time Window Formula
+ * Dimond Formula
  */
 class Diamond : public Formula {
   private:

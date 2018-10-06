@@ -47,9 +47,7 @@ Rule &Rule::operator=(Rule &&other) noexcept {
 
 // getters & setters
 
-formula::Formula &Rule::get_head() const {
-    return this->head;
-}
+formula::Formula &Rule::get_head() const { return this->head; }
 
 // methods
 
@@ -60,10 +58,8 @@ void Rule::expire_outdated_groundings(util::Timeline timeline) {
 
 void Rule::debug_print() const {
     std::cerr << std::endl;
-    std::cerr << "Rule -> head: "
-        << head.debug_string();
-    std::cerr << "Rule body:"
-        << body.debug_string();
+    std::cerr << "Rule -> head: " << head.debug_string();
+    std::cerr << "Rule body:" << body.debug_string();
     std::cerr << "// Rule " << std::endl;
     std::cerr << std::endl;
 }
@@ -85,11 +81,11 @@ void Rule::compute_variable_map() {
 }
 
 formula::Grounding
-Rule::convert_to_head_grounding(formula::Grounding const &grounding, 
-        util::Timeline timeline) {
-    auto result = formula::Grounding(
-        timeline.get_time(), timeline.get_time(),
-        timeline.get_tuple_count(), timeline.get_tuple_count());
+Rule::convert_to_head_grounding(formula::Grounding const &grounding) const {
+    auto result = formula::Grounding(grounding.get_consideration_time(), 
+                                        grounding.get_horizon_time(),
+                                     grounding.get_consideration_count(),
+                                     grounding.get_horizon_count());
     std::vector<std::string> result_vector;
     for (size_t head_index = 0; head_index < head.get_number_of_variables();
          head_index++) {
@@ -103,23 +99,29 @@ Rule::convert_to_head_grounding(formula::Grounding const &grounding,
 bool Rule::derive_conclusions(util::Timeline timeline) {
     bool is_body_satisfied = false;
     std::vector<formula::Grounding> predicate_facts;
-    std::vector<formula::Grounding> body_groundings = body.get_groundings(timeline);
-    is_body_satisfied = !body_groundings.empty();
-    if (is_body_satisfied) {
-        for (auto const &grounding : body_groundings) {
-            auto head_grounding = convert_to_head_grounding(grounding, timeline);
+    std::vector<formula::Grounding> body_groundings =
+        body.get_groundings(timeline);
+    for (auto const &grounding : body_groundings) {
+        // SNE: we only evaluate groundings derived at this current timepoint
+        if (grounding.get_consideration_time() >= timeline.get_time()) {
+            auto head_grounding =
+                convert_to_head_grounding(grounding);
             predicate_facts.push_back(head_grounding);
         }
-        std::unordered_map<std::string, std::vector<formula::Grounding>> body_facts;
-        // a bit overcomplicated, but this will allow more flexibility in the head
+    }
+    is_body_satisfied = !predicate_facts.empty();
+    if (is_body_satisfied) {
+        std::unordered_map<std::string, std::vector<formula::Grounding>>
+            body_facts;
+        // a bit overcomplicated, but this will allow more flexibility in the
+        // head
         for (auto predicate : head.get_predicate_vector()) {
             body_facts.insert({predicate, predicate_facts});
         }
-        auto result =
-            head.evaluate(timeline, body_facts);
+        auto result = head.evaluate(timeline, body_facts);
         return result;
     }
-    return false;
+    return head.is_satisfied();
 }
 
 template <typename T>

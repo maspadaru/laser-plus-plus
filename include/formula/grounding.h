@@ -66,6 +66,15 @@ class Grounding {
 
     std::string get_substitution(size_t variable_index) const;
 
+    /** Creates a string witch is the same for all groundings that 
+     * share the same constants but with different annotations.
+     * It is used where a grounding needs to be a key of a map, for instance,
+     * in Box::get_groundings() / Box::build_maps(). 
+     * TODO: This should be replaced with a hash function for efficiency later
+     * and the resulting hash should be used as the key
+     */
+    std::string compute_hash() const;
+
     void add_substitution(size_t variable_index, std::string constant);
 
     void add_substitution_vector(std::vector<std::string> vector);

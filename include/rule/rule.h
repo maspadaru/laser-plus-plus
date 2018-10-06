@@ -25,8 +25,7 @@ class Rule {
     std::unordered_map<size_t, size_t> variable_map;
 
     formula::Grounding
-    convert_to_head_grounding(formula::Grounding const &grounding, 
-            util::Timeline timeline);
+    convert_to_head_grounding(formula::Grounding const &grounding) const;
 
     void compute_variable_map();
 

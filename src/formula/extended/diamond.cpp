@@ -50,33 +50,17 @@ size_t Diamond::get_number_of_variables() const {
     return child->get_number_of_variables();
 }
 
+std::string Diamond::debug_string() const { return child->debug_string(); }
+
+void Diamond::add_child(formula::Formula *child) {}
+
 std::vector<Grounding> Diamond::get_groundings(util::Timeline timeline) const {
      auto grounding_vector = grounding_table.get_all_groundings();
      for (auto &grounding : grounding_vector) {
-         grounding.set_consideration_time(timeline.get_time());
-         grounding.set_horizon_time(timeline.get_time());
+         grounding.set_horizon_time(util::Timeline::INFINITE_TIME);
      } 
      return grounding_vector;
 }
-
-std::string Diamond::debug_string() const { return child->debug_string(); }
-
-/*
-bool Diamond::evaluate(
-    util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
-    auto predicate_vector = child->get_predicate_vector();
-    for (auto &predicate : predicate_vector) {
-        auto &fact_vector = facts[predicate];
-        for (auto &fact: fact_vector) {
-            if (fact.get_horizon_time() == timeline.get_time()) {
-                fact.set_horizon_time(timeline.get_max_time());
-            }
-        }
-    }
-    return child->evaluate(timeline, facts);
-}
-*/
 
 bool Diamond::evaluate(
     util::Timeline timeline,
@@ -93,7 +77,6 @@ void Diamond::expire_outdated_groundings(util::Timeline timeline) {
                                                timeline.get_min_tuple_count());
 }
 
-void Diamond::add_child(formula::Formula *child) {}
 
 } // namespace formula
 } // namespace laser

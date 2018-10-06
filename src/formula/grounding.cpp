@@ -44,7 +44,16 @@ bool Grounding::is_fact() { return is_fact_m; }
 void Grounding::set_as_fact() { this->is_fact_m = true; }
 
 void Grounding::set_as_background_fact() { this->is_background_fact_m = true; }
+
 // methods
+
+std::string Grounding::compute_hash() const {
+    std::stringstream ss;
+    for (auto &constant : substitution_vector) {
+          ss << constant << ";;";
+    } 
+    return ss.str();
+} 
 
 std::string Grounding::get_substitution(size_t variable_index) const {
     return substitution_vector.at(variable_index);
