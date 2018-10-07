@@ -372,13 +372,11 @@ laser::formula::Formula *DefaultRuleReader::parse_diamond() {
 }
 
 laser::formula::Formula *DefaultRuleReader::parse_box() {
-    // skip_expected_char("B");
-    // skip_spaces();
-    // skip_expected_char("]");
-    // auto child = parse_formula();
-    // return new Box(child);
-    // TODO
-    return new laser::formula::Atom("TODO");
+    skip_expected_char('B');
+    skip_spaces();
+    skip_expected_char(']');
+    auto child = parse_formula();
+    return new laser::formula::Box(child);
 }
 
 laser::formula::Formula *DefaultRuleReader::parse_negation() {

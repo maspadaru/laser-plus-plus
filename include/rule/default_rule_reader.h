@@ -12,6 +12,7 @@
 #include "io/rule_reader.h"
 #include "formula/extended/atom.h"
 #include "formula/extended/diamond.h"
+#include "formula/extended/box.h"
 #include "formula/extended/time_window.h"
 #include "util/format_exception.h"
 
