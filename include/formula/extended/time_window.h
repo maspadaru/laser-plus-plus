@@ -21,7 +21,8 @@ class TimeWindow : public Formula {
     Formula *child;
 
     util::Timeline alter_timeline(util::Timeline timeline) const;
-    uint64_t compute_horizon_time(uint64_t grounding_time,
+    uint64_t compute_horizon_time(uint64_t grounding_consideration_time,
+                                  uint64_t grounding_horizon_time,
                                   uint64_t current_time) const;
 
   public:

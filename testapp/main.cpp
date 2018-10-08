@@ -231,8 +231,8 @@ void test_box() {
 }
 
 int main() { 
-    //test_atoms();
-    //test_diamond();
-    //test_time_window();
+    test_atoms();
+    test_diamond();
+    test_time_window();
     test_box();
 }

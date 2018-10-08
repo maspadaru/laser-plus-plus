@@ -76,13 +76,17 @@ void TimeWindow::expire_outdated_groundings(util::Timeline timeline) {
     child->expire_outdated_groundings(window_timeline);
 }
 
-uint64_t TimeWindow::compute_horizon_time(uint64_t grounding_time,
+uint64_t TimeWindow::compute_horizon_time(uint64_t grounding_consideration_time,
+                                          uint64_t grounding_horizon_time,
                                           uint64_t current_time) const {
     // TODO: current implementation does not take into account future_size and
     // step
-    uint64_t size_limit = current_time + past_size;
-    uint64_t result =
-        (size_limit > grounding_time) ? grounding_time : size_limit;
+
+    // The grounding's lifetime should never excede the size of the window
+    uint64_t size_limit = grounding_consideration_time + past_size;
+    uint64_t result = (size_limit > grounding_horizon_time)
+                          ? grounding_horizon_time
+                          : size_limit;
     return result;
 }
 
@@ -91,8 +95,9 @@ TimeWindow::get_groundings(util::Timeline timeline) const {
     auto window_timeline = alter_timeline(timeline);
     auto child_conclusions = child->get_groundings(window_timeline);
     for (auto &grounding : child_conclusions) {
-        uint64_t window_horizon_time = compute_horizon_time(grounding.get_horizon_time(),
-                timeline.get_time());
+        uint64_t window_horizon_time = compute_horizon_time(
+            grounding.get_consideration_time(), grounding.get_horizon_time(),
+            timeline.get_time());
         grounding.set_horizon_time(window_horizon_time);
     }
     return child_conclusions;
