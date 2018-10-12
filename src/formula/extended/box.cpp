@@ -143,7 +143,7 @@ bool Box::adjust_annotation(Grounding &box_grounding,
     auto hc2 = child_grounding.get_horizon_count();
 
     // Adjust Time annotations:
-    if ((ct2 <= ct1) && (ht2 >= ct1 - 1)) {
+    if ((ct2 < ct1) && (ht2 >= ct1 - 1)) {
         if (ct2 < ct1) {
             ct1 = ct2;
             is_modified = true;
@@ -152,7 +152,7 @@ bool Box::adjust_annotation(Grounding &box_grounding,
             ht1 = ht2;
             is_modified = true;
         }
-    } else if ((ct2 >= ht1 + 1) && (ct2 <= ht1 + 1) && (ht2 > ht1)) {
+    } else if ((ct2 >= ct1) && (ct2 <= ht1 + 1) && (ht2 > ht1)) {
         ht1 = ht2;
         is_modified = true;
     }
