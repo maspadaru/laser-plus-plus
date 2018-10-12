@@ -72,5 +72,12 @@ bool Timeline::is_past_max_tuple_count() const {
     return tuple_count >= max_tuple_count;
 }
 
+uint64_t Timeline::substract(uint64_t initial_value, uint64_t substracted_val) const {
+    if (substracted_val > initial_value) {
+        return 0;
+    }
+    return initial_value - substracted_val;
+}
+
 } // namespace util
 } // namespace laser

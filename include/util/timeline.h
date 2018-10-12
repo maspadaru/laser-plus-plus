@@ -49,6 +49,11 @@ class Timeline {
 
     bool is_past_max_tuple_count() const;
 
+    /**
+     * Returns (initial_value - substracted_value)
+     */ 
+    uint64_t substract(uint64_t initial_value, uint64_t substracted_val) const;
+
 
 };
 

@@ -58,6 +58,17 @@ void Box::expire_outdated_groundings(util::Timeline timeline) {
     child->expire_outdated_groundings(timeline);
     grounding_table.expire_outdated_groundings(timeline.get_time(),
                                                timeline.get_tuple_count());
+    // Next we remove all groundings in the map that have the horizon
+    // values outside the timeline (imposed or not by a window).
+    for (auto iterator = box_map.begin(); iterator != box_map.end(); /*nothing*/ ) {
+        auto const &key = iterator->first;
+        auto grounding = iterator->second;
+        if (grounding.get_horizon_time() < timeline.get_min_time()) {
+            iterator = box_map.erase(iterator);
+        } else {
+            iterator++;
+        }
+    }
 }
 
 std::vector<Grounding> Box::get_groundings(util::Timeline timeline) const {

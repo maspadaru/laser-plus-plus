@@ -53,7 +53,7 @@ size_t TimeWindow::get_number_of_variables() const {
 }
 
 util::Timeline TimeWindow::alter_timeline(util::Timeline timeline) const {
-    uint64_t window_min_time = timeline.get_time() - past_size;
+    uint64_t window_min_time = timeline.substract(timeline.get_time(), past_size);
     if (timeline.get_min_time() < window_min_time) {
         timeline.set_min_time(window_min_time);
     }
