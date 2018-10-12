@@ -1,9 +1,9 @@
 #ifndef LASER_FORMULA_EXTENDED_BOX_H
 #define LASER_FORMULA_EXTENDED_BOX_H
 
+#include <set>
 #include <string>
 #include <unordered_map>
-#include <set>
 #include <vector>
 
 #include "formula/formula.h"
@@ -19,19 +19,26 @@ namespace formula {
 class Box : public Formula {
   private:
     Formula *child;
+
     GroundingTable grounding_table;
 
-    void build_maps(
-        std::unordered_map<std::string, std::set<uint64_t>> &timepoint_map,
-        std::unordered_map<std::string, Grounding> &grounding_map) const;
+    std::unordered_map<std::string, Grounding> box_map;
 
-    std::vector<Grounding> compute_valid_groundings(util::Timeline timeline) const;
+    // Methods
+
+    bool adjust_annotation(Grounding &box_grounding,
+                           Grounding const &child_grounding);
+
+    std::vector<Grounding>
+    compute_box_conclusions(util::Timeline timeline) const;
+
+    void update_box_map(std::vector<Grounding> const &facts);
 
   public:
     // constructors / destructors
 
     Box() = default;
-    explicit Box(Formula* child);
+    explicit Box(Formula *child);
     ~Box() override;
 
     Formula &create() const override;
@@ -57,19 +64,19 @@ class Box : public Formula {
 
     size_t get_number_of_variables() const override;
 
-    std::vector<Grounding> get_groundings(util::Timeline timeline) const override;
+    std::vector<Grounding>
+    get_groundings(util::Timeline timeline) const override;
 
     std::string debug_string() const override;
-    
+
     bool
     evaluate(util::Timeline timeline,
              std::unordered_map<std::string, std::vector<formula::Grounding>>
                  facts) override;
 
     void expire_outdated_groundings(util::Timeline timeline) override;
-    
-    void add_child(formula::Formula* child) override;
 
+    void add_child(formula::Formula *child) override;
 };
 
 } // namespace formula

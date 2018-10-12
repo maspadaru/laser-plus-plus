@@ -56,62 +56,101 @@ void Box::add_child(formula::Formula *child) {}
 
 void Box::expire_outdated_groundings(util::Timeline timeline) {
     child->expire_outdated_groundings(timeline);
-    grounding_table.expire_outdated_groundings(timeline.get_min_time(),
-                                               timeline.get_min_tuple_count());
+    grounding_table.expire_outdated_groundings(timeline.get_time(),
+                                               timeline.get_tuple_count());
+}
+
+std::vector<Grounding> Box::get_groundings(util::Timeline timeline) const {
+    auto grounding_vector = grounding_table.get_all_groundings();
+    return grounding_vector;
 }
 
 bool Box::evaluate(
     util::Timeline timeline,
     std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
     bool result = child->evaluate(timeline, facts);
-    auto child_facts = child->get_groundings(timeline);
-    grounding_table.add_grounding_vector(child_facts);
-    return result;
-}
-
-std::vector<Grounding> Box::get_groundings(util::Timeline timeline) const {
-    auto grounding_vector = compute_valid_groundings(timeline);
-    return grounding_vector;
-}
-
-void Box::build_maps(
-    std::unordered_map<std::string, std::set<uint64_t>> &timepoint_map,
-    std::unordered_map<std::string, Grounding> &grounding_map) const {
-    for (auto const &grounding : grounding_table.get_all_groundings()) {
-        std::string key = grounding.compute_hash();
-        timepoint_map.try_emplace(key);
-        std::set<uint64_t> &timepoint_set = timepoint_map[key];
-        timepoint_set.insert(grounding.get_consideration_time());
-        grounding_map.try_emplace(key, grounding);
+    if (result) {
+        auto child_facts = child->get_groundings(timeline);
+        update_box_map(child_facts);
+        auto box_groundings = compute_box_conclusions(timeline);
+        grounding_table.add_grounding_vector(box_groundings);
     }
+    return result;
 }
 
 std::vector<Grounding>
-Box::compute_valid_groundings(util::Timeline timeline) const {
-    std::unordered_map<std::string, std::set<uint64_t>> timepoint_map;
-    std::unordered_map<std::string, Grounding> grounding_map;
-    std::unordered_map<std::string, char> duplicate_check_map;
+Box::compute_box_conclusions(util::Timeline timeline) const {
     std::vector<Grounding> result;
-    // TODO timewindow_size might be max_time - min_time. Not sure!!!
-    uint64_t timewindow_size =
-        timeline.get_time() - timeline.get_min_time();
+    uint64_t current_time = timeline.get_time();
+    uint64_t start_time = timeline.get_min_time();
+    uint64_t current_count = timeline.get_tuple_count();
+    uint64_t start_count = timeline.get_min_tuple_count();
 
-    build_maps(timepoint_map, grounding_map);
-    for (auto &iterator : timepoint_map) {
+    for (auto &iterator : box_map) {
         auto const &key = iterator.first;
-        auto const &time_set = iterator.second;
-        if (time_set.size() == timewindow_size) {
-            if (duplicate_check_map.count(key) == 0) {
-                // key is not in duplicate_check_map, so add it to result 
-                auto &grounding = grounding_map[key];
-                grounding.set_horizon_time(timeline.get_time());
-                grounding.set_consideration_time(timeline.get_time());
-                duplicate_check_map.emplace(key, 'a');
-                result.push_back(grounding);
-            }
+        auto grounding = iterator.second;
+        auto ct = grounding.get_consideration_time();
+        auto ht = grounding.get_horizon_time();
+        auto cc = grounding.get_consideration_count();
+        auto hc = grounding.get_horizon_count();
+
+        // TODO also add tuple cunter condition
+        if (ct <= start_time && ht >= current_time) {
+            grounding.set_annotations(current_time, current_time, current_count,
+                                      current_count);
+            result.push_back(grounding);
         }
     }
     return result;
+}
+
+void Box::update_box_map(std::vector<Grounding> const &facts) {
+    bool keep_going = true;
+    while (keep_going) {
+        // We need to repeate as we may have in box p(a)[1, 1], and get
+        // from child p(a)[4,4], p(a)[2,3], in this order;
+        keep_going = false;
+        for (auto const &child_grounding : facts) {
+            std::string key = child_grounding.compute_hash();
+            box_map.try_emplace(key, child_grounding);
+            Grounding &box_grounding = box_map[key];
+            keep_going |= adjust_annotation(box_grounding, child_grounding);
+        }
+    }
+}
+
+bool Box::adjust_annotation(Grounding &box_grounding,
+                            Grounding const &child_grounding) {
+    bool is_modified = false;
+    auto ct1 = box_grounding.get_consideration_time();
+    auto ht1 = box_grounding.get_horizon_time();
+    auto cc1 = box_grounding.get_consideration_count();
+    auto hc1 = box_grounding.get_horizon_count();
+    auto ct2 = child_grounding.get_consideration_time();
+    auto ht2 = child_grounding.get_horizon_time();
+    auto cc2 = child_grounding.get_consideration_count();
+    auto hc2 = child_grounding.get_horizon_count();
+
+    // Adjust Time annotations:
+    if ((ct2 <= ct1) && (ht2 >= ct1 - 1)) {
+        if (ct2 < ct1) {
+            ct1 = ct2;
+            is_modified = true;
+        }
+        if (ht2 > ht1) {
+            ht1 = ht2;
+            is_modified = true;
+        }
+    } else if ((ct2 >= ht1 + 1) && (ct2 <= ht1 + 1) && (ht2 > ht1)) {
+        ht1 = ht2;
+        is_modified = true;
+    }
+
+    // Adjust Tuple Counter annotations:
+    // TODO
+
+    box_grounding.set_annotations(ct1, ht1, cc1, hc1);
+    return is_modified;
 }
 
 } // namespace formula

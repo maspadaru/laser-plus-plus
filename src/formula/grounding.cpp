@@ -37,6 +37,14 @@ void Grounding::set_consideration_time(uint64_t consideration_time) {
     Grounding::consideration_time = consideration_time;
 }
 
+void Grounding::set_annotations(uint64_t consideration_time, uint64_t horizon_time,
+              uint64_t consideration_count, uint64_t horizon_count) {
+    Grounding::consideration_time = consideration_time;
+    Grounding::horizon_time = horizon_time;
+    Grounding::consideration_count = consideration_count;
+    Grounding::horizon_count = horizon_count;
+}
+
 bool Grounding::is_background_fact() { return is_background_fact_m; }
 
 bool Grounding::is_fact() { return is_fact_m; }
