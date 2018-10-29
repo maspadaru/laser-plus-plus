@@ -186,32 +186,179 @@ void test_box() {
                                 "13 : f(1), f(a)\n" 
                                 "14 : f(1), f(a)\n"; 
 
-    //std::string stream_string = "1 14 "
-                                //"1 : f(1), f(a), c(a, b)\n"
-                                //"2 : c(a, b), f(a)\n"
-                                //"2 : f(1), f(x2)\n"
-                                //"3 : f(a), f(1), c(a, b), f(x2)\n"
-                                //"4 : f(a), f(1), c(b, a), f(x2)\n"
-                                //"5 : f(1), c(b, a)\n"
-                                //"5 : c(a, b), c(b, a)\n"
-                                //"5 : f(a)\n"
-                                //"5 : e(x5, y5), f(a), e(a5, b5), e(x5, y5)\n"
-                                //"5 : e(x5, y5), c(b, a)\n"
-                                //"6 : f(1), c(b,a), f(1), f(1), a(x6, y6, z6), f(a)\n"
-                                //"7 : f(a)\n"
-                                //"8 : f(1), a(x8, y8, z8), b(y8, z8), c(a, b)\n" 
-                                //"8 : c(6, 7), f(1), f(a), c(a, b), c(1, 2)\n"
-                                //"8 : c(a, b), c(a, b), c(a, b)\n"
-                                //"8 : f(a), f(a), f(a)\n"
-                                //"9 : f(a), f(1), c(6, 7), c(a, b), c(1, 2)\n"
-                                //"10 : f(a), f(1), c(1, 2), c(6, 7), c(a, b)\n"
-                                //"11 : f(11), f(a), c(6, 7), c(1, 2)\n"
-                                //"12 : e(x12, x12), f(1), f(a), c(6, 7)\n"
-                                //"13 : f(a), f(1)\n"
-                                //"14 : f(a), f(1)\n";
-
     std::string rule_string = "q(X) := [B] f(X)\n"
                               "r(Y,X) := [$, 3][B]c(X, Y)\n";
+
+    auto simple_io_manager = SimpleIOManager(stream_string);
+    auto program = laser::program::Program(rule_string, &simple_io_manager);
+    program.set_start_time(1);
+
+    while (!program.is_done()) {
+        program.evaluate();
+    }
+    std::cout << " =================================== " << std::endl;
+    std::cout << std::endl << std::endl;
+}
+
+void test_conjunction_same_variables() {
+    std::cout << std::endl;
+    const std::string TEST_NAME = "Conjunction same variables";
+    std::cout << " Test: " << TEST_NAME << std::endl;
+    std::cout << " =================================== " << std::endl;
+
+    std::string stream_string = "1 14 "
+                                "1 : a(x)\n"
+                                "2 : a(x), b(x)\n"
+                                "3 : a(x)\n"
+                                "4 : a(x)\n"
+                                "5 : a(x), b(x)\n"
+                                "6 : b(x)\n"
+                                "7 : b(x)\n"
+                                "8 : \n"
+                                "9 : a(x)\n"
+                                "10 : a(x), b(x)\n"
+                                "11 : a(x)\n"
+                                "12 : a(x)\n"
+                                "13 : a(x)\n"
+                                "14 : a(x)\n";
+
+    std::string rule_string = "q(X) := a(X) &&  b(X)\n";
+
+    auto simple_io_manager = SimpleIOManager(stream_string);
+    auto program = laser::program::Program(rule_string, &simple_io_manager);
+    program.set_start_time(1);
+
+    while (!program.is_done()) {
+        program.evaluate();
+    }
+    std::cout << " =================================== " << std::endl;
+    std::cout << std::endl << std::endl;
+}
+
+void test_conjunction_two_variables() {
+    std::cout << std::endl;
+    const std::string TEST_NAME = "Conjunction two variables";
+    std::cout << " Test: " << TEST_NAME << std::endl;
+    std::cout << " =================================== " << std::endl;
+
+    std::string stream_string = "1 14 "
+                                "1 : a(x)\n"
+                                "2 : a(x), b(y)\n"
+                                "3 : a(x)\n"
+                                "4 : a(x)\n"
+                                "5 : a(x), b(y)\n"
+                                "6 : b(x)\n"
+                                "7 : b(x)\n"
+                                "8 : \n"
+                                "9 : a(x)\n"
+                                "10 : a(x), b(y)\n"
+                                "11 : a(x)\n"
+                                "12 : a(x)\n"
+                                "13 : a(x)\n"
+                                "14 : a(x)\n";
+
+    std::string rule_string = "q(X,Y) := a(X) &&  b(Y)\n";
+
+    auto simple_io_manager = SimpleIOManager(stream_string);
+    auto program = laser::program::Program(rule_string, &simple_io_manager);
+    program.set_start_time(1);
+
+    while (!program.is_done()) {
+        program.evaluate();
+    }
+    std::cout << " =================================== " << std::endl;
+    std::cout << std::endl << std::endl;
+}
+
+void test_conjunction_diamond() {
+    std::cout << std::endl;
+    const std::string TEST_NAME = "Conjunction Diamond";
+    std::cout << " Test: " << TEST_NAME << std::endl;
+    std::cout << " =================================== " << std::endl;
+
+    std::string stream_string = "1 14 "
+                                "1 : a(x)\n"
+                                "2 : a(x), b(y)\n"
+                                "3 : a(x)\n"
+                                "4 : a(x)\n"
+                                "5 : a(x), b(y)\n"
+                                "6 : b(y)\n"
+                                "7 : b(y)\n"
+                                "8 : \n"
+                                "9 : a(x)\n"
+                                "10 : a(x), b(y)\n"
+                                "11 : a(x)\n"
+                                "12 : a(x)\n"
+                                "13 : a(x)\n"
+                                "14 : a(x)\n";
+
+    std::string rule_string = "q(X,Y) := a(X) && [$, 2] [D] b(Y)\n";
+
+    auto simple_io_manager = SimpleIOManager(stream_string);
+    auto program = laser::program::Program(rule_string, &simple_io_manager);
+    program.set_start_time(1);
+
+    while (!program.is_done()) {
+        program.evaluate();
+    }
+    std::cout << " =================================== " << std::endl;
+    std::cout << std::endl << std::endl;
+}
+
+void test_conjunction_box() {
+    std::cout << std::endl;
+    const std::string TEST_NAME = "Conjunction Box";
+    std::cout << " Test: " << TEST_NAME << std::endl;
+    std::cout << " =================================== " << std::endl;
+
+    std::string stream_string = "1 14 "
+                                "1 : a(x)\n"
+                                "2 : a(x), b(y)\n"
+                                "3 : a(x), b(y)\n"
+                                "4 : a(x), b(y)\n"
+                                "5 : a(x), b(y)\n"
+                                "6 : b(y)\n"
+                                "7 : b(y)\n"
+                                "8 : \n"
+                                "9 : a(x)\n"
+                                "10 : a(x), b(y)\n"
+                                "11 : a(x), b(y)\n"
+                                "12 : a(x), b(y)\n"
+                                "13 : a(x), b(y)\n"
+                                "14 : a(x)\n";
+
+    std::string rule_string = "q(X,Y) := a(X) && [$, 2] [B] b(Y)\n";
+
+    auto simple_io_manager = SimpleIOManager(stream_string);
+    auto program = laser::program::Program(rule_string, &simple_io_manager);
+    program.set_start_time(1);
+
+    while (!program.is_done()) {
+        program.evaluate();
+    }
+    std::cout << " =================================== " << std::endl;
+    std::cout << std::endl << std::endl;
+}
+
+void test_conjunction_corss_variables() {
+    std::cout << std::endl;
+    const std::string TEST_NAME = "Conjunction cross variables";
+    std::cout << " Test: " << TEST_NAME << std::endl;
+    std::cout << " =================================== " << std::endl;
+
+    std::string stream_string = "1 14 "
+                                "1 : a(x,y)\n"
+                                "2 : a(x,x), b(y,x)\n"
+                                "3 : a(y,y), b(y,x)\n"
+                                "4 : a(x,y), b(y,x)\n"
+                                "5 : a(y,x), b(y,x)\n"
+                                "6 : a(x,x), b(x,y)\n"
+                                "7 : a(x,x), b(y,y)\n"
+                                "8 : a(x,x), b(y,x)\n"
+                                "9 : b(x,y)\n"
+                                "10 : \n";
+
+    std::string rule_string = "q(X,Y) := a(X,X) && b(Y,X)\n";
 
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
@@ -228,5 +375,10 @@ int main() {
     // test_atoms();
     // test_diamond();
     // test_time_window();
-    test_box();
+    // test_box();
+    test_conjunction_same_variables();
+    test_conjunction_two_variables();
+    test_conjunction_diamond();
+    test_conjunction_box();
+    test_conjunction_corss_variables();
 }

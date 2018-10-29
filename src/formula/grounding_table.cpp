@@ -51,7 +51,11 @@ std::vector<Grounding> GroundingTable::get_all_groundings() const {
 }
 
 int GroundingTable::get_variable_index(std::string const &variable_name) const {
-    return variable_index.at(variable_name);
+    int result = -1;
+    if (variable_index.count(variable_name) > 0) { 
+        result = variable_index.at(variable_name);
+    }
+    return result;
 }
 
 void GroundingTable::expire_outdated_groundings(

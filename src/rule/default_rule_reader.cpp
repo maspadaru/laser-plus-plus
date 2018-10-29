@@ -264,7 +264,7 @@ laser::formula::Formula *DefaultRuleReader::parse_binary_operator() {
     if (is_next_char('&')) {
         skip_expected_char('&');
         skip_expected_char('&');
-        // result = new Conjunction();
+        result = new laser::formula::Conjunction();
     } else {
         skip_expected_char('|');
         skip_expected_char('|');

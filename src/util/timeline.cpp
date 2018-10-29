@@ -78,6 +78,15 @@ uint64_t Timeline::substract(uint64_t initial_value, uint64_t substracted_val) c
     }
     return initial_value - substracted_val;
 }
+uint64_t Timeline::min(uint64_t first, uint64_t second) const {
+    int result = (first < second) ? first : second;
+    return result;
+}
+
+uint64_t Timeline::max(uint64_t first, uint64_t second) const {
+    int result = (first > second) ? first : second;
+    return result;
+}
 
 } // namespace util
 } // namespace laser
