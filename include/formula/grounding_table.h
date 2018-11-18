@@ -40,6 +40,8 @@ class GroundingTable {
      */
     std::vector<Grounding> get_recent_groundings();
 
+    bool has_recent_groundings();
+
     void add_variable_name(std::string const &variable_name);
 
     size_t get_number_of_variables() const;

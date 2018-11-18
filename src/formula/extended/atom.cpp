@@ -117,7 +117,7 @@ bool Atom::evaluate(
             accept(grounding);
         }
     }
-    return this->is_satisfied();
+    return grounding_table.has_recent_groundings();
 }
 
 void Atom::accept(Grounding const &grounding) {

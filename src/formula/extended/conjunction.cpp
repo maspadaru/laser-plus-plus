@@ -206,7 +206,7 @@ bool Conjunction::evaluate(
     result |= right_child->evaluate(timeline, facts);
     populate_grounding_vector(timeline, left_child->get_groundings(timeline),
                               right_child->get_groundings(timeline));
-    return result;
+    return !grounding_vector.empty();
 }
 
 } // namespace formula

@@ -90,7 +90,7 @@ bool Box::evaluate(
         auto box_groundings = compute_box_conclusions(timeline);
         grounding_table.add_grounding_vector(box_groundings);
     }
-    return result;
+    return grounding_table.has_recent_groundings();
 }
 
 std::vector<Grounding>

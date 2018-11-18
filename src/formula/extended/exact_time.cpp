@@ -72,7 +72,7 @@ bool ExactTime::evaluate(
     bool result = child->evaluate(timeline, facts);
     auto child_facts = child->get_groundings(timeline);
     grounding_table.add_grounding_vector(child_facts);
-    return result;
+    return grounding_table.has_recent_groundings();
 }
 
 void ExactTime::expire_outdated_groundings(util::Timeline timeline) {

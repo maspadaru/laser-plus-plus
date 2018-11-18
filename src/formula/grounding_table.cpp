@@ -8,6 +8,10 @@ namespace formula {
 
 size_t GroundingTable::get_size() const { return size; }
 
+bool GroundingTable::has_recent_groundings() {
+    return !recent_groundings_set.empty();
+}
+
 std::vector<Grounding> GroundingTable::get_recent_groundings() {
     std::vector<Grounding> result(recent_groundings_set.size());
     std::move(recent_groundings_set.begin(), recent_groundings_set.end(), 
