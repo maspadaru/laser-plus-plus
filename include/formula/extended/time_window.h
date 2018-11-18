@@ -62,7 +62,9 @@ class TimeWindow : public Formula {
     void expire_outdated_groundings(util::Timeline timeline) override;
 
     std::vector<Grounding>
-    get_groundings(util::Timeline timeline) const override;
+    get_groundings(util::Timeline timeline) override;
+
+    std::vector<Grounding> get_conclusions(util::Timeline timeline) override;
 
     std::string debug_string() const override;
 

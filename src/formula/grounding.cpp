@@ -63,6 +63,16 @@ std::string Grounding::compute_hash() const {
     return ss.str();
 } 
 
+std::string Grounding::compute_hash_full() const {
+    std::stringstream ss;
+    for (auto &constant : substitution_vector) {
+          ss << constant << ";;";
+    } 
+    ss << consideration_time << ";;" << horizon_time << ";;"
+        << consideration_count << ";;" << horizon_count;
+    return ss.str();
+} 
+
 std::string Grounding::get_substitution(size_t variable_index) const {
     return substitution_vector.at(variable_index);
 }
@@ -104,6 +114,10 @@ std::string Grounding::debug_string() const{
         os << variable << ", ";
     }
     return os.str();
+}
+
+bool Grounding::operator< (const Grounding &other) const {
+    return compute_hash_full() < other.compute_hash_full();
 }
 
 } // namespace formula

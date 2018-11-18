@@ -91,7 +91,7 @@ uint64_t TimeWindow::compute_horizon_time(uint64_t grounding_consideration_time,
 }
 
 std::vector<Grounding>
-TimeWindow::get_groundings(util::Timeline timeline) const {
+TimeWindow::get_groundings(util::Timeline timeline) {
     auto window_timeline = alter_timeline(timeline);
     auto child_conclusions = child->get_groundings(window_timeline);
     for (auto &grounding : child_conclusions) {
@@ -101,6 +101,11 @@ TimeWindow::get_groundings(util::Timeline timeline) const {
         grounding.set_horizon_time(window_horizon_time);
     }
     return child_conclusions;
+}
+
+std::vector<Grounding>
+TimeWindow::get_conclusions(util::Timeline timeline) {
+    return get_groundings(timeline);
 }
 
 std::string TimeWindow::debug_string() const { return child->debug_string(); }

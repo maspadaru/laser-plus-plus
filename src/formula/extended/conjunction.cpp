@@ -125,8 +125,13 @@ void Conjunction::expire_outdated_groundings(util::Timeline timeline) {
 }
 
 std::vector<Grounding>
-Conjunction::get_groundings(util::Timeline timeline) const {
+Conjunction::get_groundings(util::Timeline timeline) {
     return grounding_vector;
+}
+
+std::vector<Grounding>
+Conjunction::get_conclusions(util::Timeline timeline) {
+    return get_groundings(timeline);
 }
 
 std::string

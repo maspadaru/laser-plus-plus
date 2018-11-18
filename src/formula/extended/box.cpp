@@ -71,9 +71,13 @@ void Box::expire_outdated_groundings(util::Timeline timeline) {
     }
 }
 
-std::vector<Grounding> Box::get_groundings(util::Timeline timeline) const {
+std::vector<Grounding> Box::get_groundings(util::Timeline timeline) {
     auto grounding_vector = grounding_table.get_all_groundings();
     return grounding_vector;
+}
+
+std::vector<Grounding> Box::get_conclusions(util::Timeline timeline) {
+    return grounding_table.get_recent_groundings();
 }
 
 bool Box::evaluate(

@@ -5,6 +5,7 @@
 #define LASER_FORMULA_GROUNDING_TABLE_H
 
 #include <list>
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <iostream>
@@ -16,13 +17,10 @@ namespace formula {
 
 class GroundingTable {
   private:
-    // TODO should grounding_map value be of type std::set?
-    // TODO     std::set -> PRO: unique items; CON: insert complexity O(log n)
-    // grounding_map: key: consideration_time
-    //        value: Vector of all groundings sharing consideration_time
-    //  -- value should contain no duplicates
-    std::unordered_map<uint64_t, std::list<Grounding>> grounding_map;
-    std::vector<Grounding> recent_groundings_vector;
+    // grounding_map: key: horizon_time
+    //        value: Set of all groundings sharing consideration_time
+    std::unordered_map<uint64_t, std::set<Grounding>> grounding_map;
+    std::set<Grounding> recent_groundings_set;
     std::vector<std::string> variable_names;
     std::unordered_map<std::string, int> variable_index;
     size_t size = 0;
@@ -30,17 +28,17 @@ class GroundingTable {
     template <typename T>
     void debug_print(std::string const &message, T const &value) const;
   public:
-    // getters & setters
 
     size_t get_size() const;
 
-    std::vector<Grounding> get_recent_groundings_vector() const;
 
     std::vector<std::string> get_variable_names() const;
 
     void set_variable_names(std::vector<std::string> variable_names);
 
-    // methods
+    /** Returns the contents of recent groundings set as a vector, and clears it
+     */
+    std::vector<Grounding> get_recent_groundings();
 
     void add_variable_name(std::string const &variable_name);
 
@@ -48,9 +46,7 @@ class GroundingTable {
 
     int get_variable_index(std::string const& variable_name) const;
 
-    std::list<Grounding> get_groundings(uint64_t consideration_time) const;
-
-    std::vector<Grounding> get_all_groundings() const;
+    std::vector<Grounding> get_all_groundings();
 
     void add_grounding(Grounding const &grounding);
 

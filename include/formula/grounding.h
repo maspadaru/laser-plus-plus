@@ -75,8 +75,14 @@ class Grounding {
      * in Box::get_groundings() / Box::build_maps(). 
      * TODO: This should be replaced with a hash function for efficiency later
      * and the resulting hash should be used as the key
+     * TODO: Make class immutable. Compute hash only once and return value
+     * in function get_hash()
      */
     std::string compute_hash() const;
+
+    // TODO better name
+    std::string compute_hash_full() const;
+
 
     void add_substitution(size_t variable_index, std::string constant);
 
@@ -87,6 +93,8 @@ class Grounding {
     size_t get_size() const;
 
     std::string debug_string() const;
+        
+    bool operator< (const Grounding &other) const;
 };
 
 } // namespace formula

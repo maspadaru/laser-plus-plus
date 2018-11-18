@@ -371,14 +371,45 @@ void test_conjunction_corss_variables() {
     std::cout << std::endl << std::endl;
 }
 
+void test_recursive() {
+    std::cout << std::endl;
+    const std::string TEST_NAME = "Recursive";
+    std::cout << " Test: " << TEST_NAME << std::endl;
+    std::cout << " =================================== " << std::endl;
+
+    std::string stream_string = "1 14 "
+                                "1 : q(1), p(1)\n"
+                                "2 : p(2)\n"
+                                "3 : p(3), q(3)\n"
+                                "4 : \n";
+
+    std::string rule_string = "a(X) := b(X) && c(X)\n"
+                              "b(X) := [$, 3] [D] d(X)\n"
+                              "c(X) := [$, 3] [B] e(X)\n"
+                              "e(X) := b(X) && p(X)\n"
+                              "d(X) := q(X) && p(X)\n";
+
+
+    auto simple_io_manager = SimpleIOManager(stream_string);
+    auto program = laser::program::Program(rule_string, &simple_io_manager);
+    program.set_start_time(1);
+
+    while (!program.is_done()) {
+        program.evaluate();
+    }
+    std::cout << " =================================== " << std::endl;
+    std::cout << std::endl << std::endl;
+}
+
 int main() { 
-    // test_atoms();
-    // test_diamond();
-    // test_time_window();
-    // test_box();
+    test_atoms();
+    test_diamond();
+    test_time_window();
+    test_box();
     test_conjunction_same_variables();
     test_conjunction_two_variables();
     test_conjunction_diamond();
     test_conjunction_box();
     test_conjunction_corss_variables();
+    test_recursive();
 }

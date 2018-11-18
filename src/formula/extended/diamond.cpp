@@ -54,12 +54,16 @@ std::string Diamond::debug_string() const { return child->debug_string(); }
 
 void Diamond::add_child(formula::Formula *child) {}
 
-std::vector<Grounding> Diamond::get_groundings(util::Timeline timeline) const {
+std::vector<Grounding> Diamond::get_groundings(util::Timeline timeline) {
      auto grounding_vector = grounding_table.get_all_groundings();
      for (auto &grounding : grounding_vector) {
          grounding.set_horizon_time(util::Timeline::INFINITE_TIME);
      } 
      return grounding_vector;
+}
+
+std::vector<Grounding> Diamond::get_conclusions(util::Timeline timeline) {
+    return grounding_table.get_recent_groundings();
 }
 
 bool Diamond::evaluate(

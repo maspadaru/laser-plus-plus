@@ -1,10 +1,7 @@
-#ifndef LASER_FORMULA_EXTENDED_BOX_H
-#define LASER_FORMULA_EXTENDED_BOX_H
+#ifndef LASER_FORMULA_EXTENDED_EXACT_TIME_H
+#define LASER_FORMULA_EXTENDED_EXACT_TIME_H
 
-#include <set>
 #include <string>
-#include <unordered_map>
-#include <vector>
 
 #include "formula/formula.h"
 #include "formula/grounding.h"
@@ -14,32 +11,19 @@ namespace laser {
 namespace formula {
 
 /**
- * Box Formula
+ * ExactTime (@) Formula
  */
-class Box : public Formula {
+class ExactTime : public Formula {
   private:
     Formula *child;
-
     GroundingTable grounding_table;
-
-    std::unordered_map<std::string, Grounding> box_map;
-
-    // Methods
-
-    bool adjust_annotation(Grounding &box_grounding,
-                           Grounding const &child_grounding);
-
-    std::vector<Grounding>
-    compute_box_conclusions(util::Timeline timeline) const;
-
-    void update_box_map(std::vector<Grounding> const &facts);
 
   public:
     // constructors / destructors
 
-    Box() = default;
-    explicit Box(Formula *child);
-    ~Box() override;
+    ExactTime() = default;
+    explicit ExactTime(Formula* child);
+    ~ExactTime() override;
 
     Formula &create() const override;
     Formula &clone() const override;
@@ -64,24 +48,24 @@ class Box : public Formula {
 
     size_t get_number_of_variables() const override;
 
-    std::vector<Grounding>
-    get_groundings(util::Timeline timeline) override;
+    std::vector<Grounding> get_groundings(util::Timeline timeline) override;
 
     std::vector<Grounding> get_conclusions(util::Timeline timeline) override;
 
     std::string debug_string() const override;
-
+    
     bool
     evaluate(util::Timeline timeline,
              std::unordered_map<std::string, std::vector<formula::Grounding>>
                  facts) override;
 
     void expire_outdated_groundings(util::Timeline timeline) override;
+    
+    void add_child(formula::Formula* child) override;
 
-    void add_child(formula::Formula *child) override;
 };
 
 } // namespace formula
 } // namespace laser
 
-#endif // LASER_FORMULA_EXTENDED_BOX_H
+#endif // LASER_FORMULA_EXTENDED_EXACT_TIME_H

@@ -48,7 +48,9 @@ class Diamond : public Formula {
 
     size_t get_number_of_variables() const override;
 
-    std::vector<Grounding> get_groundings(util::Timeline timeline) const override;
+    std::vector<Grounding> get_groundings(util::Timeline timeline) override;
+    
+    std::vector<Grounding> get_conclusions(util::Timeline timeline) override;
 
     std::string debug_string() const override;
     

@@ -6,30 +6,21 @@
 namespace laser {
 namespace formula {
 
-// constructors & destructor
-
-// getters & setters
-
 size_t GroundingTable::get_size() const { return size; }
 
-std::vector<Grounding> GroundingTable::get_recent_groundings_vector() const {
-    return recent_groundings_vector;
+std::vector<Grounding> GroundingTable::get_recent_groundings() {
+    std::vector<Grounding> result(recent_groundings_set.size());
+    std::move(recent_groundings_set.begin(), recent_groundings_set.end(), 
+            std::back_inserter(result));
+    recent_groundings_set.clear(); // should not be necesarry
+    return result;
 }
-
-// const methods
-
-std::list<Grounding>
-GroundingTable::get_groundings(uint64_t consideration_time) const {
-    return grounding_map.at(consideration_time);
-}
-
-// methods
 
 void GroundingTable::add_grounding(Grounding const &grounding) {
-    std::list<Grounding> &groundings =
-        grounding_map[grounding.get_consideration_time()];
-    groundings.push_back(grounding);
-    recent_groundings_vector.push_back(grounding);
+    std::set<Grounding> &groundings =
+        grounding_map[grounding.get_horizon_time()];
+    groundings.insert(grounding);
+    recent_groundings_set.insert(grounding);
     size += 1;
 }
     
@@ -39,7 +30,7 @@ void GroundingTable::add_grounding_vector(std::vector<Grounding> const &groundin
     }
 }
 
-std::vector<Grounding> GroundingTable::get_all_groundings() const {
+std::vector<Grounding> GroundingTable::get_all_groundings() {
     // Merges all lists together
     std::vector<Grounding> all_groundings;
     for (auto const &map_iterator : grounding_map) {
@@ -47,6 +38,7 @@ std::vector<Grounding> GroundingTable::get_all_groundings() const {
         all_groundings.insert(all_groundings.end(), grounding_list.begin(),
                               grounding_list.end());
     }
+    recent_groundings_set.clear();
     return all_groundings;
 }
 
@@ -60,17 +52,16 @@ int GroundingTable::get_variable_index(std::string const &variable_name) const {
 
 void GroundingTable::expire_outdated_groundings(
     uint64_t current_time, uint64_t current_tuple_counter) {
-    size_t new_size = 0;
-    for (auto &map_iterator : grounding_map) {
-        auto &grounding_list = map_iterator.second;
-        grounding_list.remove_if([current_time, current_tuple_counter](
-                                     Grounding const &grounding) {
-            return grounding.has_expired(current_time, current_tuple_counter);
-        });
-        new_size += grounding_list.size();
+    uint64_t horizon_time = current_time - 1;
+    if (grounding_map.count(horizon_time) > 0) {
+        size -= grounding_map[horizon_time].size();
+        grounding_map.erase(horizon_time);
     }
-    recent_groundings_vector.clear();
-    size = new_size;
+    recent_groundings_set.clear();
+    /* TODO expire also by hourizon_counter
+     * Not sure if it's more efficient to create a new map based on ht, or 
+     * a nested hashtable, or just to itterate over all keys
+     */
 }
 
 std::vector<std::string> GroundingTable::get_variable_names() const {

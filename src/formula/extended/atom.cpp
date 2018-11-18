@@ -98,8 +98,12 @@ std::string Atom::debug_string() const {
     return os.str();
 }
 
-std::vector<Grounding> Atom::get_groundings(util::Timeline timeline) const {
+std::vector<Grounding> Atom::get_groundings(util::Timeline timeline) {
     return grounding_table.get_all_groundings();
+}
+
+std::vector<Grounding> Atom::get_conclusions(util::Timeline timeline) {
+    return grounding_table.get_recent_groundings();
 }
 
 bool Atom::is_satisfied() const { return grounding_table.get_size() > 0; }

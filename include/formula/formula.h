@@ -71,7 +71,13 @@ class Formula {
 
     virtual void expire_outdated_groundings(util::Timeline timeline) = 0;
 
-    virtual std::vector<Grounding> get_groundings(util::Timeline timeline) const = 0;
+    virtual std::vector<Grounding> get_groundings(util::Timeline timeline) = 0;
+
+    /**
+     * Used to get conclusions from the head of the rule, i.e.: only for 
+     * Atom and Exact_Time 
+     */
+    virtual std::vector<Grounding> get_conclusions(util::Timeline timeline) = 0;
 
     virtual std::string debug_string() const = 0;
 };

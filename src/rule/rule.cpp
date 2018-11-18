@@ -97,7 +97,7 @@ Rule::convert_to_head_grounding(formula::Grounding const &grounding) const {
 }
 
 bool Rule::derive_conclusions(util::Timeline timeline) {
-    bool is_body_satisfied = false;
+    bool result = false;
     std::vector<formula::Grounding> predicate_facts;
     std::vector<formula::Grounding> body_groundings =
         body.get_groundings(timeline);
@@ -109,7 +109,7 @@ bool Rule::derive_conclusions(util::Timeline timeline) {
             predicate_facts.push_back(head_grounding);
         }
     }
-    is_body_satisfied = !predicate_facts.empty();
+    bool is_body_satisfied = !predicate_facts.empty();
     if (is_body_satisfied) {
         std::unordered_map<std::string, std::vector<formula::Grounding>>
             body_facts;
@@ -118,10 +118,9 @@ bool Rule::derive_conclusions(util::Timeline timeline) {
         for (auto predicate : head.get_predicate_vector()) {
             body_facts.insert({predicate, predicate_facts});
         }
-        auto result = head.evaluate(timeline, body_facts);
-        return result;
+        result = head.evaluate(timeline, body_facts);
     }
-    return head.is_satisfied();
+    return result;
 }
 
 template <typename T>
