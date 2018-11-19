@@ -23,9 +23,12 @@ std::vector<Grounding> GroundingTable::get_recent_groundings() {
 void GroundingTable::add_grounding(Grounding const &grounding) {
     std::set<Grounding> &groundings =
         grounding_map[grounding.get_horizon_time()];
-    groundings.insert(grounding);
-    recent_groundings_set.insert(grounding);
-    size += 1;
+    bool was_inserted = false;
+    std::tie(std::ignore, was_inserted) = groundings.insert(grounding);
+    if (was_inserted) {
+        recent_groundings_set.insert(grounding);
+        size += 1;
+    }
 }
     
 void GroundingTable::add_grounding_vector(std::vector<Grounding> const &grounding_vector) {

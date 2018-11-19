@@ -40,6 +40,31 @@
  *
  */
 
+void test_simple() {
+    std::cout << std::endl;
+    const std::string TEST_NAME = "Simple";
+    std::cout << " Test: " << TEST_NAME << std::endl;
+    std::cout << " =================================== " << std::endl;
+
+    std::string stream_string = "1 4 "
+                                "1 : a(x1, y1, z1)\n"
+                                "2 : a(x2, y2, z2)\n"
+                                "3 : a(x3, y3, z3)\n"
+                                "4 : \n";
+
+    std::string rule_string = "p(X, Y, Z) := a(X, Y, Z)\n";
+
+    auto simple_io_manager = SimpleIOManager(stream_string);
+    auto program = laser::program::Program(rule_string, &simple_io_manager);
+    program.set_start_time(1);
+
+    while (!program.is_done()) {
+        program.evaluate();
+    }
+    std::cout << " =================================== " << std::endl;
+    std::cout << std::endl << std::endl;
+}
+
 void test_atoms() {
     std::cout << std::endl;
     const std::string TEST_NAME = "Atoms";
@@ -379,8 +404,8 @@ void test_recursive() {
 
     std::string stream_string = "1 14 "
                                 "1 : q(1), p(1)\n"
-                                "2 : p(2)\n"
-                                "3 : p(3), q(3)\n"
+                                "2 : p(1)\n"
+                                "3 : p(1), q(1)\n"
                                 "4 : \n";
 
     std::string rule_string = "a(X) := b(X) && c(X)\n"
@@ -402,6 +427,7 @@ void test_recursive() {
 }
 
 int main() { 
+    test_simple();
     test_atoms();
     test_diamond();
     test_time_window();

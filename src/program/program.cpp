@@ -27,7 +27,7 @@ bool Program::evaluate_rule_vector(
 uint64_t Program::get_current_time() const { return timeline.get_time(); }
 
 uint64_t Program::get_current_tuple_counter() const {
-    return timeline.get_tuple_count(); 
+    return timeline.get_tuple_count();
 }
 
 int Program::get_number_of_new_conclusions() const {
@@ -42,8 +42,9 @@ void Program::debug_print(std::string const &message, T const &value) const {
     std::cerr << message << " : " << value << std::endl;
 }
 
-void Program::set_start_time(uint64_t start_time) { 
-    timeline.set_min_time(start_time); }
+void Program::set_start_time(uint64_t start_time) {
+    timeline.set_min_time(start_time);
+}
 
 bool Program::is_done() {
     if (!has_timeline) {
@@ -62,11 +63,35 @@ void Program::expire_outdated_groundings() {
 }
 
 bool Program::eval() {
-    std::unordered_map<std::string, std::vector<formula::Grounding>>
-        stream_facts = ioHandler.get_stream_data(timeline.get_time());
+    bool has_derived_new_conclusions = false;
+    std::unordered_map<std::string, std::vector<formula::Grounding>> facts =
+        ioHandler.get_stream_data(timeline.get_time());
     expire_outdated_groundings();
-    bool has_derived_new_conclusions = evaluate_rule_vector(stream_facts);
+    while (!facts.empty()) {
+        evaluate_rule_vector(facts);
+        facts.clear();
+        facts = get_new_conclusions();
+        has_derived_new_conclusions |= !facts.empty(); 
+    }
     return has_derived_new_conclusions;
+}
+
+std::unordered_map<std::string, std::vector<formula::Grounding>>
+Program::get_new_conclusions() {
+    std::unordered_map<std::string, std::vector<formula::Grounding>> new_conclusions;
+    for (auto const &rule : rule_vector) {
+        formula::Formula *head = &rule.get_head();
+        auto const &predicate_vector = head->get_predicate_vector();
+        for (auto const &conclusion : head->get_conclusions(timeline)) {
+            // In case head formula has multiple predicates. Might be imposible
+            for (auto const &predicate : predicate_vector) {
+                new_conclusions.try_emplace(predicate);
+                std::vector<formula::Grounding> &conclusions_vector = new_conclusions[predicate];
+                conclusions_vector.push_back(conclusion);
+            }
+        }
+    }
+    return new_conclusions;
 }
 
 void Program::write_output() {

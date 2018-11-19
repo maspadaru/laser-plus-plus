@@ -4,20 +4,20 @@
 #ifndef LASER_PROGRAM_PROGRAM_H
 #define LASER_PROGRAM_PROGRAM_H
 
-#include <string>
-#include <unordered_map>
-#include <vector>
-#include <utility>
 #include <any>
 #include <iostream>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
 
-#include "util/request_exception.h"
 #include "formula/formula.h"
 #include "io/io_manager.h"
 #include "io/rule_reader.h"
 #include "program/io_handler.h"
-#include "rule/rule.h"
 #include "rule/default_rule_reader.h"
+#include "rule/rule.h"
+#include "util/request_exception.h"
 #include "util/timeline.h"
 
 namespace laser {
@@ -29,10 +29,10 @@ class Program {
     IOHandler ioHandler;
 
     laser::util::Timeline timeline;
-    //uint64_t current_time = 0;
-    //uint64_t current_tuple_counter = 0;
-    //uint64_t stream_start_time = 0;
-    //uint64_t stream_end_time = 0;
+    // uint64_t current_time = 0;
+    // uint64_t current_tuple_counter = 0;
+    // uint64_t stream_start_time = 0;
+    // uint64_t stream_end_time = 0;
     int number_of_new_conclusions = 0;
     bool has_timeline = false;
 
@@ -50,16 +50,18 @@ class Program {
 
     void expire_outdated_groundings();
 
-    std::vector<formula::Formula *> get_new_conclusions();
-
+    // TODO Not used -> remove it
     void accept_new_facts(
         std::unordered_map<std::string, std::vector<formula::Grounding>> const
             &stream_facts);
 
     void write_output();
 
-    template<typename T>
-    void debug_print(std::string const& message, T const& value) const;
+    template <typename T>
+    void debug_print(std::string const &message, T const &value) const;
+
+    std::unordered_map<std::string, std::vector<formula::Grounding>>
+    get_new_conclusions();
 
   public:
     // constructors & destructors
