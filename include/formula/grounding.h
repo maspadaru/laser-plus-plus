@@ -38,6 +38,10 @@ class Grounding {
     Grounding(uint64_t consideration_time, uint64_t horizon_time,
               uint64_t consideration_count, uint64_t horizon_count);
 
+    Grounding(uint64_t consideration_time, uint64_t horizon_time,
+              uint64_t consideration_count, uint64_t horizon_count,
+              std::vector<std::string> substitution_vector);
+
     Grounding() = default;
 
     // getters & setters
@@ -85,6 +89,11 @@ class Grounding {
 
 
     void add_substitution(size_t variable_index, std::string constant);
+
+    /** 
+     * Creates a new Grounding containing an extra constant at the end
+     */ 
+    Grounding add_constant(size_t index, std::string const &constant) const;
 
     void add_substitution_vector(std::vector<std::string> vector);
 

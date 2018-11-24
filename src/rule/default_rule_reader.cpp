@@ -385,17 +385,15 @@ laser::formula::Formula *DefaultRuleReader::parse_negation() {
 }
 
 laser::formula::Formula *DefaultRuleReader::parse_exact_time() {
-    // skip_expected_char("@");
-    // skip_spaces();
-    // skip_expected_char(",");
-    // skip_spaces();
-    // std::string argument = parse_argument();
-    // skip_spaces();
-    // skip_expected_char("]");
-    // auto child = parse_formula();
-    // return new laser::Formula::Exact_Time(argument, child);
-    // TODO
-    return new laser::formula::Atom("TODO");
+    skip_expected_char('@');
+    skip_spaces();
+    skip_expected_char(',');
+    skip_spaces();
+    std::string argument = parse_identifier();
+    skip_spaces();
+    skip_expected_char(']');
+    auto child = parse_formula();
+    return new laser::formula::ExactTime(argument, child);
 }
 
 laser::formula::Formula *DefaultRuleReader::parse_time_window() {

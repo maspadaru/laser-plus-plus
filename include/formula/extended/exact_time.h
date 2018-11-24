@@ -17,12 +17,28 @@ class ExactTime : public Formula {
   private:
     Formula *child;
     GroundingTable grounding_table;
+    /** Name of the time variable. Will always be on the last possition in the
+     * grounding.
+     */
+    std::string time_variable;
+
+    /**
+     * Adds the Time Variable to all the groundings in child_groundings vector
+     */
+    std::vector<Grounding>
+    convert_groundings(util::Timeline timeline, std::vector<Grounding> child_groundings) const;
+
+    Grounding add_time_variable(util::Timeline timeline, Grounding grounding) const;
+
+    void init();
+
+    size_t get_time_variable_index() const;
 
   public:
     // constructors / destructors
 
     ExactTime() = default;
-    explicit ExactTime(Formula* child);
+    ExactTime(std::string time_variable, Formula *child);
     ~ExactTime() override;
 
     Formula &create() const override;
@@ -53,16 +69,15 @@ class ExactTime : public Formula {
     std::vector<Grounding> get_conclusions(util::Timeline timeline) override;
 
     std::string debug_string() const override;
-    
+
     bool
     evaluate(util::Timeline timeline,
              std::unordered_map<std::string, std::vector<formula::Grounding>>
                  facts) override;
 
     void expire_outdated_groundings(util::Timeline timeline) override;
-    
-    void add_child(formula::Formula* child) override;
 
+    void add_child(formula::Formula *child) override;
 };
 
 } // namespace formula

@@ -13,7 +13,7 @@ bool GroundingTable::has_recent_groundings() {
 }
 
 std::vector<Grounding> GroundingTable::get_recent_groundings() {
-    std::vector<Grounding> result(recent_groundings_set.size());
+    std::vector<Grounding> result;
     std::move(recent_groundings_set.begin(), recent_groundings_set.end(), 
             std::back_inserter(result));
     recent_groundings_set.clear(); // should not be necesarry
