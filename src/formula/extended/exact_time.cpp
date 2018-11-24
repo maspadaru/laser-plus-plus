@@ -107,8 +107,9 @@ std::vector<Grounding> ExactTime::get_groundings(util::Timeline timeline) {
 }
 
 std::vector<Grounding> ExactTime::get_conclusions(util::Timeline timeline) {
-    auto grounding_vector = grounding_table.get_all_groundings();
+    // 1. Get recent groundings and add them to result or furure_conclusion_map
     std::vector<Grounding> result;
+    auto grounding_vector = grounding_table.get_recent_groundings();
     if (!grounding_vector.empty()) {
         for (auto &grounding : grounding_vector) {
             std::string timevar_string =
@@ -116,9 +117,17 @@ std::vector<Grounding> ExactTime::get_conclusions(util::Timeline timeline) {
             uint64_t timevar_value = std::stoull(timevar_string);
             if (timevar_value == timeline.get_time()) {
                 result.push_back(grounding);
+            } else {
+                future_conclusion_map.try_emplace(timevar_value);
+                std::set<Grounding> &map_set = future_conclusion_map[timevar_value];
+                map_set.insert(grounding);
             }
         }
     }
+    // 2. Add all groundings from future_conclusion_map to result
+    std::set<Grounding> &grounding_set = future_conclusion_map[timeline.get_time()];
+    std::copy(grounding_set.begin(), grounding_set.end(), std::back_inserter(result));
+    future_conclusion_map.erase(timeline.get_time());
     return result;
 }
 

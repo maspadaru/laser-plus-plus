@@ -23,6 +23,15 @@ class ExactTime : public Formula {
     std::string time_variable;
 
     /**
+     * Holds all the groundings returned by grounding_table.get_recent_groundings,
+     * that were not yet reported as new conclusions due to the time_variable 
+     * pointing to some time in the future.
+     *      key: time_variable (some timepoint in the future)
+     *      value: Set of all groundings sharing the same time variable
+     */ 
+    std::unordered_map<uint64_t, std::set<Grounding>> future_conclusion_map;
+
+    /**
      * Adds the Time Variable to all the groundings in child_groundings vector
      */
     std::vector<Grounding>
