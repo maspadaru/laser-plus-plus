@@ -65,7 +65,7 @@ void Timeline::set_max_tuple_count(uint64_t max_tuple_count) {
 
 
 bool Timeline::is_past_max_time() const {
-    return time >= max_time;
+    return time > max_time;
 }
 
 bool Timeline::is_past_max_tuple_count() const {
