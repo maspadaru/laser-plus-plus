@@ -24,6 +24,7 @@ class Atom : public Formula {
     FormulaType type = FormulaType::ATOM;
     std::string predicate = "Atom";
     GroundingTable grounding_table;
+    bool is_head_m = false;
 
     /**
      * The names of all arguments of the atom
@@ -91,6 +92,10 @@ class Atom : public Formula {
 
     std::vector<std::string> get_predicate_vector() const override;
 
+    void set_head(bool is_head) override;
+
+    bool is_head() const override;
+
     // methods
 
     std::vector<std::string> get_variable_names() const override;
@@ -112,7 +117,9 @@ class Atom : public Formula {
 
     std::vector<Grounding> get_groundings(util::Timeline timeline) override;
 
-    std::vector<Grounding> get_conclusions(util::Timeline timeline) override;
+    std::vector<Grounding> get_conclusions_timepoint(util::Timeline timeline) override;
+
+    std::vector<Grounding> get_conclusions_step(util::Timeline timeline) override;
 
     void add_child(formula::Formula* child) override;
 

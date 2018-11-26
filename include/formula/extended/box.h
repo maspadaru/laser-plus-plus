@@ -18,6 +18,8 @@ namespace formula {
  */
 class Box : public Formula {
   private:
+    bool is_head_m = false;
+
     Formula *child;
 
     GroundingTable grounding_table;
@@ -48,6 +50,10 @@ class Box : public Formula {
 
     // getters / setters
 
+    void set_head(bool is_head) override;
+
+    bool is_head() const override;
+
     FormulaType get_type() const override;
 
     std::vector<std::string> get_predicate_vector() const override;
@@ -67,7 +73,9 @@ class Box : public Formula {
     std::vector<Grounding>
     get_groundings(util::Timeline timeline) override;
 
-    std::vector<Grounding> get_conclusions(util::Timeline timeline) override;
+    std::vector<Grounding> get_conclusions_timepoint(util::Timeline timeline) override;
+
+    std::vector<Grounding> get_conclusions_step(util::Timeline timeline) override;
 
     std::string debug_string() const override;
 

@@ -37,6 +37,10 @@ class TimeWindow : public Formula {
     Formula &move() override;
 
     // getters / setters
+    //
+    void set_head(bool is_head) override;
+
+    bool is_head() const override;
 
     FormulaType get_type() const override;
 
@@ -64,7 +68,9 @@ class TimeWindow : public Formula {
     std::vector<Grounding>
     get_groundings(util::Timeline timeline) override;
 
-    std::vector<Grounding> get_conclusions(util::Timeline timeline) override;
+    std::vector<Grounding> get_conclusions_timepoint(util::Timeline timeline) override;
+
+    std::vector<Grounding> get_conclusions_step(util::Timeline timeline) override;
 
     std::string debug_string() const override;
 

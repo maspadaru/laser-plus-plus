@@ -111,6 +111,15 @@ Grounding Grounding::add_constant(size_t index, std::string const &constant) con
     return result;
 }
 
+Grounding Grounding::remove_constant(size_t index) const {
+    std::vector<std::string> new_vector = substitution_vector;
+    new_vector.erase(new_vector.begin() + index);
+    Grounding result =
+        Grounding(consideration_time, horizon_time, consideration_count,
+                  horizon_count, new_vector);
+    return result;
+}
+
 void Grounding::add_substitution_vector(std::vector<std::string> vector) {
     substitution_vector.clear();
     substitution_vector.insert(substitution_vector.end(), vector.begin(),

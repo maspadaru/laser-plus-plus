@@ -24,6 +24,14 @@ Formula &Diamond::move() {
 
 // getters / setters
 
+void Diamond::set_head(bool is_head) {
+    is_head_m = is_head;
+}
+
+bool Diamond::is_head() const {
+    return is_head_m;
+}
+
 FormulaType Diamond::get_type() const { return FormulaType::DIAMOND; }
 
 std::vector<std::string> Diamond::get_predicate_vector() const {
@@ -62,7 +70,11 @@ std::vector<Grounding> Diamond::get_groundings(util::Timeline timeline) {
      return grounding_vector;
 }
 
-std::vector<Grounding> Diamond::get_conclusions(util::Timeline timeline) {
+std::vector<Grounding> Diamond::get_conclusions_timepoint(util::Timeline timeline) {
+    return get_groundings(timeline);
+}
+
+std::vector<Grounding> Diamond::get_conclusions_step(util::Timeline timeline) {
     return grounding_table.get_recent_groundings();
 }
 

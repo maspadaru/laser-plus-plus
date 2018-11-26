@@ -28,6 +28,8 @@ class Rule {
     convert_to_head_grounding(formula::Grounding const &grounding) const;
 
     void compute_variable_map();
+    
+    void init();
 
   public:
     // constructors & destructors

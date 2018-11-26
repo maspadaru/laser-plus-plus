@@ -26,6 +26,14 @@ Formula &TimeWindow::move() {
 
 // getters / setters
 
+void TimeWindow::set_head(bool is_head) {
+    child->set_head(is_head);
+}
+
+bool TimeWindow::is_head() const {
+    return child->is_head();
+}
+
 FormulaType TimeWindow::get_type() const { return FormulaType::TIME_WINDOW; }
 
 std::vector<std::string> TimeWindow::get_predicate_vector() const {
@@ -104,7 +112,12 @@ TimeWindow::get_groundings(util::Timeline timeline) {
 }
 
 std::vector<Grounding>
-TimeWindow::get_conclusions(util::Timeline timeline) {
+TimeWindow::get_conclusions_timepoint(util::Timeline timeline) {
+    return get_groundings(timeline);
+}
+
+std::vector<Grounding>
+TimeWindow::get_conclusions_step(util::Timeline timeline) {
     return get_groundings(timeline);
 }
 

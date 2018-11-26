@@ -33,6 +33,14 @@ Formula &Conjunction::move() {
     return *result;
 }
 
+void Conjunction::set_head(bool is_head) {
+    is_head_m = is_head;
+}
+
+bool Conjunction::is_head() const {
+    return is_head_m;
+}
+
 void Conjunction::populate_variable_collections() {
     // Get all variables from children and insert into variable_names
     auto left = left_child->get_variable_names();
@@ -130,7 +138,12 @@ Conjunction::get_groundings(util::Timeline timeline) {
 }
 
 std::vector<Grounding>
-Conjunction::get_conclusions(util::Timeline timeline) {
+Conjunction::get_conclusions_timepoint(util::Timeline timeline) {
+    return get_groundings(timeline);
+}
+
+std::vector<Grounding>
+Conjunction::get_conclusions_step(util::Timeline timeline) {
     return get_groundings(timeline);
 }
 

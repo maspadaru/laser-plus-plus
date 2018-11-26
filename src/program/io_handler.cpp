@@ -34,7 +34,7 @@ void IOHandler::put_conclusions(
         std::string predicate = formula->get_predicate_vector().at(0);
         auto variable_names = formula->get_full_variable_names();
         size_t number_variables = variable_names.size();
-        for (auto const &grounding : formula->get_groundings(timeline)) {
+        for (auto const &grounding : formula->get_conclusions_timepoint(timeline)) {
             std::vector<std::string> argument_vector;
             for (auto const&variable_name : variable_names) {
                size_t variable_index = formula->get_variable_index(variable_name);

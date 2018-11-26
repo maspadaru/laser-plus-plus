@@ -91,9 +91,15 @@ class Grounding {
     void add_substitution(size_t variable_index, std::string constant);
 
     /** 
-     * Creates a new Grounding containing an extra constant at the end
+     * Creates a new Grounding containing an extra constant at the specified index
      */ 
     Grounding add_constant(size_t index, std::string const &constant) const;
+
+    /** 
+     * Creates a new Grounding containing that contains all constants, except the
+     * one at the specified index
+     */ 
+    Grounding remove_constant(size_t index) const;
 
     void add_substitution_vector(std::vector<std::string> vector);
 

@@ -15,6 +15,7 @@ namespace formula {
  */
 class Diamond : public Formula {
   private:
+    bool is_head_m = false;
     Formula *child;
     GroundingTable grounding_table;
 
@@ -31,6 +32,10 @@ class Diamond : public Formula {
     Formula &move() override;
 
     // getters / setters
+
+    void set_head(bool is_head) override;
+
+    bool is_head() const override;
 
     FormulaType get_type() const override;
 
@@ -50,7 +55,9 @@ class Diamond : public Formula {
 
     std::vector<Grounding> get_groundings(util::Timeline timeline) override;
     
-    std::vector<Grounding> get_conclusions(util::Timeline timeline) override;
+    std::vector<Grounding> get_conclusions_timepoint(util::Timeline timeline) override;
+
+    std::vector<Grounding> get_conclusions_step(util::Timeline timeline) override;
 
     std::string debug_string() const override;
     

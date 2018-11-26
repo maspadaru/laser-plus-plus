@@ -48,6 +48,7 @@ Formula &Atom::clone() const {
 
 Formula &Atom::move() {
     Atom *result = new Atom(std::move(this->predicate));
+    result->is_head_m = this->is_head_m;
     result->type = this->type;
     result->full_variable_names = std::move(this->full_variable_names);
     result->binding_map = std::move(this->binding_map);
@@ -74,6 +75,14 @@ std::vector<std::string> Atom::get_variable_names() const {
 std::vector<std::string> Atom::get_full_variable_names() const {
     return full_variable_names;
 } 
+
+void Atom::set_head(bool is_head) {
+    is_head_m = is_head;
+}
+
+bool Atom::is_head() const {
+    return is_head_m;
+}
 
 // methods
 
@@ -102,9 +111,14 @@ std::vector<Grounding> Atom::get_groundings(util::Timeline timeline) {
     return grounding_table.get_all_groundings();
 }
 
-std::vector<Grounding> Atom::get_conclusions(util::Timeline timeline) {
+std::vector<Grounding> Atom::get_conclusions_timepoint(util::Timeline timeline) {
+    return grounding_table.get_all_groundings();
+}
+
+std::vector<Grounding> Atom::get_conclusions_step(util::Timeline timeline) {
     return grounding_table.get_recent_groundings();
 }
+
 
 bool Atom::is_satisfied() const { return grounding_table.get_size() > 0; }
 

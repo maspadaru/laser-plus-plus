@@ -37,6 +37,10 @@ class Formula {
 
     // getters / setters
 
+    virtual void set_head(bool is_head) = 0;
+
+    virtual bool is_head() const = 0;
+
     virtual FormulaType get_type() const = 0;
 
     virtual std::vector<std::string> get_predicate_vector() const = 0;
@@ -74,10 +78,22 @@ class Formula {
     virtual std::vector<Grounding> get_groundings(util::Timeline timeline) = 0;
 
     /**
+     * Returns only the new conclusion that were derived since the rule was last 
+     * evaluated.
+     * Useful when adding new conclusions as facts to the input of the next
+     * evaluation step during some timepoint. 
      * Used to get conclusions from the head of the rule, i.e.: only for 
      * Atom and Exact_Time 
      */
-    virtual std::vector<Grounding> get_conclusions(util::Timeline timeline) = 0;
+    virtual std::vector<Grounding> get_conclusions_step(util::Timeline timeline) = 0;
+
+    /**
+     * Returns all the new conclusion that were derived during the current timepoint 
+     * Useful when writing conclusions to output. 
+     * Used to get conclusions from the head of the rule, i.e.: only for 
+     * Atom and Exact_Time 
+     */
+    virtual std::vector<Grounding> get_conclusions_timepoint(util::Timeline timeline) = 0;
 
     virtual std::string debug_string() const = 0;
 };

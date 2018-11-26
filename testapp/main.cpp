@@ -452,32 +452,6 @@ void test_exact_time_body() {
     std::cout << std::endl << std::endl;
 }
 
-void test_exact_time_head() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Exact Time Head";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
-    std::string stream_string = "1 10 "
-                                "1 : b(1,x1), b(2, x1)\n"
-                                "2 : b(7, x2)\n"
-                                "3 : b(6, x3), b(9, x3)\n"
-                                "4 : \n";
-
-    std::string rule_string = "[@,T]a(X) := b(T, X) \n";
-
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
-}
-
 void test_exact_time_handb() {
     std::cout << std::endl;
     const std::string TEST_NAME = "Exact Time Head and Body";
@@ -504,6 +478,32 @@ void test_exact_time_handb() {
     std::cout << std::endl << std::endl;
 }
 
+void test_exact_time_head() {
+    std::cout << std::endl;
+    const std::string TEST_NAME = "Exact Time Head";
+    std::cout << " Test: " << TEST_NAME << std::endl;
+    std::cout << " =================================== " << std::endl;
+
+    std::string stream_string = "1 10 "
+                                "1 : b(1,x1), b(2, x1)\n"
+                                "2 : b(7, x2)\n"
+                                "3 : b(6, x3), b(9, x3)\n"
+                                "4 : \n";
+
+    std::string rule_string = "[@,T]a(X) := b(T, X) \n";
+
+
+    auto simple_io_manager = SimpleIOManager(stream_string);
+    auto program = laser::program::Program(rule_string, &simple_io_manager);
+    program.set_start_time(1);
+
+    while (!program.is_done()) {
+        program.evaluate();
+    }
+    std::cout << " =================================== " << std::endl;
+    std::cout << std::endl << std::endl;
+}
+
 int main() { 
     test_simple();
     test_atoms();
@@ -517,6 +517,6 @@ int main() {
     test_conjunction_corss_variables();
     test_recursive();
     test_exact_time_body();
-    test_exact_time_head();
     test_exact_time_handb();
+    test_exact_time_head();
 }

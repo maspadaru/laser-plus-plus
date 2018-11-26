@@ -13,7 +13,7 @@ namespace rule {
 
 Rule::Rule(formula::Formula *head_formula, formula::Formula *body_formula)
     : head(head_formula->clone()), body(body_formula->clone()) {
-    compute_variable_map();
+        init();
 }
 
 Rule::~Rule() {
@@ -68,6 +68,11 @@ bool Rule::evaluate(
     util::Timeline timeline,
     std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
     return body.evaluate(timeline, std::move(facts));
+}
+
+void Rule::init() {
+    head.set_head(true);
+    compute_variable_map();
 }
 
 void Rule::compute_variable_map() {

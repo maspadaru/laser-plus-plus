@@ -24,6 +24,14 @@ Formula &Box::move() {
 
 // getters / setters
 
+void Box::set_head(bool is_head) {
+    is_head_m = is_head;
+}
+
+bool Box::is_head() const {
+    return is_head_m;
+}
+
 FormulaType Box::get_type() const { return FormulaType::BOX; }
 
 std::vector<std::string> Box::get_predicate_vector() const {
@@ -76,7 +84,11 @@ std::vector<Grounding> Box::get_groundings(util::Timeline timeline) {
     return grounding_vector;
 }
 
-std::vector<Grounding> Box::get_conclusions(util::Timeline timeline) {
+std::vector<Grounding> Box::get_conclusions_timepoint(util::Timeline timeline) {
+    return get_groundings(timeline);
+}
+
+std::vector<Grounding> Box::get_conclusions_step(util::Timeline timeline) {
     return grounding_table.get_recent_groundings();
 }
 

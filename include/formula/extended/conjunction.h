@@ -18,6 +18,7 @@ namespace formula {
  */
 class Conjunction : public Formula {
   private:
+    bool is_head_m = false;
     Formula *left_child;
     Formula *right_child;
 
@@ -33,6 +34,10 @@ class Conjunction : public Formula {
     std::vector<Grounding> grounding_vector;
 
     // Methods
+
+    void set_head(bool is_head) override;
+
+    bool is_head() const override;
 
     template <typename T, typename A>
     std::vector<T, A> concatenate_vectors(std::vector<T, A> left,
@@ -81,7 +86,9 @@ class Conjunction : public Formula {
     std::vector<Grounding>
     get_groundings(util::Timeline timeline) override;
 
-    std::vector<Grounding> get_conclusions(util::Timeline timeline) override;
+    std::vector<Grounding> get_conclusions_step(util::Timeline timeline) override;
+
+    std::vector<Grounding> get_conclusions_timepoint(util::Timeline timeline) override;
 
     std::string debug_string() const override;
 
