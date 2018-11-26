@@ -504,6 +504,36 @@ void test_exact_time_head() {
     std::cout << std::endl << std::endl;
 }
 
+void test_exact_time_recursive() {
+    std::cout << std::endl;
+    const std::string TEST_NAME = "Exact Time Recursive";
+    std::cout << " Test: " << TEST_NAME << std::endl;
+    std::cout << " =================================== " << std::endl;
+
+    std::string stream_string = "1 10 "
+                                "1 : a(1,x1), a(2, x1)\n"
+                                "2 : a(7, x2),c(y2) a(3, x2), a(2, x2), a(9, x2)\n"
+                                "3 : c(y3)\n"
+                                "4 : a(5, x4), c(y)\n"
+                                "6 : c(y6)\n"
+                                "7 : \n";
+
+    std::string rule_string = "p(X, Y, T) := b(X) && [@,T]c(Y)\n"
+                              "[@,T]b(X) := a(T, X)\n";
+
+
+    auto simple_io_manager = SimpleIOManager(stream_string);
+    auto program = laser::program::Program(rule_string, &simple_io_manager);
+    program.set_start_time(1);
+
+    while (!program.is_done()) {
+        program.evaluate();
+    }
+    std::cout << " =================================== " << std::endl;
+    std::cout << std::endl << std::endl;
+}
+
+
 int main() { 
     test_simple();
     test_atoms();
@@ -519,4 +549,5 @@ int main() {
     test_exact_time_body();
     test_exact_time_handb();
     test_exact_time_head();
+    test_exact_time_recursive();
 }
