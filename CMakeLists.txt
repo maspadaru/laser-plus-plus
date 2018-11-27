@@ -16,13 +16,13 @@ file(GLOB LASER_SOURCES
 
 
 ################################## TESTAPP ##################################
-include_directories(testapp/include/)
+include_directories(test/include/)
 file(GLOB TESTAPP_SOURCES
-        "testapp/src/*.cpp"
+        "test/src/*.cpp"
     )
 
 set(TESTAPP_LASER_SOURCES ${LASER_SOURCES} ${TESTAPP_SOURCES})
-add_executable(testapp testapp/main.cpp ${TESTAPP_LASER_SOURCES})
+add_executable(testapp test/main.cpp ${TESTAPP_LASER_SOURCES})
 
 
 ################################### TESTS ###################################
@@ -30,6 +30,7 @@ add_executable(testapp testapp/main.cpp ${TESTAPP_LASER_SOURCES})
 find_package(GTest)
 if(GTEST_FOUND)
     file(GLOB TEST_SOURCES
+        "test/src/*.cpp"
         "test/formula/*.cpp"
         "test/formula/extended/*.cpp"
         "test/util/*.cpp"

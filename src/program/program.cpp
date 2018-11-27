@@ -107,9 +107,7 @@ void Program::write_output() {
 
 void Program::evaluate() {
     bool has_derived_new_conclusions = eval();
-    if (has_derived_new_conclusions) {
-        write_output();
-    }
+    write_output();
     timeline.increment_time();
 }
 

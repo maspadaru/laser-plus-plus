@@ -203,13 +203,13 @@ void test_box() {
                                 "5 : f(1), f(a), c(a,b), c(b, a)\n"
                                 "6 : f(1), c(b,a), f(a)\n"
                                 "7 : f(a)\n"
-                                "8 : f(1), f(a), c(a, b), c(6,7), c(1,2)\n" 
-                                "9 : f(1), f(a), c(a, b), c(6,7), c(1,2)\n" 
-                                "10 : f(1), f(a), c(a, b), c(6,7), c(1,2)\n" 
-                                "11 : f(1), f(a), c(6,7), c(1,2)\n" 
-                                "12 : f(1), f(a), c(6,7)\n" 
-                                "13 : f(1), f(a)\n" 
-                                "14 : f(1), f(a)\n"; 
+                                "8 : f(1), f(a), c(a, b), c(6,7), c(1,2)\n"
+                                "9 : f(1), f(a), c(a, b), c(6,7), c(1,2)\n"
+                                "10 : f(1), f(a), c(a, b), c(6,7), c(1,2)\n"
+                                "11 : f(1), f(a), c(6,7), c(1,2)\n"
+                                "12 : f(1), f(a), c(6,7)\n"
+                                "13 : f(1), f(a)\n"
+                                "14 : f(1), f(a)\n";
 
     std::string rule_string = "q(X) := [B] f(X)\n"
                               "r(Y,X) := [$, 3][B]c(X, Y)\n";
@@ -414,7 +414,6 @@ void test_recursive() {
                               "e(X) := b(X) && p(X)\n"
                               "d(X) := q(X) && p(X)\n";
 
-
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
     program.set_start_time(1);
@@ -439,7 +438,6 @@ void test_exact_time_body() {
                                 "4 : \n";
 
     std::string rule_string = "a(T, X) := [@, T] b(X) \n";
-
 
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
@@ -466,7 +464,6 @@ void test_exact_time_handb() {
 
     std::string rule_string = "[@, T]a(X) := [@, T] b(X) \n";
 
-
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
     program.set_start_time(1);
@@ -492,7 +489,6 @@ void test_exact_time_head() {
 
     std::string rule_string = "[@,T]a(X) := b(T, X) \n";
 
-
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
     program.set_start_time(1);
@@ -510,17 +506,17 @@ void test_exact_time_recursive() {
     std::cout << " Test: " << TEST_NAME << std::endl;
     std::cout << " =================================== " << std::endl;
 
-    std::string stream_string = "1 10 "
-                                "1 : a(1,x1), a(2, x1)\n"
-                                "2 : a(7, x2),c(y2) a(3, x2), a(2, x2), a(9, x2)\n"
-                                "3 : c(y3)\n"
-                                "4 : a(5, x4), c(y)\n"
-                                "6 : c(y6)\n"
-                                "7 : \n";
+    std::string stream_string =
+        "1 10 "
+        "1 : a(1,x1), a(2, x1)\n"
+        "2 : a(7, x2),c(y2) a(3, x2), a(2, x2), a(9, x2)\n"
+        "3 : c(y3)\n"
+        "4 : a(5, x4), c(y)\n"
+        "6 : c(y6)\n"
+        "7 : \n";
 
     std::string rule_string = "p(X, Y, T) := b(X) && [@,T]c(Y)\n"
                               "[@,T]b(X) := a(T, X)\n";
-
 
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
@@ -533,8 +529,7 @@ void test_exact_time_recursive() {
     std::cout << std::endl << std::endl;
 }
 
-
-int main() { 
+int main() {
     test_simple();
     test_atoms();
     test_diamond();

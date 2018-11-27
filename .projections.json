@@ -56,12 +56,12 @@
 
 
 
-    "testapp/include/*.h": {
-        "type": "testapp-header",
-        "alternate": "testapp/src/{}.cpp"
+    "test/include/*.h": {
+        "type": "test-header",
+        "alternate": "test/src/{}.cpp"
     },
-    "testapp/src/*.cpp": {
-        "type": "testapp-source",
-        "alternate": "testapp/include/{}.h"
+    "test/src/*.cpp": {
+        "type": "test-source",
+        "alternate": "test/include/{}.h"
     },
 }

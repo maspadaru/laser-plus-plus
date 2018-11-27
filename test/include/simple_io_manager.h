@@ -16,6 +16,7 @@ private:
     SimpleWriter simple_writer;
     SimpleReader simple_stream_reader;
     SimpleParser simple_parser;
+    std::string latest_output;
 
 public:
 
@@ -33,6 +34,9 @@ public:
 
     void write_output_data(
             uint64_t time, std::vector<laser::util::DataAtom> output_vector) override;
+
+    std::string get_output() const;
+
 };
 
 
