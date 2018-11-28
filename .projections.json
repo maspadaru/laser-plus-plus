@@ -53,6 +53,14 @@
 
 
 
+    "benchapp/include/*.h": {
+        "type": "test-header",
+        "alternate": "benchapp/src/{}.cpp"
+    },
+    "benchapp/src/*.cpp": {
+        "type": "test-source",
+        "alternate": "benchapp/include/{}.h"
+    },
 
 
 

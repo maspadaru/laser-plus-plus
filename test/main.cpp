@@ -20,13 +20,6 @@
  *
  *
  *
- * BUGS:
- * - Eliminate duplicates in Grounding Table. E.g.: test_atoms, time 5 sould
- *   otuput v(x5, y5, x5, y5) only once
- *
- *
- *
- *
  * OPTIMIZATIONS:
  *
  *
@@ -35,7 +28,6 @@
  * REFACTORING:
  * - Refactor Program::evaluate() & Program::eval() [P46-L10]
  * - Structure project as a library.
- * - Make use of Unit Tests
  * - Move debug_print() functions to new LOG module [P52-L10]
  *
  */

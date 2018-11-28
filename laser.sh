@@ -2,6 +2,7 @@
 
 EXECUTABLE=testapp
 TEST_EXECUTABLE=run_test
+BENCHAPP_EXECUTABLE=benchapp
 
 build_release () {
     mkdir -p cmake-build-release
@@ -24,6 +25,10 @@ clean_up () {
     rm -rf cmake-build-release
 }
 
+run_benchapp () {
+    cmake-build-debug/$BENCHAPP_EXECUTABLE 2> /dev/null
+}
+
 run_project () {
     cmake-build-debug/$EXECUTABLE 2> /dev/null
 }
@@ -42,14 +47,15 @@ debug_project () {
 
 print_help () {
     echo "Usage: laser [br b c rr r d h]"
-    echo "br: Build Release"
     echo "b: Build Debug"
+    echo "br: Build Release"
+    echo "bench: Run Benchmark App"
     echo "c: Clean project"
-    echo "rr: Run project without printing any errors"
-    echo "r: Run project and print all errors"
     echo "d: Debug project using GDB"
-    echo "t: run all tests"
     echo "h: Print help"
+    echo "r: Run project and print all errors"
+    echo "rr: Run project without printing any errors"
+    echo "t: run all tests"
 
 }
 
@@ -59,6 +65,8 @@ elif [ $1 = "br" ]; then
     build_release
 elif [ $1 = "b" ]; then
     build_debug
+elif [ $1 = "bench" ]; then
+    run_benchapp
 elif [ $1 = "c" ]; then
     clean_up
 elif [ $1 = "rr" ]; then

@@ -24,6 +24,14 @@ file(GLOB TESTAPP_SOURCES
 set(TESTAPP_LASER_SOURCES ${LASER_SOURCES} ${TESTAPP_SOURCES})
 add_executable(testapp test/main.cpp ${TESTAPP_LASER_SOURCES})
 
+################################## BENCHAPP ##################################
+include_directories(benchapp/include/)
+file(GLOB BENCHAPP_SOURCES
+        "benchapp/src/*.cpp"
+    )
+
+set(BENCHAPP_LASER_SOURCES ${LASER_SOURCES} ${BENCHAPP_SOURCES})
+add_executable(benchapp benchapp/main.cpp ${BENCHAPP_LASER_SOURCES})
 
 ################################### TESTS ###################################
 
