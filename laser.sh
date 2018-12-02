@@ -26,7 +26,7 @@ clean_up () {
 }
 
 run_benchapp () {
-    cmake-build-debug/$BENCHAPP_EXECUTABLE 2> /dev/null
+    cmake-build-debug/$BENCHAPP_EXECUTABLE
 }
 
 run_project () {
@@ -43,6 +43,10 @@ test_project () {
 
 debug_project () {
     gdb cmake-build-debug/$EXECUTABLE --tui
+}
+
+debug_benchapp () {
+    gdb cmake-build-debug/$BENCHAPP_EXECUTABLE --tui
 }
 
 print_help () {
@@ -75,6 +79,8 @@ elif [ $1 = "r" ]; then
     run_project_with_debug
 elif [ $1 = "d" ]; then
     debug_project
+elif [ $1 = "db" ]; then
+    debug_benchapp
 elif [ $1 = "t" ]; then
     test_project
 elif [ $1 = "h" ]; then

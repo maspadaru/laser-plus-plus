@@ -18,11 +18,12 @@ class FileIOManager : public laser::io::IOManager {
     std::string latest_output;
     uint64_t start_time;
     uint64_t end_time;
+    bool is_output_enabled;
 
   public:
     FileIOManager(std::string const &stream_path,
                   std::string const &output_path, uint64_t start_time,
-                  uint64_t end_time);
+                  uint64_t end_time, int facts_per_timepoint, bool is_output_enabled);
 
     ~FileIOManager() override = default;
 

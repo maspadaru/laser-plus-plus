@@ -22,13 +22,14 @@ class FileReader {
     static constexpr char LINE_DELIMITER = 1;
     static constexpr char LINE_VALUE = 2;
     static constexpr char EXPECTED_LINE_DELIMITER = ':';
-
+        
+    int facts_per_timepoint;
     std::ifstream in;
 
     bool read_line(std::string &line);
 
   public:
-    explicit FileReader(std::string const &stream_path);
+    FileReader(std::string const &stream_path, int facts_per_timepoint);
     ~FileReader();
 
     std::vector<std::string> read_all_data();
