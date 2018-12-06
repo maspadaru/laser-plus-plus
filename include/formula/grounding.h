@@ -6,8 +6,10 @@
 #define LASER_FORMULA_GROUNDING_H
 
 #include <climits>
-#include <string>
+#include <functional> // std::hash<std::string>
 #include <sstream>
+#include <string>
+#include <utility>
 #include <vector>
 
 namespace laser {
@@ -33,10 +35,10 @@ class Grounding {
 
     std::string substitution_hash;
     std::string full_hash;
+    size_t real_hash;
     size_t size = 0;
 
     void init();
-
 
   public:
     // constructors & destructors
@@ -52,7 +54,7 @@ class Grounding {
 
     Grounding() = default;
 
-    // getters 
+    // getters
 
     uint64_t get_consideration_time() const;
 
@@ -70,48 +72,57 @@ class Grounding {
 
     std::string get_full_hash() const;
 
+    size_t get_real_hash() const;
+
     // methods
-    
+
     std::string get_constant(size_t variable_index) const;
 
     bool has_expired(uint64_t time, uint64_t tuple_counter) const;
 
     size_t get_size() const;
 
-
-    /** 
-     * Creates a new Grounding containing an extra constant at the specified index
-     */ 
+    /**
+     * Creates a new Grounding containing an extra constant at the specified
+     * index
+     */
     Grounding new_constant(size_t index, std::string const &constant) const;
 
-
-    /** 
-     * Creates a new Grounding containing the new constant vector 
-     */ 
+    /**
+     * Creates a new Grounding containing the new constant vector
+     */
     Grounding new_constant_vector(std::vector<std::string> new_vector) const;
 
-    /** 
-     * Creates a new Grounding containing the new annotations 
-     */ 
-    Grounding new_annotations(uint64_t consideration_time, uint64_t horizon_time,
-              uint64_t consideration_count, uint64_t horizon_count) const;
+    /**
+     * Creates a new Grounding containing the new annotations
+     */
+    Grounding new_annotations(uint64_t consideration_time,
+                              uint64_t horizon_time,
+                              uint64_t consideration_count,
+                              uint64_t horizon_count) const;
 
-    /** 
-     * Creates a new Grounding containing the new horizon time 
-     */ 
+    /**
+     * Creates a new Grounding containing the new horizon time
+     */
     Grounding new_horizon_time(uint64_t horizon_time) const;
 
-    /** 
-     * Creates a new Grounding containing that contains all constants, except the
-     * one at the specified index
-     */ 
+    /**
+     * Creates a new Grounding containing that contains all constants, except
+     * the one at the specified index
+     */
     Grounding remove_constant(size_t index) const;
 
-
-
     std::string debug_string() const;
-        
-    bool operator< (const Grounding &other) const;
+
+    bool operator<(const Grounding &other) const;
+
+    bool operator==(const Grounding &other) const;
+};
+
+struct GroundingHasher {
+    size_t operator()(const Grounding &x) const {
+        return x.get_real_hash();
+    }
 };
 
 } // namespace formula

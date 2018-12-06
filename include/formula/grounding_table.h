@@ -5,10 +5,11 @@
 #define LASER_FORMULA_GROUNDING_TABLE_H
 
 #include <list>
-#include <set>
+#include <unordered_set>
 #include <string>
 #include <unordered_map>
 #include <iostream>
+
 
 #include "formula/grounding.h"
 
@@ -19,8 +20,8 @@ class GroundingTable {
   private:
     // grounding_map: key: horizon_time
     //        value: Set of all groundings sharing consideration_time
-    std::unordered_map<uint64_t, std::set<Grounding>> grounding_map;
-    std::set<Grounding> recent_groundings_set;
+    std::unordered_map<uint64_t, std::unordered_set<Grounding, GroundingHasher>> grounding_map;
+    std::unordered_set<Grounding, GroundingHasher> recent_groundings_set;
     std::vector<std::string> variable_names;
     std::unordered_map<std::string, int> variable_index;
     size_t size = 0;

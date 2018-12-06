@@ -21,7 +21,7 @@ std::vector<Grounding> GroundingTable::get_recent_groundings() {
 }
 
 void GroundingTable::add_grounding(Grounding const &grounding) {
-    std::set<Grounding> &groundings =
+    std::unordered_set<Grounding, GroundingHasher> &groundings =
         grounding_map[grounding.get_horizon_time()];
     bool was_inserted = false;
     std::tie(std::ignore, was_inserted) = groundings.insert(grounding);

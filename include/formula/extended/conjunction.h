@@ -1,7 +1,6 @@
 #ifndef LASER_FORMULA_EXTENDED_CONJUNCTION_H
 #define LASER_FORMULA_EXTENDED_CONJUNCTION_H
 
-#include <set>
 #include <string>
 #include <unordered_map>
 #include <vector>

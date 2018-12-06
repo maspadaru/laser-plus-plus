@@ -2,6 +2,7 @@
 #define LASER_FORMULA_EXTENDED_EXACT_TIME_H
 
 #include <string>
+#include <unordered_set>
 
 #include "formula/formula.h"
 #include "formula/grounding.h"
@@ -29,7 +30,7 @@ class ExactTime : public Formula {
      *      key: time_variable (some timepoint in the future)
      *      value: Set of all groundings sharing the same time variable
      */
-    std::unordered_map<uint64_t, std::set<Grounding>> future_conclusion_map;
+    std::unordered_map<uint64_t, std::unordered_set<Grounding, GroundingHasher>> future_conclusion_map;
 
     std::vector<Grounding> timepoint_conclusions;
 

@@ -3,7 +3,6 @@
 //
 
 #include "formula/grounding.h"
-#include <utility>
 
 namespace laser {
 namespace formula {
@@ -46,9 +45,13 @@ bool Grounding::is_background_fact() const { return is_background_fact_m; }
 
 bool Grounding::is_fact() const { return is_fact_m; }
 
-std::string Grounding::get_substitution_hash() const { return substitution_hash; }
+std::string Grounding::get_substitution_hash() const {
+    return substitution_hash;
+}
 
 std::string Grounding::get_full_hash() const { return full_hash; }
+
+size_t Grounding::get_real_hash() const { return real_hash; }
 
 Grounding Grounding::new_annotations(uint64_t consideration_time,
                                      uint64_t horizon_time,
@@ -83,10 +86,12 @@ void Grounding::init() {
         full_hash_stream << constant << ";;";
     }
     full_hash_stream << consideration_time << ";;" << horizon_time << ";;"
-                << consideration_count << ";;" << horizon_count;
+                     << consideration_count << ";;" << horizon_count;
     substitution_hash = substitution_hash_stream.str();
     full_hash = full_hash_stream.str();
     size = constant_vector.size();
+    std::hash<std::string> hasher;
+    real_hash = hasher(full_hash);
 }
 
 std::string Grounding::get_constant(size_t variable_index) const {
@@ -136,7 +141,11 @@ std::string Grounding::debug_string() const {
 }
 
 bool Grounding::operator<(const Grounding &other) const {
-    return get_full_hash() < other.get_full_hash();
+    return real_hash < other.real_hash;
+}
+
+bool Grounding::operator==(const Grounding &other) const {
+    return real_hash == other.real_hash;
 }
 
 } // namespace formula
