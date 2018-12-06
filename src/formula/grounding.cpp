@@ -11,18 +11,24 @@ namespace formula {
 // constructors & destructors
 
 Grounding::Grounding(uint64_t consideration_time, uint64_t horizon_time,
-                     uint64_t consideration_count, uint64_t horizon_count)
+                     uint64_t consideration_count, uint64_t horizon_count,
+                     bool is_fact, bool is_background_fact,
+                     std::vector<std::string> constant_vector)
     : consideration_time(consideration_time), horizon_time(horizon_time),
-      consideration_count(consideration_count), horizon_count(horizon_count) {}
+      consideration_count(consideration_count), horizon_count(horizon_count),
+      is_fact_m(is_fact), is_background_fact_m(is_background_fact),
+      constant_vector(std::move(constant_vector)) {
+    init();
+}
 
 Grounding::Grounding(uint64_t consideration_time, uint64_t horizon_time,
                      uint64_t consideration_count, uint64_t horizon_count,
-                     std::vector<std::string> substitution_vector)
+                     std::vector<std::string> constant_vector)
     : consideration_time(consideration_time), horizon_time(horizon_time),
       consideration_count(consideration_count), horizon_count(horizon_count),
-      substitution_vector(std::move(substitution_vector)) {}
-
-// getters & setters
+      constant_vector(std::move(constant_vector)) {
+    init();
+}
 
 uint64_t Grounding::get_consideration_time() const {
     return consideration_time;
@@ -36,54 +42,55 @@ uint64_t Grounding::get_consideration_count() const {
 
 uint64_t Grounding::get_horizon_count() const { return horizon_count; }
 
-void Grounding::set_horizon_time(uint64_t horizon_time) {
-    Grounding::horizon_time = horizon_time;
+bool Grounding::is_background_fact() const { return is_background_fact_m; }
+
+bool Grounding::is_fact() const { return is_fact_m; }
+
+std::string Grounding::get_substitution_hash() const { return substitution_hash; }
+
+std::string Grounding::get_full_hash() const { return full_hash; }
+
+Grounding Grounding::new_annotations(uint64_t consideration_time,
+                                     uint64_t horizon_time,
+                                     uint64_t consideration_count,
+                                     uint64_t horizon_count) const {
+    Grounding result = Grounding(consideration_time, horizon_time,
+                                 consideration_count, horizon_count, is_fact_m,
+                                 is_background_fact_m, constant_vector);
+    return result;
 }
 
-void Grounding::set_consideration_time(uint64_t consideration_time) {
-    Grounding::consideration_time = consideration_time;
+Grounding Grounding::new_horizon_time(uint64_t horizon_time) const {
+    Grounding result = Grounding(consideration_time, horizon_time,
+                                 consideration_count, horizon_count, is_fact_m,
+                                 is_background_fact_m, constant_vector);
+    return result;
 }
 
-void Grounding::set_annotations(uint64_t consideration_time,
-                                uint64_t horizon_time,
-                                uint64_t consideration_count,
-                                uint64_t horizon_count) {
-    Grounding::consideration_time = consideration_time;
-    Grounding::horizon_time = horizon_time;
-    Grounding::consideration_count = consideration_count;
-    Grounding::horizon_count = horizon_count;
+Grounding
+Grounding::new_constant_vector(std::vector<std::string> new_vector) const {
+    Grounding result =
+        Grounding(consideration_time, horizon_time, consideration_count,
+                  horizon_count, is_fact_m, is_background_fact_m, new_vector);
+    return result;
 }
 
-bool Grounding::is_background_fact() { return is_background_fact_m; }
-
-bool Grounding::is_fact() { return is_fact_m; }
-
-void Grounding::set_as_fact() { this->is_fact_m = true; }
-
-void Grounding::set_as_background_fact() { this->is_background_fact_m = true; }
-
-// methods
-
-std::string Grounding::compute_hash() const {
-    std::stringstream ss;
-    for (auto &constant : substitution_vector) {
-        ss << constant << ";;";
+void Grounding::init() {
+    std::stringstream substitution_hash_stream;
+    std::stringstream full_hash_stream;
+    for (auto &constant : constant_vector) {
+        substitution_hash_stream << constant << ";;";
+        full_hash_stream << constant << ";;";
     }
-    return ss.str();
+    full_hash_stream << consideration_time << ";;" << horizon_time << ";;"
+                << consideration_count << ";;" << horizon_count;
+    substitution_hash = substitution_hash_stream.str();
+    full_hash = full_hash_stream.str();
+    size = constant_vector.size();
 }
 
-std::string Grounding::compute_hash_full() const {
-    std::stringstream ss;
-    for (auto &constant : substitution_vector) {
-        ss << constant << ";;";
-    }
-    ss << consideration_time << ";;" << horizon_time << ";;"
-       << consideration_count << ";;" << horizon_count;
-    return ss.str();
-}
-
-std::string Grounding::get_substitution(size_t variable_index) const {
-    return substitution_vector.at(variable_index);
+std::string Grounding::get_constant(size_t variable_index) const {
+    return constant_vector.at(variable_index);
 }
 
 bool Grounding::has_expired(uint64_t time, uint64_t tuple_counter) const {
@@ -95,15 +102,9 @@ bool Grounding::has_expired(uint64_t time, uint64_t tuple_counter) const {
     return result;
 }
 
-void Grounding::add_substitution(size_t variable_index, std::string constant) {
-    if (substitution_vector.size() <= variable_index) {
-        substitution_vector.resize(variable_index + 5);
-    }
-    substitution_vector.at(variable_index) = std::move(constant);
-}
-
-Grounding Grounding::add_constant(size_t index, std::string const &constant) const {
-    std::vector<std::string> new_vector = substitution_vector;
+Grounding Grounding::new_constant(size_t index,
+                                  std::string const &constant) const {
+    std::vector<std::string> new_vector = constant_vector;
     new_vector.insert(new_vector.begin() + index, constant);
     Grounding result =
         Grounding(consideration_time, horizon_time, consideration_count,
@@ -112,7 +113,7 @@ Grounding Grounding::add_constant(size_t index, std::string const &constant) con
 }
 
 Grounding Grounding::remove_constant(size_t index) const {
-    std::vector<std::string> new_vector = substitution_vector;
+    std::vector<std::string> new_vector = constant_vector;
     new_vector.erase(new_vector.begin() + index);
     Grounding result =
         Grounding(consideration_time, horizon_time, consideration_count,
@@ -120,13 +121,7 @@ Grounding Grounding::remove_constant(size_t index) const {
     return result;
 }
 
-void Grounding::add_substitution_vector(std::vector<std::string> vector) {
-    substitution_vector.clear();
-    substitution_vector.insert(substitution_vector.end(), vector.begin(),
-                               vector.end());
-}
-
-size_t Grounding::get_size() const { return substitution_vector.size(); }
+size_t Grounding::get_size() const { return size; }
 
 std::string Grounding::debug_string() const {
     std::stringstream os;
@@ -134,14 +129,14 @@ std::string Grounding::debug_string() const {
        << consideration_time << ", " << horizon_time << ", "
        << consideration_count << ", " << horizon_count << "] ";
     os << "; Constants: ";
-    for (auto const &variable : substitution_vector) {
+    for (auto const &variable : constant_vector) {
         os << variable << ", ";
     }
     return os.str();
 }
 
 bool Grounding::operator<(const Grounding &other) const {
-    return compute_hash_full() < other.compute_hash_full();
+    return get_full_hash() < other.get_full_hash();
 }
 
 } // namespace formula

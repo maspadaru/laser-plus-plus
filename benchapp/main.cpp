@@ -11,8 +11,8 @@
 #include "file_reader.h"
 #include "file_writer.h"
 
-const uint64_t END_TIME = 100000;
-const uint64_t NFACTS = 1;
+const uint64_t END_TIME = 10000;
+const uint64_t NFACTS = 100;
 const bool OUTPUT = false;
 
 void run_diamond() {
@@ -51,7 +51,7 @@ void run_diamond() {
 void run_conjunction() {
     std::cout << "Starting run: Conjunction " << std::endl;
 
-    std::string rules = "r(Y, Z) := c(X, Y) && d(Y,Z)\n";
+    std::string rules = "q(X, Y, Z) := c(X, Y) && d(Y,Z)\n";
 
     std::string stream_path = "/home/mike/stream_file.txt";
     std::string output_path = "/home/mike/out_cpp_diamond.txt";
@@ -112,14 +112,49 @@ void run_box() {
               << std::endl;
 }
 
+void run_single() {
+    std::cout << "Starting run: Single Rule " << std::endl;
+
+    std::string rules = ""
+                        "t(X, Y) := d(X, Y)\n"
+                        ;
+
+    std::string stream_path = "/home/mike/stream_file.txt";
+    std::string output_path = "/home/mike/out_cpp_atom_single.txt";
+    uint64_t start_time = 0;
+    uint64_t end_time = END_TIME;
+    int facts_per_timepoint = NFACTS;
+    bool is_output_enabled = OUTPUT;
+
+    auto file_io_manager =
+        FileIOManager(stream_path, output_path, start_time, end_time,
+                      facts_per_timepoint, is_output_enabled);
+    auto program = laser::program::Program(rules, &file_io_manager);
+    program.set_start_time(0);
+
+    clock_t begin = clock();
+
+    while (!program.is_done()) {
+        program.evaluate();
+    }
+
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl
+              << std::endl
+              << std::endl;
+}
+
 void run_atoms() {
     std::cout << "Starting run: Atoms " << std::endl;
 
-    std::string rules = "q(X, Y, Z) := a(X, Y, Z)\n"
-                              "r(Y) := c(X, Y)\n"
-                              "t(Y, X) := d(X, Y)\n"
-                              "u(X, X) := f(X)\n"
-                              "v(X, Y, X, Y) := e(X, Y)\n";
+    std::string rules = ""
+                        "q(X, Y, Z) := a(X, Y, Z)\n"
+                        "r(Y) := c(X, Y)\n"
+                        "t(Y, X) := d(X, Y)\n"
+                        "u(X, X) := f(X)\n"
+                        "v(X, Y, X, Y) := e(X, Y)\n"
+                        ;
 
     std::string stream_path = "/home/mike/stream_file.txt";
     std::string output_path = "/home/mike/out_cpp_atoms.txt";
@@ -217,7 +252,8 @@ int main() {
     std::cout << " timepoints: " << END_TIME << std::endl 
         << " facts per timepoint: " << NFACTS << std::endl
        << "output enabled: "<< OUTPUT << std::endl << std::endl;
-    run_atoms(); 
+    run_single();
+    //run_atoms(); 
     //run_diamond(); 
     //run_conjunction(); 
     //run_box(); 

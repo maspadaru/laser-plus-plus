@@ -35,7 +35,7 @@ class ExactTime : public Formula {
 
     std::vector<Grounding>
     convert_groundings_head(util::Timeline timeline,
-                       std::vector<Grounding> groundings) const;
+                       std::vector<Grounding> const &groundings) const;
 
     /**
      * Adds the Time Variable to all the groundings in groundings vector

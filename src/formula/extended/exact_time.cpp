@@ -79,7 +79,7 @@ void ExactTime::add_child(formula::Formula *child) {}
 
 Grounding ExactTime::add_time_variable(util::Timeline timeline,
                                        Grounding const &grounding) const {
-    auto result = grounding.add_constant(get_time_variable_index(),
+    auto result = grounding.new_constant(get_time_variable_index(),
                                          std::to_string(timeline.get_time()));
     return result;
 }
@@ -92,14 +92,13 @@ Grounding ExactTime::remove_time_variable(util::Timeline timeline,
 
 std::vector<Grounding>
 ExactTime::convert_groundings_head(util::Timeline timeline,
-                              std::vector<Grounding> groundings) const {
+                              std::vector<Grounding> const &groundings) const {
     std::vector<Grounding> result_vector;
     for (auto const &grounding : groundings) {
         size_t timevar_index = grounding_table.get_variable_index(time_variable);
-        std::string horizon_time_string = grounding.get_substitution(timevar_index);
+        std::string horizon_time_string = grounding.get_constant(timevar_index);
         uint64_t horizon_time = std::stoull(horizon_time_string);
-        auto new_grounding = grounding;
-        new_grounding.set_horizon_time(horizon_time);
+        auto new_grounding = grounding.new_horizon_time(horizon_time);
         result_vector.push_back(new_grounding);
     }
     return result_vector;
@@ -133,7 +132,7 @@ std::vector<Grounding> ExactTime::get_groundings(util::Timeline timeline) {
     std::vector<Grounding> result;
     for (auto &grounding : grounding_vector) {
         std::string timevar_string =
-            grounding.get_substitution(get_time_variable_index());
+            grounding.get_constant(get_time_variable_index());
         uint64_t timevar_value = std::stoull(timevar_string);
         if (timevar_value <= timeline.get_time()) {
             result.push_back(grounding);
@@ -155,7 +154,7 @@ ExactTime::get_conclusions_step(util::Timeline timeline) {
     auto grounding_vector = grounding_table.get_recent_groundings();
     for (auto &grounding : grounding_vector) {
         std::string timevar_string =
-            grounding.get_substitution(get_time_variable_index());
+            grounding.get_constant(get_time_variable_index());
         uint64_t timevar_value = std::stoull(timevar_string);
         if (timevar_value == timeline.get_time()) {
             conclusions_vector.push_back(grounding);

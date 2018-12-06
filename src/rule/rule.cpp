@@ -87,17 +87,17 @@ void Rule::compute_variable_map() {
 
 formula::Grounding
 Rule::convert_to_head_grounding(formula::Grounding const &grounding) const {
-    auto result = formula::Grounding(grounding.get_consideration_time(), 
-                                        grounding.get_horizon_time(),
-                                     grounding.get_consideration_count(),
-                                     grounding.get_horizon_count());
     std::vector<std::string> result_vector;
     for (size_t head_index = 0; head_index < head.get_number_of_variables();
          head_index++) {
         result_vector.push_back(
-            grounding.get_substitution(variable_map.at(head_index)));
+            grounding.get_constant(variable_map.at(head_index)));
     }
-    result.add_substitution_vector(result_vector);
+    formula::Grounding result = formula::Grounding(grounding.get_consideration_time(), 
+                                        grounding.get_horizon_time(),
+                                     grounding.get_consideration_count(),
+                                     grounding.get_horizon_count(), 
+                                     result_vector);
     return result;
 }
 

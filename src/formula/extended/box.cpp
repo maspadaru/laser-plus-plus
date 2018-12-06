@@ -106,7 +106,7 @@ bool Box::evaluate(
 }
 
 std::vector<Grounding>
-Box::compute_box_conclusions(util::Timeline timeline) const {
+Box::compute_box_conclusions(util::Timeline timeline) {
     std::vector<Grounding> result;
     uint64_t current_time = timeline.get_time();
     uint64_t start_time = timeline.get_min_time();
@@ -115,7 +115,7 @@ Box::compute_box_conclusions(util::Timeline timeline) const {
 
     for (auto &iterator : box_map) {
         auto const &key = iterator.first;
-        auto grounding = iterator.second;
+        auto const &grounding = iterator.second;
         auto ct = grounding.get_consideration_time();
         auto ht = grounding.get_horizon_time();
         auto cc = grounding.get_consideration_count();
@@ -123,9 +123,10 @@ Box::compute_box_conclusions(util::Timeline timeline) const {
 
         // TODO also add tuple cunter condition
         if (ct <= start_time && ht >= current_time) {
-            grounding.set_annotations(current_time, current_time, current_count,
+            auto new_grounding = grounding.new_annotations(current_time, current_time, current_count,
                                       current_count);
-            result.push_back(grounding);
+            iterator.second = new_grounding;
+            result.push_back(new_grounding);
         }
     }
     return result;
@@ -138,16 +139,21 @@ void Box::update_box_map(std::vector<Grounding> const &facts) {
         // from child p(a)[4,4], p(a)[2,3], in this order;
         keep_going = false;
         for (auto const &child_grounding : facts) {
-            std::string key = child_grounding.compute_hash();
+            std::string key = child_grounding.get_substitution_hash();
             box_map.try_emplace(key, child_grounding);
             Grounding &box_grounding = box_map[key];
-            keep_going |= adjust_annotation(box_grounding, child_grounding);
+            auto adjusted_result = adjust_annotation(box_grounding, child_grounding);
+            keep_going |= adjusted_result.first;
+            if (adjusted_result.first) {
+                auto map_tuple = box_map.find(key);
+                map_tuple->second = adjusted_result.second;
+            }
         }
     }
 }
 
-bool Box::adjust_annotation(Grounding &box_grounding,
-                            Grounding const &child_grounding) {
+std::pair<bool, Grounding> Box::adjust_annotation(Grounding const &box_grounding,
+                            Grounding const &child_grounding) const {
     bool is_modified = false;
     auto ct1 = box_grounding.get_consideration_time();
     auto ht1 = box_grounding.get_horizon_time();
@@ -176,8 +182,11 @@ bool Box::adjust_annotation(Grounding &box_grounding,
     // Adjust Tuple Counter annotations:
     // TODO
 
-    box_grounding.set_annotations(ct1, ht1, cc1, hc1);
-    return is_modified;
+    if (is_modified) {
+        auto new_box_grounding = box_grounding.new_annotations(ct1, ht1, cc1, hc1);
+        return {is_modified, new_box_grounding};
+    }
+    return {is_modified, box_grounding};
 }
 
 } // namespace formula

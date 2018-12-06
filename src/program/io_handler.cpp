@@ -19,9 +19,8 @@ laser::program::IOHandler::get_stream_data(uint64_t time) {
         result.try_emplace(predicate);
         std::vector<formula::Grounding> &map_vector = result.at(predicate);
         // TODO !!! SET TUPLE COUNTER VALUES !!!!
-        formula::Grounding grounding(time, time, 0, 9999);
-        grounding.set_as_fact();
-        grounding.add_substitution_vector(data.get_arguments());
+        formula::Grounding grounding(time, time, 0, 9999, true, false, 
+                data.get_arguments());
         map_vector.push_back(grounding);
     }
     return result;
@@ -38,7 +37,7 @@ void IOHandler::put_conclusions(
             std::vector<std::string> argument_vector;
             for (auto const&variable_name : variable_names) {
                size_t variable_index = formula->get_variable_index(variable_name);
-               std::string argument = grounding.get_substitution(variable_index);
+               std::string argument = grounding.get_constant(variable_index);
                argument_vector.push_back(argument);
             }
             auto data_atom = util::DataAtom(predicate, argument_vector);

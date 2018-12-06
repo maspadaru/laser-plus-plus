@@ -102,13 +102,15 @@ std::vector<Grounding>
 TimeWindow::get_groundings(util::Timeline timeline) {
     auto window_timeline = alter_timeline(timeline);
     auto child_conclusions = child->get_groundings(window_timeline);
+    std::vector<Grounding> result;
     for (auto &grounding : child_conclusions) {
         uint64_t window_horizon_time = compute_horizon_time(
             grounding.get_consideration_time(), grounding.get_horizon_time(),
             timeline.get_time());
-        grounding.set_horizon_time(window_horizon_time);
+        auto new_grounding = grounding.new_horizon_time(window_horizon_time);
+        result.push_back(new_grounding);
     }
-    return child_conclusions;
+    return result;
 }
 
 std::vector<Grounding>

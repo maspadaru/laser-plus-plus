@@ -5,6 +5,7 @@
 #include <string>
 #include <unordered_map>
 #include <vector>
+#include <utility>
 
 #include "formula/formula.h"
 #include "formula/grounding.h"
@@ -28,11 +29,11 @@ class Box : public Formula {
 
     // Methods
 
-    bool adjust_annotation(Grounding &box_grounding,
-                           Grounding const &child_grounding);
+    std::pair<bool, Grounding> adjust_annotation(Grounding const &box_grounding,
+                           Grounding const &child_grounding) const;
 
     std::vector<Grounding>
-    compute_box_conclusions(util::Timeline timeline) const;
+    compute_box_conclusions(util::Timeline timeline);
 
     void update_box_map(std::vector<Grounding> const &facts);
 
