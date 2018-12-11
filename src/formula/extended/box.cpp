@@ -123,9 +123,9 @@ Box::compute_box_conclusions(util::Timeline timeline) {
 
         // TODO also add tuple cunter condition
         if (ct <= start_time && ht >= current_time) {
-            auto new_grounding = grounding.new_annotations(current_time, current_time, current_count,
+            auto new_grounding = grounding.new_annotations(current_time, 
+                                        current_time, current_count,
                                       current_count);
-            iterator.second = new_grounding;
             result.push_back(new_grounding);
         }
     }
@@ -135,7 +135,7 @@ Box::compute_box_conclusions(util::Timeline timeline) {
 void Box::update_box_map(std::vector<Grounding> const &facts) {
     bool keep_going = true;
     while (keep_going) {
-        // We need to repeate as we may have in box p(a)[1, 1], and get
+        // We need to repete as we may have in box p(a)[1, 1], and get
         // from child p(a)[4,4], p(a)[2,3], in this order;
         keep_going = false;
         for (auto const &child_grounding : facts) {

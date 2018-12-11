@@ -203,8 +203,10 @@ void test_box() {
                                 "13 : f(1), f(a)\n"
                                 "14 : f(1), f(a)\n";
 
-    std::string rule_string = "q(X) := [B] f(X)\n"
-                              "r(Y,X) := [$, 3][B]c(X, Y)\n";
+    std::string rule_string = "" 
+                            "q(X) := [B] f(X)\n"
+                            "r(Y,X) := [$, 3][B]c(X, Y)\n"
+                            ;
 
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
@@ -522,19 +524,19 @@ void test_exact_time_recursive() {
 }
 
 int main() {
-    test_simple();
-    test_atoms();
-    test_diamond();
-    test_time_window();
+    //test_simple();
+    //test_atoms();
+    //test_diamond();
+    //test_time_window();
     test_box();
-    test_conjunction_same_variables();
-    test_conjunction_two_variables();
-    test_conjunction_diamond();
-    test_conjunction_box();
-    test_conjunction_corss_variables();
-    test_recursive();
-    test_exact_time_body();
-    test_exact_time_handb();
-    test_exact_time_head();
-    test_exact_time_recursive();
+    //test_conjunction_same_variables();
+    //test_conjunction_two_variables();
+    //test_conjunction_diamond();
+    //test_conjunction_box();
+    //test_conjunction_corss_variables();
+    //test_recursive();
+    //test_exact_time_body();
+    //test_exact_time_handb();
+    //test_exact_time_head();
+    //test_exact_time_recursive();
 }

@@ -36,12 +36,12 @@ TEST(BoxTest, BoxAtom) {
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 ->  q(1), q(a), r(b, a)";
-    expected[2] = "2 ->  q(a), q(1), r(b, a)";
-    expected[3] = "3 -> q(1), q(a)";
-    expected[4] = "4 -> q(1), q(a)";
-    expected[5] = "5 -> q(1), q(a)";
-    expected[6] = "6 -> q(1), q(a)";
+    expected[1] = "1 -> q(1), q(a), r(b, a)";
+    expected[2] = "2 -> q(a), q(1), r(b, a)";
+    expected[3] = "3 -> q(a), q(1), r(b, a)";
+    expected[4] = "4 -> q(a), q(1)";
+    expected[5] = "5 -> q(a), q(1)";
+    expected[6] = "6 -> q(a), q(1)";
     expected[7] = "7 -> q(a)";
     expected[8] = "8 -> q(a)";
     expected[9] = "9 -> q(a)";

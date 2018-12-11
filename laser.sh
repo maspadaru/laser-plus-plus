@@ -36,12 +36,12 @@ run_benchapp () {
     time cmake-build-release/$BENCHAPP_EXECUTABLE
 }
 
-run_project () {
+run_project_silent () {
     build_debug 
     cmake-build-debug/$EXECUTABLE 2> /dev/null
 }
 
-run_project_with_debug () {
+run_project () {
     build_debug 
     cmake-build-debug/$EXECUTABLE
 }
@@ -89,9 +89,9 @@ elif [ $1 = "p" ]; then
 elif [ $1 = "c" ]; then
     clean_up
 elif [ $1 = "rsilent" ]; then
-    run_project
+    run_project_silent
 elif [ $1 = "r" ]; then
-    run_project_with_debug
+    run_project
 elif [ $1 = "d" ]; then
     debug_project
 elif [ $1 = "db" ]; then

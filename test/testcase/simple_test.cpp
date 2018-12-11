@@ -24,10 +24,10 @@ TEST(SimpleTest, SimpleAtom) {
     std::string rule_string = "p(X, Y, Z) := a(X, Y, Z)\n";
 
     std::vector<std::string> expected(15);
-    expected[0] = "0 -> p(x1, y1, z1)";
-    expected[1] = "1 -> p(x2, y2, z2)";
-    expected[2] = "2 -> p(x3, y3, z3)";
-    expected[3] = "3 -> ";
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(x1, y1, z1)";
+    expected[2] = "2 -> p(x2, y2, z2)";
+    expected[3] = "3 -> p(x3, y3, z3)";
     expected[4] = "4 -> ";
     expected[5] = "5 -> ";
     expected[6] = "6 -> ";
