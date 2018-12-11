@@ -13,7 +13,8 @@
 #include "simple_writer.h"
  
 
-TEST(DiamondTest, DiamondAtom) {
+TEST(TimeWindowTest, TimeWindow) {
+
     std::string stream_string = "1 14 "
                                 "1 : \n"
                                 "2 : c(x2, y2)\n"
@@ -34,29 +35,29 @@ TEST(DiamondTest, DiamondAtom) {
                                 "13 : \n"
                                 "14 : \n";
 
-    std::string rule_string = "q(X, Y, Z) := [D] a(X, Y, Z)\n"
-                              "u(X, X) := [D]f(X)\n";
+    std::string rule_string = "q(X, Y, Z) := [$, 3] [D] a(X, Y, Z)\n"
+                              "r(Y) := [$, 100] c(X, Y)\n"
+                              "s(X) := [$, 0] [D] e(X, X)\n"
+                              "u(X, X) := [$, 1][D]f(X)\n";
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> ";
-    expected[2] = "2 -> ";
+    expected[2] = "2 -> r(y2)";
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
     expected[5] = "5 -> ";
     expected[6] = "6 -> q(x6, y6, z6)";
     expected[7] = "7 -> q(x6, y6, z6)";
-    expected[8] = "8 -> q(x6, y6, z6), q(x8, y8, z8)";
-    expected[9] = "9 -> q(x6, y6, z6), q(x8, y8, z8)";
-    expected[10] = "10 -> q(x10, y10, z10), q(x6, y6, z6), q(x8, y8, z8)";
-    expected[11] = "11 -> q(x10, y10, z10), q(x6, y6, z6), "
-        "q(x8, y8, z8), u(-9.099, -9.099), u(Z, Z), u(a11, a11)";
-    expected[12] = "12 -> q(x10, y10, z10), q(x6, y6, z6), "
-        "q(x8, y8, z8), u(-9.099, -9.099), u(Z, Z), u(a11, a11)";
-    expected[13] = "13 -> q(x10, y10, z10), q(x6, y6, z6), "
-        "q(x8, y8, z8), u(-9.099, -9.099), u(Z, Z), u(a11, a11)";
-    expected[14] = "14 -> q(x10, y10, z10), q(x6, y6, z6), "
-        "q(x8, y8, z8), u(-9.099, -9.099), u(Z, Z), u(a11, a11)";
+    expected[8] = "8 -> q(x8, y8, z8), q(x6, y6, z6)";
+    expected[9] = "9 -> q(x8, y8, z8), q(x6, y6, z6)";
+    expected[10] = "10 -> q(x10, y10, z10), q(x8, y8, z8)";
+    expected[11] = "11 -> q(x10, y10, z10), q(x8, y8, z8), u(Z, Z), "
+        "u(a11, a11), u(-9.099, -9.099)";
+    expected[12] = "12 -> q(x10, y10, z10), s(x12), u(Z, Z), "
+        "u(a11, a11), u(-9.099, -9.099)";
+    expected[13] = "13 -> q(x10, y10, z10)";
+    expected[14] = "14 -> ";
 
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);

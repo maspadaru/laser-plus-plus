@@ -37,22 +37,27 @@ run_benchapp () {
 }
 
 run_project () {
+    build_debug 
     cmake-build-debug/$EXECUTABLE 2> /dev/null
 }
 
 run_project_with_debug () {
+    build_debug 
     cmake-build-debug/$EXECUTABLE
 }
 
 test_project () {
+    build_debug 
     cmake-build-debug/$TEST_EXECUTABLE
 }
 
 debug_project () {
+    build_debug 
     gdb cmake-build-debug/$EXECUTABLE --tui
 }
 
 debug_benchapp () {
+    build_debug 
     gdb cmake-build-debug/$BENCHAPP_EXECUTABLE --tui
 }
 
