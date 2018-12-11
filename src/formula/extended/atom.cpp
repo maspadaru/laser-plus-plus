@@ -71,18 +71,13 @@ std::vector<std::string> Atom::get_variable_names() const {
     return grounding_table.get_variable_names();
 }
 
-
 std::vector<std::string> Atom::get_full_variable_names() const {
     return full_variable_names;
-} 
-
-void Atom::set_head(bool is_head) {
-    is_head_m = is_head;
 }
 
-bool Atom::is_head() const {
-    return is_head_m;
-}
+void Atom::set_head(bool is_head) { is_head_m = is_head; }
+
+bool Atom::is_head() const { return is_head_m; }
 
 // methods
 
@@ -111,28 +106,28 @@ std::vector<Grounding> Atom::get_groundings(util::Timeline timeline) {
     return grounding_table.get_all_groundings();
 }
 
-std::vector<Grounding>
-Atom::get_conclusion_set() {
-    std::unordered_set<Grounding, GroundingSubstitutionHasher> grounding_set;
+std::vector<Grounding> Atom::get_conclusion_set() {
+    std::unordered_set<Grounding, GroundingSubstitutionHasher,
+                       GroundingSubstitutionEqualityChecker>
+        grounding_set;
     auto gt_groundings = grounding_table.get_all_groundings();
     for (auto const &grounding : gt_groundings) {
         grounding_set.insert(grounding);
     }
     std::vector<Grounding> result;
-    result.insert(result.end(), grounding_set.begin(),
-                          grounding_set.end());
+    result.insert(result.end(), grounding_set.begin(), grounding_set.end());
     return result;
 }
 
-std::vector<formula::Grounding> Atom::get_conclusions_timepoint(util::Timeline timeline) {
-    //TODO: can be changed to return get_conclusion_set
-    return grounding_table.get_all_groundings();
+std::vector<formula::Grounding>
+Atom::get_conclusions_timepoint(util::Timeline timeline) {
+    // return grounding_table.get_all_groundings();
+    return get_conclusion_set();
 }
 
 std::vector<Grounding> Atom::get_conclusions_step(util::Timeline timeline) {
     return grounding_table.get_recent_groundings();
 }
-
 
 bool Atom::is_satisfied() const { return grounding_table.get_size() > 0; }
 
@@ -180,14 +175,14 @@ Grounding Atom::remove_duplicate_variables(Grounding const &grounding) {
     for (size_t index : first_position_vector) {
         result_values.push_back(grounding.get_constant(index));
     }
-    Grounding result = Grounding(
-        grounding.get_consideration_time(), grounding.get_horizon_time(),
-        grounding.get_consideration_count(), grounding.get_horizon_count(),
-        result_values);
+    Grounding result = Grounding(grounding.get_consideration_time(),
+                                 grounding.get_horizon_time(),
+                                 grounding.get_consideration_count(),
+                                 grounding.get_horizon_count(), result_values);
     return result;
 }
 
-void Atom::add_child(formula::Formula* child) {} 
+void Atom::add_child(formula::Formula *child) {}
 
 template <typename T>
 void Atom::debug_print(std::string const &message, T const &value) const {

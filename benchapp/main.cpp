@@ -12,8 +12,8 @@
 #include "file_writer.h"
 
 const uint64_t BUILD_NUMBER = 2; 
-const uint64_t END_TIME = 1000000;
-const uint64_t NFACTS = 1;
+const uint64_t END_TIME = 10000;
+const uint64_t NFACTS = 100;
 const bool OUTPUT = false;
 
 void run_single() {
@@ -221,7 +221,8 @@ void run_all() {
                             "t(X) := [$, 5] u(X, X)\n"
                             "u(X, X) := [$, 3][B]f(X)\n"
                             "v(X, Y, X, Y) := e(X, Y)\n"
-                             "q(X, Y, Z, T) := [@, T]a(X, Y, Z)\n";
+                             //"q(X, Y, Z, T) := [@, T]a(X, Y, Z)\n"
+                             ;
 
     std::string stream_path = "/home/mike/stream_file.txt";
     std::string output_path = "/home/mike/out_cpp.txt";
@@ -255,11 +256,11 @@ int main() {
         << " timepoints: " << END_TIME << std::endl 
         << " facts per timepoint: " << NFACTS << std::endl
        << "output enabled: "<< OUTPUT << std::endl << std::endl;
-    run_single();
-    run_diamond(); 
-    run_conjunction(); 
-    run_box(); 
+    //run_single();
+    //run_diamond(); 
+    //run_conjunction(); 
+    //run_box(); 
     //run_exact_time(); 
     //run_atoms(); 
-    //run_all(); 
+    run_all(); 
 }

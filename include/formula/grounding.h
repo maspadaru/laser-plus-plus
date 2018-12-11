@@ -114,6 +114,7 @@ class Grounding {
     bool operator<(const Grounding &other) const;
 
     bool operator==(const Grounding &other) const;
+    bool has_same_substitutions(const Grounding &other) const;
 };
 
 struct GroundingFullHasher {
@@ -125,6 +126,12 @@ struct GroundingFullHasher {
 struct GroundingSubstitutionHasher {
     size_t operator()(const Grounding &x) const {
         return x.get_substitution_hash();
+    }
+};
+
+struct GroundingSubstitutionEqualityChecker {
+    bool operator()(const Grounding &x, const Grounding &y) const {
+        return x.has_same_substitutions(y);
     }
 };
 

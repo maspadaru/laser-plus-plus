@@ -145,5 +145,9 @@ bool Grounding::operator==(const Grounding &other) const {
     return full_hash == other.full_hash;
 }
 
+bool Grounding::has_same_substitutions(const Grounding &other) const {
+    return substitution_hash == other.substitution_hash;
+}
+
 } // namespace formula
 } // namespace laser
