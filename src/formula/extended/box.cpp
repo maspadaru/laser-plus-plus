@@ -139,7 +139,7 @@ void Box::update_box_map(std::vector<Grounding> const &facts) {
         // from child p(a)[4,4], p(a)[2,3], in this order;
         keep_going = false;
         for (auto const &child_grounding : facts) {
-            std::string key = child_grounding.get_substitution_hash();
+            size_t key = child_grounding.get_substitution_hash();
             box_map.try_emplace(key, child_grounding);
             Grounding &box_grounding = box_map[key];
             auto adjusted_result = adjust_annotation(box_grounding, child_grounding);

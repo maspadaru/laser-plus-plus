@@ -33,9 +33,8 @@ class Grounding {
     bool is_fact_m = false;
     std::vector<std::string> constant_vector;
 
-    std::string substitution_hash;
-    std::string full_hash;
-    size_t real_hash;
+    size_t full_hash;
+    size_t substitution_hash;
     size_t size = 0;
 
     void init();
@@ -68,11 +67,9 @@ class Grounding {
 
     bool is_fact() const;
 
-    std::string get_substitution_hash() const;
+    size_t get_full_hash() const;
 
-    std::string get_full_hash() const;
-
-    size_t get_real_hash() const;
+    size_t get_substitution_hash() const;
 
     // methods
 
@@ -119,9 +116,15 @@ class Grounding {
     bool operator==(const Grounding &other) const;
 };
 
-struct GroundingHasher {
+struct GroundingFullHasher {
     size_t operator()(const Grounding &x) const {
-        return x.get_real_hash();
+        return x.get_full_hash();
+    }
+};
+
+struct GroundingSubstitutionHasher {
+    size_t operator()(const Grounding &x) const {
+        return x.get_substitution_hash();
     }
 };
 

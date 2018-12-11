@@ -111,7 +111,21 @@ std::vector<Grounding> Atom::get_groundings(util::Timeline timeline) {
     return grounding_table.get_all_groundings();
 }
 
-std::vector<Grounding> Atom::get_conclusions_timepoint(util::Timeline timeline) {
+std::vector<Grounding>
+Atom::get_conclusion_set() {
+    std::unordered_set<Grounding, GroundingSubstitutionHasher> grounding_set;
+    auto gt_groundings = grounding_table.get_all_groundings();
+    for (auto const &grounding : gt_groundings) {
+        grounding_set.insert(grounding);
+    }
+    std::vector<Grounding> result;
+    result.insert(result.end(), grounding_set.begin(),
+                          grounding_set.end());
+    return result;
+}
+
+std::vector<formula::Grounding> Atom::get_conclusions_timepoint(util::Timeline timeline) {
+    //TODO: can be changed to return get_conclusion_set
     return grounding_table.get_all_groundings();
 }
 

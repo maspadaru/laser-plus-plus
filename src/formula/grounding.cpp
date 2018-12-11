@@ -45,13 +45,11 @@ bool Grounding::is_background_fact() const { return is_background_fact_m; }
 
 bool Grounding::is_fact() const { return is_fact_m; }
 
-std::string Grounding::get_substitution_hash() const {
+size_t Grounding::get_substitution_hash() const {
     return substitution_hash;
 }
 
-std::string Grounding::get_full_hash() const { return full_hash; }
-
-size_t Grounding::get_real_hash() const { return real_hash; }
+size_t Grounding::get_full_hash() const { return full_hash; }
 
 Grounding Grounding::new_annotations(uint64_t consideration_time,
                                      uint64_t horizon_time,
@@ -79,19 +77,18 @@ Grounding::new_constant_vector(std::vector<std::string> new_vector) const {
 }
 
 void Grounding::init() {
-    std::stringstream substitution_hash_stream;
     std::stringstream full_hash_stream;
     for (auto &constant : constant_vector) {
-        substitution_hash_stream << constant << ";;";
         full_hash_stream << constant << ";;";
     }
+    std::string substitution_hash_str = full_hash_stream.str();
     full_hash_stream << consideration_time << ";;" << horizon_time << ";;"
                      << consideration_count << ";;" << horizon_count;
-    substitution_hash = substitution_hash_stream.str();
-    full_hash = full_hash_stream.str();
+    std::string full_hash_str = full_hash_stream.str();
     size = constant_vector.size();
     std::hash<std::string> hasher;
-    real_hash = hasher(full_hash);
+    full_hash = hasher(full_hash_str);
+    substitution_hash = hasher(substitution_hash_str);
 }
 
 std::string Grounding::get_constant(size_t variable_index) const {
@@ -141,11 +138,11 @@ std::string Grounding::debug_string() const {
 }
 
 bool Grounding::operator<(const Grounding &other) const {
-    return real_hash < other.real_hash;
+    return full_hash < other.full_hash;
 }
 
 bool Grounding::operator==(const Grounding &other) const {
-    return real_hash == other.real_hash;
+    return full_hash == other.full_hash;
 }
 
 } // namespace formula

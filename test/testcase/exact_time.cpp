@@ -110,7 +110,7 @@ TEST(ExactTimeTest, ExactTimeHeadAndBody) {
     expected[0] = "0 -> ";
     expected[1] = "1 -> a(2), a(1)";
     expected[2] = "2 -> a(3)";
-    expected[3] = "3 -> a(5), a(4) ";
+    expected[3] = "3 -> a(5), a(4)";
     expected[4] = "4 -> ";
     expected[5] = "5 -> ";
     expected[6] = "6 -> ";

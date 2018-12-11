@@ -25,7 +25,7 @@ class Box : public Formula {
 
     GroundingTable grounding_table;
 
-    std::unordered_map<std::string, Grounding> box_map;
+    std::unordered_map<size_t, Grounding> box_map;
 
     // Methods
 

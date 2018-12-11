@@ -14,14 +14,14 @@ bool GroundingTable::has_recent_groundings() {
 
 std::vector<Grounding> GroundingTable::get_recent_groundings() {
     std::vector<Grounding> result;
-    std::move(recent_groundings_set.begin(), recent_groundings_set.end(), 
-            std::back_inserter(result));
+    std::move(recent_groundings_set.begin(), recent_groundings_set.end(),
+              std::back_inserter(result));
     recent_groundings_set.clear(); // should not be necesarry
     return result;
 }
 
 void GroundingTable::add_grounding(Grounding const &grounding) {
-    std::unordered_set<Grounding, GroundingHasher> &groundings =
+    std::unordered_set<Grounding, GroundingFullHasher> &groundings =
         grounding_map[grounding.get_horizon_time()];
     bool was_inserted = false;
     std::tie(std::ignore, was_inserted) = groundings.insert(grounding);
@@ -30,8 +30,9 @@ void GroundingTable::add_grounding(Grounding const &grounding) {
         size += 1;
     }
 }
-    
-void GroundingTable::add_grounding_vector(std::vector<Grounding> const &grounding_vector) {
+
+void GroundingTable::add_grounding_vector(
+    std::vector<Grounding> const &grounding_vector) {
     for (auto const &grounding : grounding_vector) {
         add_grounding(grounding);
     }
@@ -51,7 +52,7 @@ std::vector<Grounding> GroundingTable::get_all_groundings() {
 
 int GroundingTable::get_variable_index(std::string const &variable_name) const {
     int result = -1;
-    if (variable_index.count(variable_name) > 0) { 
+    if (variable_index.count(variable_name) > 0) {
         result = variable_index.at(variable_name);
     }
     return result;
@@ -66,7 +67,7 @@ void GroundingTable::expire_outdated_groundings(
     }
     recent_groundings_set.clear();
     /* TODO expire also by hourizon_counter
-     * Not sure if it's more efficient to create a new map based on ht, or 
+     * Not sure if it's more efficient to create a new map based on ht, or
      * a nested hashtable, or just to itterate over all keys
      */
 }

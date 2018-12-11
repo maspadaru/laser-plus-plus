@@ -30,7 +30,7 @@ class ExactTime : public Formula {
      *      key: time_variable (some timepoint in the future)
      *      value: Set of all groundings sharing the same time variable
      */
-    std::unordered_map<uint64_t, std::unordered_set<Grounding, GroundingHasher>> future_conclusion_map;
+    std::unordered_map<uint64_t, std::unordered_set<Grounding, GroundingFullHasher>> future_conclusion_map;
 
     std::vector<Grounding> timepoint_conclusions;
 

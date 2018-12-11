@@ -70,6 +70,11 @@ class Atom : public Formula {
     template<typename T>
     void debug_print(std::string const& message, T const& value) const;
 
+    /** returns a vector containing only unique groundings in regards to 
+     * substitutions, not annotations 
+     */
+    std::vector<Grounding> get_conclusion_set();
+
   public:
     // constructors & destructors
 
