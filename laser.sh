@@ -27,13 +27,13 @@ clean_up () {
 
 run_profile () {
     build_debug 
-    cmake-build-debug/$BENCHAPP_EXECUTABLE
-    gprof cmake-build-debug/$BENCHAPP_EXECUTABLE > prof.txt
+    cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4
+    gprof cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 > prof.txt
 }
 
 run_benchapp () {
     build_release 
-    time cmake-build-release/$BENCHAPP_EXECUTABLE
+    cmake-build-release/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 
 }
 
 run_project_silent () {
@@ -58,34 +58,38 @@ debug_project () {
 
 debug_benchapp () {
     build_debug 
-    gdb cmake-build-debug/$BENCHAPP_EXECUTABLE --tui
+    gdb cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 --tui
 }
 
 print_help () {
-    echo "Usage: laser [b c d p rsilent r release h t]"
-    echo "b: Build Debug"
+    echo "Usage: laser [b bench c d dbench p rsilent r release h t]"
+    echo "b: Build with Debug symbols"
+    echo "bench: Run Benchmark App"
     echo "c: Clean project"
     echo "d: Debug project using GDB"
+    echo "dbench: Debug benchark application using GDB"
     echo "p: Profile application. Generates prof.txt"
     echo "release: Build Release"
-    echo "bench: Run Benchmark App"
     echo "h: Print help"
     echo "r: Run project and print all errors"
     echo "rsilent: Run project without printing any errors"
     echo "t: run all tests"
+    echo " "
+    echo " Options [bench dbench p] require additional arguments:"
+    echo " test_name end_time_of_stream number_of_facts_per_timepoint window_size"
 
 }
 
 if [ $# -eq 0 ]; then 
-	print_help
+	print_help 
 elif [ $1 = "release" ]; then
     build_release
 elif [ $1 = "b" ]; then
     build_debug
 elif [ $1 = "bench" ]; then
-    run_benchapp
+    run_benchapp "$2" "$3" "$4" "$5"
 elif [ $1 = "p" ]; then
-    run_profile
+    run_profile "$2" "$3" "$4" "$5"
 elif [ $1 = "c" ]; then
     clean_up
 elif [ $1 = "rsilent" ]; then
@@ -94,8 +98,8 @@ elif [ $1 = "r" ]; then
     run_project
 elif [ $1 = "d" ]; then
     debug_project
-elif [ $1 = "db" ]; then
-    debug_benchapp
+elif [ $1 = "dbench" ]; then
+    debug_benchapp "$2" "$3" "$4" "$5"
 elif [ $1 = "t" ]; then
     test_project
 elif [ $1 = "h" ]; then

@@ -1,5 +1,6 @@
 #include <ctime>
 #include <iostream>
+#include <string.h>
 
 #include <formula/extended/atom.h>
 #include <formula/formula.h>
@@ -11,13 +12,13 @@
 #include "file_reader.h"
 #include "file_writer.h"
 
-const uint64_t BUILD_NUMBER = 2; 
-const uint64_t END_TIME = 10000;
-const uint64_t NFACTS = 100;
+const uint64_t BUILD_NUMBER = 1; 
 const bool OUTPUT = false;
 
-void run_single() {
-    std::cout << "Starting run: Single Atom " << std::endl;
+uint64_t end_time = 10000;
+uint64_t NFACTS = 100;
+
+void run_atom(uint64_t end_time, int facts_per_timepoint, int window_size) {
 
     std::string rules = ""
                         "t(X, Y) := d(X, Y)\n"
@@ -26,8 +27,6 @@ void run_single() {
     std::string stream_path = "/home/mike/stream_file.txt";
     std::string output_path = "/home/mike/out_cpp_atom_single.txt";
     uint64_t start_time = 0;
-    uint64_t end_time = END_TIME;
-    int facts_per_timepoint = NFACTS;
     bool is_output_enabled = OUTPUT;
 
     auto file_io_manager =
@@ -45,11 +44,10 @@ void run_single() {
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl
-              << std::endl
               << std::endl;
 }
 
-void run_diamond() {
+void run_diamond(uint64_t end_time, int facts_per_timepoint, int window_size) {
     std::cout << "Starting run: Diamond " << std::endl;
 
     std::string rules = "t(X, Y) := [$, 5] [D]d(X, Y)\n";
@@ -57,8 +55,6 @@ void run_diamond() {
     std::string stream_path = "/home/mike/stream_file.txt";
     std::string output_path = "/home/mike/out_cpp_diamond.txt";
     uint64_t start_time = 0;
-    uint64_t end_time = END_TIME;
-    int facts_per_timepoint = NFACTS;
     bool is_output_enabled = OUTPUT;
 
     auto file_io_manager =
@@ -82,7 +78,7 @@ void run_diamond() {
               << std::endl;
 }
 
-void run_conjunction() {
+void run_conjunction(uint64_t end_time, int facts_per_timepoint, int window_size) {
     std::cout << "Starting run: Conjunction " << std::endl;
 
     std::string rules = "t(X, Y) := d(X, Y) && f(X)\n";
@@ -90,8 +86,6 @@ void run_conjunction() {
     std::string stream_path = "/home/mike/stream_file.txt";
     std::string output_path = "/home/mike/out_cpp_conjunction.txt";
     uint64_t start_time = 0;
-    uint64_t end_time = END_TIME;
-    int facts_per_timepoint = NFACTS;
     bool is_output_enabled = OUTPUT;
 
     auto file_io_manager =
@@ -115,7 +109,7 @@ void run_conjunction() {
               << std::endl;
 }
 
-void run_box() {
+void run_box(uint64_t end_time, int facts_per_timepoint, int window_size) {
     std::cout << "Starting run: Box " << std::endl;
 
     std::string rules = "t(X) := [$, 3][B]f(X)\n";
@@ -123,8 +117,6 @@ void run_box() {
     std::string stream_path = "/home/mike/stream_file.txt";
     std::string output_path = "/home/mike/out_cpp_box.txt";
     uint64_t start_time = 0;
-    uint64_t end_time = END_TIME;
-    int facts_per_timepoint = NFACTS;
     bool is_output_enabled = OUTPUT;
 
     auto file_io_manager =
@@ -146,16 +138,14 @@ void run_box() {
               << std::endl;
 }
 
-void run_exact_time() {
-    std::cout << "Starting run: Exact Time " << std::endl;
+void run_time_reference(uint64_t end_time, int facts_per_timepoint, int window_size) {
+    std::cout << "Starting run: Time Reference" << std::endl;
 
     std::string rules = "t(X, Y, T) := [@, T]d(X, Y)\n";
 
     std::string stream_path = "/home/mike/stream_file.txt";
     std::string output_path = "/home/mike/out_cpp_timeref.txt";
     uint64_t start_time = 0;
-    uint64_t end_time = END_TIME;
-    int facts_per_timepoint = NFACTS;
     bool is_output_enabled = OUTPUT;
 
     auto file_io_manager =
@@ -177,7 +167,7 @@ void run_exact_time() {
               << std::endl;
 }
 
-void run_atoms() {
+void run_multi_atom(uint64_t end_time, int facts_per_timepoint, int window_size) {
     std::cout << "Starting run: Atoms " << std::endl;
 
     std::string rules = ""
@@ -191,8 +181,6 @@ void run_atoms() {
     std::string stream_path = "/home/mike/stream_file.txt";
     std::string output_path = "/home/mike/out_cpp_atoms.txt";
     uint64_t start_time = 0;
-    uint64_t end_time = END_TIME;
-    int facts_per_timepoint = NFACTS;
     bool is_output_enabled = OUTPUT;
 
     auto file_io_manager =
@@ -214,8 +202,8 @@ void run_atoms() {
               << std::endl;
 }
 
-void run_all() {
-    std::cout << "Starting run: All " << std::endl;
+void run_multi_all(uint64_t end_time, int facts_per_timepoint, int window_size) {
+    std::cout << "Starting run: Multi All " << std::endl;
 
     std::string rules = "r(Y, Z) := c(X, Y) && d(Y,Z)\n"
                             "t(X) := [$, 5] u(X, X)\n"
@@ -227,8 +215,6 @@ void run_all() {
     std::string stream_path = "/home/mike/stream_file.txt";
     std::string output_path = "/home/mike/out_cpp.txt";
     uint64_t start_time = 0;
-    uint64_t end_time = END_TIME;
-    int facts_per_timepoint = NFACTS;
     bool is_output_enabled = OUTPUT;
 
     auto file_io_manager =
@@ -250,17 +236,42 @@ void run_all() {
               << std::endl;
 }
 
-int main() { 
+int main(int argc, char **argv) { 
+    if (argc < 4) {
+        std::cerr << "Usage: benchapp TEST_NAME END_TIME FACTS_PER_TIMEPOINT WINDOW_SIZE" 
+            << std::endl;
+        return 1;
+    }
+    std::string test_name(argv[1]);
+    std::string end_time_str(argv[2]);
+    std::string num_facts_str(argv[3]);
+    std::string win_size_str(argv[4]);
+
+    uint64_t end_time = std::stoull(end_time_str);
+    int num_facts = std::stoi(num_facts_str);
+    int win_size = std::stoi(win_size_str);
+
     std::cout 
-        << " build: " << BUILD_NUMBER << std::endl 
-        << " timepoints: " << END_TIME << std::endl 
-        << " facts per timepoint: " << NFACTS << std::endl
-       << "output enabled: "<< OUTPUT << std::endl << std::endl;
-    //run_single();
-    //run_diamond(); 
-    //run_conjunction(); 
-    //run_box(); 
-    //run_exact_time(); 
-    //run_atoms(); 
-    run_all(); 
+       << "    build: " << BUILD_NUMBER << std::endl 
+       << "    timepoints: " << end_time << std::endl 
+       << "    facts per timepoint: " << num_facts << std::endl
+       << "    window size: " << win_size << std::endl
+       << "    output enabled: "<< OUTPUT << std::endl
+       << "Starting run: " << test_name << std::endl;
+
+    if (test_name == "atom") {
+        run_atom(end_time, num_facts, win_size);
+    } else if (test_name == "diamond") {
+        run_diamond(end_time, num_facts, win_size); 
+    } else if (test_name == "conjunction") {
+        run_conjunction(end_time, num_facts, win_size); 
+    } else if (test_name == "box") {
+        run_box(end_time, num_facts, win_size); 
+    } else if (test_name == "tref") {
+        run_time_reference(end_time, num_facts, win_size); 
+    } else if (test_name == "multiatom") {
+        run_multi_atom(end_time, num_facts, win_size); 
+    } else if (test_name == "multiall") {
+        run_multi_all(end_time, num_facts, win_size); 
+    }
 }
