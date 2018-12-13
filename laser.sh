@@ -36,6 +36,11 @@ run_benchapp () {
     cmake-build-release/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 
 }
 
+# only difference between benchapp is that this does not compile first
+run_benchscript () {
+    cmake-build-release/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 
+}
+
 run_project_silent () {
     build_debug 
     cmake-build-debug/$EXECUTABLE 2> /dev/null
@@ -88,6 +93,8 @@ elif [ $1 = "b" ]; then
     build_debug
 elif [ $1 = "bench" ]; then
     run_benchapp "$2" "$3" "$4" "$5"
+elif [ $1 = "benchscript" ]; then
+    run_benchscript "$2" "$3" "$4" "$5"
 elif [ $1 = "p" ]; then
     run_profile "$2" "$3" "$4" "$5"
 elif [ $1 = "c" ]; then

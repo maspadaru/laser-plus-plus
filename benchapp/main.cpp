@@ -48,9 +48,9 @@ void run_atom(uint64_t end_time, int facts_per_timepoint, int window_size) {
 }
 
 void run_diamond(uint64_t end_time, int facts_per_timepoint, int window_size) {
-    std::cout << "Starting run: Diamond " << std::endl;
 
-    std::string rules = "t(X, Y) := [$, 5] [D]d(X, Y)\n";
+    std::string rules = "t(X, Y) := [$, " + std::to_string(window_size) +  
+                                    "] [D]d(X, Y)\n";
 
     std::string stream_path = "/home/mike/stream_file.txt";
     std::string output_path = "/home/mike/out_cpp_diamond.txt";
@@ -79,7 +79,6 @@ void run_diamond(uint64_t end_time, int facts_per_timepoint, int window_size) {
 }
 
 void run_conjunction(uint64_t end_time, int facts_per_timepoint, int window_size) {
-    std::cout << "Starting run: Conjunction " << std::endl;
 
     std::string rules = "t(X, Y) := d(X, Y) && f(X)\n";
 
@@ -110,9 +109,9 @@ void run_conjunction(uint64_t end_time, int facts_per_timepoint, int window_size
 }
 
 void run_box(uint64_t end_time, int facts_per_timepoint, int window_size) {
-    std::cout << "Starting run: Box " << std::endl;
 
-    std::string rules = "t(X) := [$, 3][B]f(X)\n";
+    std::string rules = "t(X) := [$, " + std::to_string(window_size) +  
+                                    "][B]f(X)\n";
 
     std::string stream_path = "/home/mike/stream_file.txt";
     std::string output_path = "/home/mike/out_cpp_box.txt";
@@ -139,7 +138,6 @@ void run_box(uint64_t end_time, int facts_per_timepoint, int window_size) {
 }
 
 void run_time_reference(uint64_t end_time, int facts_per_timepoint, int window_size) {
-    std::cout << "Starting run: Time Reference" << std::endl;
 
     std::string rules = "t(X, Y, T) := [@, T]d(X, Y)\n";
 
@@ -168,7 +166,6 @@ void run_time_reference(uint64_t end_time, int facts_per_timepoint, int window_s
 }
 
 void run_multi_atom(uint64_t end_time, int facts_per_timepoint, int window_size) {
-    std::cout << "Starting run: Atoms " << std::endl;
 
     std::string rules = ""
                         "q(X, Y, Z) := a(X, Y, Z)\n"
@@ -203,11 +200,12 @@ void run_multi_atom(uint64_t end_time, int facts_per_timepoint, int window_size)
 }
 
 void run_multi_all(uint64_t end_time, int facts_per_timepoint, int window_size) {
-    std::cout << "Starting run: Multi All " << std::endl;
 
     std::string rules = "r(Y, Z) := c(X, Y) && d(Y,Z)\n"
-                            "t(X) := [$, 5] u(X, X)\n"
-                            "u(X, X) := [$, 3][B]f(X)\n"
+                            "t(X) := [$, " + std::to_string(window_size) +  
+                                    "] u(X, X)\n"
+                            "u(X, X) := [$, " + std::to_string(window_size) +  
+                                    "][B]f(X)\n"
                             "v(X, Y, X, Y) := e(X, Y)\n"
                              //"q(X, Y, Z, T) := [@, T]a(X, Y, Z)\n"
                              ;
@@ -252,12 +250,10 @@ int main(int argc, char **argv) {
     int win_size = std::stoi(win_size_str);
 
     std::cout 
-       << "    build: " << BUILD_NUMBER << std::endl 
-       << "    timepoints: " << end_time << std::endl 
-       << "    facts per timepoint: " << num_facts << std::endl
-       << "    window size: " << win_size << std::endl
-       << "    output enabled: "<< OUTPUT << std::endl
-       << "Starting run: " << test_name << std::endl;
+       << "Starting run: " << test_name << std::endl
+       << "timepoints: " << end_time 
+       << ",  facts per timepoint: " << num_facts 
+       << ",  window size: " << win_size << std::endl;
 
     if (test_name == "atom") {
         run_atom(end_time, num_facts, win_size);
