@@ -46,7 +46,7 @@ TEST(AtomsTest, Atom) {
     expected[2] = "2 -> r(y2), t(y2, x2)";
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
-    expected[5] = "5 -> v(x5, y5, x5, y5), v(a5, b5, a5, b5)";
+    expected[5] = "5 -> v(a5, b5, a5, b5), v(x5, y5, x5, y5)";
     expected[6] = "6 -> q(x6, y6, z6)";
     expected[7] = "7 -> ";
     expected[8] = "8 -> q(x8, y8, z8)";

@@ -24,9 +24,9 @@ TEST(ExactTimeTest, ExactTimeBody) {
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> a(1, 2), a(1, 1)";
+    expected[1] = "1 -> a(1, 1), a(1, 2)";
     expected[2] = "2 -> a(2, 3)";
-    expected[3] = "3 -> a(3, 5), a(3, 4)";
+    expected[3] = "3 -> a(3, 4), a(3, 5)";
     expected[4] = "4 -> ";
     expected[5] = "5 -> ";
     expected[6] = "6 -> ";
@@ -155,7 +155,7 @@ TEST(ExactTimeTest, ExactTimeRecursive) {
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> b(x1)";
-    expected[2] = "2 -> p(x2, y2, 2), p(x1, y2, 2), b(x2), b(x1)";
+    expected[2] = "2 -> p(x1, y2, 2), p(x2, y2, 2), b(x2), b(x1)";
     expected[3] = "3 -> p(x2, y3, 3), b(x2)";
     expected[4] = "4 -> ";
     expected[5] = "5 -> b(x4)";

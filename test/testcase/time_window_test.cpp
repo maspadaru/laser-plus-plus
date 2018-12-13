@@ -49,13 +49,13 @@ TEST(TimeWindowTest, TimeWindow) {
     expected[5] = "5 -> ";
     expected[6] = "6 -> q(x6, y6, z6)";
     expected[7] = "7 -> q(x6, y6, z6)";
-    expected[8] = "8 -> q(x8, y8, z8), q(x6, y6, z6)";
-    expected[9] = "9 -> q(x8, y8, z8), q(x6, y6, z6)";
-    expected[10] = "10 -> q(x10, y10, z10), q(x8, y8, z8)";
-    expected[11] = "11 -> q(x10, y10, z10), q(x8, y8, z8), u(Z, Z), "
-        "u(a11, a11), u(-9.099, -9.099)";
-    expected[12] = "12 -> q(x10, y10, z10), s(x12), u(Z, Z), "
-        "u(a11, a11), u(-9.099, -9.099)";
+    expected[8] = "8 -> q(x6, y6, z6), q(x8, y8, z8)";
+    expected[9] = "9 -> q(x6, y6, z6), q(x8, y8, z8)";
+    expected[10] = "10 -> q(x8, y8, z8), q(x10, y10, z10)";
+    expected[11] = "11 -> q(x8, y8, z8), q(x10, y10, z10), u(-9.099, -9.099)," 
+        " u(Z, Z), u(a11, a11)";
+    expected[12] = "12 -> q(x10, y10, z10), s(x12), u(-9.099, -9.099)," 
+        " u(Z, Z), u(a11, a11)";
     expected[13] = "13 -> q(x10, y10, z10)";
     expected[14] = "14 -> ";
 
