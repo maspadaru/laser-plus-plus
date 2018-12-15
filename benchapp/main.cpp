@@ -1,6 +1,5 @@
 #include <ctime>
 #include <iostream>
-#include <string.h>
 
 #include <formula/extended/atom.h>
 #include <formula/formula.h>
@@ -269,5 +268,7 @@ int main(int argc, char **argv) {
         run_multi_atom(end_time, num_facts, win_size); 
     } else if (test_name == "multiall") {
         run_multi_all(end_time, num_facts, win_size); 
+    } else {
+        std::cout << "Invalid test name!" << std::endl;
     }
 }

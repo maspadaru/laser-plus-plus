@@ -12,5 +12,5 @@ cmake-build-debug/
 compile_commands.json
 Session.vim
 gmon.out
-prof.txt
+prof_*.txt
 

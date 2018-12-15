@@ -27,8 +27,12 @@ clean_up () {
 
 run_profile () {
     build_debug 
+    rm -f prfo_flat.txt
+    rm -f prfo_graph.txt
+    rm -f gmon.out
     cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4
-    gprof cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 > prof.txt
+    gprof -a -b -p cmake-build-debug/$BENCHAPP_EXECUTABLE > prof_flat.txt
+    gprof -a -b -q cmake-build-debug/$BENCHAPP_EXECUTABLE > prof_graph.txt
 }
 
 run_benchapp () {
