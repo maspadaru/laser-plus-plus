@@ -11,13 +11,13 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <memory>
 
 namespace laser {
 namespace formula {
 
 /**
  * Annotated Grounding (_alpha_-_sigma_)
- * (Definition 7)
  * Maps each variable in the formula _alpha_ to a constant value due to
  * substitution _sigma_
  * The grounding is annotated with consideration and horizon values
@@ -31,7 +31,7 @@ class Grounding {
     uint64_t horizon_count = ULLONG_MAX;
     bool is_background_fact_m = false;
     bool is_fact_m = false;
-    std::vector<std::string> constant_vector;
+    std::vector<std::shared_ptr<std::string const>> constant_vector;
 
     size_t full_hash;
     size_t substitution_hash;
@@ -44,12 +44,12 @@ class Grounding {
 
     Grounding(uint64_t consideration_time, uint64_t horizon_time,
               uint64_t consideration_count, uint64_t horizon_count,
-              std::vector<std::string> constant_vector);
+              std::vector<std::shared_ptr<std::string const>> constant_vector);
 
     Grounding(uint64_t consideration_time, uint64_t horizon_time,
               uint64_t consideration_count, uint64_t horizon_count,
               bool is_fact, bool is_background_fact,
-              std::vector<std::string> constant_vector);
+              std::vector<std::shared_ptr<std::string const>> constant_vector);
 
     Grounding() = default;
 
@@ -86,11 +86,6 @@ class Grounding {
     Grounding new_constant(size_t index, std::string const &constant) const;
 
     /**
-     * Creates a new Grounding containing the new constant vector
-     */
-    Grounding new_constant_vector(std::vector<std::string> new_vector) const;
-
-    /**
      * Creates a new Grounding containing the new annotations
      */
     Grounding new_annotations(uint64_t consideration_time,
@@ -115,6 +110,11 @@ class Grounding {
 
     bool operator==(const Grounding &other) const;
     bool has_same_substitutions(const Grounding &other) const;
+
+    /**
+     * Creates a new Grounding containing the new constant vector
+     */
+    //Grounding new_constant_vector(std::vector<std::string> new_vector) const;
 };
 
 struct GroundingFullHasher {

@@ -171,7 +171,7 @@ bool Atom::is_valid_fact(Grounding const &grounding) const {
 }
 
 Grounding Atom::remove_duplicate_variables(Grounding const &grounding) {
-    std::vector<std::string> result_values;
+    std::vector<std::shared_ptr<std::string const>> result_values;
     for (size_t index : first_position_vector) {
         result_values.push_back(grounding.get_constant(index));
     }
