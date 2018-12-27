@@ -116,8 +116,8 @@ std::vector<Token> SimpleParser::tokenize(std::string rule_string) const {
 std::vector<laser::util::DataAtom>
 SimpleParser::parse_token_vector(
         std::vector<Token> input_token_vector) {
-    std::vector<std::string> token_list;
-    std::string predicate;
+    std::vector<std::shared_ptr<std::string const>> token_list;
+    std::shared_ptr<std::string const> predicate;
     std::vector<laser::util::DataAtom> result;
     for (auto token : input_token_vector) {
         switch (token.type) {
@@ -132,7 +132,7 @@ SimpleParser::parse_token_vector(
                 break;
             }
             case TokenType::IDENTIFIER : {
-                token_list.push_back(token.value);
+                token_list.push_back(std::make_shared<std::string const>(token.value));
                 break;
             }
             case TokenType::CLOSED_PARENTHESES : {

@@ -75,6 +75,8 @@ class Grounding {
 
     std::string get_constant(size_t variable_index) const;
 
+    std::shared_ptr<std::string const> get_constant_ptr(size_t variable_index) const;
+
     bool has_expired(uint64_t time, uint64_t tuple_counter) const;
 
     size_t get_size() const;

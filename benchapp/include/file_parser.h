@@ -12,6 +12,7 @@
 #include <tuple>
 #include <utility>
 #include <vector>
+#include <memory>
 
 #include <util/data_atom.h>
 #include <util/format_exception.h>

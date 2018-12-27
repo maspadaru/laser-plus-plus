@@ -13,6 +13,7 @@
 #include <sstream>
 #include <utility>
 #include <string>
+#include <memory>
 
 #include <util/format_exception.h>
 #include <util/data_atom.h>

@@ -156,8 +156,8 @@ Conjunction::hash_common_variables(Formula const &child,
     std::stringstream ss;
     for (auto &variable : common_child_variables) {
         size_t variable_index = child.get_variable_index(variable);
-        auto constant = grounding.get_constant(variable_index);
-        ss << constant << ";;";
+        auto constant = grounding.get_constant_ptr(variable_index);
+        ss << *constant << ";;";
     }
     return ss.str();
 }
@@ -170,14 +170,14 @@ Grounding Conjunction::merge_groundings(util::Timeline timeline,
     // TODO not sure about tuple counter values;
     auto cc = timeline.get_tuple_count();
     auto hc = timeline.min(left.get_horizon_count(), right.get_horizon_count());
-    std::vector<std::string> substitution_vector;
+    std::vector<std::shared_ptr<std::string const>> substitution_vector;
     for (auto const &variable_name : variable_names) {
         auto left_index = left_child->get_variable_index(variable_name);
         if (left_index >= 0) {
-            substitution_vector.push_back(left.get_constant(left_index));
+            substitution_vector.push_back(left.get_constant_ptr(left_index));
         } else {
             auto right_index = right_child->get_variable_index(variable_name);
-            substitution_vector.push_back(right.get_constant(right_index));
+            substitution_vector.push_back(right.get_constant_ptr(right_index));
         }
     }
     auto result = Grounding(ct, ht, cc, hc, substitution_vector);

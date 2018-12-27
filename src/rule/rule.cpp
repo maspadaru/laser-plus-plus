@@ -87,11 +87,11 @@ void Rule::compute_variable_map() {
 
 formula::Grounding
 Rule::convert_to_head_grounding(formula::Grounding const &grounding) const {
-    std::vector<std::string> result_vector;
+    std::vector<std::shared_ptr<std::string const>> result_vector;
     for (size_t head_index = 0; head_index < head.get_number_of_variables();
          head_index++) {
         result_vector.push_back(
-            grounding.get_constant(variable_map.at(head_index)));
+            grounding.get_constant_ptr(variable_map.at(head_index)));
     }
     formula::Grounding result = formula::Grounding(grounding.get_consideration_time(), 
                                         grounding.get_horizon_time(),
