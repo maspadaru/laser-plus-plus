@@ -212,7 +212,7 @@ void Conjunction::populate_grounding_vector(
 
 bool Conjunction::evaluate(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
     // TODO Here I can split facts in sub-maps, based on predicates of children
     bool result = left_child->evaluate(timeline, facts);
     result |= right_child->evaluate(timeline, facts);

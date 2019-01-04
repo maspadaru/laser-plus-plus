@@ -69,7 +69,7 @@ class Formula {
     virtual bool
     evaluate(util::Timeline timeline,
              std::unordered_map<std::string, std::vector<formula::Grounding>>
-                 facts) = 0;
+                 const &facts) = 0;
 
     virtual size_t get_number_of_variables() const = 0;
 

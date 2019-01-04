@@ -66,8 +66,8 @@ void Rule::debug_print() const {
 
 bool Rule::evaluate(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
-    return body.evaluate(timeline, std::move(facts));
+    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
+    return body.evaluate(timeline, facts);
 }
 
 void Rule::init() {

@@ -82,7 +82,7 @@ std::vector<Grounding> Diamond::get_conclusions_step(util::Timeline timeline) {
 
 bool Diamond::evaluate(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
     bool result = child->evaluate(timeline, facts);
     auto child_facts = child->get_groundings(timeline);
     grounding_table.add_grounding_vector(child_facts);

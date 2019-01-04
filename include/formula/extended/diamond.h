@@ -64,7 +64,7 @@ class Diamond : public Formula {
     bool
     evaluate(util::Timeline timeline,
              std::unordered_map<std::string, std::vector<formula::Grounding>>
-                 facts) override;
+                 const &facts) override;
 
     void expire_outdated_groundings(util::Timeline timeline) override;
     

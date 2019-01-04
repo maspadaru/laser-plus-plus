@@ -94,7 +94,7 @@ std::vector<Grounding> Box::get_conclusions_step(util::Timeline timeline) {
 
 bool Box::evaluate(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
     bool result = child->evaluate(timeline, facts);
     if (result) {
         auto child_facts = child->get_groundings(timeline);

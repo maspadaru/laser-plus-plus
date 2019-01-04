@@ -133,7 +133,7 @@ bool Atom::is_satisfied() const { return grounding_table.get_size() > 0; }
 
 bool Atom::evaluate(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
     if (facts.count(predicate) > 0) {
         auto grounding_vector = facts.at(predicate);
         for (auto const &grounding : grounding_vector) {

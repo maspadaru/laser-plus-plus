@@ -74,7 +74,7 @@ util::Timeline TimeWindow::alter_timeline(util::Timeline timeline) const {
 
 bool TimeWindow::evaluate(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
     auto window_timeline = alter_timeline(timeline);
     return child->evaluate(window_timeline, facts);
 }

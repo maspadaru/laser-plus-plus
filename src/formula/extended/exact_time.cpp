@@ -180,9 +180,9 @@ ExactTime::get_conclusions_step(util::Timeline timeline) {
 
 void ExactTime::evaluate_head(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
     std::string predicate = get_predicate_vector().at(0);
-    auto predicate_facts = facts[predicate];
+    auto predicate_facts = facts.at(predicate);
     auto exact_time_groundings =
         convert_groundings_head(timeline, predicate_facts);
     grounding_table.add_grounding_vector(exact_time_groundings);
@@ -190,7 +190,7 @@ void ExactTime::evaluate_head(
 
 void ExactTime::evaluate_body(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
     child->evaluate(timeline, facts);
     auto child_conclusions = child->get_groundings(timeline);
     auto exact_time_groundings =
@@ -200,7 +200,7 @@ void ExactTime::evaluate_body(
 
 bool ExactTime::evaluate(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
     // If the formula is in the head of the rule, we know the child can only
     // be an Atom. So we can ignore the child.
     if (is_head()) {

@@ -114,7 +114,7 @@ class Atom : public Formula {
     bool
     evaluate(util::Timeline timeline,
              std::unordered_map<std::string, std::vector<formula::Grounding>>
-                 facts) override;
+                 const &facts) override;
 
     size_t get_number_of_variables() const override;
 
