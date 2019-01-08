@@ -5,6 +5,7 @@
 #ifndef LASER_PROGRAM_IO_HANDLER_H
 #define LASER_PROGRAM_IO_HANDLER_H
 
+#include <memory>
 #include <unordered_map>
 
 #include "formula/extended/atom.h"
@@ -24,7 +25,8 @@ class IOHandler {
     explicit IOHandler(io::IOManager *ioManager);
 
     // methods
-    std::unordered_map<std::string, std::vector<formula::Grounding>>
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<formula::Grounding>>>
     get_stream_data(uint64_t time);
 
     void put_conclusions(util::Timeline timeline,

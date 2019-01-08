@@ -5,6 +5,7 @@
 #ifndef LASER_FORMULA_FORMULA_H
 #define LASER_FORMULA_FORMULA_H
 
+#include <memory>
 #include <string>
 
 #include "formula/grounding_table.h"
@@ -47,7 +48,7 @@ class Formula {
 
     // methods
 
-    virtual void add_child(formula::Formula* child) = 0;
+    virtual void add_child(formula::Formula *child) = 0;
 
     /**
      * Return a list of unique variable names
@@ -66,34 +67,37 @@ class Formula {
 
     virtual bool is_satisfied() const = 0;
 
-    virtual bool
-    evaluate(util::Timeline timeline,
-             std::unordered_map<std::string, std::vector<formula::Grounding>>
-                 const &facts) = 0;
+    virtual bool evaluate(
+        util::Timeline timeline,
+        std::unordered_map<
+            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
+            &facts) = 0;
 
     virtual size_t get_number_of_variables() const = 0;
 
     virtual void expire_outdated_groundings(util::Timeline timeline) = 0;
 
-    virtual std::vector<Grounding> get_groundings(util::Timeline timeline) = 0;
+    virtual std::vector<std::shared_ptr<Grounding>>
+    get_groundings(util::Timeline timeline) = 0;
 
     /**
-     * Returns only the new conclusion that were derived since the rule was last 
+     * Returns only the new conclusion that were derived since the rule was last
      * evaluated.
      * Useful when adding new conclusions as facts to the input of the next
-     * evaluation step during some timepoint. 
-     * Used to get conclusions from the head of the rule, i.e.: only for 
-     * Atom and Exact_Time 
+     * evaluation step during some timepoint.
+     * Used to get conclusions from the head of the rule, i.e.: only for
+     * Atom and Exact_Time
      */
-    virtual std::vector<Grounding> get_conclusions_step(util::Timeline timeline) = 0;
+    virtual std::vector<std::shared_ptr<Grounding>>
+    get_conclusions_step(util::Timeline timeline) = 0;
 
     /**
-     * Returns all the new conclusion that were derived during the current timepoint 
-     * Useful when writing conclusions to output. 
-     * Used to get conclusions from the head of the rule, i.e.: only for 
-     * Atom and Exact_Time 
+     * Returns all the new conclusion that were derived during the current
+     * timepoint Useful when writing conclusions to output. Used to get
+     * conclusions from the head of the rule, i.e.: only for Atom and Exact_Time
      */
-    virtual std::vector<Grounding> get_conclusions_timepoint(util::Timeline timeline) = 0;
+    virtual std::vector<std::shared_ptr<Grounding>>
+    get_conclusions_timepoint(util::Timeline timeline) = 0;
 
     virtual std::string debug_string() const = 0;
 };

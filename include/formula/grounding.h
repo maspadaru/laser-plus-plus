@@ -7,6 +7,7 @@
 
 #include <climits>
 #include <functional> // std::hash<std::string>
+#include <memory>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -41,7 +42,6 @@ class Grounding {
 
   public:
     // constructors & destructors
-
     Grounding(uint64_t consideration_time, uint64_t horizon_time,
               uint64_t consideration_count, uint64_t horizon_count,
               std::vector<std::string> constant_vector);
@@ -83,31 +83,33 @@ class Grounding {
      * Creates a new Grounding containing an extra constant at the specified
      * index
      */
-    Grounding new_constant(size_t index, std::string const &constant) const;
+    std::shared_ptr<Grounding> new_constant(size_t index,
+                                            std::string const &constant) const;
 
     /**
      * Creates a new Grounding containing the new constant vector
      */
-    Grounding new_constant_vector(std::vector<std::string> new_vector) const;
+    std::shared_ptr<Grounding>
+    new_constant_vector(std::vector<std::string> const &new_vector) const;
 
     /**
      * Creates a new Grounding containing the new annotations
      */
-    Grounding new_annotations(uint64_t consideration_time,
-                              uint64_t horizon_time,
-                              uint64_t consideration_count,
-                              uint64_t horizon_count) const;
+    std::shared_ptr<Grounding> new_annotations(uint64_t consideration_time,
+                                               uint64_t horizon_time,
+                                               uint64_t consideration_count,
+                                               uint64_t horizon_count) const;
 
     /**
      * Creates a new Grounding containing the new horizon time
      */
-    Grounding new_horizon_time(uint64_t horizon_time) const;
+    std::shared_ptr<Grounding> new_horizon_time(uint64_t horizon_time) const;
 
     /**
      * Creates a new Grounding containing that contains all constants, except
      * the one at the specified index
      */
-    Grounding remove_constant(size_t index) const;
+    std::shared_ptr<Grounding> remove_constant(size_t index) const;
 
     std::string debug_string() const;
 
@@ -118,20 +120,28 @@ class Grounding {
 };
 
 struct GroundingFullHasher {
-    size_t operator()(const Grounding &x) const {
-        return x.get_full_hash();
+    size_t operator()(std::shared_ptr<Grounding> const &x) const {
+        return x->get_full_hash();
     }
 };
 
 struct GroundingSubstitutionHasher {
-    size_t operator()(const Grounding &x) const {
-        return x.get_substitution_hash();
+    size_t operator()(std::shared_ptr<Grounding> const &x) const {
+        return x->get_substitution_hash();
     }
 };
 
 struct GroundingSubstitutionEqualityChecker {
-    bool operator()(const Grounding &x, const Grounding &y) const {
-        return x.has_same_substitutions(y);
+    bool operator()(std::shared_ptr<Grounding> const &x,
+                    std::shared_ptr<Grounding> const &y) const {
+        return x->has_same_substitutions(*y);
+    }
+};
+
+struct GroundingFullEqualityChecker {
+    bool operator()(std::shared_ptr<Grounding> const &x,
+                    std::shared_ptr<Grounding> const &y) const {
+        return *x == *y;
     }
 };
 

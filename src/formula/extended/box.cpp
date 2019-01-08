@@ -24,13 +24,9 @@ Formula &Box::move() {
 
 // getters / setters
 
-void Box::set_head(bool is_head) {
-    is_head_m = is_head;
-}
+void Box::set_head(bool is_head) { is_head_m = is_head; }
 
-bool Box::is_head() const {
-    return is_head_m;
-}
+bool Box::is_head() const { return is_head_m; }
 
 FormulaType Box::get_type() const { return FormulaType::BOX; }
 
@@ -68,10 +64,11 @@ void Box::expire_outdated_groundings(util::Timeline timeline) {
                                                timeline.get_tuple_count());
     // Next we remove all groundings in the map that have the horizon
     // values outside the timeline (imposed or not by a window).
-    for (auto iterator = box_map.begin(); iterator != box_map.end(); /*nothing*/ ) {
+    for (auto iterator = box_map.begin(); iterator != box_map.end();
+         /*nothing*/) {
         auto const &key = iterator->first;
         auto grounding = iterator->second;
-        if (grounding.get_horizon_time() < timeline.get_min_time()) {
+        if (grounding->get_horizon_time() < timeline.get_min_time()) {
             iterator = box_map.erase(iterator);
         } else {
             iterator++;
@@ -79,22 +76,26 @@ void Box::expire_outdated_groundings(util::Timeline timeline) {
     }
 }
 
-std::vector<Grounding> Box::get_groundings(util::Timeline timeline) {
+std::vector<std::shared_ptr<Grounding>>
+Box::get_groundings(util::Timeline timeline) {
     auto grounding_vector = grounding_table.get_all_groundings();
     return grounding_vector;
 }
 
-std::vector<Grounding> Box::get_conclusions_timepoint(util::Timeline timeline) {
+std::vector<std::shared_ptr<Grounding>>
+Box::get_conclusions_timepoint(util::Timeline timeline) {
     return get_groundings(timeline);
 }
 
-std::vector<Grounding> Box::get_conclusions_step(util::Timeline timeline) {
+std::vector<std::shared_ptr<Grounding>>
+Box::get_conclusions_step(util::Timeline timeline) {
     return grounding_table.get_recent_groundings();
 }
 
 bool Box::evaluate(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<Grounding>>> const &facts) {
     bool result = child->evaluate(timeline, facts);
     if (result) {
         auto child_facts = child->get_groundings(timeline);
@@ -105,9 +106,9 @@ bool Box::evaluate(
     return grounding_table.has_recent_groundings();
 }
 
-std::vector<Grounding>
+std::vector<std::shared_ptr<Grounding>>
 Box::compute_box_conclusions(util::Timeline timeline) {
-    std::vector<Grounding> result;
+    std::vector<std::shared_ptr<Grounding>> result;
     uint64_t current_time = timeline.get_time();
     uint64_t start_time = timeline.get_min_time();
     uint64_t current_count = timeline.get_tuple_count();
@@ -116,33 +117,33 @@ Box::compute_box_conclusions(util::Timeline timeline) {
     for (auto &iterator : box_map) {
         auto const &key = iterator.first;
         auto const &grounding = iterator.second;
-        auto ct = grounding.get_consideration_time();
-        auto ht = grounding.get_horizon_time();
-        auto cc = grounding.get_consideration_count();
-        auto hc = grounding.get_horizon_count();
+        auto ct = grounding->get_consideration_time();
+        auto ht = grounding->get_horizon_time();
+        auto cc = grounding->get_consideration_count();
+        auto hc = grounding->get_horizon_count();
 
         // TODO also add tuple cunter condition
         if (ct <= start_time && ht >= current_time) {
-            auto new_grounding = grounding.new_annotations(current_time, 
-                                        current_time, current_count,
-                                      current_count);
+            auto new_grounding = grounding->new_annotations(
+                current_time, current_time, current_count, current_count);
             result.push_back(new_grounding);
         }
     }
     return result;
 }
 
-void Box::update_box_map(std::vector<Grounding> const &facts) {
+void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts) {
     bool keep_going = true;
     while (keep_going) {
         // We need to repete as we may have in box p(a)[1, 1], and get
         // from child p(a)[4,4], p(a)[2,3], in this order;
         keep_going = false;
         for (auto const &child_grounding : facts) {
-            size_t key = child_grounding.get_substitution_hash();
+            size_t key = child_grounding->get_substitution_hash();
             box_map.try_emplace(key, child_grounding);
-            Grounding &box_grounding = box_map[key];
-            auto adjusted_result = adjust_annotation(box_grounding, child_grounding);
+            std::shared_ptr<Grounding> &box_grounding = box_map[key];
+            auto adjusted_result =
+                adjust_annotation(box_grounding, child_grounding);
             keep_going |= adjusted_result.first;
             if (adjusted_result.first) {
                 auto map_tuple = box_map.find(key);
@@ -152,17 +153,18 @@ void Box::update_box_map(std::vector<Grounding> const &facts) {
     }
 }
 
-std::pair<bool, Grounding> Box::adjust_annotation(Grounding const &box_grounding,
-                            Grounding const &child_grounding) const {
+std::pair<bool, std::shared_ptr<Grounding>> Box::adjust_annotation(
+    std::shared_ptr<Grounding> const &box_grounding,
+    std::shared_ptr<Grounding> const &child_grounding) const {
     bool is_modified = false;
-    auto ct1 = box_grounding.get_consideration_time();
-    auto ht1 = box_grounding.get_horizon_time();
-    auto cc1 = box_grounding.get_consideration_count();
-    auto hc1 = box_grounding.get_horizon_count();
-    auto ct2 = child_grounding.get_consideration_time();
-    auto ht2 = child_grounding.get_horizon_time();
-    auto cc2 = child_grounding.get_consideration_count();
-    auto hc2 = child_grounding.get_horizon_count();
+    auto ct1 = box_grounding->get_consideration_time();
+    auto ht1 = box_grounding->get_horizon_time();
+    auto cc1 = box_grounding->get_consideration_count();
+    auto hc1 = box_grounding->get_horizon_count();
+    auto ct2 = child_grounding->get_consideration_time();
+    auto ht2 = child_grounding->get_horizon_time();
+    auto cc2 = child_grounding->get_consideration_count();
+    auto hc2 = child_grounding->get_horizon_count();
 
     // Adjust Time annotations:
     if ((ct2 < ct1) && (ht2 >= ct1 - 1)) {
@@ -183,7 +185,8 @@ std::pair<bool, Grounding> Box::adjust_annotation(Grounding const &box_grounding
     // TODO
 
     if (is_modified) {
-        auto new_box_grounding = box_grounding.new_annotations(ct1, ht1, cc1, hc1);
+        auto new_box_grounding =
+            box_grounding->new_annotations(ct1, ht1, cc1, hc1);
         return {is_modified, new_box_grounding};
     }
     return {is_modified, box_grounding};

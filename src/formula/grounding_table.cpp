@@ -12,17 +12,18 @@ bool GroundingTable::has_recent_groundings() {
     return !recent_groundings_set.empty();
 }
 
-std::vector<Grounding> GroundingTable::get_recent_groundings() {
-    std::vector<Grounding> result;
+std::vector<std::shared_ptr<Grounding>>
+GroundingTable::get_recent_groundings() {
+    std::vector<std::shared_ptr<Grounding>> result;
     std::move(recent_groundings_set.begin(), recent_groundings_set.end(),
               std::back_inserter(result));
     recent_groundings_set.clear(); // should not be necesarry
     return result;
 }
 
-void GroundingTable::add_grounding(Grounding const &grounding) {
-    std::unordered_set<Grounding, GroundingFullHasher> &groundings =
-        grounding_map[grounding.get_horizon_time()];
+void GroundingTable::add_grounding(
+    std::shared_ptr<Grounding> const &grounding) {
+    auto &groundings = grounding_map[grounding->get_horizon_time()];
     bool was_inserted = false;
     std::tie(std::ignore, was_inserted) = groundings.insert(grounding);
     if (was_inserted) {
@@ -32,15 +33,15 @@ void GroundingTable::add_grounding(Grounding const &grounding) {
 }
 
 void GroundingTable::add_grounding_vector(
-    std::vector<Grounding> const &grounding_vector) {
+    std::vector<std::shared_ptr<Grounding>> const &grounding_vector) {
     for (auto const &grounding : grounding_vector) {
         add_grounding(grounding);
     }
 }
 
-std::vector<Grounding> GroundingTable::get_all_groundings() {
+std::vector<std::shared_ptr<Grounding>> GroundingTable::get_all_groundings() {
     // Merges all lists together
-    std::vector<Grounding> all_groundings;
+    std::vector<std::shared_ptr<Grounding>> all_groundings;
     for (auto const &map_iterator : grounding_map) {
         auto grounding_list = map_iterator.second;
         all_groundings.insert(all_groundings.end(), grounding_list.begin(),

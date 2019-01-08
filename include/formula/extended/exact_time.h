@@ -30,35 +30,39 @@ class ExactTime : public Formula {
      *      key: time_variable (some timepoint in the future)
      *      value: Set of all groundings sharing the same time variable
      */
-    std::unordered_map<uint64_t,
-                       std::unordered_set<Grounding, GroundingFullHasher>>
+    std::unordered_map<
+        uint64_t,
+        std::unordered_set<std::shared_ptr<Grounding>, GroundingFullHasher,
+                           GroundingFullEqualityChecker>>
         future_conclusion_map;
 
-    std::vector<Grounding> timepoint_conclusions;
+    std::vector<std::shared_ptr<Grounding>> timepoint_conclusions;
 
-    std::vector<Grounding>
-    convert_groundings_head(util::Timeline timeline,
-                            std::vector<Grounding> const &groundings) const;
+    std::vector<std::shared_ptr<Grounding>> convert_groundings_head(
+        util::Timeline timeline,
+        std::vector<std::shared_ptr<Grounding>> const &groundings) const;
 
     /**
      * Adds the Time Variable to all the groundings in groundings vector
      */
-    std::vector<Grounding>
-    convert_groundings_body(util::Timeline timeline,
-                            std::vector<Grounding> groundings) const;
+    std::vector<std::shared_ptr<Grounding>> convert_groundings_body(
+        util::Timeline timeline,
+        std::vector<std::shared_ptr<Grounding>> groundings) const;
 
     /**
      * Removes the Time Variable from all the groundings in groundings vector
      */
-    std::vector<Grounding>
+    std::vector<std::shared_ptr<Grounding>>
     revert_groundings(util::Timeline timeline,
-                      std::vector<Grounding> groundings) const;
+                      std::vector<std::shared_ptr<Grounding>> groundings) const;
 
-    Grounding add_time_variable(util::Timeline timeline,
-                                Grounding const &grounding) const;
+    std::shared_ptr<Grounding>
+    add_time_variable(util::Timeline timeline,
+                      Grounding const &grounding) const;
 
-    Grounding remove_time_variable(util::Timeline timeline,
-                                   Grounding grounding) const;
+    std::shared_ptr<Grounding>
+    remove_time_variable(util::Timeline timeline,
+                         Grounding const &grounding) const;
 
     void init();
 
@@ -66,13 +70,13 @@ class ExactTime : public Formula {
 
     void evaluate_head(
         util::Timeline timeline,
-        std::unordered_map<std::string, std::vector<formula::Grounding>> const
-            &facts);
+        std::unordered_map<
+            std::string, std::vector<std::shared_ptr<Grounding>>> const &facts);
 
     void evaluate_body(
         util::Timeline timeline,
-        std::unordered_map<std::string, std::vector<formula::Grounding>> const
-            &facts);
+        std::unordered_map<
+            std::string, std::vector<std::shared_ptr<Grounding>>> const &facts);
 
   public:
     // constructors / destructors
@@ -108,19 +112,21 @@ class ExactTime : public Formula {
 
     size_t get_number_of_variables() const override;
 
-    std::vector<Grounding> get_groundings(util::Timeline timeline) override;
+    std::vector<std::shared_ptr<Grounding>>
+    get_groundings(util::Timeline timeline) override;
 
-    std::vector<Grounding>
+    std::vector<std::shared_ptr<Grounding>>
     get_conclusions_step(util::Timeline timeline) override;
-    std::vector<Grounding>
+    std::vector<std::shared_ptr<Grounding>>
     get_conclusions_timepoint(util::Timeline timeline) override;
 
     std::string debug_string() const override;
 
     bool
     evaluate(util::Timeline timeline,
-             std::unordered_map<std::string, std::vector<formula::Grounding>>
-                 const &facts) override;
+             std::unordered_map<std::string,
+                                std::vector<std::shared_ptr<Grounding>>> const
+                 &facts) override;
 
     void expire_outdated_groundings(util::Timeline timeline) override;
 

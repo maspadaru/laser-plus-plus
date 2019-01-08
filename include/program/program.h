@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <memory>
 
 #include "formula/formula.h"
 #include "io/io_manager.h"
@@ -43,7 +44,8 @@ class Program {
     // methods
 
     bool evaluate_rule_vector(
-        std::unordered_map<std::string, std::vector<formula::Grounding>> const
+        std::unordered_map<
+            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
             &facts);
 
     bool eval();
@@ -52,7 +54,7 @@ class Program {
 
     // TODO Not used -> remove it
     void accept_new_facts(
-        std::unordered_map<std::string, std::vector<formula::Grounding>> const
+        std::unordered_map<std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
             &stream_facts);
 
     void write_output();
@@ -60,7 +62,7 @@ class Program {
     template <typename T>
     void debug_print(std::string const &message, T const &value) const;
 
-    std::unordered_map<std::string, std::vector<formula::Grounding>>
+    std::unordered_map<std::string, std::vector<std::shared_ptr<formula::Grounding>>>
     get_new_conclusions();
 
   public:

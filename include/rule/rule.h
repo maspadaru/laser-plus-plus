@@ -5,6 +5,7 @@
 #define LASER_RULE_RULE_H
 
 #include <iostream>
+#include <memory>
 
 #include "formula/formula.h"
 #include "util/timeline.h"
@@ -18,17 +19,17 @@ class Rule {
     formula::Formula &body;
 
     /**
-     * Maps variables positions in the head's Grounding Table to positions in 
+     * Maps variables positions in the head's Grounding Table to positions in
      * the body's Grounding Table.
      * E.g.: p(X, Y) :- q(Y, Z, X) -> { [0, 2], [1, 0] }
-     */  
+     */
     std::unordered_map<size_t, size_t> variable_map;
 
-    formula::Grounding
+    std::shared_ptr<formula::Grounding>
     convert_to_head_grounding(formula::Grounding const &grounding) const;
 
     void compute_variable_map();
-    
+
     void init();
 
   public:
@@ -60,7 +61,9 @@ class Rule {
      */
     bool evaluate(
         util::Timeline timeline,
-        std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts);
+        std::unordered_map<
+            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
+            &facts);
 
     void expire_outdated_groundings(util::Timeline timeline);
 

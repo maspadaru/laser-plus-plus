@@ -30,7 +30,7 @@ class Conjunction : public Formula {
      */
     std::unordered_map<std::string, size_t> variable_map;
 
-    std::vector<Grounding> grounding_vector;
+    std::vector<std::shared_ptr<Grounding>> grounding_vector;
 
     // Methods
 
@@ -44,12 +44,12 @@ class Conjunction : public Formula {
 
     void populate_variable_collections();
     void populate_grounding_vector(util::Timeline timeline,
-                                   std::vector<Grounding> left_groundings,
-                                   std::vector<Grounding> right_groundings);
+                                   std::vector<std::shared_ptr<Grounding>> left_groundings,
+                                   std::vector<std::shared_ptr<Grounding>> right_groundings);
 
     std::string hash_common_variables(Formula const &child, Grounding const &grounding) const;
 
-    Grounding merge_groundings(util::Timeline timeline, Grounding const &left,
+    std::shared_ptr<Grounding> merge_groundings(util::Timeline timeline, Grounding const &left,
                                Grounding const &right) const;
 
   public:
@@ -82,18 +82,18 @@ class Conjunction : public Formula {
 
     size_t get_number_of_variables() const override;
 
-    std::vector<Grounding>
+    std::vector<std::shared_ptr<Grounding>>
     get_groundings(util::Timeline timeline) override;
 
-    std::vector<Grounding> get_conclusions_step(util::Timeline timeline) override;
+    std::vector<std::shared_ptr<Grounding>> get_conclusions_step(util::Timeline timeline) override;
 
-    std::vector<Grounding> get_conclusions_timepoint(util::Timeline timeline) override;
+    std::vector<std::shared_ptr<Grounding>> get_conclusions_timepoint(util::Timeline timeline) override;
 
     std::string debug_string() const override;
 
     bool
     evaluate(util::Timeline timeline,
-             std::unordered_map<std::string, std::vector<formula::Grounding>>
+             std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>>
                  const &facts) override;
 
     void expire_outdated_groundings(util::Timeline timeline) override;

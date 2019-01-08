@@ -77,62 +77,66 @@ std::string ExactTime::debug_string() const { return child->debug_string(); }
 
 void ExactTime::add_child(formula::Formula *child) {}
 
-Grounding ExactTime::add_time_variable(util::Timeline timeline,
-                                       Grounding const &grounding) const {
+std::shared_ptr<Grounding>
+ExactTime::add_time_variable(util::Timeline timeline,
+                             Grounding const &grounding) const {
     auto result = grounding.new_constant(get_time_variable_index(),
                                          std::to_string(timeline.get_time()));
     return result;
 }
 
-Grounding ExactTime::remove_time_variable(util::Timeline timeline,
-                                          Grounding grounding) const {
+std::shared_ptr<Grounding>
+ExactTime::remove_time_variable(util::Timeline timeline,
+                                Grounding const &grounding) const {
     auto result = grounding.remove_constant(get_time_variable_index());
     return result;
 }
 
-std::vector<Grounding>
-ExactTime::convert_groundings_head(util::Timeline timeline,
-                              std::vector<Grounding> const &groundings) const {
-    std::vector<Grounding> result_vector;
+std::vector<std::shared_ptr<Grounding>> ExactTime::convert_groundings_head(
+    util::Timeline timeline,
+    std::vector<std::shared_ptr<Grounding>> const &groundings) const {
+    std::vector<std::shared_ptr<Grounding>> result_vector;
     for (auto const &grounding : groundings) {
-        size_t timevar_index = grounding_table.get_variable_index(time_variable);
-        std::string horizon_time_string = grounding.get_constant(timevar_index);
+        size_t timevar_index =
+            grounding_table.get_variable_index(time_variable);
+        std::string horizon_time_string =
+            grounding->get_constant(timevar_index);
         uint64_t horizon_time = std::stoull(horizon_time_string);
-        auto new_grounding = grounding.new_horizon_time(horizon_time);
+        auto new_grounding = grounding->new_horizon_time(horizon_time);
         result_vector.push_back(new_grounding);
     }
     return result_vector;
 }
 
-std::vector<Grounding>
-ExactTime::convert_groundings_body(util::Timeline timeline,
-                              std::vector<Grounding> groundings) const {
-    std::vector<Grounding> result_vector;
+std::vector<std::shared_ptr<Grounding>> ExactTime::convert_groundings_body(
+    util::Timeline timeline,
+    std::vector<std::shared_ptr<Grounding>> groundings) const {
+    std::vector<std::shared_ptr<Grounding>> result_vector;
     for (auto const &grounding : groundings) {
-        auto new_grounding = add_time_variable(timeline, grounding);
+        auto new_grounding = add_time_variable(timeline, *grounding);
         result_vector.push_back(new_grounding);
     }
     return result_vector;
 }
 
-
-std::vector<Grounding>
-ExactTime::revert_groundings(util::Timeline timeline,
-                             std::vector<Grounding> groundings) const {
-    std::vector<Grounding> result_vector;
+std::vector<std::shared_ptr<Grounding>> ExactTime::revert_groundings(
+    util::Timeline timeline,
+    std::vector<std::shared_ptr<Grounding>> groundings) const {
+    std::vector<std::shared_ptr<Grounding>> result_vector;
     for (auto const &grounding : groundings) {
-        auto new_grounding = remove_time_variable(timeline, grounding);
+        auto new_grounding = remove_time_variable(timeline, *grounding);
         result_vector.push_back(new_grounding);
     }
     return result_vector;
 }
 
-std::vector<Grounding> ExactTime::get_groundings(util::Timeline timeline) {
+std::vector<std::shared_ptr<Grounding>>
+ExactTime::get_groundings(util::Timeline timeline) {
     auto grounding_vector = grounding_table.get_all_groundings();
-    std::vector<Grounding> result;
+    std::vector<std::shared_ptr<Grounding>> result;
     for (auto &grounding : grounding_vector) {
         std::string timevar_string =
-            grounding.get_constant(get_time_variable_index());
+            grounding->get_constant(get_time_variable_index());
         uint64_t timevar_value = std::stoull(timevar_string);
         if (timevar_value <= timeline.get_time()) {
             result.push_back(grounding);
@@ -141,31 +145,34 @@ std::vector<Grounding> ExactTime::get_groundings(util::Timeline timeline) {
     return result;
 }
 
-std::vector<Grounding>
+std::vector<std::shared_ptr<Grounding>>
 ExactTime::get_conclusions_timepoint(util::Timeline timeline) {
     return timepoint_conclusions;
 }
 
-std::vector<Grounding>
+std::vector<std::shared_ptr<Grounding>>
 ExactTime::get_conclusions_step(util::Timeline timeline) {
     // 1. Get recent groundings and add them to conclusions_vector or
     // furure_conclusion_map
-    std::vector<Grounding> conclusions_vector;
+    std::vector<std::shared_ptr<Grounding>> conclusions_vector;
     auto grounding_vector = grounding_table.get_recent_groundings();
     for (auto &grounding : grounding_vector) {
         std::string timevar_string =
-            grounding.get_constant(get_time_variable_index());
+            grounding->get_constant(get_time_variable_index());
         uint64_t timevar_value = std::stoull(timevar_string);
         if (timevar_value == timeline.get_time()) {
             conclusions_vector.push_back(grounding);
         } else {
             future_conclusion_map.try_emplace(timevar_value);
-            std::unordered_set<Grounding, GroundingFullHasher> &map_set = future_conclusion_map[timevar_value];
+            std::unordered_set<std::shared_ptr<Grounding>, GroundingFullHasher,
+                               GroundingFullEqualityChecker> &map_set =
+                future_conclusion_map[timevar_value];
             map_set.insert(grounding);
         }
     }
     // 2. Add all groundings from future_conclusion_map to conclusions_vector
-    std::unordered_set<Grounding, GroundingFullHasher> &grounding_set =
+    std::unordered_set<std::shared_ptr<Grounding>, GroundingFullHasher,
+                       GroundingFullEqualityChecker> &grounding_set =
         future_conclusion_map[timeline.get_time()];
     std::copy(grounding_set.begin(), grounding_set.end(),
               std::back_inserter(conclusions_vector));
@@ -180,7 +187,8 @@ ExactTime::get_conclusions_step(util::Timeline timeline) {
 
 void ExactTime::evaluate_head(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<Grounding>>> const &facts) {
     std::string predicate = get_predicate_vector().at(0);
     auto predicate_facts = facts.at(predicate);
     auto exact_time_groundings =
@@ -190,7 +198,8 @@ void ExactTime::evaluate_head(
 
 void ExactTime::evaluate_body(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<Grounding>>> const &facts) {
     child->evaluate(timeline, facts);
     auto child_conclusions = child->get_groundings(timeline);
     auto exact_time_groundings =
@@ -200,7 +209,8 @@ void ExactTime::evaluate_body(
 
 bool ExactTime::evaluate(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> const &facts) {
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<Grounding>>> const &facts) {
     // If the formula is in the head of the rule, we know the child can only
     // be an Atom. So we can ignore the child.
     if (is_head()) {
