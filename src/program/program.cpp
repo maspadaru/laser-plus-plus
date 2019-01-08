@@ -67,6 +67,9 @@ bool Program::eval() {
     bool has_new_conclusions_timepoint = false;
     bool has_new_conclusions_step = false;
     auto facts = ioHandler.get_stream_data(timeline.get_time());
+
+    //clock_t begin = clock();
+
     expire_outdated_groundings();
     do {
         evaluate_rule_vector(facts);
@@ -75,6 +78,11 @@ bool Program::eval() {
         has_new_conclusions_step = !facts.empty();
         has_new_conclusions_timepoint |= has_new_conclusions_step;
     } while (has_new_conclusions_step);
+
+    //clock_t end = clock();
+    //double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    //evaluation_secs += elapsed_secs;
+
     return has_new_conclusions_timepoint;
 }
 
@@ -131,6 +139,10 @@ Program::Program(laser::rule::RuleReader *rule_reader,
                  laser::io::IOManager *ioManager)
     : ioManager(ioManager), ioHandler(ioManager) {
     rule_vector = rule_reader->get_rules();
+}
+
+double Program::get_eval_secs() const {
+    return evaluation_secs;
 }
 
 } // namespace program

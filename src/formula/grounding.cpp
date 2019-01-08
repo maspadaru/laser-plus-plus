@@ -76,18 +76,17 @@ std::shared_ptr<Grounding> Grounding::new_constant_vector(
 }
 
 void Grounding::init() {
-    std::stringstream full_hash_stream;
-    for (auto &constant : constant_vector) {
-        full_hash_stream << constant << ";;";
-    }
-    std::string substitution_hash_str = full_hash_stream.str();
-    full_hash_stream << consideration_time << ";;" << horizon_time << ";;"
-                     << consideration_count << ";;" << horizon_count;
-    std::string full_hash_str = full_hash_stream.str();
+    std::string substitution_hash_str = std::accumulate(
+        constant_vector.begin(), constant_vector.end(), std::string(";"));
+    std::string full_hash_str =
+        substitution_hash_str + std::to_string(consideration_time)
+            + std::to_string(horizon_time)
+            + std::to_string(consideration_count)
+            + std::to_string(horizon_count);
+     std::hash<std::string> hasher;
+     full_hash = hasher(full_hash_str);
+     substitution_hash = hasher(substitution_hash_str);
     size = constant_vector.size();
-    std::hash<std::string> hasher;
-    full_hash = hasher(full_hash_str);
-    substitution_hash = hasher(substitution_hash_str);
 }
 
 std::string Grounding::get_constant(size_t variable_index) const {

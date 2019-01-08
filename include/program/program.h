@@ -29,6 +29,8 @@ class Program {
     laser::io::IOManager *ioManager;
     IOHandler ioHandler;
 
+    double evaluation_secs = 0;
+
     laser::util::Timeline timeline;
     // uint64_t current_time = 0;
     // uint64_t current_tuple_counter = 0;
@@ -75,6 +77,8 @@ class Program {
     virtual ~Program();
 
     // getters & setters
+
+    double get_eval_secs() const;
 
     uint64_t get_current_time() const;
 
