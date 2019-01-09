@@ -37,7 +37,7 @@ class FileIOManager : public laser::io::IOManager {
 
     void write_output_data(
         uint64_t time,
-        std::vector<laser::util::DataAtom> output_vector) override;
+        std::vector<laser::util::DataAtom> const &output_vector) override;
 
     std::string get_output() const;
 };

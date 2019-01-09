@@ -36,7 +36,7 @@ public:
 
     virtual void write_output_data(
             uint64_t time,
-            std::vector<laser::util::DataAtom> output_vector) = 0;
+            std::vector<laser::util::DataAtom> const &output_vector) = 0;
 };
 
 

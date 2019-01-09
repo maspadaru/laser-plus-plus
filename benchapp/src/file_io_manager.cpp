@@ -33,7 +33,7 @@ std::vector<laser::util::DataAtom> FileIOManager::read_background_data() {
 }
 
 void FileIOManager::write_output_data(
-    uint64_t time, std::vector<laser::util::DataAtom> output_vector) {
+    uint64_t time, std::vector<laser::util::DataAtom> const &output_vector) {
     if (is_output_enabled) {
         latest_output = "";
         latest_output = file_writer.format_output(time, output_vector);

@@ -68,7 +68,7 @@ bool Program::eval() {
     bool has_new_conclusions_step = false;
     auto facts = ioHandler.get_stream_data(timeline.get_time());
 
-    //clock_t begin = clock();
+    clock_t begin = clock();
 
     expire_outdated_groundings();
     do {
@@ -79,9 +79,9 @@ bool Program::eval() {
         has_new_conclusions_timepoint |= has_new_conclusions_step;
     } while (has_new_conclusions_step);
 
-    //clock_t end = clock();
-    //double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    //evaluation_secs += elapsed_secs;
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    evaluation_secs += elapsed_secs;
 
     return has_new_conclusions_timepoint;
 }
@@ -117,7 +117,8 @@ void Program::write_output() {
 
 void Program::evaluate() {
     bool has_derived_new_conclusions = eval();
-    write_output();
+    // TODO "write output" is disabled for benchmarking
+    //write_output();
     timeline.increment_time();
 }
 
@@ -143,6 +144,15 @@ Program::Program(laser::rule::RuleReader *rule_reader,
 
 double Program::get_eval_secs() const {
     return evaluation_secs;
+}
+
+double Program::get_reader_secs() const {
+    return ioHandler.get_reader_secs();
+
+}
+
+double Program::get_handler_secs() const {
+    return ioHandler.get_handler_secs();
 }
 
 } // namespace program

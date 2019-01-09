@@ -83,9 +83,9 @@ void Grounding::init() {
             + std::to_string(horizon_time)
             + std::to_string(consideration_count)
             + std::to_string(horizon_count);
-     std::hash<std::string> hasher;
-     full_hash = hasher(full_hash_str);
-     substitution_hash = hasher(substitution_hash_str);
+    std::hash<std::string> hasher;
+    full_hash = hasher(full_hash_str);
+    substitution_hash = hasher(substitution_hash_str);
     size = constant_vector.size();
 }
 

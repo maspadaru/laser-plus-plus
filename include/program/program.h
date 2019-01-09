@@ -77,6 +77,9 @@ class Program {
     virtual ~Program();
 
     // getters & setters
+    double get_reader_secs() const;
+
+    double get_handler_secs() const;
 
     double get_eval_secs() const;
 

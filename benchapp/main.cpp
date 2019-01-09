@@ -39,6 +39,9 @@ double run_atom(uint64_t end_time, int facts_per_timepoint, int window_size) {
         program.evaluate();
     }
 
+    std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+
     return program.get_eval_secs();
 }
 
@@ -231,8 +234,8 @@ int main(int argc, char **argv) {
 
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl;
-    //std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
-    //std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
     std::cout << std::endl;
 }

@@ -34,7 +34,7 @@ std::vector<laser::util::DataAtom> SimpleIOManager::read_background_data() {
 }
 
 void SimpleIOManager::write_output_data(
-        uint64_t time, std::vector<laser::util::DataAtom> output_vector) {
+        uint64_t time, std::vector<laser::util::DataAtom> const &output_vector) {
     latest_output = "";
     latest_output = simple_writer.format_output(time, output_vector);
     simple_writer.write_output(latest_output);
