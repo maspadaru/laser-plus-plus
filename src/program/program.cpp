@@ -146,14 +146,14 @@ double Program::get_eval_secs() const {
     return evaluation_secs;
 }
 
-double Program::get_reader_secs() const {
-    return ioHandler.get_reader_secs();
+//double Program::get_reader_secs() const {
+    //return ioHandler.get_reader_secs();
 
-}
+//}
 
-double Program::get_handler_secs() const {
-    return ioHandler.get_handler_secs();
-}
+//double Program::get_handler_secs() const {
+    //return ioHandler.get_handler_secs();
+//}
 
 } // namespace program
 } // namespace laser

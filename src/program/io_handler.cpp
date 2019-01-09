@@ -17,11 +17,11 @@ laser::program::IOHandler::get_stream_data(uint64_t time) {
                        std::vector<std::shared_ptr<formula::Grounding>>>
         result;
 
-    clock_t begin = clock();
+    //clock_t begin = clock();
     auto data_vector = ioManager->read_stream_data(time);
-    clock_t end_read = clock();
-    double elapsed_secs = double(end_read - begin) / CLOCKS_PER_SEC;
-    reader_secs += elapsed_secs;
+    //clock_t end_read = clock();
+    //double elapsed_secs = double(end_read - begin) / CLOCKS_PER_SEC;
+    //reader_secs += elapsed_secs;
 
     for (auto const &data : data_vector) {
         std::string predicate = data.get_predicate();
@@ -33,20 +33,20 @@ laser::program::IOHandler::get_stream_data(uint64_t time) {
             time, time, 0, 9999, true, false, data.get_arguments());
         map_vector.push_back(grounding);
     }
-    double end = clock();
-    elapsed_secs = double(end - end_read) / CLOCKS_PER_SEC;
-    handler_secs += elapsed_secs;
+    //double end = clock();
+    //elapsed_secs = double(end - end_read) / CLOCKS_PER_SEC;
+    //handler_secs += elapsed_secs;
     return result;
 }
 
-double IOHandler::get_reader_secs() const {
-    return reader_secs;
+//double IOHandler::get_reader_secs() const {
+    //return reader_secs;
 
-}
+//}
 
-double IOHandler::get_handler_secs() const {
-   return handler_secs; 
-}
+//double IOHandler::get_handler_secs() const {
+   //return handler_secs; 
+//}
 
 void IOHandler::put_conclusions(
     util::Timeline timeline,

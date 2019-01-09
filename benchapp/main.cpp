@@ -34,15 +34,23 @@ double run_atom(uint64_t end_time, int facts_per_timepoint, int window_size) {
     auto program = laser::program::Program(rules, &file_io_manager);
     program.set_start_time(0);
 
+    clock_t begin = clock();
 
     while (!program.is_done()) {
         program.evaluate();
     }
 
-    std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
-    std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
 
-    return program.get_eval_secs();
+    return eval_secs;
 }
 
 double run_diamond(uint64_t end_time, int facts_per_timepoint, int window_size) {
@@ -60,12 +68,23 @@ double run_diamond(uint64_t end_time, int facts_per_timepoint, int window_size) 
                       facts_per_timepoint, is_output_enabled);
     auto program = laser::program::Program(rules, &file_io_manager);
     program.set_start_time(0);
+    clock_t begin = clock();
 
     while (!program.is_done()) {
         program.evaluate();
     }
 
-    return program.get_eval_secs();
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
+
+    return eval_secs;
 }
 
 double run_conjunction(uint64_t end_time, int facts_per_timepoint, int window_size) {
@@ -83,11 +102,23 @@ double run_conjunction(uint64_t end_time, int facts_per_timepoint, int window_si
     auto program = laser::program::Program(rules, &file_io_manager);
     program.set_start_time(0);
 
+    clock_t begin = clock();
+
     while (!program.is_done()) {
         program.evaluate();
     }
-    return program.get_eval_secs();
 
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
+
+    return eval_secs;
 }
 
 double run_box(uint64_t end_time, int facts_per_timepoint, int window_size) {
@@ -106,10 +137,23 @@ double run_box(uint64_t end_time, int facts_per_timepoint, int window_size) {
     auto program = laser::program::Program(rules, &file_io_manager);
     program.set_start_time(0);
 
+    clock_t begin = clock();
+
     while (!program.is_done()) {
         program.evaluate();
     }
-    return program.get_eval_secs();
+
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
+
+    return eval_secs;
 }
 
 double run_time_reference(uint64_t end_time, int facts_per_timepoint, int window_size) {
@@ -127,10 +171,23 @@ double run_time_reference(uint64_t end_time, int facts_per_timepoint, int window
     auto program = laser::program::Program(rules, &file_io_manager);
     program.set_start_time(0);
 
+    clock_t begin = clock();
+
     while (!program.is_done()) {
         program.evaluate();
     }
-    return program.get_eval_secs();
+
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
+
+    return eval_secs;
 
 }
 
@@ -155,10 +212,23 @@ double run_multi_atom(uint64_t end_time, int facts_per_timepoint, int window_siz
     auto program = laser::program::Program(rules, &file_io_manager);
     program.set_start_time(0);
 
+    clock_t begin = clock();
+
     while (!program.is_done()) {
         program.evaluate();
     }
-    return program.get_eval_secs();
+
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
+
+    return eval_secs;
 
 }
 
@@ -184,10 +254,23 @@ double run_multi_all(uint64_t end_time, int facts_per_timepoint, int window_size
     auto program = laser::program::Program(rules, &file_io_manager);
     program.set_start_time(0);
 
+    clock_t begin = clock();
+
     while (!program.is_done()) {
         program.evaluate();
     }
-    return program.get_eval_secs();
+
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
+
+    return eval_secs;
 }
 
 int main(int argc, char **argv) { 
@@ -211,31 +294,23 @@ int main(int argc, char **argv) {
        << ",  facts per timepoint: " << num_facts 
        << ",  window size: " << win_size << std::endl;
     
-    double eval_secs;
-    clock_t begin = clock();
 
     if (test_name == "atom") {
-        eval_secs = run_atom(end_time, num_facts, win_size);
+        run_atom(end_time, num_facts, win_size);
     } else if (test_name == "diamond") {
-        eval_secs = run_diamond(end_time, num_facts, win_size); 
+        run_diamond(end_time, num_facts, win_size); 
     } else if (test_name == "conjunction") {
-        eval_secs = run_conjunction(end_time, num_facts, win_size); 
+        run_conjunction(end_time, num_facts, win_size); 
     } else if (test_name == "box") {
-        eval_secs = run_box(end_time, num_facts, win_size); 
+        run_box(end_time, num_facts, win_size); 
     } else if (test_name == "tref") {
-        eval_secs = run_time_reference(end_time, num_facts, win_size); 
+        run_time_reference(end_time, num_facts, win_size); 
     } else if (test_name == "multiatom") {
-        eval_secs = run_multi_atom(end_time, num_facts, win_size); 
+        run_multi_atom(end_time, num_facts, win_size); 
     } else if (test_name == "multiall") {
-        eval_secs = run_multi_all(end_time, num_facts, win_size); 
+        run_multi_all(end_time, num_facts, win_size); 
     } else {
         std::cout << "Invalid test name!" << std::endl;
     }
 
-    clock_t end = clock();
-    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
-    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
-    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
-    std::cout << std::endl;
 }
