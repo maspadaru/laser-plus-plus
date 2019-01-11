@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.7)
 
-# detele the following 2 lines to use system's default C/C++ compiler
+# comment out the following 2 lines to use system's default C/C++ compiler
 set(CMAKE_C_COMPILER "clang")
 set(CMAKE_CXX_COMPILER "clang++")
 
