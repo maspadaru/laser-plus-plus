@@ -6,7 +6,6 @@
 #define LASER_PROGRAM_IO_HANDLER_H
 
 #include <unordered_map>
-#include <memory>
 
 #include "formula/extended/atom.h"
 #include "formula/grounding.h"

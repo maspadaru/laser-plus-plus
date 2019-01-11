@@ -8,25 +8,24 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <memory>
 
 namespace laser {
 namespace util {
 
 class DataAtom {
   private:
-    std::shared_ptr<std::string const> predicate;
-    std::vector<std::shared_ptr<std::string const>> argument_vector;
+    std::string predicate;
+    std::vector<std::string> argument_vector;
 
   public:
     // constructors & destructors
-    DataAtom(std::shared_ptr<std::string const> predicate, std::vector<std::shared_ptr<std::string const>> arguments);
+    DataAtom(std::string predicate, std::vector<std::string> arguments);
     ~DataAtom() = default;
 
     // getters & setters
-    std::shared_ptr<std::string const> get_predicate() const;
+    std::string get_predicate() const;
 
-    std::vector<std::shared_ptr<std::string const>> get_arguments() const;
+    std::vector<std::string> get_arguments() const;
 
     // methods
 };

@@ -21,12 +21,12 @@ std::string SimpleWriter::format_output(
     for (size_t atom_index = 0; atom_index < output_vector.size();
          atom_index++) {
         auto const &data_atom = output_vector.at(atom_index);
-        result_stream << *data_atom.get_predicate() << ARGUMENTS_START;
+        result_stream << data_atom.get_predicate() << ARGUMENTS_START;
         auto argument_vector = data_atom.get_arguments();
         for (size_t argument_index = 0; argument_index < argument_vector.size();
              argument_index++) {
-            auto argument = argument_vector.at(argument_index);
-            result_stream << *argument;
+            auto const &argument = argument_vector.at(argument_index);
+            result_stream << argument;
             if (argument_index < argument_vector.size() - 1) {
                 result_stream << DELIMITER;
             }

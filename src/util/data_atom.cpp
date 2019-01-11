@@ -7,12 +7,12 @@
 namespace laser {
 namespace util {
 
-DataAtom::DataAtom(std::shared_ptr<std::string const> predicate, std::vector<std::shared_ptr<std::string const>> arguments)
+DataAtom::DataAtom(std::string predicate, std::vector<std::string> arguments)
     : predicate(std::move(predicate)), argument_vector(std::move(arguments)) {}
 
-std::shared_ptr<std::string const> DataAtom::get_predicate() const { return predicate; }
+std::string DataAtom::get_predicate() const { return predicate; }
 
-std::vector<std::shared_ptr<std::string const>> DataAtom::get_arguments() const {
+std::vector<std::string> DataAtom::get_arguments() const {
     return argument_vector;
 }
 

@@ -163,9 +163,9 @@ int Atom::get_variable_index(std::string variable_name) const {
 bool Atom::is_valid_fact(Grounding const &grounding) const {
     bool is_valid = true;
     for (auto const &iterator : binding_map) {
-        auto first = grounding.get_constant_ptr(iterator.first);
-        auto second = grounding.get_constant_ptr(iterator.second);
-        is_valid &= *first == *second;
+        auto first = grounding.get_constant(iterator.first);
+        auto second = grounding.get_constant(iterator.second);
+        is_valid &= first == second;
     }
     return is_valid;
 }
@@ -173,7 +173,7 @@ bool Atom::is_valid_fact(Grounding const &grounding) const {
 Grounding Atom::remove_duplicate_variables(Grounding const &grounding) {
     std::vector<std::shared_ptr<std::string const>> result_values;
     for (size_t index : first_position_vector) {
-        result_values.push_back((grounding.get_constant_ptr(index)));
+        result_values.push_back(grounding.get_constant(index));
     }
     Grounding result = Grounding(grounding.get_consideration_time(),
                                  grounding.get_horizon_time(),

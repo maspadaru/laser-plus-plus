@@ -87,10 +87,6 @@ std::string Grounding::get_constant(size_t variable_index) const {
     return *constant_vector.at(variable_index);
 }
 
-std::shared_ptr<std::string const> Grounding::get_constant_ptr(size_t variable_index) const {
-    return constant_vector.at(variable_index);
-}
-
 bool Grounding::has_expired(uint64_t time, uint64_t tuple_counter) const {
     // grounding expires when:
     // - At time point t, remove all groundings that expire at time t-1, so

@@ -96,8 +96,8 @@ ExactTime::convert_groundings_head(util::Timeline timeline,
     std::vector<Grounding> result_vector;
     for (auto const &grounding : groundings) {
         size_t timevar_index = grounding_table.get_variable_index(time_variable);
-        auto horizon_time_string = grounding.get_constant_ptr(timevar_index);
-        uint64_t horizon_time = std::stoull(*horizon_time_string);
+        std::string horizon_time_string = grounding.get_constant(timevar_index);
+        uint64_t horizon_time = std::stoull(horizon_time_string);
         auto new_grounding = grounding.new_horizon_time(horizon_time);
         result_vector.push_back(new_grounding);
     }
@@ -131,9 +131,9 @@ std::vector<Grounding> ExactTime::get_groundings(util::Timeline timeline) {
     auto grounding_vector = grounding_table.get_all_groundings();
     std::vector<Grounding> result;
     for (auto &grounding : grounding_vector) {
-        auto timevar_string =
-            grounding.get_constant_ptr(get_time_variable_index());
-        uint64_t timevar_value = std::stoull(*timevar_string);
+        std::string timevar_string =
+            grounding.get_constant(get_time_variable_index());
+        uint64_t timevar_value = std::stoull(timevar_string);
         if (timevar_value <= timeline.get_time()) {
             result.push_back(grounding);
         }
@@ -153,9 +153,9 @@ ExactTime::get_conclusions_step(util::Timeline timeline) {
     std::vector<Grounding> conclusions_vector;
     auto grounding_vector = grounding_table.get_recent_groundings();
     for (auto &grounding : grounding_vector) {
-        auto timevar_string =
-            grounding.get_constant_ptr(get_time_variable_index());
-        uint64_t timevar_value = std::stoull(*timevar_string);
+        std::string timevar_string =
+            grounding.get_constant(get_time_variable_index());
+        uint64_t timevar_value = std::stoull(timevar_string);
         if (timevar_value == timeline.get_time()) {
             conclusions_vector.push_back(grounding);
         } else {
