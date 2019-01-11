@@ -10,6 +10,7 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
+#include <memory>
 
 #include "formula/formula.h"
 #include "io/io_manager.h"
@@ -28,6 +29,8 @@ class Program {
     laser::io::IOManager *ioManager;
     IOHandler ioHandler;
 
+    double evaluation_secs = 0;
+
     laser::util::Timeline timeline;
     // uint64_t current_time = 0;
     // uint64_t current_tuple_counter = 0;
@@ -43,7 +46,8 @@ class Program {
     // methods
 
     bool evaluate_rule_vector(
-        std::unordered_map<std::string, std::vector<formula::Grounding>> const
+        std::unordered_map<
+            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
             &facts);
 
     bool eval();
@@ -52,7 +56,7 @@ class Program {
 
     // TODO Not used -> remove it
     void accept_new_facts(
-        std::unordered_map<std::string, std::vector<formula::Grounding>> const
+        std::unordered_map<std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
             &stream_facts);
 
     void write_output();
@@ -60,7 +64,7 @@ class Program {
     template <typename T>
     void debug_print(std::string const &message, T const &value) const;
 
-    std::unordered_map<std::string, std::vector<formula::Grounding>>
+    std::unordered_map<std::string, std::vector<std::shared_ptr<formula::Grounding>>>
     get_new_conclusions();
 
   public:
@@ -73,6 +77,11 @@ class Program {
     virtual ~Program();
 
     // getters & setters
+    //double get_reader_secs() const;
+
+    //double get_handler_secs() const;
+
+    double get_eval_secs() const;
 
     uint64_t get_current_time() const;
 

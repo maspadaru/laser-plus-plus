@@ -2,6 +2,7 @@
 #define LASER_FORMULA_EXTENDED_DIAMOND_H
 
 #include <string>
+#include <memory>
 
 #include "formula/formula.h"
 #include "formula/grounding.h"
@@ -53,18 +54,18 @@ class Diamond : public Formula {
 
     size_t get_number_of_variables() const override;
 
-    std::vector<Grounding> get_groundings(util::Timeline timeline) override;
+    std::vector<std::shared_ptr<Grounding>> get_groundings(util::Timeline timeline) override;
     
-    std::vector<Grounding> get_conclusions_timepoint(util::Timeline timeline) override;
+    std::vector<std::shared_ptr<Grounding>> get_conclusions_timepoint(util::Timeline timeline) override;
 
-    std::vector<Grounding> get_conclusions_step(util::Timeline timeline) override;
+    std::vector<std::shared_ptr<Grounding>> get_conclusions_step(util::Timeline timeline) override;
 
     std::string debug_string() const override;
     
     bool
     evaluate(util::Timeline timeline,
-             std::unordered_map<std::string, std::vector<formula::Grounding>>
-                 facts) override;
+             std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>>
+                 const &facts) override;
 
     void expire_outdated_groundings(util::Timeline timeline) override;
     

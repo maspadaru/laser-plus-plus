@@ -17,7 +17,7 @@ const bool OUTPUT = false;
 uint64_t end_time = 10000;
 uint64_t NFACTS = 100;
 
-void run_atom(uint64_t end_time, int facts_per_timepoint, int window_size) {
+double run_atom(uint64_t end_time, int facts_per_timepoint, int window_size) {
 
     std::string rules = ""
                         "t(X, Y) := d(X, Y)\n"
@@ -42,11 +42,18 @@ void run_atom(uint64_t end_time, int facts_per_timepoint, int window_size) {
 
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl
-              << std::endl;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
+
+    return eval_secs;
 }
 
-void run_diamond(uint64_t end_time, int facts_per_timepoint, int window_size) {
+double run_diamond(uint64_t end_time, int facts_per_timepoint, int window_size) {
 
     std::string rules = "t(X, Y) := [$, " + std::to_string(window_size) +  
                                     "] [D]d(X, Y)\n";
@@ -61,7 +68,6 @@ void run_diamond(uint64_t end_time, int facts_per_timepoint, int window_size) {
                       facts_per_timepoint, is_output_enabled);
     auto program = laser::program::Program(rules, &file_io_manager);
     program.set_start_time(0);
-
     clock_t begin = clock();
 
     while (!program.is_done()) {
@@ -69,15 +75,19 @@ void run_diamond(uint64_t end_time, int facts_per_timepoint, int window_size) {
     }
 
     clock_t end = clock();
-
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
 
-    std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl
-              << std::endl
-              << std::endl;
+    return eval_secs;
 }
 
-void run_conjunction(uint64_t end_time, int facts_per_timepoint, int window_size) {
+double run_conjunction(uint64_t end_time, int facts_per_timepoint, int window_size) {
 
     std::string rules = "t(X, Y) := d(X, Y) && f(X)\n";
 
@@ -99,15 +109,19 @@ void run_conjunction(uint64_t end_time, int facts_per_timepoint, int window_size
     }
 
     clock_t end = clock();
-
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
 
-    std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl
-              << std::endl
-              << std::endl;
+    return eval_secs;
 }
 
-void run_box(uint64_t end_time, int facts_per_timepoint, int window_size) {
+double run_box(uint64_t end_time, int facts_per_timepoint, int window_size) {
 
     std::string rules = "t(X) := [$, " + std::to_string(window_size) +  
                                     "][B]f(X)\n";
@@ -131,12 +145,18 @@ void run_box(uint64_t end_time, int facts_per_timepoint, int window_size) {
 
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl
-              << std::endl
-              << std::endl;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
+
+    return eval_secs;
 }
 
-void run_time_reference(uint64_t end_time, int facts_per_timepoint, int window_size) {
+double run_time_reference(uint64_t end_time, int facts_per_timepoint, int window_size) {
 
     std::string rules = "t(X, Y, T) := [@, T]d(X, Y)\n";
 
@@ -159,12 +179,19 @@ void run_time_reference(uint64_t end_time, int facts_per_timepoint, int window_s
 
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl
-              << std::endl
-              << std::endl;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
+
+    return eval_secs;
+
 }
 
-void run_multi_atom(uint64_t end_time, int facts_per_timepoint, int window_size) {
+double run_multi_atom(uint64_t end_time, int facts_per_timepoint, int window_size) {
 
     std::string rules = ""
                         "q(X, Y, Z) := a(X, Y, Z)\n"
@@ -193,12 +220,19 @@ void run_multi_atom(uint64_t end_time, int facts_per_timepoint, int window_size)
 
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl
-              << std::endl
-              << std::endl;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
+
+    return eval_secs;
+
 }
 
-void run_multi_all(uint64_t end_time, int facts_per_timepoint, int window_size) {
+double run_multi_all(uint64_t end_time, int facts_per_timepoint, int window_size) {
 
     std::string rules = "r(Y, Z) := c(X, Y) && d(Y,Z)\n"
                             "t(X) := [$, " + std::to_string(window_size) +  
@@ -228,9 +262,15 @@ void run_multi_all(uint64_t end_time, int facts_per_timepoint, int window_size) 
 
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl
-              << std::endl
-              << std::endl;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
+
+    return eval_secs;
 }
 
 int main(int argc, char **argv) { 
@@ -253,6 +293,7 @@ int main(int argc, char **argv) {
        << "timepoints: " << end_time 
        << ",  facts per timepoint: " << num_facts 
        << ",  window size: " << win_size << std::endl;
+    
 
     if (test_name == "atom") {
         run_atom(end_time, num_facts, win_size);
@@ -271,4 +312,5 @@ int main(int argc, char **argv) {
     } else {
         std::cout << "Invalid test name!" << std::endl;
     }
+
 }

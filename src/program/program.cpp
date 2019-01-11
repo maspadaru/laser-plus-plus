@@ -12,7 +12,8 @@ namespace program {
 Program::~Program() { rule_vector.clear(); }
 
 bool Program::evaluate_rule_vector(
-    std::unordered_map<std::string, std::vector<formula::Grounding>> const
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<formula::Grounding>>> const
         &facts) {
     bool result = false;
     for (auto &rule : rule_vector) {
@@ -65,22 +66,30 @@ void Program::expire_outdated_groundings() {
 bool Program::eval() {
     bool has_new_conclusions_timepoint = false;
     bool has_new_conclusions_step = false;
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts =
-        ioHandler.get_stream_data(timeline.get_time());
+    auto facts = ioHandler.get_stream_data(timeline.get_time());
+
+    clock_t begin = clock();
+
     expire_outdated_groundings();
     do {
         evaluate_rule_vector(facts);
         facts.clear();
         facts = get_new_conclusions();
         has_new_conclusions_step = !facts.empty();
-        has_new_conclusions_timepoint |= has_new_conclusions_step; 
-    } while (has_new_conclusions_step); 
+        has_new_conclusions_timepoint |= has_new_conclusions_step;
+    } while (has_new_conclusions_step);
+
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    evaluation_secs += elapsed_secs;
+
     return has_new_conclusions_timepoint;
 }
 
-std::unordered_map<std::string, std::vector<formula::Grounding>>
+std::unordered_map<std::string, std::vector<std::shared_ptr<formula::Grounding>>>
 Program::get_new_conclusions() {
-    std::unordered_map<std::string, std::vector<formula::Grounding>> new_conclusions;
+    std::unordered_map<std::string, std::vector<std::shared_ptr<formula::Grounding>>>
+        new_conclusions;
     for (auto const &rule : rule_vector) {
         formula::Formula *head = &rule.get_head();
         auto const &predicate_vector = head->get_predicate_vector();
@@ -88,7 +97,8 @@ Program::get_new_conclusions() {
             // In case head formula has multiple predicates. Might be imposible
             for (auto const &predicate : predicate_vector) {
                 new_conclusions.try_emplace(predicate);
-                std::vector<formula::Grounding> &conclusions_vector = new_conclusions[predicate];
+                std::vector<std::shared_ptr<formula::Grounding>> &conclusions_vector =
+                    new_conclusions[predicate];
                 conclusions_vector.push_back(conclusion);
             }
         }
@@ -107,12 +117,13 @@ void Program::write_output() {
 
 void Program::evaluate() {
     bool has_derived_new_conclusions = eval();
-    write_output();
+    // TODO "write output" is disabled for benchmarking
+    //write_output();
     timeline.increment_time();
 }
 
 void Program::accept_new_facts(
-    std::unordered_map<std::string, std::vector<formula::Grounding>> const
+    std::unordered_map<std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
         &stream_facts) {
     for (auto &rule : rule_vector) {
         rule.evaluate(timeline, stream_facts);
@@ -130,6 +141,19 @@ Program::Program(laser::rule::RuleReader *rule_reader,
     : ioManager(ioManager), ioHandler(ioManager) {
     rule_vector = rule_reader->get_rules();
 }
+
+double Program::get_eval_secs() const {
+    return evaluation_secs;
+}
+
+//double Program::get_reader_secs() const {
+    //return ioHandler.get_reader_secs();
+
+//}
+
+//double Program::get_handler_secs() const {
+    //return ioHandler.get_handler_secs();
+//}
 
 } // namespace program
 } // namespace laser

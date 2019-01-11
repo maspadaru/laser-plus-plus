@@ -33,13 +33,9 @@ Formula &Conjunction::move() {
     return *result;
 }
 
-void Conjunction::set_head(bool is_head) {
-    is_head_m = is_head;
-}
+void Conjunction::set_head(bool is_head) { is_head_m = is_head; }
 
-bool Conjunction::is_head() const {
-    return is_head_m;
-}
+bool Conjunction::is_head() const { return is_head_m; }
 
 void Conjunction::populate_variable_collections() {
     // Get all variables from children and insert into variable_names
@@ -132,17 +128,17 @@ void Conjunction::expire_outdated_groundings(util::Timeline timeline) {
     grounding_vector.clear();
 }
 
-std::vector<Grounding>
+std::vector<std::shared_ptr<Grounding>>
 Conjunction::get_groundings(util::Timeline timeline) {
     return grounding_vector;
 }
 
-std::vector<Grounding>
+std::vector<std::shared_ptr<Grounding>>
 Conjunction::get_conclusions_timepoint(util::Timeline timeline) {
     return get_groundings(timeline);
 }
 
-std::vector<Grounding>
+std::vector<std::shared_ptr<Grounding>>
 Conjunction::get_conclusions_step(util::Timeline timeline) {
     return get_groundings(timeline);
 }
@@ -162,9 +158,9 @@ Conjunction::hash_common_variables(Formula const &child,
     return ss.str();
 }
 
-Grounding Conjunction::merge_groundings(util::Timeline timeline,
-                                        Grounding const &left,
-                                        Grounding const &right) const {
+std::shared_ptr<Grounding>
+Conjunction::merge_groundings(util::Timeline timeline, Grounding const &left,
+                              Grounding const &right) const {
     auto ct = timeline.get_time();
     auto ht = timeline.min(left.get_horizon_time(), right.get_horizon_time());
     // TODO not sure about tuple counter values;
@@ -180,29 +176,30 @@ Grounding Conjunction::merge_groundings(util::Timeline timeline,
             substitution_vector.push_back(right.get_constant(right_index));
         }
     }
-    auto result = Grounding(ct, ht, cc, hc, substitution_vector);
+    auto result = std::make_shared<Grounding>(
+        Grounding(ct, ht, cc, hc, substitution_vector));
     return result;
 }
 
 void Conjunction::populate_grounding_vector(
-    util::Timeline timeline, std::vector<Grounding> left_groundings,
-    std::vector<Grounding> right_groundings) {
-    std::unordered_map<std::string, std::vector<Grounding>> hashmap;
+    util::Timeline timeline, std::vector<std::shared_ptr<Grounding>> left_groundings,
+    std::vector<std::shared_ptr<Grounding>> right_groundings) {
+    std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>> hashmap;
     for (auto const &gr : right_groundings) {
-        auto key = hash_common_variables(*right_child, gr);
+        auto key = hash_common_variables(*right_child, *gr);
         hashmap.try_emplace(key);
-        std::vector<Grounding> &map_vector = hashmap[key];
+        std::vector<std::shared_ptr<Grounding>> &map_vector = hashmap[key];
         map_vector.push_back(gr);
     }
     for (auto const &gl : left_groundings) {
-        auto key = hash_common_variables(*left_child, gl);
+        auto key = hash_common_variables(*left_child, *gl);
         if (hashmap.count(key) > 0) {
             auto hashmap_values = hashmap.at(key);
             for (auto const &gr : hashmap_values) {
                 auto current_time = timeline.get_time();
-                if (gl.get_consideration_time() == current_time ||
-                    gr.get_consideration_time() == current_time) {
-                    auto new_grounding = merge_groundings(timeline, gl, gr);
+                if (gl->get_consideration_time() == current_time ||
+                    gr->get_consideration_time() == current_time) {
+                    auto new_grounding = merge_groundings(timeline, *gl, *gr);
                     grounding_vector.push_back(new_grounding);
                 }
             }
@@ -212,7 +209,8 @@ void Conjunction::populate_grounding_vector(
 
 bool Conjunction::evaluate(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>> const
+        &facts) {
     // TODO Here I can split facts in sub-maps, based on predicates of children
     bool result = left_child->evaluate(timeline, facts);
     result |= right_child->evaluate(timeline, facts);

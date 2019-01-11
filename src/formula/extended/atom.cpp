@@ -102,30 +102,32 @@ std::string Atom::debug_string() const {
     return os.str();
 }
 
-std::vector<Grounding> Atom::get_groundings(util::Timeline timeline) {
+std::vector<std::shared_ptr<Grounding>>
+Atom::get_groundings(util::Timeline timeline) {
     return grounding_table.get_all_groundings();
 }
 
-std::vector<Grounding> Atom::get_conclusion_set() {
-    std::unordered_set<Grounding, GroundingSubstitutionHasher,
+std::vector<std::shared_ptr<Grounding>> Atom::get_conclusion_set() {
+    std::unordered_set<std::shared_ptr<Grounding>, GroundingSubstitutionHasher,
                        GroundingSubstitutionEqualityChecker>
         grounding_set;
     auto gt_groundings = grounding_table.get_all_groundings();
     for (auto const &grounding : gt_groundings) {
         grounding_set.insert(grounding);
     }
-    std::vector<Grounding> result;
+    std::vector<std::shared_ptr<Grounding>> result;
     result.insert(result.end(), grounding_set.begin(), grounding_set.end());
     return result;
 }
 
-std::vector<formula::Grounding>
+std::vector<std::shared_ptr<Grounding>>
 Atom::get_conclusions_timepoint(util::Timeline timeline) {
     // return grounding_table.get_all_groundings();
     return get_conclusion_set();
 }
 
-std::vector<Grounding> Atom::get_conclusions_step(util::Timeline timeline) {
+std::vector<std::shared_ptr<Grounding>>
+Atom::get_conclusions_step(util::Timeline timeline) {
     return grounding_table.get_recent_groundings();
 }
 
@@ -133,7 +135,8 @@ bool Atom::is_satisfied() const { return grounding_table.get_size() > 0; }
 
 bool Atom::evaluate(
     util::Timeline timeline,
-    std::unordered_map<std::string, std::vector<formula::Grounding>> facts) {
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<Grounding>>> const &facts) {
     if (facts.count(predicate) > 0) {
         auto grounding_vector = facts.at(predicate);
         for (auto const &grounding : grounding_vector) {
@@ -143,13 +146,13 @@ bool Atom::evaluate(
     return grounding_table.has_recent_groundings();
 }
 
-void Atom::accept(Grounding const &grounding) {
-    auto grounding_size = grounding.get_size();
+void Atom::accept(std::shared_ptr<Grounding> const &grounding) {
+    auto grounding_size = grounding->get_size();
     auto atom_size = this->get_number_of_variables();
     if (atom_size == grounding_size) {
         grounding_table.add_grounding(grounding);
-    } else if (atom_size <= grounding_size && is_valid_fact(grounding)) {
-        auto valid_grounding = remove_duplicate_variables(grounding);
+    } else if (atom_size <= grounding_size && is_valid_fact(*grounding)) {
+        auto valid_grounding = remove_duplicate_variables(*grounding);
         grounding_table.add_grounding(valid_grounding);
     } else {
         // TODO some sort of error
@@ -170,7 +173,8 @@ bool Atom::is_valid_fact(Grounding const &grounding) const {
     return is_valid;
 }
 
-Grounding Atom::remove_duplicate_variables(Grounding const &grounding) {
+std::shared_ptr<Grounding>
+Atom::remove_duplicate_variables(Grounding const &grounding) {
     std::vector<std::string> result_values;
     for (size_t index : first_position_vector) {
         result_values.push_back(grounding.get_constant(index));
@@ -179,7 +183,7 @@ Grounding Atom::remove_duplicate_variables(Grounding const &grounding) {
                                  grounding.get_horizon_time(),
                                  grounding.get_consideration_count(),
                                  grounding.get_horizon_count(), result_values);
-    return result;
+    return std::make_shared<Grounding>(result);
 }
 
 void Atom::add_child(formula::Formula *child) {}

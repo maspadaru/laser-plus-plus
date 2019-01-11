@@ -45,50 +45,48 @@ bool Grounding::is_background_fact() const { return is_background_fact_m; }
 
 bool Grounding::is_fact() const { return is_fact_m; }
 
-size_t Grounding::get_substitution_hash() const {
-    return substitution_hash;
-}
+size_t Grounding::get_substitution_hash() const { return substitution_hash; }
 
 size_t Grounding::get_full_hash() const { return full_hash; }
 
-Grounding Grounding::new_annotations(uint64_t consideration_time,
-                                     uint64_t horizon_time,
-                                     uint64_t consideration_count,
-                                     uint64_t horizon_count) const {
-    Grounding result = Grounding(consideration_time, horizon_time,
-                                 consideration_count, horizon_count, is_fact_m,
-                                 is_background_fact_m, constant_vector);
-    return result;
+std::shared_ptr<Grounding>
+Grounding::new_annotations(uint64_t consideration_time, uint64_t horizon_time,
+                           uint64_t consideration_count,
+                           uint64_t horizon_count) const {
+    auto result = Grounding(consideration_time, horizon_time,
+                            consideration_count, horizon_count, is_fact_m,
+                            is_background_fact_m, constant_vector);
+    return std::make_shared<Grounding>(result);
 }
 
-Grounding Grounding::new_horizon_time(uint64_t horizon_time) const {
-    Grounding result = Grounding(consideration_time, horizon_time,
-                                 consideration_count, horizon_count, is_fact_m,
-                                 is_background_fact_m, constant_vector);
-    return result;
+std::shared_ptr<Grounding>
+Grounding::new_horizon_time(uint64_t horizon_time) const {
+    auto result = Grounding(consideration_time, horizon_time,
+                            consideration_count, horizon_count, is_fact_m,
+                            is_background_fact_m, constant_vector);
+    return std::make_shared<Grounding>(result);
 }
 
-Grounding
-Grounding::new_constant_vector(std::vector<std::string> new_vector) const {
+std::shared_ptr<Grounding> Grounding::new_constant_vector(
+    std::vector<std::string> const &new_vector) const {
     Grounding result =
         Grounding(consideration_time, horizon_time, consideration_count,
                   horizon_count, is_fact_m, is_background_fact_m, new_vector);
-    return result;
+    return std::make_shared<Grounding>(result);
 }
 
 void Grounding::init() {
-    std::stringstream full_hash_stream;
-    for (auto &constant : constant_vector) {
-        full_hash_stream << constant << ";;";
-    }
-    std::string substitution_hash_str = full_hash_stream.str();
-    full_hash_stream << consideration_time << ";;" << horizon_time << ";;"
-                     << consideration_count << ";;" << horizon_count;
-    std::string full_hash_str = full_hash_stream.str();
-    size = constant_vector.size();
+    std::string substitution_hash_str = std::accumulate(
+        constant_vector.begin(), constant_vector.end(), std::string(";"));
+    std::string full_hash_str =
+        substitution_hash_str + std::to_string(consideration_time)
+            + std::to_string(horizon_time)
+            + std::to_string(consideration_count)
+            + std::to_string(horizon_count);
     std::hash<std::string> hasher;
     full_hash = hasher(full_hash_str);
     substitution_hash = hasher(substitution_hash_str);
+    size = constant_vector.size();
 }
 
 std::string Grounding::get_constant(size_t variable_index) const {
@@ -104,23 +102,23 @@ bool Grounding::has_expired(uint64_t time, uint64_t tuple_counter) const {
     return result;
 }
 
-Grounding Grounding::new_constant(size_t index,
-                                  std::string const &constant) const {
+std::shared_ptr<Grounding>
+Grounding::new_constant(size_t index, std::string const &constant) const {
     std::vector<std::string> new_vector = constant_vector;
     new_vector.insert(new_vector.begin() + index, constant);
     Grounding result =
         Grounding(consideration_time, horizon_time, consideration_count,
                   horizon_count, new_vector);
-    return result;
+    return std::make_shared<Grounding>(result);
 }
 
-Grounding Grounding::remove_constant(size_t index) const {
+std::shared_ptr<Grounding> Grounding::remove_constant(size_t index) const {
     std::vector<std::string> new_vector = constant_vector;
     new_vector.erase(new_vector.begin() + index);
     Grounding result =
         Grounding(consideration_time, horizon_time, consideration_count,
                   horizon_count, new_vector);
-    return result;
+    return std::make_shared<Grounding>(result);
 }
 
 size_t Grounding::get_size() const { return size; }
@@ -137,15 +135,15 @@ std::string Grounding::debug_string() const {
     return os.str();
 }
 
-bool Grounding::operator<(const Grounding &other) const {
+bool Grounding::operator<(Grounding const &other) const {
     return full_hash < other.full_hash;
 }
 
-bool Grounding::operator==(const Grounding &other) const {
+bool Grounding::operator==(Grounding const &other) const {
     return full_hash == other.full_hash;
 }
 
-bool Grounding::has_same_substitutions(const Grounding &other) const {
+bool Grounding::has_same_substitutions(Grounding const &other) const {
     return substitution_hash == other.substitution_hash;
 }
 
