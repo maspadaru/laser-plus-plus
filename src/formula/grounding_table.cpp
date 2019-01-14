@@ -92,10 +92,6 @@ size_t GroundingTable::get_number_of_variables() const {
     return variable_names.size();
 }
 
-void GroundingTable::add_variable_name(std::string const &variable_name) {
-    this->variable_names.push_back(variable_name);
-}
-
 template <typename T>
 void GroundingTable::debug_print(std::string const &message,
                                  T const &value) const {

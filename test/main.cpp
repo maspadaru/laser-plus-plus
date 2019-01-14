@@ -526,17 +526,17 @@ void test_exact_time_recursive() {
 int main() {
     test_simple();
     test_atoms();
-    test_diamond();
-    test_time_window();
-    test_box();
-    test_conjunction_same_variables();
-    test_conjunction_two_variables();
-    test_conjunction_diamond();
-    test_conjunction_box();
-    test_conjunction_corss_variables();
-    test_recursive();
-    test_exact_time_body();
-    test_exact_time_handb();
-    test_exact_time_head();
-    test_exact_time_recursive();
+    //test_diamond();
+    //test_time_window();
+    //test_box();
+    //test_conjunction_same_variables();
+    //test_conjunction_two_variables();
+    //test_conjunction_diamond();
+    //test_conjunction_box();
+    //test_conjunction_corss_variables();
+    //test_recursive();
+    //test_exact_time_body();
+    //test_exact_time_handb();
+    //test_exact_time_head();
+    //test_exact_time_recursive();
 }

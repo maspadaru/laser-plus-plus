@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./laser.sh release  
+./laser.sh b  
 
 ./laser.sh benchscript atom 1000000 100 0 
 ./laser.sh benchscript atom 10000 10000 0 

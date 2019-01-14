@@ -12,7 +12,7 @@ build() {
     cd ..
     mkdir -p cmake-build-debug
     cd cmake-build-debug
-    cmake -DCMAKE_CXX_FLAGS=-pg -DCMAKE_BUILD_TYPE=Debug ..
+    cmake -DCMAKE_CXX_FLAGS=-pg -DCMAKE_EXE_LINKER_FLAGS=-pg -DCMAKE_SHARED_LINKER_FLAGS=-pg -DCMAKE_BUILD_TYPE=Debug ..
     make
     cd ..
 }

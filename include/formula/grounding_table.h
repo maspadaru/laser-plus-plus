@@ -47,8 +47,6 @@ class GroundingTable {
 
     bool has_recent_groundings();
 
-    void add_variable_name(std::string const &variable_name);
-
     size_t get_number_of_variables() const;
 
     int get_variable_index(std::string const &variable_name) const;
