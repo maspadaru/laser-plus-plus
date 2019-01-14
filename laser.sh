@@ -23,7 +23,7 @@ clean_up () {
 }
 
 run_profile () {
-    build_debug 
+    build 
     rm -f prof_flat.txt
     rm -f prof_graph.txt
     rm -f gmon.out
@@ -33,7 +33,7 @@ run_profile () {
 }
 
 run_benchapp () {
-    build_release 
+    build 
     cmake-build-release/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 
 }
 
@@ -43,27 +43,27 @@ run_benchscript () {
 }
 
 run_project () {
-    build_debug 
+    build 
     cmake-build-debug/$EXECUTABLE
 }
 
 test_project () {
-    build_debug 
+    build 
     cmake-build-debug/$TEST_EXECUTABLE
 }
 
 debug_project () {
-    build_debug 
+    build 
     gdb cmake-build-debug/$EXECUTABLE --tui
 }
 
 debug_benchapp () {
-    build_debug 
+    build 
     gdb --tui --args cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 
 }
 
 print_help () {
-    echo "Usage: laser [b bench c d dbench p rsilent r release h t]"
+    echo "Usage: laser [b bench c d dbench p r h t]"
     echo "b: Build Laser"
     echo "c: Clean project"
     echo "bench: Run Benchmark App"
