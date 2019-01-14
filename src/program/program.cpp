@@ -63,13 +63,13 @@ void Program::expire_outdated_groundings() {
     }
 }
 
-bool Program::eval() {
+bool Program::do_evaluation_loop(
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<formula::Grounding>>> const
+                       &initial_facts) {
     bool has_new_conclusions_timepoint = false;
     bool has_new_conclusions_step = false;
-    auto facts = ioHandler.get_stream_data(timeline.get_time());
-
-    clock_t begin = clock();
-
+    auto facts = initial_facts;
     expire_outdated_groundings();
     do {
         evaluate_rule_vector(facts);
@@ -78,12 +78,19 @@ bool Program::eval() {
         has_new_conclusions_step = !facts.empty();
         has_new_conclusions_timepoint |= has_new_conclusions_step;
     } while (has_new_conclusions_step);
+    return has_new_conclusions_timepoint;
+}
 
+bool Program::timed_evaluation(
+                       std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<formula::Grounding>>> const
+                       &facts) {
+    clock_t begin = clock();
+    auto has_new_conclusions = do_evaluation_loop(facts);
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     evaluation_secs += elapsed_secs;
-
-    return has_new_conclusions_timepoint;
+    return has_new_conclusions;
 }
 
 std::unordered_map<std::string,
@@ -118,7 +125,8 @@ void Program::write_output() {
 }
 
 void Program::evaluate() {
-    bool has_derived_new_conclusions = eval();
+    auto facts = ioHandler.get_stream_data(timeline.get_time());
+    bool has_derived_new_conclusions = timed_evaluation(facts);
     // TODO writing is disabled for benchmarking, this means all tests fail
     write_output();
     timeline.increment_time();

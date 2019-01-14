@@ -6,11 +6,11 @@
 
 #include <any>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <memory>
 
 #include "formula/formula.h"
 #include "io/io_manager.h"
@@ -50,13 +50,21 @@ class Program {
             std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
             &facts);
 
-    bool eval();
+    bool timed_evaluation(
+                       std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<formula::Grounding>>> const
+                       &facts);
+    bool do_evaluation_loop(
+        std::unordered_map<
+            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
+            &initial_facts);
 
     void expire_outdated_groundings();
 
     // TODO Not used -> remove it
     void accept_new_facts(
-        std::unordered_map<std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
+        std::unordered_map<
+            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
             &stream_facts);
 
     void write_output();
@@ -64,7 +72,8 @@ class Program {
     template <typename T>
     void debug_print(std::string const &message, T const &value) const;
 
-    std::unordered_map<std::string, std::vector<std::shared_ptr<formula::Grounding>>>
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<formula::Grounding>>>
     get_new_conclusions();
 
   public:
@@ -77,9 +86,9 @@ class Program {
     virtual ~Program();
 
     // getters & setters
-    //double get_reader_secs() const;
+    // double get_reader_secs() const;
 
-    //double get_handler_secs() const;
+    // double get_handler_secs() const;
 
     double get_eval_secs() const;
 
