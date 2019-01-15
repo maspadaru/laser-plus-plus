@@ -16,7 +16,8 @@ std::string SimpleWriter::format_output(
     const std::string TIME_SEPARATOR = " -> ";
     const std::string ARGUMENTS_START = "(";
     const std::string ARGUMENTS_END = ")";
-    const std::string DELIMITER = ", ";
+    const std::string ARGUMENT_DELIMITER = ", ";
+    const std::string CONCLUSION_DELIMITER = " ";
     result_stream << time << TIME_SEPARATOR;
     for (size_t atom_index = 0; atom_index < output_vector.size();
          atom_index++) {
@@ -28,13 +29,11 @@ std::string SimpleWriter::format_output(
             auto const &argument = argument_vector.at(argument_index);
             result_stream << argument;
             if (argument_index < argument_vector.size() - 1) {
-                result_stream << DELIMITER;
+                result_stream << ARGUMENT_DELIMITER;
             }
         }
         result_stream << ARGUMENTS_END;
-        if (atom_index < output_vector.size() - 1) {
-            result_stream << DELIMITER;
-        }
+        result_stream << CONCLUSION_DELIMITER;
     }
     return result_stream.str();
 }

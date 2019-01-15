@@ -24,9 +24,9 @@ TEST(ExactTimeTest, ExactTimeBody) {
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> a(1, 1), a(1, 2)";
+    expected[1] = "1 -> a(1, 1) a(1, 2)";
     expected[2] = "2 -> a(2, 3)";
-    expected[3] = "3 -> a(3, 4), a(3, 5)";
+    expected[3] = "3 -> a(3, 4) a(3, 5)";
     expected[4] = "4 -> ";
     expected[5] = "5 -> ";
     expected[6] = "6 -> ";
@@ -47,11 +47,28 @@ TEST(ExactTimeTest, ExactTimeBody) {
     while (!program.is_done()) {
         program.evaluate();
         std::string result = simple_io_manager.get_output();
-        EXPECT_EQ(result, expected[current_time]);
+        std::istringstream issr(result);
+        std::vector<std::string> results(std::istream_iterator<std::string>{issr},
+                                 std::istream_iterator<std::string>());
+        std::istringstream isse(expected[current_time]);
+        std::vector<std::string> expecteds(std::istream_iterator<std::string>{isse},
+                                 std::istream_iterator<std::string>());
+        bool has_all_rezults = true;
+        for (auto const &rezitem : results) {
+            has_all_rezults &= 
+                std::find(expecteds.begin(), expecteds.end(), rezitem) 
+                    != expecteds.end(); 
+        }
+        bool is_same_size = results.size() == expecteds.size();
+        bool error = !(has_all_rezults && is_same_size);
+        // if there is a problem, print both so we can compare
+        if (error) {
+            std::cout << "Laser rez: " << result << std::endl; 
+            std::cout << "Expected : " << expected[current_time] << std::endl; 
+            EXPECT_FALSE(error);
+        }
         current_time++;
     }
-    // ASSERT_EQ(-1.0, squareRoot(-0.2));
-    // EXPECT_TRUE(has_derived_conclusions);
 }
 
 TEST(ExactTimeTest, ExactTimeHead) {
@@ -89,11 +106,28 @@ TEST(ExactTimeTest, ExactTimeHead) {
     while (!program.is_done()) {
         program.evaluate();
         std::string result = simple_io_manager.get_output();
-        EXPECT_EQ(result, expected[current_time]);
+        std::istringstream issr(result);
+        std::vector<std::string> results(std::istream_iterator<std::string>{issr},
+                                 std::istream_iterator<std::string>());
+        std::istringstream isse(expected[current_time]);
+        std::vector<std::string> expecteds(std::istream_iterator<std::string>{isse},
+                                 std::istream_iterator<std::string>());
+        bool has_all_rezults = true;
+        for (auto const &rezitem : results) {
+            has_all_rezults &= 
+                std::find(expecteds.begin(), expecteds.end(), rezitem) 
+                    != expecteds.end(); 
+        }
+        bool is_same_size = results.size() == expecteds.size();
+        bool error = !(has_all_rezults && is_same_size);
+        // if there is a problem, print both so we can compare
+        if (error) {
+            std::cout << "Laser rez: " << result << std::endl; 
+            std::cout << "Expected : " << expected[current_time] << std::endl; 
+            EXPECT_FALSE(error);
+        }
         current_time++;
     }
-    // ASSERT_EQ(-1.0, squareRoot(-0.2));
-    // EXPECT_TRUE(has_derived_conclusions);
 }
 
 TEST(ExactTimeTest, ExactTimeHeadAndBody) {
@@ -108,9 +142,9 @@ TEST(ExactTimeTest, ExactTimeHeadAndBody) {
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> a(2), a(1)";
+    expected[1] = "1 -> a(2) a(1)";
     expected[2] = "2 -> a(3)";
-    expected[3] = "3 -> a(5), a(4)";
+    expected[3] = "3 -> a(5) a(4)";
     expected[4] = "4 -> ";
     expected[5] = "5 -> ";
     expected[6] = "6 -> ";
@@ -131,11 +165,28 @@ TEST(ExactTimeTest, ExactTimeHeadAndBody) {
     while (!program.is_done()) {
         program.evaluate();
         std::string result = simple_io_manager.get_output();
-        EXPECT_EQ(result, expected[current_time]);
+        std::istringstream issr(result);
+        std::vector<std::string> results(std::istream_iterator<std::string>{issr},
+                                 std::istream_iterator<std::string>());
+        std::istringstream isse(expected[current_time]);
+        std::vector<std::string> expecteds(std::istream_iterator<std::string>{isse},
+                                 std::istream_iterator<std::string>());
+        bool has_all_rezults = true;
+        for (auto const &rezitem : results) {
+            has_all_rezults &= 
+                std::find(expecteds.begin(), expecteds.end(), rezitem) 
+                    != expecteds.end(); 
+        }
+        bool is_same_size = results.size() == expecteds.size();
+        bool error = !(has_all_rezults && is_same_size);
+        // if there is a problem, print both so we can compare
+        if (error) {
+            std::cout << "Laser rez: " << result << std::endl; 
+            std::cout << "Expected : " << expected[current_time] << std::endl; 
+            EXPECT_FALSE(error);
+        }
         current_time++;
     }
-    // ASSERT_EQ(-1.0, squareRoot(-0.2));
-    // EXPECT_TRUE(has_derived_conclusions);
 }
 
 TEST(ExactTimeTest, ExactTimeRecursive) {
@@ -155,8 +206,8 @@ TEST(ExactTimeTest, ExactTimeRecursive) {
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> b(x1)";
-    expected[2] = "2 -> p(x1, y2, 2), p(x2, y2, 2), b(x2), b(x1)";
-    expected[3] = "3 -> p(x2, y3, 3), b(x2)";
+    expected[2] = "2 -> p(x1, y2, 2) p(x2, y2, 2) b(x2) b(x1)";
+    expected[3] = "3 -> p(x2, y3, 3) b(x2)";
     expected[4] = "4 -> ";
     expected[5] = "5 -> b(x4)";
     expected[6] = "6 -> ";
@@ -177,9 +228,26 @@ TEST(ExactTimeTest, ExactTimeRecursive) {
     while (!program.is_done()) {
         program.evaluate();
         std::string result = simple_io_manager.get_output();
-        EXPECT_EQ(result, expected[current_time]);
+        std::istringstream issr(result);
+        std::vector<std::string> results(std::istream_iterator<std::string>{issr},
+                                 std::istream_iterator<std::string>());
+        std::istringstream isse(expected[current_time]);
+        std::vector<std::string> expecteds(std::istream_iterator<std::string>{isse},
+                                 std::istream_iterator<std::string>());
+        bool has_all_rezults = true;
+        for (auto const &rezitem : results) {
+            has_all_rezults &= 
+                std::find(expecteds.begin(), expecteds.end(), rezitem) 
+                    != expecteds.end(); 
+        }
+        bool is_same_size = results.size() == expecteds.size();
+        bool error = !(has_all_rezults && is_same_size);
+        // if there is a problem, print both so we can compare
+        if (error) {
+            std::cout << "Laser rez: " << result << std::endl; 
+            std::cout << "Expected : " << expected[current_time] << std::endl; 
+            EXPECT_FALSE(error);
+        }
         current_time++;
     }
-    // ASSERT_EQ(-1.0, squareRoot(-0.2));
-    // EXPECT_TRUE(has_derived_conclusions);
 }

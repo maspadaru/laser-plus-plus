@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include <gtest/gtest.h>
 #include <formula/extended/atom.h>
@@ -43,17 +44,17 @@ TEST(AtomsTest, Atom) {
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> u(x1, x1)";
-    expected[2] = "2 -> r(y2), t(y2, x2)";
+    expected[2] = "2 -> r(y2) t(y2, x2)";
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
-    expected[5] = "5 -> v(a5, b5, a5, b5), v(x5, y5, x5, y5)";
+    expected[5] = "5 -> v(a5, b5, a5, b5) v(x5, y5, x5, y5)";
     expected[6] = "6 -> q(x6, y6, z6)";
     expected[7] = "7 -> ";
     expected[8] = "8 -> q(x8, y8, z8)";
     expected[9] = "9 -> ";
     expected[10] = "10 -> q(x10, y10, z10)";
     expected[11] = "11 -> u(a11, a11)";
-    expected[12] = "12 -> s(x12), v(x12, x12, x12, x12)";
+    expected[12] = "12 -> s(x12) v(x12, x12, x12, x12)";
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
@@ -65,9 +66,26 @@ TEST(AtomsTest, Atom) {
     while (!program.is_done()) {
         program.evaluate();
         std::string result = simple_io_manager.get_output();
-        EXPECT_EQ(result, expected[current_time]);
+        std::istringstream issr(result);
+        std::vector<std::string> results(std::istream_iterator<std::string>{issr},
+                                 std::istream_iterator<std::string>());
+        std::istringstream isse(expected[current_time]);
+        std::vector<std::string> expecteds(std::istream_iterator<std::string>{isse},
+                                 std::istream_iterator<std::string>());
+        bool has_all_rezults = true;
+        for (auto const &rezitem : results) {
+            has_all_rezults &= 
+                std::find(expecteds.begin(), expecteds.end(), rezitem) 
+                    != expecteds.end(); 
+        }
+        bool is_same_size = results.size() == expecteds.size();
+        bool error = !(has_all_rezults && is_same_size);
+        // if there is a problem, print both so we can compare
+        if (error) {
+            std::cout << "Laser rez: " << result << std::endl; 
+            std::cout << "Expected : " << expected[current_time] << std::endl; 
+            EXPECT_FALSE(error);
+        }
         current_time++;
     }
-    // ASSERT_EQ(-1.0, squareRoot(-0.2));
-    // EXPECT_TRUE(has_derived_conclusions);
 }

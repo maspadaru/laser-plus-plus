@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include <sstream>
 
 #include <gtest/gtest.h>
 #include <formula/extended/atom.h>
@@ -36,18 +37,18 @@ TEST(BoxTest, BoxAtom) {
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> q(a), q(1), r(b, a)";
-    expected[2] = "2 -> q(1), q(a), r(b, a)";
-    expected[3] = "3 -> q(1), q(a), r(b, a)";
-    expected[4] = "4 -> q(1), q(a)";
-    expected[5] = "5 -> q(1), q(a)";
-    expected[6] = "6 -> q(1), q(a)";
+    expected[1] = "1 -> q(a) q(1) r(b, a)";
+    expected[2] = "2 -> q(1) q(a) r(b, a)";
+    expected[3] = "3 -> q(1) q(a) r(b, a)";
+    expected[4] = "4 -> q(1) q(a)";
+    expected[5] = "5 -> q(1) q(a)";
+    expected[6] = "6 -> q(1) q(a)";
     expected[7] = "7 -> q(a)";
     expected[8] = "8 -> q(a)";
     expected[9] = "9 -> q(a)";
     expected[10] = "10 -> q(a)";
-    expected[11] = "11 -> q(a), r(2, 1), r(7, 6)";
-    expected[12] = "12 -> q(a), r(7, 6)";
+    expected[11] = "11 -> q(a) r(2, 1) r(7, 6)";
+    expected[12] = "12 -> q(a) r(7, 6)";
     expected[13] = "13 -> q(a)";
     expected[14] = "14 -> q(a)";
 
@@ -59,7 +60,26 @@ TEST(BoxTest, BoxAtom) {
     while (!program.is_done()) {
         program.evaluate();
         std::string result = simple_io_manager.get_output();
-        EXPECT_EQ(result, expected[current_time]);
+        std::istringstream issr(result);
+        std::vector<std::string> results(std::istream_iterator<std::string>{issr},
+                                 std::istream_iterator<std::string>());
+        std::istringstream isse(expected[current_time]);
+        std::vector<std::string> expecteds(std::istream_iterator<std::string>{isse},
+                                 std::istream_iterator<std::string>());
+        bool has_all_rezults = true;
+        for (auto const &rezitem : results) {
+            has_all_rezults &= 
+                std::find(expecteds.begin(), expecteds.end(), rezitem) 
+                    != expecteds.end(); 
+        }
+        bool is_same_size = results.size() == expecteds.size();
+        bool error = !(has_all_rezults && is_same_size);
+        // if there is a problem, print both so we can compare
+        if (error) {
+            std::cout << "Laser rez: " << result << std::endl; 
+            std::cout << "Expected : " << expected[current_time] << std::endl; 
+            EXPECT_FALSE(error);
+        }
         current_time++;
     }
 }

@@ -23,7 +23,6 @@ clean_up () {
 }
 
 run_profile () {
-    build 
     rm -f prof_flat.txt
     rm -f prof_graph.txt
     rm -f gmon.out
@@ -33,48 +32,37 @@ run_profile () {
 }
 
 run_benchapp () {
-    build 
-    cmake-build-release/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 
-}
-
-# only difference between benchapp is that this does not compile first
-run_benchscript () {
     cmake-build-release/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 
 }
 
 run_project () {
-    build 
     cmake-build-debug/$EXECUTABLE
 }
 
 test_project () {
-    build 
     cmake-build-debug/$TEST_EXECUTABLE
 }
 
 debug_project () {
-    build 
     gdb cmake-build-debug/$EXECUTABLE --tui
 }
 
 debug_benchapp () {
-    build 
     gdb --tui --args cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 
 }
 
 print_help () {
-    echo "Usage: laser [b bench c d dbench p r h t]"
+    echo "Usage: laser [b bench c d p r h t]"
     echo "b: Build Laser"
     echo "c: Clean project"
     echo "bench: Run Benchmark App"
     echo "d: Debug project using GDB"
-    echo "dbench: Debug benchark application using GDB"
     echo "p: Profile application. Generates prof.txt"
     echo "h: Print help"
     echo "r: Run TestApp project"
     echo "t: run all tests"
     echo " "
-    echo " Options [bench dbench p] require additional arguments:"
+    echo " Options [bench p] require additional arguments:"
     echo " test_name end_time_of_stream number_of_facts_per_timepoint window_size"
 
 }
@@ -85,8 +73,6 @@ elif [ $1 = "b" ]; then
     build
 elif [ $1 = "bench" ]; then
     run_benchapp "$2" "$3" "$4" "$5"
-elif [ $1 = "benchscript" ]; then
-    run_benchscript "$2" "$3" "$4" "$5"
 elif [ $1 = "p" ]; then
     run_profile "$2" "$3" "$4" "$5"
 elif [ $1 = "c" ]; then
