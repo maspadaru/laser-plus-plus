@@ -8,11 +8,11 @@
 #include <climits>
 #include <functional> // std::hash<std::string>
 #include <memory>
+#include <numeric>
 #include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
-#include <numeric>
 
 namespace laser {
 namespace formula {
@@ -34,15 +34,15 @@ class Grounding {
     bool is_fact_m = false;
     std::vector<std::string> constant_vector;
 
-    size_t full_hash;
-    size_t substitution_hash;
-    size_t size = 0;
+    bool has_hash = false;
+    size_t hash = 0;
 
-    void init();
+    void compute_hash();
     bool annotation_less_than(Grounding const &other) const;
 
   public:
     // constructors & destructors
+
     Grounding(uint64_t consideration_time, uint64_t horizon_time,
               uint64_t consideration_count, uint64_t horizon_count,
               std::vector<std::string> constant_vector);
@@ -68,7 +68,7 @@ class Grounding {
 
     bool is_fact() const;
 
-    size_t get_substitution_hash() const;
+    size_t get_hash();
 
     // methods
 
@@ -117,26 +117,24 @@ class Grounding {
     bool substitution_less_than(Grounding const &other) const;
 };
 
-struct GroundingFullCompare
-{
+struct GroundingFullCompare {
     bool operator()(Grounding const &x, Grounding const &y) const {
         return x < y;
     }
 
-    bool operator()(std::shared_ptr<Grounding> const &x, 
-            std::shared_ptr<Grounding> const &y) const {
+    bool operator()(std::shared_ptr<Grounding> const &x,
+                    std::shared_ptr<Grounding> const &y) const {
         return *x < *y;
     }
 };
 
-struct GroundingSubstitutionCompare
-{
+struct GroundingSubstitutionCompare {
     bool operator()(Grounding const &x, Grounding const &y) const {
         return x.substitution_less_than(y);
     }
 
-    bool operator()(std::shared_ptr<Grounding> const &x, 
-            std::shared_ptr<Grounding> const &y) const {
+    bool operator()(std::shared_ptr<Grounding> const &x,
+                    std::shared_ptr<Grounding> const &y) const {
         return x->substitution_less_than(*y);
     }
 };

@@ -139,7 +139,7 @@ void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts) {
         // from child p(a)[4,4], p(a)[2,3], in this order;
         keep_going = false;
         for (auto const &child_grounding : facts) {
-            size_t key = child_grounding->get_substitution_hash();
+            size_t key = child_grounding->get_hash();
             box_map.try_emplace(key, child_grounding);
             std::shared_ptr<Grounding> &box_grounding = box_map[key];
             auto adjusted_result =
