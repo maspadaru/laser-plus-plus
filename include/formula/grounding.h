@@ -19,7 +19,6 @@ namespace formula {
 
 /**
  * Annotated Grounding (_alpha_-_sigma_)
- * (Definition 7)
  * Maps each variable in the formula _alpha_ to a constant value due to
  * substitution _sigma_
  * The grounding is annotated with consideration and horizon values
@@ -69,8 +68,6 @@ class Grounding {
 
     bool is_fact() const;
 
-    size_t get_full_hash() const;
-
     size_t get_substitution_hash() const;
 
     // methods
@@ -117,35 +114,7 @@ class Grounding {
 
     bool operator<(const Grounding &other) const;
 
-    bool operator==(const Grounding &other) const;
-    bool has_same_substitutions(const Grounding &other) const;
     bool substitution_less_than(Grounding const &other) const;
-};
-
-struct GroundingFullHasher {
-    size_t operator()(std::shared_ptr<Grounding> const &x) const {
-        return x->get_full_hash();
-    }
-};
-
-struct GroundingSubstitutionHasher {
-    size_t operator()(std::shared_ptr<Grounding> const &x) const {
-        return x->get_substitution_hash();
-    }
-};
-
-struct GroundingSubstitutionEqualityChecker {
-    bool operator()(std::shared_ptr<Grounding> const &x,
-                    std::shared_ptr<Grounding> const &y) const {
-        return x->has_same_substitutions(*y);
-    }
-};
-
-struct GroundingFullEqualityChecker {
-    bool operator()(std::shared_ptr<Grounding> const &x,
-                    std::shared_ptr<Grounding> const &y) const {
-        return *x == *y;
-    }
 };
 
 struct GroundingFullCompare

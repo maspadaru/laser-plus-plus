@@ -164,16 +164,14 @@ ExactTime::get_conclusions_step(util::Timeline timeline) {
             conclusions_vector.push_back(grounding);
         } else {
             future_conclusion_map.try_emplace(timevar_value);
-            std::unordered_set<std::shared_ptr<Grounding>, GroundingFullHasher,
-                               GroundingFullEqualityChecker> &map_set =
-                future_conclusion_map[timevar_value];
+            std::set<std::shared_ptr<Grounding>, GroundingFullCompare>
+                &map_set = future_conclusion_map[timevar_value];
             map_set.insert(grounding);
         }
     }
     // 2. Add all groundings from future_conclusion_map to conclusions_vector
-    std::unordered_set<std::shared_ptr<Grounding>, GroundingFullHasher,
-                       GroundingFullEqualityChecker> &grounding_set =
-        future_conclusion_map[timeline.get_time()];
+    std::set<std::shared_ptr<Grounding>, GroundingFullCompare>
+        &grounding_set = future_conclusion_map[timeline.get_time()];
     std::copy(grounding_set.begin(), grounding_set.end(),
               std::back_inserter(conclusions_vector));
     future_conclusion_map.erase(timeline.get_time());

@@ -525,7 +525,7 @@ void test_exact_time_recursive() {
 
 int main() {
     test_simple();
-    test_atoms();
+    //test_atoms();
     //test_diamond();
     //test_time_window();
     //test_box();

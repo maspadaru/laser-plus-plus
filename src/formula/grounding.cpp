@@ -47,8 +47,6 @@ bool Grounding::is_fact() const { return is_fact_m; }
 
 size_t Grounding::get_substitution_hash() const { return substitution_hash; }
 
-size_t Grounding::get_full_hash() const { return full_hash; }
-
 std::shared_ptr<Grounding>
 Grounding::new_annotations(uint64_t consideration_time, uint64_t horizon_time,
                            uint64_t consideration_count,
@@ -135,10 +133,37 @@ std::string Grounding::debug_string() const {
 }
 
 bool Grounding::annotation_less_than(Grounding const &other) const {
-    return consideration_time < other.consideration_time ||
-           horizon_time < other.horizon_time ||
-           consideration_count < other.consideration_count ||
-           horizon_time < other.horizon_count;
+
+    // check each value. If they are equal, continue to the next value
+
+    bool equal;
+    bool less;
+
+    equal = consideration_time == other.consideration_time;
+    if (!equal) {
+        less = consideration_time < other.consideration_time;
+        return less;
+    }
+
+    equal = horizon_time == other.horizon_time;
+    if (!equal) {
+        less = horizon_time < other.horizon_time;
+        return less;
+    }
+
+    equal = consideration_count == other.consideration_count;
+    if (!equal) {
+        less = consideration_count < other.consideration_count;
+        return less;
+    }
+
+    equal = horizon_count == other.horizon_count;
+    if (!equal) {
+        less = horizon_count < other.horizon_count;
+        return less;
+    }
+
+    return false; // *this == other
 }
 
 bool Grounding::substitution_less_than(Grounding const &other) const {
@@ -154,14 +179,6 @@ bool Grounding::operator<(Grounding const &other) const {
     if (q) return false;
     bool r = substitution_less_than(other);
     return r;
-}
-
-bool Grounding::operator==(Grounding const &other) const {
-    return full_hash == other.full_hash;
-}
-
-bool Grounding::has_same_substitutions(Grounding const &other) const {
-    return substitution_hash == other.substitution_hash;
 }
 
 } // namespace formula

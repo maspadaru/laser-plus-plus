@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 #include <memory>
+#include <set>
 
 #include "formula/formula.h"
 #include "formula/grounding_table.h"
