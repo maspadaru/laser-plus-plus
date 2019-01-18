@@ -40,6 +40,7 @@ class Grounding {
     size_t size = 0;
 
     void init();
+    bool annotation_less_than(Grounding const &other) const;
 
   public:
     // constructors & destructors
@@ -118,6 +119,7 @@ class Grounding {
 
     bool operator==(const Grounding &other) const;
     bool has_same_substitutions(const Grounding &other) const;
+    bool substitution_less_than(Grounding const &other) const;
 };
 
 struct GroundingFullHasher {
@@ -143,6 +145,30 @@ struct GroundingFullEqualityChecker {
     bool operator()(std::shared_ptr<Grounding> const &x,
                     std::shared_ptr<Grounding> const &y) const {
         return *x == *y;
+    }
+};
+
+struct GroundingFullCompare
+{
+    bool operator()(Grounding const &x, Grounding const &y) const {
+        return x < y;
+    }
+
+    bool operator()(std::shared_ptr<Grounding> const &x, 
+            std::shared_ptr<Grounding> const &y) const {
+        return *x < *y;
+    }
+};
+
+struct GroundingSubstitutionCompare
+{
+    bool operator()(Grounding const &x, Grounding const &y) const {
+        return x.substitution_less_than(y);
+    }
+
+    bool operator()(std::shared_ptr<Grounding> const &x, 
+            std::shared_ptr<Grounding> const &y) const {
+        return x->substitution_less_than(*y);
     }
 };
 

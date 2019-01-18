@@ -79,10 +79,9 @@ void Grounding::init() {
     std::string substitution_hash_str = std::accumulate(
         constant_vector.begin(), constant_vector.end(), std::string(";"));
     std::string full_hash_str =
-        substitution_hash_str + std::to_string(consideration_time)
-            + std::to_string(horizon_time)
-            + std::to_string(consideration_count)
-            + std::to_string(horizon_count);
+        substitution_hash_str + std::to_string(consideration_time) +
+        std::to_string(horizon_time) + std::to_string(consideration_count) +
+        std::to_string(horizon_count);
     std::hash<std::string> hasher;
     full_hash = hasher(full_hash_str);
     substitution_hash = hasher(substitution_hash_str);
@@ -135,8 +134,26 @@ std::string Grounding::debug_string() const {
     return os.str();
 }
 
+bool Grounding::annotation_less_than(Grounding const &other) const {
+    return consideration_time < other.consideration_time ||
+           horizon_time < other.horizon_time ||
+           consideration_count < other.consideration_count ||
+           horizon_time < other.horizon_count;
+}
+
+bool Grounding::substitution_less_than(Grounding const &other) const {
+    // operator< for std::vector is said to have linear time complexity
+    return constant_vector < other.constant_vector;
+}
+
 bool Grounding::operator<(Grounding const &other) const {
-    return full_hash < other.full_hash;
+    // !p -> ( !q && (!q -> r) )
+    bool p = annotation_less_than(other);
+    if (p) return true;
+    bool q = other.annotation_less_than(*this);
+    if (q) return false;
+    bool r = substitution_less_than(other);
+    return r;
 }
 
 bool Grounding::operator==(Grounding const &other) const {
