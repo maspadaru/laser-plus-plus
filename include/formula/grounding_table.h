@@ -23,8 +23,8 @@ class GroundingTable {
     std::unordered_map<
         uint64_t, std::set<std::shared_ptr<Grounding>, GroundingFullCompare>>
         grounding_map;
-    std::set<std::shared_ptr<Grounding>, GroundingFullCompare>
-        recent_groundings_set;
+    std::vector<std::shared_ptr<Grounding>>
+        recent_groundings_vector;
     std::vector<std::string> variable_names;
     std::unordered_map<std::string, int> variable_index;
     size_t size = 0;

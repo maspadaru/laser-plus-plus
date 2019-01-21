@@ -58,6 +58,11 @@ Grounding::new_annotations(uint64_t consideration_time, uint64_t horizon_time,
                             is_background_fact_m, constant_vector);
     return std::make_shared<Grounding>(result);
 }
+    
+std::shared_ptr<Grounding> Grounding::clone() const {
+    Grounding clone = Grounding(*this);
+    return std::make_shared<Grounding>(clone);
+}
 
 std::shared_ptr<Grounding>
 Grounding::new_horizon_time(uint64_t horizon_time) const {

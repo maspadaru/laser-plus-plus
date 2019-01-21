@@ -9,15 +9,13 @@ namespace formula {
 size_t GroundingTable::get_size() const { return size; }
 
 bool GroundingTable::has_recent_groundings() {
-    return !recent_groundings_set.empty();
+    return !recent_groundings_vector.empty();
 }
 
 std::vector<std::shared_ptr<Grounding>>
 GroundingTable::get_recent_groundings() {
-    std::vector<std::shared_ptr<Grounding>> result;
-    std::move(recent_groundings_set.begin(), recent_groundings_set.end(),
-              std::back_inserter(result));
-    recent_groundings_set.clear(); // should not be necesarry
+    std::vector<std::shared_ptr<Grounding>> result = recent_groundings_vector;
+    recent_groundings_vector.clear();
     return result;
 }
 
@@ -27,7 +25,7 @@ void GroundingTable::add_grounding(
     bool was_inserted = false;
     std::tie(std::ignore, was_inserted) = groundings.insert(grounding);
     if (was_inserted) {
-        recent_groundings_set.insert(grounding);
+        recent_groundings_vector.push_back(grounding);
         size += 1;
     }
 }
@@ -47,7 +45,7 @@ std::vector<std::shared_ptr<Grounding>> GroundingTable::get_all_groundings() {
         all_groundings.insert(all_groundings.end(), grounding_list.begin(),
                               grounding_list.end());
     }
-    recent_groundings_set.clear();
+    recent_groundings_vector.clear();
     return all_groundings;
 }
 
@@ -66,7 +64,7 @@ void GroundingTable::expire_outdated_groundings(
         size -= grounding_map[horizon_time].size();
         grounding_map.erase(horizon_time);
     }
-    recent_groundings_set.clear();
+    recent_groundings_vector.clear();
     /* TODO expire also by hourizon_counter
      * Not sure if it's more efficient to create a new map based on ht, or
      * a nested hashtable, or just to itterate over all keys

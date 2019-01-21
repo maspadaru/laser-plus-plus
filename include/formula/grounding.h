@@ -54,6 +54,8 @@ class Grounding {
 
     Grounding() = default;
 
+    std::shared_ptr<Grounding> clone() const;
+
     // getters
 
     uint64_t get_consideration_time() const;
