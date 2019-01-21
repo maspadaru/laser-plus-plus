@@ -53,6 +53,40 @@ double run_atom(uint64_t end_time, int facts_per_timepoint, int window_size) {
     return eval_secs;
 }
 
+double run_atom_window(uint64_t end_time, int facts_per_timepoint, int window_size) {
+
+    std::string rules = "t(X, Y) := [$, " + std::to_string(window_size) +  
+                                    "] d(X, Y)\n";
+
+    std::string stream_path = "/home/mike/stream_file.txt";
+    std::string output_path = "/home/mike/out_cpp_atom_window.txt";
+    uint64_t start_time = 0;
+    bool is_output_enabled = OUTPUT;
+
+    auto file_io_manager =
+        FileIOManager(stream_path, output_path, start_time, end_time,
+                      facts_per_timepoint, is_output_enabled);
+    auto program = laser::program::Program(rules, &file_io_manager);
+    program.set_start_time(0);
+    clock_t begin = clock();
+
+    while (!program.is_done()) {
+        program.evaluate();
+    }
+
+    clock_t end = clock();
+    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    double eval_secs = program.get_eval_secs();
+    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
+    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO Reading time (sec): " << program.get_reader_secs() << std::endl;
+    //std::cout << "IO Handling time (sec): " << program.get_handler_secs() << std::endl;
+    std::cout << std::endl;
+
+    return eval_secs;
+}
+
 double run_diamond(uint64_t end_time, int facts_per_timepoint, int window_size) {
 
     std::string rules = "t(X, Y) := [$, " + std::to_string(window_size) +  
@@ -297,6 +331,8 @@ int main(int argc, char **argv) {
 
     if (test_name == "atom") {
         run_atom(end_time, num_facts, win_size);
+    } else if (test_name == "atom_window") {
+        run_atom_window(end_time, num_facts, win_size); 
     } else if (test_name == "diamond") {
         run_diamond(end_time, num_facts, win_size); 
     } else if (test_name == "conjunction") {

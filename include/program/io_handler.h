@@ -20,14 +20,18 @@ class IOHandler {
 
   private:
     io::IOManager *ioManager;
-    //double reader_secs = 0;
-    //double handler_secs = 0;
+    // double reader_secs = 0;
+    // double handler_secs = 0;
+
+    std::vector<std::shared_ptr<formula::Grounding>> remove_duplicates(
+        std::vector<std::shared_ptr<formula::Grounding>> input_groundings)
+        const;
 
   public:
     explicit IOHandler(io::IOManager *ioManager);
 
-    //double get_reader_secs() const;
-    //double get_handler_secs() const;
+    // double get_reader_secs() const;
+    // double get_handler_secs() const;
 
     // methods
     std::unordered_map<std::string,

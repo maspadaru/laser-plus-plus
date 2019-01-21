@@ -108,15 +108,7 @@ Atom::get_groundings(util::Timeline timeline) {
 }
 
 std::vector<std::shared_ptr<Grounding>> Atom::get_conclusion_set() {
-    std::set<std::shared_ptr<Grounding>, GroundingSubstitutionCompare>
-        grounding_set;
-    auto gt_groundings = grounding_table.get_all_groundings();
-    for (auto const &grounding : gt_groundings) {
-        grounding_set.insert(grounding);
-    }
-    std::vector<std::shared_ptr<Grounding>> result;
-    result.insert(result.end(), grounding_set.begin(), grounding_set.end());
-    return result;
+    return grounding_table.get_all_groundings();
 }
 
 std::vector<std::shared_ptr<Grounding>>
