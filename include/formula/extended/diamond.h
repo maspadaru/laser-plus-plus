@@ -1,12 +1,11 @@
 #ifndef LASER_FORMULA_EXTENDED_DIAMOND_H
 #define LASER_FORMULA_EXTENDED_DIAMOND_H
 
-#include <string>
 #include <memory>
+#include <string>
 
 #include "formula/formula.h"
 #include "formula/grounding.h"
-#include "formula/grounding_table.h"
 
 namespace laser {
 namespace formula {
@@ -18,13 +17,21 @@ class Diamond : public Formula {
   private:
     bool is_head_m = false;
     Formula *child;
-    GroundingTable grounding_table;
+    std::unordered_map<uint64_t, std::vector<std::shared_ptr<Grounding>>>
+        grounding_map;
+    std::vector<std::shared_ptr<Grounding>> recent_groundings_vector;
+
+    void add_grounding(std::shared_ptr<Grounding> const &grounding);
+    void add_grounding_vector(
+        std::vector<std::shared_ptr<Grounding>> const &grounding_vector);
+    void expire_from_map(uint64_t expiration_time,
+                         uint64_t expiration_tuple_counter);
 
   public:
     // constructors / destructors
 
     Diamond() = default;
-    explicit Diamond(Formula* child);
+    explicit Diamond(Formula *child);
     ~Diamond() override;
 
     Formula &create() const override;
@@ -54,23 +61,26 @@ class Diamond : public Formula {
 
     size_t get_number_of_variables() const override;
 
-    std::vector<std::shared_ptr<Grounding>> get_groundings(util::Timeline timeline) override;
-    
-    std::vector<std::shared_ptr<Grounding>> get_conclusions_timepoint(util::Timeline timeline) override;
+    std::vector<std::shared_ptr<Grounding>>
+    get_groundings(util::Timeline timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>> get_conclusions_step(util::Timeline timeline) override;
+    std::vector<std::shared_ptr<Grounding>>
+    get_conclusions_timepoint(util::Timeline timeline) override;
+
+    std::vector<std::shared_ptr<Grounding>>
+    get_conclusions_step(util::Timeline timeline) override;
 
     std::string debug_string() const override;
-    
+
     bool
     evaluate(util::Timeline timeline,
-             std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>>
-                 const &facts) override;
+             std::unordered_map<std::string,
+                                std::vector<std::shared_ptr<Grounding>>> const
+                 &facts) override;
 
     void expire_outdated_groundings(util::Timeline timeline) override;
-    
-    void add_child(formula::Formula* child) override;
 
+    void add_child(formula::Formula *child) override;
 };
 
 } // namespace formula
