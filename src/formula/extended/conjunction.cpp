@@ -164,7 +164,7 @@ Conjunction::merge_groundings(util::Timeline timeline, Grounding const &left,
     auto ct = timeline.get_time();
     auto ht = timeline.min(left.get_horizon_time(), right.get_horizon_time());
     // TODO not sure about tuple counter values;
-    auto cc = timeline.get_tuple_count();
+    auto cc = timeline.max(left.get_horizon_count(), right.get_horizon_count());
     auto hc = timeline.min(left.get_horizon_count(), right.get_horizon_count());
     std::vector<std::string> substitution_vector;
     for (auto const &variable_name : variable_names) {

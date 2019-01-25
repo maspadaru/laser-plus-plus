@@ -22,6 +22,7 @@ class IOHandler {
     io::IOManager *ioManager;
     // double reader_secs = 0;
     // double handler_secs = 0;
+    uint64_t current_tuple_counter = 0;
 
     std::vector<std::shared_ptr<formula::Grounding>> remove_duplicates(
         std::vector<std::shared_ptr<formula::Grounding>> input_groundings)
@@ -36,7 +37,7 @@ class IOHandler {
     // methods
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<formula::Grounding>>>
-    get_stream_data(uint64_t time);
+    get_stream_data(laser::util::Timeline &timeline);
 
     void put_conclusions(util::Timeline timeline,
                          std::vector<formula::Formula *> const &conclusions);

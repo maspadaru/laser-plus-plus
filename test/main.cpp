@@ -524,10 +524,10 @@ void test_exact_time_recursive() {
 }
 
 int main() {
-    test_simple();
+    //test_simple();
     //test_atoms();
     //test_diamond();
-    //test_time_window();
+    test_time_window();
     //test_box();
     //test_conjunction_same_variables();
     //test_conjunction_two_variables();

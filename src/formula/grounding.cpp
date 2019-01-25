@@ -141,15 +141,9 @@ bool Grounding::annotation_less_than(Grounding const &other) const {
     bool equal;
     bool less;
 
-    equal = consideration_time == other.consideration_time;
+    equal = horizon_count == other.horizon_count;
     if (!equal) {
-        less = consideration_time < other.consideration_time;
-        return less;
-    }
-
-    equal = horizon_time == other.horizon_time;
-    if (!equal) {
-        less = horizon_time < other.horizon_time;
+        less = horizon_count < other.horizon_count;
         return less;
     }
 
@@ -159,9 +153,15 @@ bool Grounding::annotation_less_than(Grounding const &other) const {
         return less;
     }
 
-    equal = horizon_count == other.horizon_count;
+    equal = consideration_time == other.consideration_time;
     if (!equal) {
-        less = horizon_count < other.horizon_count;
+        less = consideration_time < other.consideration_time;
+        return less;
+    }
+
+    equal = horizon_time == other.horizon_time;
+    if (!equal) {
+        less = horizon_time < other.horizon_time;
         return less;
     }
 

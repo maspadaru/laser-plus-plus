@@ -125,7 +125,7 @@ void Program::write_output() {
 }
 
 void Program::evaluate() {
-    auto facts = ioHandler.get_stream_data(timeline.get_time());
+    auto facts = ioHandler.get_stream_data(timeline);
     bool has_derived_new_conclusions = timed_evaluation(facts);
     // TODO writing is disabled for benchmarking, this means all tests fail
     write_output();

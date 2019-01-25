@@ -12,11 +12,12 @@ laser::program::IOHandler::IOHandler(io::IOManager *ioManager)
 
 std::unordered_map<std::string,
                    std::vector<std::shared_ptr<formula::Grounding>>>
-laser::program::IOHandler::get_stream_data(uint64_t time) {
+laser::program::IOHandler::get_stream_data(laser::util::Timeline &timeline) {
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<formula::Grounding>>>
         result;
-
+    uint64_t time = timeline.get_time();
+    uint64_t max_tuple_counter = timeline.get_max_tuple_count();
     // clock_t begin = clock();
     auto data_vector = ioManager->read_stream_data(time);
     // clock_t end_read = clock();
@@ -28,14 +29,16 @@ laser::program::IOHandler::get_stream_data(uint64_t time) {
         result.try_emplace(predicate);
         std::vector<std::shared_ptr<formula::Grounding>> &map_vector =
             result.at(predicate);
-        // TODO !!! SET TUPLE COUNTER VALUES !!!!
         auto grounding = std::make_shared<laser::formula::Grounding>(
-            time, time, 0, 9999, true, false, data.get_arguments());
+            time, time, current_tuple_counter, max_tuple_counter, true, false, 
+            data.get_arguments());
         map_vector.push_back(grounding);
+        current_tuple_counter++;
     }
     // double end = clock();
     // elapsed_secs = double(end - end_read) / CLOCKS_PER_SEC;
     // handler_secs += elapsed_secs;
+    timeline.set_tuple_count(current_tuple_counter);
     return result;
 }
 
