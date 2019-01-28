@@ -57,27 +57,26 @@ int GroundingTable::get_variable_index(std::string const &variable_name) const {
     return result;
 }
 
-void GroundingTable::expire_outdated_groundings(
-    uint64_t current_time, uint64_t min_tuple_counter) {
-    // Expire by hourizon_time
+void GroundingTable::expire_outdated_groundings(uint64_t current_time,
+                                                uint64_t tuple_count) {
+    // Expire by horizon_time
     uint64_t horizon_time = current_time - 1;
     if (grounding_map.count(horizon_time) > 0) {
         size -= grounding_map[horizon_time].size();
         grounding_map.erase(horizon_time);
     }
-    // Expire by hourizon_counter
-    if (min_tuple_counter > 0) {
-        for (auto &iterator : grounding_map) {
-            std::set<std::shared_ptr<Grounding>, GroundingFullCompare> &set =
-                iterator.second;
-            for (auto &grounding : set) {
-                if (grounding->get_horizon_count() < min_tuple_counter) {
-                    set.erase(grounding);
-                } else {
-                    // Sets in map are ordered with lowest horizon_counter
-                    // first.
-                    break;
-                }
+    // Expire by horizon_count
+    for (auto &iterator : grounding_map) {
+        std::set<std::shared_ptr<Grounding>, GroundingFullCompare> &set =
+            iterator.second;
+        for (auto &grounding : set) {
+            auto hc = grounding->get_horizon_count();
+            if (hc < tuple_count) {
+                set.erase(grounding);
+            } else {
+                // Sets in map are ordered with lowest horizon_counter
+                // first.
+                break;
             }
         }
     }

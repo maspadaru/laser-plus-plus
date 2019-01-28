@@ -22,7 +22,7 @@ class IOHandler {
     io::IOManager *ioManager;
     // double reader_secs = 0;
     // double handler_secs = 0;
-    uint64_t current_tuple_counter = 0;
+    uint64_t current_tuple_counter = 1;
 
     std::vector<std::shared_ptr<formula::Grounding>> remove_duplicates(
         std::vector<std::shared_ptr<formula::Grounding>> input_groundings)

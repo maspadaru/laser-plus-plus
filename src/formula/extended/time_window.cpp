@@ -92,9 +92,9 @@ uint64_t TimeWindow::compute_horizon_time(uint64_t grounding_consideration_time,
 
     // The grounding's lifetime should never excede the size of the window
     uint64_t size_limit = grounding_consideration_time + past_size;
-    uint64_t result = (size_limit > grounding_horizon_time)
-                          ? grounding_horizon_time
-                          : size_limit;
+    uint64_t result = (size_limit < grounding_horizon_time)
+                          ? size_limit
+                          : grounding_horizon_time;
     return result;
 }
 

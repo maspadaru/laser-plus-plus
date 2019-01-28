@@ -17,8 +17,8 @@ class Timeline {
     uint64_t tuple_count = 0;
     uint64_t min_time = 0;
     uint64_t max_time = ULLONG_MAX;
-    uint64_t min_tuple_count = 0;
-    uint64_t max_tuple_count = 0;
+    //uint64_t min_tuple_count = 0; //TODO remove because it is unused
+    //uint64_t max_tuple_count = 0; //TODO remove because it is unused
 
   public:
     static const uint64_t INFINITE_TIME;
@@ -39,11 +39,11 @@ class Timeline {
     uint64_t get_max_time() const;
     void set_max_time(uint64_t max_time);
 
-    uint64_t get_min_tuple_count() const;
-    void set_min_tuple_count(uint64_t min_tuple_count);
+    //uint64_t get_min_tuple_count() const;
+    //void set_min_tuple_count(uint64_t min_tuple_count);
 
-    uint64_t get_max_tuple_count() const;
-    void set_max_tuple_count(uint64_t max_tuple_count);
+    //uint64_t get_max_tuple_count() const;
+    //void set_max_tuple_count(uint64_t max_tuple_count);
 
     bool is_past_max_time() const;
 
@@ -51,6 +51,8 @@ class Timeline {
 
     /**
      * Returns (initial_value - substracted_value)
+     * Functions like this might be necesary in case timeline has more 
+     * timepoints than the limit of uint64_t. 
      */ 
     uint64_t substract(uint64_t initial_value, uint64_t substracted_val) const;
 

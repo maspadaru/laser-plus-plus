@@ -18,7 +18,6 @@ class TupleWindow : public Formula {
     uint64_t future_size = 0; // U
     Formula *child;
 
-    util::Timeline alter_timeline(util::Timeline timeline) const;
     uint64_t compute_horizon_count(uint64_t grounding_consideration_count,
                                   uint64_t grounding_horizon_count) const;
 

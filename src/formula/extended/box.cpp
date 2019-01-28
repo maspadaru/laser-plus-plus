@@ -61,7 +61,7 @@ void Box::add_child(formula::Formula *child) {}
 void Box::expire_outdated_groundings(util::Timeline timeline) {
     child->expire_outdated_groundings(timeline);
     grounding_table.expire_outdated_groundings(timeline.get_time(),
-                                               timeline.get_min_tuple_count());
+                                               timeline.get_tuple_count());
     // Next we remove all groundings in the map that have the horizon
     // values outside the timeline (imposed or not by a window).
     for (auto iterator = box_map.begin(); iterator != box_map.end();
@@ -111,8 +111,6 @@ Box::compute_box_conclusions(util::Timeline timeline) {
     std::vector<std::shared_ptr<Grounding>> result;
     uint64_t current_time = timeline.get_time();
     uint64_t start_time = timeline.get_min_time();
-    uint64_t current_count = timeline.get_tuple_count();
-    uint64_t start_count = timeline.get_min_tuple_count();
 
     for (auto &iterator : box_map) {
         auto const &key = iterator.first;
@@ -122,10 +120,10 @@ Box::compute_box_conclusions(util::Timeline timeline) {
         auto cc = grounding->get_consideration_count();
         auto hc = grounding->get_horizon_count();
 
-        // TODO also add tuple cunter condition
+        // One grounding should exist at each timepoint in the timeline
         if (ct <= start_time && ht >= current_time) {
             auto new_grounding = grounding->new_annotations(
-                current_time, current_time, current_count, current_count);
+                current_time, current_time, cc, hc);
             result.push_back(new_grounding);
         }
     }

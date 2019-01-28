@@ -223,7 +223,7 @@ void ExactTime::expire_outdated_groundings(util::Timeline timeline) {
     timepoint_conclusions.clear();
     child->expire_outdated_groundings(timeline);
     grounding_table.expire_outdated_groundings(timeline.get_min_time(),
-                                               timeline.get_min_tuple_count());
+                                               timeline.get_tuple_count());
 }
 
 } // namespace formula

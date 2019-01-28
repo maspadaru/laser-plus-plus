@@ -53,11 +53,6 @@ size_t TupleWindow::get_number_of_variables() const {
     return child->get_number_of_variables();
 }
 
-util::Timeline TupleWindow::alter_timeline(util::Timeline timeline) const {
-    timeline.set_min_tuple_count(timeline.get_tuple_count());
-    return timeline;
-}
-
 std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>>
 TupleWindow::adjust_annotations(
     std::unordered_map<std::string,
@@ -67,14 +62,16 @@ TupleWindow::adjust_annotations(
         result;
     auto predicates = child->get_predicate_vector();
     for (auto const &predicate : predicates) {
-        auto fact_vector = facts.at(predicate);
-        result.try_emplace(predicate);
-        auto result_vector = result.at(predicate);
-        for (auto const &fact : fact_vector) {
-            auto horizon_count = compute_horizon_count(
-                fact->get_consideration_count(), fact->get_horizon_count());
-            auto grounding = fact->new_horizon_count(horizon_count);
-            result_vector.push_back(grounding);
+        if (facts.count(predicate) > 0) {
+            auto fact_vector = facts.at(predicate);
+            result.try_emplace(predicate);
+            auto &result_vector = result.at(predicate);
+            for (auto const &fact : fact_vector) {
+                auto horizon_count = compute_horizon_count(
+                    fact->get_consideration_count(), fact->get_horizon_count());
+                auto grounding = fact->new_horizon_count(horizon_count);
+                result_vector.push_back(grounding);
+            }
         }
     }
     return result;
@@ -84,27 +81,23 @@ bool TupleWindow::evaluate(
     util::Timeline timeline,
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<Grounding>>> const &facts) {
-    auto window_timeline = alter_timeline(timeline);
     auto child_facts = adjust_annotations(facts);
-    return child->evaluate(window_timeline, child_facts);
+    return child->evaluate(timeline, child_facts);
 }
 
 void TupleWindow::expire_outdated_groundings(util::Timeline timeline) {
-    auto window_timeline = alter_timeline(timeline);
-    child->expire_outdated_groundings(window_timeline);
+    child->expire_outdated_groundings(timeline);
 }
 
 uint64_t
 TupleWindow::compute_horizon_count(uint64_t grounding_consideration_count,
                                    uint64_t grounding_horizon_count) const {
-    // TODO: current implementation does not take into account future_size 
-
-    // The grounding's lifetime should never excede the size of the window
-    uint64_t size_limit = grounding_consideration_count + past_size;
+    // TODO: current implementation does not take into account future_size
+    uint64_t new_hc = grounding_consideration_count + past_size;
     uint64_t result =
-        (size_limit > grounding_horizon_count && grounding_horizon_count > 0)
-            ? grounding_horizon_count
-            : size_limit;
+        (new_hc < grounding_horizon_count)
+            ? new_hc
+            : grounding_horizon_count;
     return result;
 }
 
@@ -132,7 +125,7 @@ TupleWindow::TupleWindow(uint64_t size, Formula *child) {
 }
 
 TupleWindow::TupleWindow(uint64_t past_size, uint64_t future_size,
-                        Formula *child) {
+                         Formula *child) {
     this->past_size = past_size;
     this->future_size = future_size;
     this->child = &child->move();

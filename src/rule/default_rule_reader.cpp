@@ -410,8 +410,16 @@ laser::formula::Formula *DefaultRuleReader::parse_time_window() {
 }
 
 laser::formula::Formula *DefaultRuleReader::parse_tuple_window() {
-    // TODO
-    return new laser::formula::Atom("TODO");
+    skip_expected_char('#');
+    skip_spaces();
+    skip_expected_char(',');
+    skip_spaces();
+    std::string argument = parse_natural_number();
+    skip_spaces();
+    skip_expected_char(']');
+    auto child = parse_formula();
+    uint64_t window_size = std::stoull(argument);  
+    return new laser::formula::TupleWindow(window_size, child);
 }
 
 std::vector<laser::rule::Rule> DefaultRuleReader::get_rules() {

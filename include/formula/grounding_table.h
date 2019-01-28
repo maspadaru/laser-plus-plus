@@ -61,7 +61,7 @@ class GroundingTable {
      * or tupple counter
      */
     void expire_outdated_groundings(uint64_t expiration_time,
-                                    uint64_t expiration_tuple_counter);
+                                    uint64_t expiration_tuple_count);
 };
 
 } // namespace formula

@@ -14,6 +14,7 @@
 #include "formula/extended/diamond.h"
 #include "formula/extended/box.h"
 #include "formula/extended/time_window.h"
+#include "formula/extended/tuple_window.h"
 #include "formula/extended/conjunction.h"
 #include "formula/extended/exact_time.h"
 #include "util/format_exception.h"
