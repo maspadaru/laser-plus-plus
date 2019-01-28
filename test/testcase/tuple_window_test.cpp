@@ -15,7 +15,7 @@
  
 
 TEST(TupleWindowTest, SimpleDiamond) {
-    std::string stream_string = "1 14 "
+    std::string stream_string = "0 14 "
                                 "1 : f(x1)\n"
                                 "2 : a(x2)\n"
                                 "3 : f(x3)\n"
@@ -51,7 +51,7 @@ TEST(TupleWindowTest, SimpleDiamond) {
 
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
-    int current_time = 1;
+    int current_time = 0;
     program.set_start_time(current_time);
 
     while (!program.is_done()) {
@@ -82,12 +82,13 @@ TEST(TupleWindowTest, SimpleDiamond) {
 }
 
 TEST(TupleWindowTest, SimpleBox) {
-    std::string stream_string = "1 14 "
+    std::string stream_string = "0 14 "
                                 // 3 timepoints where f(x) occurs within the 
                                 // tuple window
-                                "1 : f(x)\n"
-                                "2 : f(x), a(x)\n"
-                                "3 : f(x)\n"
+                                "0 : f(x)\n"
+                                "1 : f(x), a(x)\n"
+                                "2 : f(x)\n"
+                                "3 : \n"
                                 // 3 timepoints where f(y) occurs, but after
                                 // timepoint 5, f(y) slides out of the window
                                 "4 : f(y)\n"
@@ -111,10 +112,10 @@ TEST(TupleWindowTest, SimpleBox) {
     std::string rule_string = "u(X) := [#, 3][B]f(X)\n";
 
     std::vector<std::string> expected(15);
-    expected[0] = "0 -> ";
+    expected[0] = "0 -> u(x)";
     expected[1] = "1 -> u(x)";
     expected[2] = "2 -> u(x)";
-    expected[3] = "3 -> u(x)";
+    expected[3] = "3 -> ";
     expected[4] = "4 -> ";
     expected[5] = "5 -> ";
     expected[6] = "6 -> ";
@@ -129,7 +130,7 @@ TEST(TupleWindowTest, SimpleBox) {
 
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
-    int current_time = 1;
+    int current_time = 0;
     program.set_start_time(current_time);
 
     while (!program.is_done()) {
@@ -160,7 +161,7 @@ TEST(TupleWindowTest, SimpleBox) {
 }
 
 TEST(TupleWindowTest, MultipleRules) {
-    std::string stream_string = "1 14 "
+    std::string stream_string = "0 14 "
                                 "1 : \n"
                                 "2 : c(x2, y2)\n"
                                 "2 : d(x2, y2)\n"
@@ -205,7 +206,7 @@ TEST(TupleWindowTest, MultipleRules) {
 
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
-    int current_time = 1;
+    int current_time = 0;
     program.set_start_time(current_time);
 
     while (!program.is_done()) {
