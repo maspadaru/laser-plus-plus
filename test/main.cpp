@@ -530,22 +530,43 @@ void test_tuple_window() {
     std::cout << " =================================== " << std::endl;
 
     std::string stream_string = "1 14 "
-                                "1 : f(x1)\n"
-                                "2 : a(x2)\n"
-                                "3 : f(x3)\n"
-                                "5 : f(x5), f(y5)\n"
-                                "6 : \n"
-                                "7 : f(z), f(z), f(z)\n"
-                                "8 : f(z)\n"
+                                "1 : \n"
+                                // r(y2) will be derived only at timepoint 2, 
+                                // as c(x2, y2) will expire based on horizon time
+                                "2 : c(x2, y2)\n"
+                                "2 : d(x2, y2)\n"
+                                "4 : \n"
+                                //facts at timepoint 5 don't satisfy any rule
+                                "5 : \n"
+                                "5 : e(x5, y5), e(a5, b5), e(x5, y5)\n"
+                                "5 : e(x5, y5)\n"
+                                // q(x6, y6, z6) will be derived and will expire
+                                // by sliding out of the tuple window
+                                // after 3 other facts enter the stream
+                                // (at timepoint 10)
+                                "6 : a(x6, y6, z6)\n"
+                                "7 : \n"
+                                "8 : a(x8, y8, z8), b(y8, z8)\n"
                                 "9 : \n"
-                                "10 : \n"
-                                "11 : \n"
-                                "12 : \n"
+                                "10 : a(x10, y10, z10)\n"
+                                // u(X, X) will only apear at timepoint 11, 
+                                // as it will slide out of the tuple window
+                                // as the next fact enters the stream
+                                "11 : f(a11)\n"
+                                "11 : f(-9.099)\n"
+                                "11 : f(Z)\n"
+                                // s(e12) will only apear at timepoint 12, as
+                                // it is behind a tuple window of size zero,
+                                // and thus it imediatly slides out of the window
+                                "12 : e(x12, x12)\n"
                                 "13 : \n"
                                 "14 : \n";
 
-    std::string rule_string = 
-                              "u(X) := [#, 1][D]f(X)\n";
+    std::string rule_string = "q(X, Y, Z) := [#, 3] [D] a(X, Y, Z)\n"
+                              "r(Y) := [#, 100] c(X, Y)\n"
+                              "s(X) := [#, 0] [D] e(X, X)\n"
+                              "u(X, X) := [#, 1][D]f(X)\n";
+
 
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
