@@ -18,7 +18,7 @@ class Timeline {
     uint64_t min_time = 0;
     uint64_t max_time = ULLONG_MAX;
     uint64_t min_tuple_count = 0;
-    uint64_t max_tuple_count = ULLONG_MAX;
+    uint64_t max_tuple_count = 0;
 
   public:
     static const uint64_t INFINITE_TIME;

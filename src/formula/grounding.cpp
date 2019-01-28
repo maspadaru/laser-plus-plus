@@ -72,6 +72,14 @@ Grounding::new_horizon_time(uint64_t horizon_time) const {
     return std::make_shared<Grounding>(result);
 }
 
+std::shared_ptr<Grounding>
+Grounding::new_horizon_count(uint64_t horizon_count) const {
+    auto result = Grounding(consideration_time, horizon_time,
+                            consideration_count, horizon_count, is_fact_m,
+                            is_background_fact_m, constant_vector);
+    return std::make_shared<Grounding>(result);
+}
+
 std::shared_ptr<Grounding> Grounding::new_constant_vector(
     std::vector<std::string> const &new_vector) const {
     Grounding result =

@@ -17,7 +17,8 @@ laser::program::IOHandler::get_stream_data(laser::util::Timeline &timeline) {
                        std::vector<std::shared_ptr<formula::Grounding>>>
         result;
     uint64_t time = timeline.get_time();
-    uint64_t max_tuple_counter = timeline.get_max_tuple_count();
+    // max_tuple_counter will be set by a window formula if necesarry
+    uint64_t max_tuple_counter = 0;
     // clock_t begin = clock();
     auto data_vector = ioManager->read_stream_data(time);
     // clock_t end_read = clock();

@@ -92,7 +92,7 @@ bool Diamond::evaluate(
 void Diamond::expire_outdated_groundings(util::Timeline timeline) {
     child->expire_outdated_groundings(timeline);
     grounding_table.expire_outdated_groundings(timeline.get_min_time(),
-                                               timeline.get_tuple_count());
+                                               timeline.get_min_tuple_count());
 }
 
 

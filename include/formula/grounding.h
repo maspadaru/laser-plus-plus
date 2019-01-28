@@ -107,6 +107,11 @@ class Grounding {
     std::shared_ptr<Grounding> new_horizon_time(uint64_t horizon_time) const;
 
     /**
+     * Creates a new Grounding containing the new horizon tuple count 
+     */
+    std::shared_ptr<Grounding> new_horizon_count(uint64_t horizon_count) const;
+
+    /**
      * Creates a new Grounding containing that contains all constants, except
      * the one at the specified index
      */
