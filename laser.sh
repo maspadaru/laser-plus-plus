@@ -26,13 +26,13 @@ run_profile () {
     rm -f prof_flat.txt
     rm -f prof_graph.txt
     rm -f gmon.out
-    cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4
+    cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 $5 $6
     gprof -a -b -p cmake-build-debug/$BENCHAPP_EXECUTABLE > prof_flat.txt
     gprof -a -b -q cmake-build-debug/$BENCHAPP_EXECUTABLE > prof_graph.txt
 }
 
 run_benchapp () {
-    cmake-build-release/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 
+    cmake-build-release/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 $5 $6
 }
 
 run_project () {
@@ -48,7 +48,7 @@ debug_project () {
 }
 
 debug_benchapp () {
-    gdb --tui --args cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 
+    gdb --tui --args cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 $5 $6 
 }
 
 print_help () {
@@ -63,7 +63,7 @@ print_help () {
     echo "t: run all tests"
     echo " "
     echo " Options [bench p] require additional arguments:"
-    echo " test_name end_time_of_stream number_of_facts_per_timepoint window_size"
+    echo " test_name end_time_of_stream number_of_facts_per_timepoint window_size stream_file_path output_file_path"
 
 }
 
@@ -72,9 +72,9 @@ if [ $# -eq 0 ]; then
 elif [ $1 = "b" ]; then
     build
 elif [ $1 = "bench" ]; then
-    run_benchapp "$2" "$3" "$4" "$5"
+    run_benchapp "$2" "$3" "$4" "$5" "$6" "$7"
 elif [ $1 = "p" ]; then
-    run_profile "$2" "$3" "$4" "$5"
+    run_profile "$2" "$3" "$4" "$5" "$6" "$7"
 elif [ $1 = "c" ]; then
     clean_up
 elif [ $1 = "r" ]; then
@@ -82,7 +82,7 @@ elif [ $1 = "r" ]; then
 elif [ $1 = "d" ]; then
     debug_project
 elif [ $1 = "dbench" ]; then
-    debug_benchapp "$2" "$3" "$4" "$5"
+    debug_benchapp "$2" "$3" "$4" "$5" "$6" "$7"
 elif [ $1 = "t" ]; then
     test_project
 elif [ $1 = "h" ]; then
