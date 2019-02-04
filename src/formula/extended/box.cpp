@@ -68,7 +68,9 @@ void Box::expire_outdated_groundings(util::Timeline timeline) {
          /*nothing*/) {
         auto const &key = iterator->first;
         auto grounding = iterator->second;
-        if (grounding->get_horizon_time() < timeline.get_min_time()) {
+        bool is_expired = grounding->get_horizon_time() < timeline.get_min_time() 
+            || grounding->get_horizon_count() <= timeline.get_tuple_count();
+        if (is_expired) {
             iterator = box_map.erase(iterator);
         } else {
             iterator++;
@@ -99,7 +101,7 @@ bool Box::evaluate(
     bool result = child->evaluate(timeline, facts);
     if (result) {
         auto child_facts = child->get_groundings(timeline);
-        update_box_map(child_facts);
+        update_box_map(child_facts, timeline);
         auto box_groundings = compute_box_conclusions(timeline);
         grounding_table.add_grounding_vector(box_groundings);
     }
@@ -130,7 +132,8 @@ Box::compute_box_conclusions(util::Timeline timeline) {
     return result;
 }
 
-void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts) {
+void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts, 
+        util::Timeline timeline) {
     bool keep_going = true;
     while (keep_going) {
         // We need to repete as we may have in box p(a)[1, 1], and get
@@ -141,7 +144,7 @@ void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts) {
             box_map.try_emplace(key, child_grounding);
             std::shared_ptr<Grounding> &box_grounding = box_map[key];
             auto adjusted_result =
-                adjust_annotation(box_grounding, child_grounding);
+                adjust_annotation(box_grounding, child_grounding, timeline);
             keep_going |= adjusted_result.first;
             if (adjusted_result.first) {
                 auto map_tuple = box_map.find(key);
@@ -153,7 +156,8 @@ void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts) {
 
 std::pair<bool, std::shared_ptr<Grounding>> Box::adjust_annotation(
     std::shared_ptr<Grounding> const &box_grounding,
-    std::shared_ptr<Grounding> const &child_grounding) const {
+    std::shared_ptr<Grounding> const &child_grounding,
+    util::Timeline timeline) const {
     bool is_modified = false;
     auto ct1 = box_grounding->get_consideration_time();
     auto ht1 = box_grounding->get_horizon_time();
@@ -180,11 +184,12 @@ std::pair<bool, std::shared_ptr<Grounding>> Box::adjust_annotation(
     }
 
     // Adjust Tuple Counter annotations:
-    // TODO
+    auto hc = timeline.max(hc1, hc2);
+    if (hc != hc1) { is_modified = true; }
 
     if (is_modified) {
         auto new_box_grounding =
-            box_grounding->new_annotations(ct1, ht1, cc1, hc1);
+            box_grounding->new_annotations(ct1, ht1, cc1, hc);
         return {is_modified, new_box_grounding};
     }
     return {is_modified, box_grounding};

@@ -29,11 +29,11 @@ laser::program::IOHandler::get_stream_data(laser::util::Timeline &timeline) {
         result.try_emplace(predicate);
         std::vector<std::shared_ptr<formula::Grounding>> &map_vector =
             result.at(predicate);
+        current_tuple_counter++;
         auto grounding = std::make_shared<laser::formula::Grounding>(
             time, time, current_tuple_counter, max_tuple_counter, true, false, 
             data.get_arguments());
         map_vector.push_back(grounding);
-        current_tuple_counter++;
     }
     // double end = clock();
     // elapsed_secs = double(end - end_read) / CLOCKS_PER_SEC;

@@ -32,11 +32,13 @@ class Box : public Formula {
 
     std::pair<bool, std::shared_ptr<Grounding>>
     adjust_annotation(std::shared_ptr<Grounding> const &box_grounding,
-                      std::shared_ptr<Grounding> const &child_grounding) const;
+                      std::shared_ptr<Grounding> const &child_grounding,
+                      util::Timeline timeline) const;
 
     std::vector<std::shared_ptr<Grounding>> compute_box_conclusions(util::Timeline timeline);
 
-    void update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts);
+    void update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts,
+            util::Timeline timeline);
 
   public:
     // constructors / destructors

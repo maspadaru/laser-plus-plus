@@ -71,7 +71,7 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
             iterator.second;
         for (auto &grounding : set) {
             auto hc = grounding->get_horizon_count();
-            if (hc < tuple_count) {
+            if (hc <= tuple_count) {
                 set.erase(grounding);
             } else {
                 // Sets in map are ordered with lowest horizon_counter

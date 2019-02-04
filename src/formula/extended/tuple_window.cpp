@@ -77,16 +77,45 @@ TupleWindow::adjust_annotations(
     return result;
 }
 
+util::Timeline TupleWindow::alter_timeline(util::Timeline timeline) const {
+    auto current_tuple_count = timeline.get_tuple_count();
+    if (current_tuple_count < past_size) {
+        // there are not enought facts in the timeline, so there is no need 
+        // for croping
+        return timeline;
+    }
+
+    auto low_tuple_count =
+        timeline.substract(current_tuple_count, past_size);
+    auto current_time = timeline.get_time();
+    auto test_time = current_time;
+    bool low_time_found = false;
+    while (!low_time_found) {
+        auto test_tuple_count = timeline.get_tuple_count_at(test_time);
+        if (test_tuple_count <= low_tuple_count) {
+            low_time_found = true;
+            test_time++;
+        } else {
+            test_time--;
+        }
+    }
+    auto low_time = timeline.max(timeline.get_min_time(), test_time);
+    timeline.set_min_time(low_time);
+    return timeline;
+}
+
 bool TupleWindow::evaluate(
     util::Timeline timeline,
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<Grounding>>> const &facts) {
     auto child_facts = adjust_annotations(facts);
-    return child->evaluate(timeline, child_facts);
+    auto window_timeline = alter_timeline(timeline);
+    return child->evaluate(window_timeline, child_facts);
 }
 
 void TupleWindow::expire_outdated_groundings(util::Timeline timeline) {
-    child->expire_outdated_groundings(timeline);
+    auto window_timeline = alter_timeline(timeline);
+    child->expire_outdated_groundings(window_timeline);
 }
 
 uint64_t
@@ -95,9 +124,7 @@ TupleWindow::compute_horizon_count(uint64_t grounding_consideration_count,
     // TODO: current implementation does not take into account future_size
     uint64_t new_hc = grounding_consideration_count + past_size;
     uint64_t result =
-        (new_hc < grounding_horizon_count)
-            ? new_hc
-            : grounding_horizon_count;
+        (new_hc < grounding_horizon_count) ? new_hc : grounding_horizon_count;
     return result;
 }
 

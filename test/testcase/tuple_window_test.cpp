@@ -83,12 +83,12 @@ TEST(TupleWindowTest, SimpleDiamond) {
 
 TEST(TupleWindowTest, SimpleBox) {
     std::string stream_string = "0 14 "
+                                "0 : \n"
                                 // 3 timepoints where f(x) occurs within the 
                                 // tuple window
-                                "0 : f(x)\n"
-                                "1 : f(x), a(x)\n"
+                                "1 : f(x)\n"
                                 "2 : f(x)\n"
-                                "3 : \n"
+                                "3 : f(x)\n"
                                 // 3 timepoints where f(y) occurs, but after
                                 // timepoint 5, f(y) slides out of the window
                                 "4 : f(y)\n"
@@ -112,15 +112,15 @@ TEST(TupleWindowTest, SimpleBox) {
     std::string rule_string = "u(X) := [#, 3][B]f(X)\n";
 
     std::vector<std::string> expected(15);
-    expected[0] = "0 -> u(x)";
-    expected[1] = "1 -> u(x)";
-    expected[2] = "2 -> u(x)";
-    expected[3] = "3 -> ";
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> ";
+    expected[2] = "2 -> ";
+    expected[3] = "3 -> u(x)";
     expected[4] = "4 -> ";
-    expected[5] = "5 -> ";
+    expected[5] = "5 -> u(x) u(y) u(a)";
     expected[6] = "6 -> ";
-    expected[7] = "7 -> ";
-    expected[8] = "8 -> ";
+    expected[7] = "7 -> u(z)";
+    expected[8] = "8 -> u(z)";
     expected[9] = "9 -> ";
     expected[10] = "10 -> ";
     expected[11] = "11 -> ";

@@ -24,9 +24,8 @@ uint64_t Timeline::get_tuple_count() const {
 
 void Timeline::set_tuple_count(uint64_t tuple_count) {
     this->tuple_count = tuple_count;
-}
-void Timeline::increment_tuple_count() {
-    tuple_count++;
+    tuple_count_history.try_emplace(time);
+    tuple_count_history[time] = tuple_count;
 }
 
 uint64_t Timeline::get_min_time() const {
@@ -43,6 +42,13 @@ uint64_t Timeline::get_max_time() const {
 }
 void Timeline::set_max_time(uint64_t max_time) {
     this->max_time = max_time;
+}
+
+uint64_t Timeline::get_tuple_count_at(uint64_t timepoint) const {
+    auto result = (tuple_count_history.count(timepoint) > 0) 
+        ? tuple_count_history.at(timepoint)
+        : 0;
+    return result;
 }
 
 //uint64_t Timeline::get_min_tuple_count() const {
