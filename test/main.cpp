@@ -10,46 +10,13 @@
 #include "simple_reader.h"
 #include "simple_writer.h"
 
-/* TODO
- *
- * FEATURES:
- * - Implement use of Tuple Counter
- * - Program should not set_start_time(), it should get current time from the
- *      stream
- *
- *
- *
- *
- * OPTIMIZATIONS:
- *
- *
- *
- *
- * REFACTORING:
- * - Refactor Program::evaluate() & Program::eval() [P46-L10]
- * - Structure project as a library.
- * - Move debug_print() functions to new LOG module [P52-L10]
- *
- */
-
-void test_simple() {
+void run(std::string const &name, std::string const &stream_string, std::string const &rule_string) {
     std::cout << std::endl;
-    const std::string TEST_NAME = "Simple";
-    std::cout << " Test: " << TEST_NAME << std::endl;
+    std::cout << " Test: " << name << std::endl;
     std::cout << " =================================== " << std::endl;
-
-    std::string stream_string = "1 4 "
-                                "1 : a(x1, y1, z1)\n"
-                                "2 : a(x2, y2, z2)\n"
-                                "3 : a(x3, y3, z3)\n"
-                                "4 : \n";
-
-    std::string rule_string = "p(X, Y, Z) := a(X, Y, Z)\n";
-
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
+    program.set_start_time(simple_io_manager.read_stream_start_time());
     while (!program.is_done()) {
         program.evaluate();
     }
@@ -57,12 +24,19 @@ void test_simple() {
     std::cout << std::endl << std::endl;
 }
 
-void test_atoms() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Atoms";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
+void test_simple() {
+    const std::string name = "Simple";
+    std::string stream_string = "1 4 "
+                                "1 : a(x1, y1, z1)\n"
+                                "2 : a(x2, y2, z2)\n"
+                                "3 : a(x3, y3, z3)\n"
+                                "4 : \n";
+    std::string rule_string = "p(X, Y, Z) := a(X, Y, Z)\n";
+    run(name, stream_string, rule_string);
+}
 
+void test_atoms() {
+    const std::string name = "Atoms";
     std::string stream_string = "1 14 "
                                 "1 : f(x1)\n"
                                 "2 : c(x2, y2)\n"
@@ -80,31 +54,17 @@ void test_atoms() {
                                 "12 : e(x12, x12)\n"
                                 "13 : \n"
                                 "14 : \n";
-
     std::string rule_string = "q(X, Y, Z) := a(X, Y, Z)\n"
                               "r(Y) := c(X, Y)\n"
                               "s(X) := e(X, X)\n"
                               "t(Y, X) := d(X, Y)\n"
                               "u(X, X) := f(X)\n"
                               "v(X, Y, X, Y) := e(X, Y)\n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_diamond() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Diamond";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Diamond";
     std::string stream_string = "1 14 "
                                 "1 : \n"
                                 "2 : c(x2, y2)\n"
@@ -124,27 +84,13 @@ void test_diamond() {
                                 "12 : e(x12, x12)\n"
                                 "13 : \n"
                                 "14 : \n";
-
     std::string rule_string = "q(X, Y, Z) := [D] a(X, Y, Z)\n"
                               "u(X, X) := [D]f(X)\n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_time_window() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Time Window";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Time Window";
     std::string stream_string = "1 14 "
                                 "1 : \n"
                                 "2 : c(x2, y2)\n"
@@ -164,29 +110,15 @@ void test_time_window() {
                                 "12 : e(x12, x12)\n"
                                 "13 : \n"
                                 "14 : \n";
-
     std::string rule_string = "q(X, Y, Z) := [$, 3] [D] a(X, Y, Z)\n"
                               "r(Y) := [$, 100] c(X, Y)\n"
                               "s(X) := [$, 0] [D] e(X, X)\n"
                               "u(X, X) := [$, 1][D]f(X)\n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_box() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Box";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Box";
     std::string stream_string = "1 14 "
                                 "1 : f(1), f(a), c(a, b)\n"
                                 "2 : f(a), f(1), c(a, b), f(x2)\n"
@@ -202,29 +134,15 @@ void test_box() {
                                 "12 : f(1), f(a), c(6,7)\n"
                                 "13 : f(1), f(a)\n"
                                 "14 : f(1), f(a)\n";
-
     std::string rule_string = "" 
                             "q(X) := [B] f(X)\n"
                             "r(Y,X) := [$, 3][B]c(X, Y)\n"
                             ;
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_conjunction_same_variables() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Conjunction same variables";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Simple";
     std::string stream_string = "1 14 "
                                 "1 : a(x)\n"
                                 "2 : a(x), b(x)\n"
@@ -240,26 +158,12 @@ void test_conjunction_same_variables() {
                                 "12 : a(x)\n"
                                 "13 : a(x)\n"
                                 "14 : a(x)\n";
-
     std::string rule_string = "q(X) := a(X) &&  b(X)\n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_conjunction_two_variables() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Conjunction two variables";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Conjunction two variables";
     std::string stream_string = "1 14 "
                                 "1 : a(x)\n"
                                 "2 : a(x), b(y)\n"
@@ -275,26 +179,12 @@ void test_conjunction_two_variables() {
                                 "12 : a(x)\n"
                                 "13 : a(x)\n"
                                 "14 : a(x)\n";
-
     std::string rule_string = "q(X,Y) := a(X) &&  b(Y)\n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_conjunction_diamond() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Conjunction Diamond";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Conjunction Diamond";
     std::string stream_string = "1 14 "
                                 "1 : a(x)\n"
                                 "2 : a(x), b(y)\n"
@@ -310,26 +200,12 @@ void test_conjunction_diamond() {
                                 "12 : a(x)\n"
                                 "13 : a(x)\n"
                                 "14 : a(x)\n";
-
     std::string rule_string = "q(X,Y) := a(X) && [$, 2] [D] b(Y)\n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_conjunction_box() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Conjunction Box";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Conjunction Box";
     std::string stream_string = "1 14 "
                                 "1 : a(x)\n"
                                 "2 : a(x), b(y)\n"
@@ -345,26 +221,12 @@ void test_conjunction_box() {
                                 "12 : a(x), b(y)\n"
                                 "13 : a(x), b(y)\n"
                                 "14 : a(x)\n";
-
     std::string rule_string = "q(X,Y) := a(X) && [$, 2] [B] b(Y)\n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_conjunction_corss_variables() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Conjunction cross variables";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Conjunction cross variables";
     std::string stream_string = "1 14 "
                                 "1 : a(x,y)\n"
                                 "2 : a(x,x), b(y,x)\n"
@@ -376,130 +238,60 @@ void test_conjunction_corss_variables() {
                                 "8 : a(x,x), b(y,x)\n"
                                 "9 : b(x,y)\n"
                                 "10 : \n";
-
     std::string rule_string = "q(X,Y) := a(X,X) && b(Y,X)\n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_recursive() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Recursive";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Recursive";
     std::string stream_string = "1 14 "
                                 "1 : q(1), p(1)\n"
                                 "2 : p(1)\n"
                                 "3 : p(1), q(1)\n"
                                 "4 : \n";
-
     std::string rule_string = "a(X) := b(X) && c(X)\n"
                               "b(X) := [$, 3] [D] d(X)\n"
                               "c(X) := [$, 3] [B] e(X)\n"
                               "e(X) := b(X) && p(X)\n"
                               "d(X) := q(X) && p(X)\n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_exact_time_body() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Exact Time Body";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Time Reference Body";
     std::string stream_string = "1 14 "
                                 "1 : b(1), b(2)\n"
                                 "2 : b(3)\n"
                                 "3 : b(4), b(5)\n"
                                 "4 : \n";
-
     std::string rule_string = "a(T, X) := [@, T] b(X) \n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_exact_time_handb() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Exact Time Head and Body";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Time Reference head and body";
     std::string stream_string = "1 14 "
                                 "1 : b(1), b(2)\n"
                                 "2 : b(3)\n"
                                 "3 : b(4), b(5)\n"
                                 "4 : \n";
-
     std::string rule_string = "[@, T]a(X) := [@, T] b(X) \n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_exact_time_head() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Exact Time Head";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Time Reference Head";
     std::string stream_string = "1 10 "
                                 "1 : b(1,x1), b(2, x1)\n"
                                 "2 : b(7, x2)\n"
                                 "3 : b(6, x3), b(9, x3)\n"
                                 "4 : \n";
-
     std::string rule_string = "[@,T]a(X) := b(T, X) \n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_exact_time_recursive() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Exact Time Recursive";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Time Reference Recursive";
     std::string stream_string =
         "1 10 "
         "1 : a(1,x1), a(2, x1)\n"
@@ -508,27 +300,13 @@ void test_exact_time_recursive() {
         "4 : a(5, x4), c(y)\n"
         "6 : c(y6)\n"
         "7 : \n";
-
     std::string rule_string = "p(X, Y, T) := b(X) && [@,T]c(Y)\n"
                               "[@,T]b(X) := a(T, X)\n";
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(1);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 void test_tuple_window() {
-    std::cout << std::endl;
-    const std::string TEST_NAME = "Tuple Window";
-    std::cout << " Test: " << TEST_NAME << std::endl;
-    std::cout << " =================================== " << std::endl;
-
+    const std::string name = "Tuple Window";
     std::string stream_string = "0 14 "
                                 "0 : \n"
                                 // 3 timepoints where f(x) occurs within the 
@@ -555,36 +333,25 @@ void test_tuple_window() {
                                 "12 : \n"
                                 "13 : f(a)\n"
                                 "14 : \n";
-
     std::string rule_string = "u(X) := [#, 3][B]f(X)\n";
-
-
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(0);
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-    std::cout << " =================================== " << std::endl;
-    std::cout << std::endl << std::endl;
+    run(name, stream_string, rule_string);
 }
 
 int main() {
-    //test_simple();
-    //test_atoms();
-    //test_diamond();
-    //test_time_window();
-    //test_box();
-    //test_conjunction_same_variables();
-    //test_conjunction_two_variables();
-    //test_conjunction_diamond();
-    //test_conjunction_box();
-    //test_conjunction_corss_variables();
-    //test_recursive();
-    //test_exact_time_body();
-    //test_exact_time_handb();
-    //test_exact_time_head();
-    //test_exact_time_recursive();
+    test_simple();
+    test_atoms();
+    test_diamond();
+    test_time_window();
+    test_box();
+    test_conjunction_same_variables();
+    test_conjunction_two_variables();
+    test_conjunction_diamond();
+    test_conjunction_box();
+    test_conjunction_corss_variables();
+    test_recursive();
+    test_exact_time_body();
+    test_exact_time_handb();
+    test_exact_time_head();
+    test_exact_time_recursive();
     test_tuple_window();
 }
