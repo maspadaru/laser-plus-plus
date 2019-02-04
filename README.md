@@ -1,6 +1,6 @@
 # Laser++ 
 
-Laser++ is a C++ implementation of the [Laser stream reasoning engine](https://research.vu.nl/en/publications/expressive-stream-reasoning-with-laser) 
+**Laser++** is a C++ implementation of the [Laser stream reasoning engine](https://research.vu.nl/en/publications/expressive-stream-reasoning-with-laser) 
 based on the [LARS logic framework](http://www.kr.tuwien.ac.at/research/projects/dhsr/pub/2015/bdef2015-aaai.pdf)   
 
 
@@ -52,8 +52,9 @@ Benchmark by running:
 ```
 
 The parameter test_name can be selected from this list:
-[atom, diamond, box, conjunction, tref, multiatom, multiall, atom_window]. 
-For details on each test, see benchapp/main.cpp
+[*atom*, *diamond*, *box*, *conjunction*, *tref*, *multiatom*, *multiall*, 
+*atom_window*]. 
+For details on each test, see *benchapp/main.cpp*
 
 The parameter *output_file_path* is optional. In case it is missing, no output
 will be written. 
