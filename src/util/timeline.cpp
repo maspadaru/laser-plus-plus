@@ -4,22 +4,12 @@ namespace laser {
 namespace util {
 
 const uint64_t Timeline::INFINITE_TIME = ULLONG_MAX;   
+const size_t Timeline::MAX_WINDOW = 1000;   
 
 void Timeline::set_start_time(uint64_t initial_time) {
     // make sure this is executed only when initializing the Timeline
     if (time == 0) {
-        // TODO 999999999 seems to be the maximum number I can reserver
-        // for tuple_count_history. Meaning that I can not track more
-        // timepoints. I have to implement timeline in such a way that 
-        // after this number, the counter resets to zero and uses modulo
-        // operations to figure out which number is larger. 
-        tuple_count_history.reserve(999999999);
-        // make sure there is no gap in the beggining of the time vector
-        if (initial_time > 0) {
-            for (uint64_t i = 0; i < initial_time; i++) {
-                tuple_count_history.push_back(0);
-            }
-        }
+        tuple_count_history.resize(MAX_WINDOW, 0);
         time = initial_time;    
     }
 }
@@ -43,7 +33,8 @@ uint64_t Timeline::get_tuple_count() const {
 
 void Timeline::set_tuple_count(uint64_t tuple_count) {
     this->tuple_count = tuple_count;
-    tuple_count_history.push_back(tuple_count);
+    size_t position = time % MAX_WINDOW; 
+    tuple_count_history[position] = tuple_count;
 }
 
 uint64_t Timeline::get_min_time() const {
@@ -63,7 +54,8 @@ void Timeline::set_max_time(uint64_t max_time) {
 }
 
 uint64_t Timeline::get_tuple_count_at(uint64_t timepoint) const {
-    return tuple_count_history[timepoint];
+    size_t position = timepoint % MAX_WINDOW; 
+    return tuple_count_history[position];
 }
 
 //uint64_t Timeline::get_min_tuple_count() const {
