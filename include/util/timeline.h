@@ -35,6 +35,7 @@ class Timeline {
 
     uint64_t get_time() const;
     void set_time(uint64_t time);
+    void set_start_time(uint64_t initial_time);
     void increment_time();
 
     uint64_t get_tuple_count() const;

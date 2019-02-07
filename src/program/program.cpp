@@ -44,7 +44,7 @@ void Program::debug_print(std::string const &message, T const &value) const {
 }
 
 void Program::set_start_time(uint64_t start_time) {
-    timeline.set_time(start_time);
+    timeline.set_start_time(start_time);
 }
 
 bool Program::is_done() {

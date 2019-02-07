@@ -5,17 +5,30 @@ namespace util {
 
 const uint64_t Timeline::INFINITE_TIME = ULLONG_MAX;   
 
+void Timeline::set_start_time(uint64_t initial_time) {
+    // make sure this is executed only when initializing the Timeline
+    if (time == 0) {
+        // TODO 999999999 seems to be the maximum number I can reserver
+        // for tuple_count_history. Meaning that I can not track more
+        // timepoints. I have to implement timeline in such a way that 
+        // after this number, the counter resets to zero and uses modulo
+        // operations to figure out which number is larger. 
+        tuple_count_history.reserve(999999999);
+        // make sure there is no gap in the beggining of the time vector
+        if (initial_time > 0) {
+            for (uint64_t i = 0; i < initial_time; i++) {
+                tuple_count_history.push_back(0);
+            }
+        }
+        time = initial_time;    
+    }
+}
+
 uint64_t Timeline::get_time() const {
     return time;
 }
 
 void Timeline::set_time(uint64_t time) {
-    // make sure there are no gaps in the time vector
-    if (time > tuple_count_history.size()) {
-        for (int i = tuple_count_history.size(); i < time; i++) {
-            tuple_count_history.push_back(0);
-        }
-    }
     this->time = time;
 }
 
