@@ -10,6 +10,12 @@ uint64_t Timeline::get_time() const {
 }
 
 void Timeline::set_time(uint64_t time) {
+    // make sure there are no gaps in the time vector
+    if (time > tuple_count_history.size()) {
+        for (int i = tuple_count_history.size(); i < time; i++) {
+            tuple_count_history.push_back(0);
+        }
+    }
     this->time = time;
 }
 
@@ -24,8 +30,7 @@ uint64_t Timeline::get_tuple_count() const {
 
 void Timeline::set_tuple_count(uint64_t tuple_count) {
     this->tuple_count = tuple_count;
-    tuple_count_history.try_emplace(time);
-    tuple_count_history[time] = tuple_count;
+    tuple_count_history.push_back(tuple_count);
 }
 
 uint64_t Timeline::get_min_time() const {
@@ -45,10 +50,7 @@ void Timeline::set_max_time(uint64_t max_time) {
 }
 
 uint64_t Timeline::get_tuple_count_at(uint64_t timepoint) const {
-    auto result = (tuple_count_history.count(timepoint) > 0) 
-        ? tuple_count_history.at(timepoint)
-        : 0;
-    return result;
+    return tuple_count_history[timepoint];
 }
 
 //uint64_t Timeline::get_min_tuple_count() const {

@@ -7,7 +7,7 @@
 
 #include <climits>
 #include <cstdint>
-#include <unordered_map>
+#include <vector>
 
 namespace laser {
 namespace util {
@@ -21,11 +21,12 @@ class Timeline {
     //uint64_t min_tuple_count = 0; //TODO remove because it is unused
     //uint64_t max_tuple_count = 0; //TODO remove because it is unused
 
+    // Using a vector because inserting in a map was too slow
     /** records the cumulated tuple counter at each timepoint
      * key: timepoint
      * value: tuple counter
      */
-    std::unordered_map<uint64_t, uint64_t> tuple_count_history;
+    std::vector<uint64_t> tuple_count_history;
 
   public:
     static const uint64_t INFINITE_TIME;

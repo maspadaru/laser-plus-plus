@@ -35,10 +35,10 @@ void run(uint64_t end_time, int facts_per_timepoint,
 
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    double eval_secs = program.get_eval_secs();
     std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
+    double eval_secs = program.get_eval_secs();
     std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
-    std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
+    //std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
     // std::cout << "IO Reading time (sec): " << program.get_reader_secs() <<
     // std::endl; std::cout << "IO Handling time (sec): " <<
     // program.get_handler_secs() << std::endl;
