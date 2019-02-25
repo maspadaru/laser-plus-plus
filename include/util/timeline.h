@@ -10,6 +10,7 @@
 #include <climits>
 #include <cstdint>
 #include <vector>
+#include <memory>
 
 namespace laser {
 namespace util {
@@ -23,24 +24,18 @@ class Timeline {
     //uint64_t min_tuple_count = 0; //TODO remove because it is unused
     //uint64_t max_tuple_count = 0; //TODO remove because it is unused
 
-    bool is_clone = false;
-
     // Using a vector because inserting in a map was too slow
     /** records the cumulated tuple counter at each timepoint
      * key: timepoint
      * value: tuple counter
      */
-    std::vector<uint64_t> *tuple_count_history;
+    std::shared_ptr<std::vector<uint64_t>> tuple_count_history;
 
   public:
     static const uint64_t INFINITE_TIME;
     static const size_t MAX_WINDOW;
 
     Timeline();
-
-    ~Timeline();
-
-    Timeline clone() const;
 
     uint64_t get_time() const;
     void set_time(uint64_t time);

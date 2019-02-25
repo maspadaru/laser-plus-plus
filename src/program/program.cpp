@@ -16,9 +16,6 @@ bool Program::evaluate_rule_vector(
                        std::vector<std::shared_ptr<formula::Grounding>>> const
         &facts) {
     bool result = false;
-    // Evaluation is done for the previous timepoint
-    auto evaluation_timeline = timeline.clone();
-    evaluation_timeline.decrement_time();
     for (auto &rule : rule_vector) {
         rule.evaluate(timeline, facts);
         result |= rule.derive_conclusions(timeline);
@@ -69,7 +66,7 @@ void Program::expire_outdated_groundings() {
 bool Program::do_evaluation_loop(
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<formula::Grounding>>> const
-        &initial_facts) {
+                       &initial_facts) {
     bool has_new_conclusions_timepoint = false;
     bool has_new_conclusions_step = false;
     auto facts = initial_facts;
@@ -84,15 +81,16 @@ bool Program::do_evaluation_loop(
     return has_new_conclusions_timepoint;
 }
 
-void Program::timed_evaluation(
-    std::unordered_map<std::string,
+bool Program::timed_evaluation(
+                       std::unordered_map<std::string,
                        std::vector<std::shared_ptr<formula::Grounding>>> const
-        &facts) {
+                       &facts) {
     clock_t begin = clock();
     auto has_new_conclusions = do_evaluation_loop(facts);
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
     evaluation_secs += elapsed_secs;
+    return has_new_conclusions;
 }
 
 std::unordered_map<std::string,
@@ -117,42 +115,21 @@ Program::get_new_conclusions() {
     return new_conclusions;
 }
 
-std::unordered_map<std::string,
-                   std::vector<std::shared_ptr<formula::Grounding>>>
-Program::read_input() {
-    if (is_done()) {
-        has_input = false;
-    } else {
-        has_input = true;
-        auto facts = ioHandler.get_stream_data(timeline);
-    }
-}
-
 void Program::write_output() {
     std::vector<formula::Formula *> new_conclusions;
     for (auto const &rule : rule_vector) {
-        formula::Formula *head = &rule.get_head().clone();
+        formula::Formula *head = &rule.get_head();
         new_conclusions.push_back(head);
     }
-    // Writing is done for the next to last previous timepoint
-    auto write_timeline = timeline.clone();
-    write_timeline.decrement_time();
-    write_timeline.decrement_time();
     ioHandler.put_conclusions(timeline, new_conclusions);
 }
 
 void Program::evaluate() {
-    // create threads
-    auto facts = read_input();
-    if (has_input) {
-        timed_evaluation(facts);
-    }
-    if (has_output) {
-        // if writing is disabled (e.g.: for benchmarking) all tests will fail
-        write_output();
-    }
+    auto facts = ioHandler.get_stream_data(timeline);
+    bool has_derived_new_conclusions = timed_evaluation(facts);
+    // TODO writing is disabled for benchmarking, this means all tests fail
+    write_output();
     timeline.increment_time();
-    // join threads
 }
 
 void Program::accept_new_facts(

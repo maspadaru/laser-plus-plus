@@ -3,24 +3,7 @@
 namespace laser {
 namespace util {
 
-Timeline::Timeline() : tuple_count_history(new std::vector<uint64_t>) {}
-
-Timeline::~Timeline() {
-    if (!is_clone) {
-        delete tuple_count_history;
-    }
-}
-
-Timeline Timeline::clone() const {
-    Timeline result;
-    result.is_clone = true;
-    result.time = this->time;
-    result.tuple_count = this->tuple_count;
-    result.min_time = this->max_time;
-    result.min_time = this->max_time;
-    result.tuple_count_history = this->tuple_count_history;
-    return result;
-}
+Timeline::Timeline() : tuple_count_history(std::make_shared<std::vector<uint64_t>>()) {}
 
 const uint64_t Timeline::INFINITE_TIME = ULLONG_MAX;
 const size_t Timeline::MAX_WINDOW = 1000;
@@ -44,11 +27,9 @@ uint64_t Timeline::get_tuple_count() const { return tuple_count; }
 
 void Timeline::set_tuple_count(uint64_t tuple_count) {
     // Clones can't modify the tuple_count_history
-    if (!is_clone) {
         this->tuple_count = tuple_count;
         size_t position = time % MAX_WINDOW;
         (*tuple_count_history)[position] = tuple_count;
-    }
 }
 
 uint64_t Timeline::get_min_time() const { return min_time; }
