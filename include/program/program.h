@@ -29,6 +29,8 @@ class Program {
     laser::io::IOManager *ioManager;
     IOHandler ioHandler;
 
+    bool has_output = false;
+    bool has_input = false;
     double evaluation_secs = 0;
 
     laser::util::Timeline timeline;
@@ -50,10 +52,10 @@ class Program {
             std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
             &facts);
 
-    bool timed_evaluation(
-                       std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<formula::Grounding>>> const
-                       &facts);
+    void timed_evaluation(
+        std::unordered_map<
+            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
+            &facts);
     bool do_evaluation_loop(
         std::unordered_map<
             std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
@@ -68,6 +70,10 @@ class Program {
             &stream_facts);
 
     void write_output();
+
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<formula::Grounding>>>
+    read_input();
 
     template <typename T>
     void debug_print(std::string const &message, T const &value) const;
