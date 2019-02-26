@@ -47,15 +47,6 @@ void Program::set_start_time(uint64_t start_time) {
     timeline.set_start_time(start_time);
 }
 
-bool Program::is_done() {
-    if (!has_timeline) {
-        timeline.set_min_time(ioManager->read_stream_start_time());
-        timeline.set_max_time(ioManager->read_stream_end_time());
-        has_timeline = true;
-    }
-    bool keep_going = has_timeline && !timeline.is_past_max_time();
-    return !keep_going;
-}
 
 void Program::expire_outdated_groundings() {
     for (auto &rule : rule_vector) {
@@ -124,7 +115,7 @@ void Program::write_output() {
     ioHandler.put_conclusions(timeline, new_conclusions);
 }
 
-void Program::evaluate() {
+void Program::evaluate(timeline) {
     auto facts = ioHandler.get_stream_data(timeline);
     bool has_derived_new_conclusions = timed_evaluation(facts);
     // TODO writing is disabled for benchmarking, this means all tests fail

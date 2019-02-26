@@ -29,9 +29,15 @@ class Program {
     laser::io::IOManager *ioManager;
     IOHandler ioHandler;
 
+    Timeline timeline;
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<formula::Grounding>>>
+        facts;
+
+
+
     double evaluation_secs = 0;
 
-    laser::util::Timeline timeline;
     int number_of_new_conclusions = 0;
     bool has_timeline = false;
 
@@ -47,9 +53,9 @@ class Program {
             &facts);
 
     bool timed_evaluation(
-                       std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<formula::Grounding>>> const
-                       &facts);
+        std::unordered_map<
+            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
+            &facts);
     bool do_evaluation_loop(
         std::unordered_map<
             std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
@@ -96,14 +102,8 @@ class Program {
 
     // methods
 
-    /**
-     *
-     * @return True if new conclusions were derived from the input facts in
-     * the current program time point
-     */
-    void evaluate();
-
-    bool is_done();
+    std::vector<io::DataAtom>>
+        evaluate(Timeline timeline, std::vector<io::DataAtom>> facts);
 
     void set_start_time(uint64_t start_time);
 };

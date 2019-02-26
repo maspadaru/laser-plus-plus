@@ -9,18 +9,14 @@ namespace reasoner {
 
 class SequentialReasoner {
   private:
-    std::unordered_map<uint64_t, io::DataAtom> fact_map;
-    std::unordered_map<uint64_t, io::DataAtom> conclusion_map;
-    std::unordered_map<uint64_t, bool> fact_ready;
-    std::unordered_map<uint64_t, bool> conclusion_ready;
+    std::unordered_map<uint64_t, std::vector<io::DataAtom>> fact_map;
+    std::unordered_map<uint64_t, std::vector<io::DataAtom>> conclusion_map;
 
-    Program* program;
     laser::io::IOManager *ioManager;
-    IOHandler ioHandler;
 
-    void read();
-    void evaluate();
-    void write();
+    void read(Timeline timeline);
+    void evaluate(Timeline timeline);
+    void write(Timeline timeline);
 
   public:
 
