@@ -3,6 +3,10 @@
         "type": "laser-util-header",
         "alternate": "src/util/{}.cpp"
     },
+    "include/reasoner/*.h": {
+        "type": "laser-formula-header",
+        "alternate": "src/reasoner/{}.cpp"
+    },
     "include/formula/*.h": {
         "type": "laser-formula-header",
         "alternate": "src/formula/{}.cpp"
@@ -29,6 +33,10 @@
     "src/util/*.cpp": {
         "type": "laser-util-source",
         "alternate": "include/util/{}.h"
+    },
+    "src/reasoner/*.cpp": {
+        "type": "laser-formula-source",
+        "alternate": "include/reasoner/{}.h"
     },
     "src/formula/*.cpp": {
         "type": "laser-formula-source",

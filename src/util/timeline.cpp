@@ -3,15 +3,14 @@
 namespace laser {
 namespace util {
 
-Timeline::Timeline() : tuple_count_history(std::make_shared<std::vector<uint64_t>>()) {}
+Timeline::Timeline()
+    : tuple_count_history(std::make_shared<std::unordered_map<uint64_t, uint64_t>>()) {}
 
 const uint64_t Timeline::INFINITE_TIME = ULLONG_MAX;
-const size_t Timeline::MAX_WINDOW = 1000;
 
 void Timeline::set_start_time(uint64_t initial_time) {
     // make sure this is executed only when initializing the Timeline
     if (time == 0) {
-        tuple_count_history->resize(MAX_WINDOW, 0);
         time = initial_time;
     }
 }
@@ -26,10 +25,9 @@ void Timeline::decrement_time() { time--; }
 uint64_t Timeline::get_tuple_count() const { return tuple_count; }
 
 void Timeline::set_tuple_count(uint64_t tuple_count) {
-    // Clones can't modify the tuple_count_history
-        this->tuple_count = tuple_count;
-        size_t position = time % MAX_WINDOW;
-        (*tuple_count_history)[position] = tuple_count;
+    // TODO make this thread-safe
+    this->tuple_count = tuple_count;
+    tuple_count_history->try_emplace(time, tuple_count);
 }
 
 uint64_t Timeline::get_min_time() const { return min_time; }
@@ -40,31 +38,11 @@ uint64_t Timeline::get_max_time() const { return max_time; }
 void Timeline::set_max_time(uint64_t max_time) { this->max_time = max_time; }
 
 uint64_t Timeline::get_tuple_count_at(uint64_t timepoint) const {
-    size_t position = timepoint % MAX_WINDOW;
-    return tuple_count_history->at(position);
+    return tuple_count_history->at(timepoint);
 }
 
-// uint64_t Timeline::get_min_tuple_count() const {
-// return min_tuple_count;
-//}
-
-// void Timeline::set_min_tuple_count(uint64_t min_tuple_count) {
-// this->min_tuple_count = min_tuple_count;
-//}
-
-// uint64_t Timeline::get_max_tuple_count() const {
-// return max_tuple_count;
-//}
-
-// void Timeline::set_max_tuple_count(uint64_t max_tuple_count) {
-// this->max_tuple_count = max_tuple_count;
-//}
 
 bool Timeline::is_past_max_time() const { return time > max_time; }
-
-// bool Timeline::is_past_max_tuple_count() const {
-// return tuple_count >= max_tuple_count;
-//}
 
 uint64_t Timeline::substract(uint64_t initial_value,
                              uint64_t substracted_val) const {

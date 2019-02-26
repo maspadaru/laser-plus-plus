@@ -32,10 +32,6 @@ class Program {
     double evaluation_secs = 0;
 
     laser::util::Timeline timeline;
-    // uint64_t current_time = 0;
-    // uint64_t current_tuple_counter = 0;
-    // uint64_t stream_start_time = 0;
-    // uint64_t stream_end_time = 0;
     int number_of_new_conclusions = 0;
     bool has_timeline = false;
 
