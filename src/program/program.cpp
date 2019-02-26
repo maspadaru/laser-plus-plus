@@ -7,46 +7,23 @@
 namespace laser {
 namespace program {
 
-// constructors & destructors
+
+Program::Program(io::RuleReader *rule_reader) {
+    rule_vector = rule_reader->get_rules();
+}
 
 Program::~Program() { rule_vector.clear(); }
 
-bool Program::evaluate_rule_vector(
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<formula::Grounding>>> const
-        &facts) {
-    bool result = false;
+void Program::evaluate_rule_vector() {
     for (auto &rule : rule_vector) {
         rule.evaluate(timeline, facts);
-        result |= rule.derive_conclusions(timeline);
+        rule.derive_conclusions(timeline);
     }
-    return result;
-}
-
-// getters & setters
-
-uint64_t Program::get_current_time() const { return timeline.get_time(); }
-
-uint64_t Program::get_current_tuple_counter() const {
-    return timeline.get_tuple_count();
-}
-
-int Program::get_number_of_new_conclusions() const {
-    return number_of_new_conclusions;
-}
-
-// methods
-
-template <typename T>
-void Program::debug_print(std::string const &message, T const &value) const {
-    std::cerr << "Program -> current time: " << timeline.get_time() << " -> ";
-    std::cerr << message << " : " << value << std::endl;
 }
 
 void Program::set_start_time(uint64_t start_time) {
     timeline.set_start_time(start_time);
 }
-
 
 void Program::expire_outdated_groundings() {
     for (auto &rule : rule_vector) {
@@ -54,39 +31,20 @@ void Program::expire_outdated_groundings() {
     }
 }
 
-bool Program::do_evaluation_loop(
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<formula::Grounding>>> const
-                       &initial_facts) {
-    bool has_new_conclusions_timepoint = false;
-    bool has_new_conclusions_step = false;
-    auto facts = initial_facts;
+void Program::do_evaluation_loop() {
+    bool has_new_conclusions = false;
     expire_outdated_groundings();
     do {
-        evaluate_rule_vector(facts);
+        evaluate_rule_vector();
         facts.clear();
-        facts = get_new_conclusions();
-        has_new_conclusions_step = !facts.empty();
-        has_new_conclusions_timepoint |= has_new_conclusions_step;
-    } while (has_new_conclusions_step);
-    return has_new_conclusions_timepoint;
-}
-
-bool Program::timed_evaluation(
-                       std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<formula::Grounding>>> const
-                       &facts) {
-    clock_t begin = clock();
-    auto has_new_conclusions = do_evaluation_loop(facts);
-    clock_t end = clock();
-    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    evaluation_secs += elapsed_secs;
-    return has_new_conclusions;
+        facts = compute_new_facts();
+        has_new_conclusions = !facts.empty();
+    } while (has_new_conclusions);
 }
 
 std::unordered_map<std::string,
                    std::vector<std::shared_ptr<formula::Grounding>>>
-Program::get_new_conclusions() {
+Program::compute_new_facts() {
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<formula::Grounding>>>
         new_conclusions;
@@ -106,54 +64,26 @@ Program::get_new_conclusions() {
     return new_conclusions;
 }
 
-void Program::write_output() {
-    std::vector<formula::Formula *> new_conclusions;
+std::vector<formula::Formula *> Program::get_conclusions() {
+    std::vector<formula::Formula *> result;
     for (auto const &rule : rule_vector) {
         formula::Formula *head = &rule.get_head();
-        new_conclusions.push_back(head);
+        result.push_back(head);
     }
-    ioHandler.put_conclusions(timeline, new_conclusions);
+    return result;
 }
 
-void Program::evaluate(timeline) {
-    auto facts = ioHandler.get_stream_data(timeline);
-    bool has_derived_new_conclusions = timed_evaluation(facts);
-    // TODO writing is disabled for benchmarking, this means all tests fail
-    write_output();
-    timeline.increment_time();
+std::vector<util::DataAtom>
+Program::evaluate(util::Timeline const &timeline,
+                  std::vector<util::DataAtom> const &data_facts) {
+    this->timeline = timeline;
+    facts = io_handler.handle_input(this->timeline, data_facts);
+    do_evaluation_loop();
+    auto conclusions = get_conclusions();
+    //! if writing is disabled for benchmarking, this means all tests fail
+    auto result = io_handler.handle_output(timeline, conclusions);
+    return result;
 }
-
-void Program::accept_new_facts(
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<formula::Grounding>>> const
-        &stream_facts) {
-    for (auto &rule : rule_vector) {
-        rule.evaluate(timeline, stream_facts);
-    }
-}
-
-Program::Program(std::string rule_string, laser::io::IOManager *ioManager)
-    : ioManager(ioManager), ioHandler(ioManager) {
-    rule::DefaultRuleReader rule_reader(std::move(rule_string));
-    rule_vector = rule_reader.get_rules();
-}
-
-Program::Program(laser::rule::RuleReader *rule_reader,
-                 laser::io::IOManager *ioManager)
-    : ioManager(ioManager), ioHandler(ioManager) {
-    rule_vector = rule_reader->get_rules();
-}
-
-double Program::get_eval_secs() const { return evaluation_secs; }
-
-// double Program::get_reader_secs() const {
-// return ioHandler.get_reader_secs();
-
-//}
-
-// double Program::get_handler_secs() const {
-// return ioHandler.get_handler_secs();
-//}
 
 } // namespace program
 } // namespace laser

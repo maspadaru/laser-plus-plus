@@ -27,7 +27,7 @@ namespace rule {
 /**
  *
  */
-class DefaultRuleReader : public laser::rule::RuleReader {
+class DefaultRuleReader : public laser::io::RuleReader {
 private:
     std::string rule_string;
     std::stringstream input;

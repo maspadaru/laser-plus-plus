@@ -13,97 +13,47 @@
 #include <vector>
 
 #include "formula/formula.h"
-#include "io/io_manager.h"
 #include "io/rule_reader.h"
 #include "program/io_handler.h"
 #include "rule/default_rule_reader.h"
 #include "rule/rule.h"
 #include "util/request_exception.h"
 #include "util/timeline.h"
+#include "util/data_atom.h"
 
 namespace laser {
 namespace program {
 
 class Program {
   private:
-    laser::io::IOManager *ioManager;
-    IOHandler ioHandler;
-
-    Timeline timeline;
+    IOHandler io_handler;
+    std::vector<rule::Rule> rule_vector;
+    util::Timeline timeline;
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<formula::Grounding>>>
         facts;
 
+    void evaluate_rule_vector();
 
-
-    double evaluation_secs = 0;
-
-    int number_of_new_conclusions = 0;
-    bool has_timeline = false;
-
-    uint64_t number_of_background_facts = 0;
-
-    std::vector<rule::Rule> rule_vector;
-
-    // methods
-
-    bool evaluate_rule_vector(
-        std::unordered_map<
-            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
-            &facts);
-
-    bool timed_evaluation(
-        std::unordered_map<
-            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
-            &facts);
-    bool do_evaluation_loop(
-        std::unordered_map<
-            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
-            &initial_facts);
+    void do_evaluation_loop();
 
     void expire_outdated_groundings();
 
-    // TODO Not used -> remove it
-    void accept_new_facts(
-        std::unordered_map<
-            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
-            &stream_facts);
-
-    void write_output();
-
-    template <typename T>
-    void debug_print(std::string const &message, T const &value) const;
+    std::vector<formula::Formula *> get_conclusions();
 
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<formula::Grounding>>>
-    get_new_conclusions();
+    compute_new_facts();
 
   public:
-    // constructors & destructors
 
-    Program(std::string rule_string, laser::io::IOManager *ioManager);
-    Program(laser::rule::RuleReader *rule_reader,
-            laser::io::IOManager *ioManager);
+    explicit Program(io::RuleReader *rule_reader);
 
     virtual ~Program();
 
-    // getters & setters
-    // double get_reader_secs() const;
-
-    // double get_handler_secs() const;
-
-    double get_eval_secs() const;
-
-    uint64_t get_current_time() const;
-
-    uint64_t get_current_tuple_counter() const;
-
-    int get_number_of_new_conclusions() const;
-
-    // methods
-
-    std::vector<io::DataAtom>>
-        evaluate(Timeline timeline, std::vector<io::DataAtom>> facts);
+    std::vector<util::DataAtom>
+        evaluate(util::Timeline const &timeline,
+                 std::vector<util::DataAtom> const &data_facts);
 
     void set_start_time(uint64_t start_time);
 };

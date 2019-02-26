@@ -12,6 +12,7 @@
 #include "formula/grounding.h"
 #include "io/io_manager.h"
 #include "util/timeline.h"
+#include "util/data_atom.h"
 
 namespace laser {
 namespace program {
@@ -19,9 +20,6 @@ namespace program {
 class IOHandler {
 
   private:
-    io::IOManager *ioManager;
-    // double reader_secs = 0;
-    // double handler_secs = 0;
     uint64_t current_tuple_counter = 0;
 
     std::vector<std::shared_ptr<formula::Grounding>> remove_duplicates(
@@ -29,18 +27,15 @@ class IOHandler {
         const;
 
   public:
-    explicit IOHandler(io::IOManager *ioManager);
-
-    // double get_reader_secs() const;
-    // double get_handler_secs() const;
-
     // methods
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<formula::Grounding>>>
-    get_stream_data(laser::util::Timeline &timeline);
+    handle_input(util::Timeline &timeline,
+                 std::vector<util::DataAtom> const &data_vector);
 
-    void put_conclusions(util::Timeline timeline,
-                         std::vector<formula::Formula *> const &conclusions);
+    std::vector<util::DataAtom>
+    handle_output(util::Timeline const &timeline,
+                  std::vector<formula::Formula *> const &conclusions);
 };
 
 } // namespace program

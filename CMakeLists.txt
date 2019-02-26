@@ -17,6 +17,7 @@ file(GLOB LASER_SOURCES
         "src/util/*.cpp"
         "src/program/*.cpp"
         "src/rule/*.cpp"
+        "src/reasoner/*.cpp"
         )
 
 

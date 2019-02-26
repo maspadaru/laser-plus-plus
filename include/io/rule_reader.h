@@ -2,13 +2,13 @@
 // Created by mike on 7/17/18.
 //
 
-#ifndef LASER_RULE_RULE_READER_H
-#define LASER_RULE_RULE_READER_H
+#ifndef LASER_RULE_IO_READER_H
+#define LASER_RULE_IO_READER_H
 
 #include "rule/rule.h"
 
 namespace laser {
-namespace rule {
+namespace io {
 
 /**
  *
@@ -32,10 +32,10 @@ public:
     * @throw ReadException if any problem occurred while reading the input,
     * e.g.: source file is inaccessible
     */
-    virtual std::vector<laser::rule::Rule> get_rules() = 0;
+    virtual std::vector<rule::Rule> get_rules() = 0;
 };
 
 } // namespace rule
 } // namespace laser
 
-#endif // LASER_RULE_RULE_READER_H
+#endif // LASER_RULE_IO_READER_H
