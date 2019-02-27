@@ -28,7 +28,6 @@ class Timeline {
 
   public:
     static const uint64_t INFINITE_TIME;
-    static const size_t MAX_WINDOW;
 
     Timeline();
 

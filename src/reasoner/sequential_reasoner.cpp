@@ -37,7 +37,7 @@ void SequentialReasoner::evaluate(util::Timeline timeline) {
     auto program = program::Program(rule_reader); 
     auto time = timeline.get_time();
     while (!timeline.is_past_max_time()) {
-        bool has_new_input = conclusion_map.count(time) > 0;
+        bool has_new_input = fact_map.count(time) > 0;
         if (has_new_input) {
             auto facts = fact_map.at(time);
             auto conclusions = program.evaluate(timeline, facts);
