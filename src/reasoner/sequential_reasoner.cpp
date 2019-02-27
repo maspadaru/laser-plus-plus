@@ -18,9 +18,12 @@ void SequentialReasoner::start() {
     main_timeline.set_start_time(start_time);
     main_timeline.set_min_time(start_time);
     main_timeline.set_max_time(end_time);
-    read(main_timeline);
-    evaluate(main_timeline);
-    write(main_timeline);
+    std::thread read_thread(&SequentialReasoner::read, this, main_timeline);
+    std::thread evaluate_thread(&SequentialReasoner::evaluate, this, main_timeline);
+    std::thread write_thread(&SequentialReasoner::write, this, main_timeline);
+    read_thread.join();
+    evaluate_thread.join();
+    write_thread.join();
 }
 
 void SequentialReasoner::read(util::Timeline timeline) {

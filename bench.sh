@@ -44,17 +44,3 @@
 #./laser.sh bench box 1000 1000 10 ~/stream_file.txt
 #./laser.sh bench box 1000 1000 100 ~/stream_file.txt
 
-
-
-
-
-# Atom Window - dif window sizes
-#./laser.sh bench atom_window 100000 10 3 ~/stream_file.txt
-#./laser.sh bench atom_window 1000 1000 3 ~/stream_file.txt
-#./laser.sh bench atom_window 10 100000 3 ~/stream_file.txt
-
-# Atom Window - dif window sizes
-#./laser.sh bench atom_window 100000 10 3 ~/stream_file.txt
-#./laser.sh bench atom_window 1000 1000 3 ~/stream_file.txt
-#./laser.sh bench atom_window 10 100000 3 ~/stream_file.txt
-

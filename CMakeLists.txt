@@ -20,6 +20,7 @@ file(GLOB LASER_SOURCES
         "src/reasoner/*.cpp"
         )
 
+find_package(Threads)
 
 ################################## TESTAPP ##################################
 include_directories(test/include/)
@@ -29,6 +30,7 @@ file(GLOB TESTAPP_SOURCES
 
 set(TESTAPP_LASER_SOURCES ${LASER_SOURCES} ${TESTAPP_SOURCES})
 add_executable(testapp test/main.cpp ${TESTAPP_LASER_SOURCES})
+target_link_libraries(testapp ${CMAKE_THREAD_LIBS_INIT})
 
 ################################## BENCHAPP ##################################
 include_directories(benchapp/include/)
@@ -38,6 +40,7 @@ file(GLOB BENCHAPP_SOURCES
 
 set(BENCHAPP_LASER_SOURCES ${LASER_SOURCES} ${BENCHAPP_SOURCES})
 add_executable(benchapp benchapp/main.cpp ${BENCHAPP_LASER_SOURCES})
+target_link_libraries(benchapp ${CMAKE_THREAD_LIBS_INIT})
 
 ################################### TESTS ###################################
 
@@ -49,7 +52,7 @@ if(GTEST_FOUND)
     )
     include_directories(${GTEST_INCLUDE_DIRS})
     add_executable(run_test test/test.cpp ${LASER_SOURCES} ${TEST_SOURCES})
-    target_link_libraries(run_test ${GTEST_LIBRARIES} pthread)
+    target_link_libraries(run_test ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 endif(GTEST_FOUND)
 
 
