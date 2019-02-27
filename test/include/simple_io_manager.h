@@ -16,6 +16,7 @@ class SimpleIOManager : public laser::io::IOManager {
     SimpleReader simple_stream_reader;
     SimpleParser simple_parser;
     std::string latest_output;
+    std::unordered_map<uint64_t, std::string> output_map;
 
   public:
     explicit SimpleIOManager(std::string stream_string);
@@ -34,7 +35,7 @@ class SimpleIOManager : public laser::io::IOManager {
         uint64_t time,
         std::vector<laser::util::DataAtom> const &output_vector) override;
 
-    std::string get_output() const;
+    std::string get_output(uint64_t time) const;
 };
 
 #endif // TEST_SIMPLE_IO_MANAGER_H

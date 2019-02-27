@@ -1,18 +1,8 @@
+#include <sstream>
 #include <string>
 #include <vector>
-#include <sstream>
 
-#include <gtest/gtest.h>
-#include <formula/extended/atom.h>
-#include <formula/formula.h>
-#include <program/program.h>
-#include <rule/rule.h>
-
-#include "simple_io_manager.h"
-#include "simple_parser.h"
-#include "simple_reader.h"
-#include "simple_writer.h"
- 
+#include "test_framework.h"
 
 TEST(TupleWindowTest, SimpleDiamond) {
     std::string stream_string = "0 14 "
@@ -49,36 +39,7 @@ TEST(TupleWindowTest, SimpleDiamond) {
     expected[13] = "13 -> u(z)";
     expected[14] = "14 -> u(z)";
 
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    int current_time = 0;
-    program.set_start_time(current_time);
-
-    while (!program.is_done()) {
-        program.evaluate();
-        std::string result = simple_io_manager.get_output();
-        std::istringstream issr(result);
-        std::vector<std::string> results(std::istream_iterator<std::string>{issr},
-                                 std::istream_iterator<std::string>());
-        std::istringstream isse(expected[current_time]);
-        std::vector<std::string> expecteds(std::istream_iterator<std::string>{isse},
-                                 std::istream_iterator<std::string>());
-        bool has_all_rezults = true;
-        for (auto const &rezitem : results) {
-            has_all_rezults &= 
-                std::find(expecteds.begin(), expecteds.end(), rezitem) 
-                    != expecteds.end(); 
-        }
-        bool is_same_size = results.size() == expecteds.size();
-        bool error = !(has_all_rezults && is_same_size);
-        // if there is a problem, print both so we can compare
-        if (error) {
-            std::cout << "Laser rez: " << result << std::endl; 
-            std::cout << "Expected : " << expected[current_time] << std::endl; 
-            EXPECT_FALSE(error);
-        }
-        current_time++;
-    }
+    test_framework::run_test(stream_string, rule_string, expected);
 }
 
 TEST(TupleWindowTest, SimpleBox) {
@@ -128,36 +89,7 @@ TEST(TupleWindowTest, SimpleBox) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    int current_time = 0;
-    program.set_start_time(current_time);
-
-    while (!program.is_done()) {
-        program.evaluate();
-        std::string result = simple_io_manager.get_output();
-        std::istringstream issr(result);
-        std::vector<std::string> results(std::istream_iterator<std::string>{issr},
-                                 std::istream_iterator<std::string>());
-        std::istringstream isse(expected[current_time]);
-        std::vector<std::string> expecteds(std::istream_iterator<std::string>{isse},
-                                 std::istream_iterator<std::string>());
-        bool has_all_rezults = true;
-        for (auto const &rezitem : results) {
-            has_all_rezults &= 
-                std::find(expecteds.begin(), expecteds.end(), rezitem) 
-                    != expecteds.end(); 
-        }
-        bool is_same_size = results.size() == expecteds.size();
-        bool error = !(has_all_rezults && is_same_size);
-        // if there is a problem, print both so we can compare
-        if (error) {
-            std::cout << "Laser rez: " << result << std::endl; 
-            std::cout << "Expected : " << expected[current_time] << std::endl; 
-            EXPECT_FALSE(error);
-        }
-        current_time++;
-    }
+    test_framework::run_test(stream_string, rule_string, expected);
 }
 
 TEST(TupleWindowTest, MultipleRules) {
@@ -204,35 +136,6 @@ TEST(TupleWindowTest, MultipleRules) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    int current_time = 0;
-    program.set_start_time(current_time);
-
-    while (!program.is_done()) {
-        program.evaluate();
-        std::string result = simple_io_manager.get_output();
-        std::istringstream issr(result);
-        std::vector<std::string> results(std::istream_iterator<std::string>{issr},
-                                 std::istream_iterator<std::string>());
-        std::istringstream isse(expected[current_time]);
-        std::vector<std::string> expecteds(std::istream_iterator<std::string>{isse},
-                                 std::istream_iterator<std::string>());
-        bool has_all_rezults = true;
-        for (auto const &rezitem : results) {
-            has_all_rezults &= 
-                std::find(expecteds.begin(), expecteds.end(), rezitem) 
-                    != expecteds.end(); 
-        }
-        bool is_same_size = results.size() == expecteds.size();
-        bool error = !(has_all_rezults && is_same_size);
-        // if there is a problem, print both so we can compare
-        if (error) {
-            std::cout << "Laser rez: " << result << std::endl; 
-            std::cout << "Expected : " << expected[current_time] << std::endl; 
-            EXPECT_FALSE(error);
-        }
-        current_time++;
-    }
+    test_framework::run_test(stream_string, rule_string, expected);
 }
 

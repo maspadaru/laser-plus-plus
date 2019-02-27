@@ -1,25 +1,22 @@
 #include <iostream>
 
-#include <formula/extended/atom.h>
-#include <formula/formula.h>
-#include <program/program.h>
-#include <rule/rule.h>
+#include <reasoner/sequential_reasoner.h>
+#include <rule/default_rule_reader.h>
 
 #include "simple_io_manager.h"
-#include "simple_parser.h"
-#include "simple_reader.h"
-#include "simple_writer.h"
 
-void run(std::string const &name, std::string const &stream_string, std::string const &rule_string) {
+void run(std::string const &name, std::string const &stream_string,
+         std::string const &rule_string) {
     std::cout << std::endl;
     std::cout << " Test: " << name << std::endl;
     std::cout << " =================================== " << std::endl;
     auto simple_io_manager = SimpleIOManager(stream_string);
-    auto program = laser::program::Program(rule_string, &simple_io_manager);
-    program.set_start_time(simple_io_manager.read_stream_start_time());
-    while (!program.is_done()) {
-        program.evaluate();
-    }
+    auto rule_reader = laser::rule::DefaultRuleReader(rule_string);
+    auto reasoner =
+        laser::reasoner::SequentialReasoner(&rule_reader, &simple_io_manager);
+
+    reasoner.start();
+
     std::cout << " =================================== " << std::endl;
     std::cout << std::endl << std::endl;
 }
@@ -134,10 +131,9 @@ void test_box() {
                                 "12 : f(1), f(a), c(6,7)\n"
                                 "13 : f(1), f(a)\n"
                                 "14 : f(1), f(a)\n";
-    std::string rule_string = "" 
-                            "q(X) := [B] f(X)\n"
-                            "r(Y,X) := [$, 3][B]c(X, Y)\n"
-                            ;
+    std::string rule_string = ""
+                              "q(X) := [B] f(X)\n"
+                              "r(Y,X) := [$, 3][B]c(X, Y)\n";
     run(name, stream_string, rule_string);
 }
 
@@ -309,7 +305,7 @@ void test_tuple_window() {
     const std::string name = "Tuple Window";
     std::string stream_string = "0 14 "
                                 "0 : \n"
-                                // 3 timepoints where f(x) occurs within the 
+                                // 3 timepoints where f(x) occurs within the
                                 // tuple window
                                 "1 : f(x)\n"
                                 "2 : f(x)\n"
@@ -319,13 +315,13 @@ void test_tuple_window() {
                                 "4 : f(y)\n"
                                 "5 : f(x), f(y), f(a), a(x), a(y), a(z), a(t)\n"
                                 "6 : f(y)\n"
-                                // f(z) occurs more than 3 times within the 
-                                // tuple window but only for 2 consecutive 
+                                // f(z) occurs more than 3 times within the
+                                // tuple window but only for 2 consecutive
                                 // timepoints
                                 "7 : f(z), f(z), f(z)\n"
                                 "8 : f(z)\n"
                                 "9 : \n"
-                                // f(a) occurs at 3 timepoints within the 
+                                // f(a) occurs at 3 timepoints within the
                                 // tuple window, but the 3 timepoints are not
                                 // consecutive
                                 "10 : f(a)\n"

@@ -38,10 +38,14 @@ void SimpleIOManager::write_output_data(
     latest_output = "";
     latest_output = simple_writer.format_output(time, output_vector);
     simple_writer.write_output(latest_output);
+    output_map.try_emplace(time, latest_output);
 }
 
-std::string SimpleIOManager::get_output() const {
-    return latest_output;
+std::string SimpleIOManager::get_output(uint64_t time) const {
+    if (output_map.count(time) > 0) {
+        return output_map.at(time);
+    }
+    return "";
 }
 
 SimpleIOManager::SimpleIOManager(std::string stream_string) {

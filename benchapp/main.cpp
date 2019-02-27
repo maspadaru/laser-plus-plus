@@ -1,15 +1,10 @@
 #include <ctime>
 #include <iostream>
 
-#include <formula/extended/atom.h>
-#include <formula/formula.h>
-#include <program/program.h>
-#include <rule/rule.h>
+#include <rule/default_rule_reader.h>
+#include <reasoner/sequential_reasoner.h>
 
 #include "file_io_manager.h"
-#include "file_parser.h"
-#include "file_reader.h"
-#include "file_writer.h"
 
 const uint64_t BUILD_NUMBER = 1;
 
@@ -20,28 +15,18 @@ void run(uint64_t end_time, int facts_per_timepoint,
          std::string const &stream_path, std::string const &output_path,
          bool is_output_enabled, std::string const &rules) {
     uint64_t start_time = 0;
-
     auto file_io_manager =
         FileIOManager(stream_path, output_path, start_time, end_time,
                       facts_per_timepoint, is_output_enabled);
-    auto program = laser::program::Program(rules, &file_io_manager);
-    program.set_start_time(0);
+    auto rule_reader = laser::rule::DefaultRuleReader(rules);
+    auto reasoner =
+        laser::reasoner::SequentialReasoner(&rule_reader, &file_io_manager);
 
     clock_t begin = clock();
-
-    while (!program.is_done()) {
-        program.evaluate();
-    }
-
+    reasoner.start();
     clock_t end = clock();
     double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "Total Elapsed time (sec): " << elapsed_secs << std::endl;
-    double eval_secs = program.get_eval_secs();
-    std::cout << "Evaluation time (sec): " << eval_secs << std::endl;
-    //std::cout << "IO time (sec): " << elapsed_secs - eval_secs << std::endl;
-    // std::cout << "IO Reading time (sec): " << program.get_reader_secs() <<
-    // std::endl; std::cout << "IO Handling time (sec): " <<
-    // program.get_handler_secs() << std::endl;
+    std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl;
     std::cout << std::endl;
 }
 
@@ -134,7 +119,7 @@ int main(int argc, char **argv) {
                      "WINDOW_SIZE INPUT_PATH [OUTPUT_PATH]"
                   << std::endl;
         return 1;
-    } 
+    }
     std::string test_name(argv[1]);
     std::string end_time_str(argv[2]);
     std::string num_facts_str(argv[3]);
