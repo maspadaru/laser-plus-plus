@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <reasoner/sequential_reasoner.h>
+#include <reasoner/reasoner.h>
 #include <rule/default_rule_reader.h>
 
 #include "simple_io_manager.h"
@@ -13,7 +13,7 @@ void run(std::string const &name, std::string const &stream_string,
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto rule_reader = laser::rule::DefaultRuleReader(rule_string);
     auto reasoner =
-        laser::reasoner::SequentialReasoner(&rule_reader, &simple_io_manager);
+        laser::reasoner::Reasoner(&rule_reader, &simple_io_manager);
 
     reasoner.start();
 

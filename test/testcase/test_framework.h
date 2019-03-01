@@ -11,7 +11,7 @@
 
 #include <gtest/gtest.h>
 
-#include <reasoner/sequential_reasoner.h>
+#include <reasoner/reasoner.h>
 #include <rule/default_rule_reader.h>
 
 #include "simple_io_manager.h"

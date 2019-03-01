@@ -11,7 +11,7 @@ void run_test(std::string const &stream_string, std::string const &rule_string,
     auto simple_io_manager = SimpleIOManager(stream_string);
     auto rule_reader = laser::rule::DefaultRuleReader(rule_string);
     auto reasoner =
-        laser::reasoner::SequentialReasoner(&rule_reader, &simple_io_manager);
+        laser::reasoner::Reasoner(&rule_reader, &simple_io_manager);
 
     reasoner.start();
     auto start_time = simple_io_manager.read_stream_start_time();

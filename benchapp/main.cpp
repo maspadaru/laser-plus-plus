@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include <rule/default_rule_reader.h>
-#include <reasoner/sequential_reasoner.h>
+#include <reasoner/reasoner.h>
 
 #include "file_io_manager.h"
 
@@ -20,7 +20,7 @@ void run(uint64_t end_time, int facts_per_timepoint,
                       facts_per_timepoint, is_output_enabled);
     auto rule_reader = laser::rule::DefaultRuleReader(rules);
     auto reasoner =
-        laser::reasoner::SequentialReasoner(&rule_reader, &file_io_manager);
+        laser::reasoner::Reasoner(&rule_reader, &file_io_manager);
 
     clock_t begin = clock();
     reasoner.start();
