@@ -2,18 +2,18 @@
 
 ./laser.sh b  
 
-#./laser.sh bench atom 1000000 100 0 ~/stream_file.txt
-#./laser.sh bench atom 10000 10000 0 ~/stream_file.txt
-#./laser.sh bench atom 100 1000000 0 ~/stream_file.txt
+./laser.sh bench atom 1000000 100 0 ~/stream_file.txt
+./laser.sh bench atom 10000 10000 0 ~/stream_file.txt
+./laser.sh bench atom 100 1000000 0 ~/stream_file.txt
 
 # ATOM
-./laser.sh bench atom 1000000 1 0 ~/stream_file.txt
+#./laser.sh bench atom 1000000 1 0 ~/stream_file.txt
 #./laser.sh bench atom 100000 10 0 ~/stream_file.txt
 #./laser.sh bench atom 10000 100 0 ~/stream_file.txt
-./laser.sh bench atom 1000 1000 0 ~/stream_file.txt
+#./laser.sh bench atom 1000 1000 0 ~/stream_file.txt
 #./laser.sh bench atom 100 10000 0 ~/stream_file.txt
 #./laser.sh bench atom 10 100000 0 ~/stream_file.txt
-./laser.sh bench atom 1 1000000 0 ~/stream_file.txt
+#./laser.sh bench atom 1 1000000 0 ~/stream_file.txt
 
 # Diamond - dif input sizes
 #./laser.sh bench diamond 100000 10 3 ~/stream_file.txt

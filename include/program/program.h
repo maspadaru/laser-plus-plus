@@ -4,7 +4,6 @@
 #ifndef LASER_PROGRAM_PROGRAM_H
 #define LASER_PROGRAM_PROGRAM_H
 
-#include <any>
 #include <iostream>
 #include <memory>
 #include <string>
