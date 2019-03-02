@@ -27,9 +27,7 @@ class Reasoner {
     std::mutex conclusion_map_mutex;
     io::IOManager *io_manager;
     io::RuleReader *rule_reader;
-    double read_secs = 0;
     double evaluate_secs = 0;
-    double write_secs = 0;
 
     void read(util::Timeline timeline);
     void evaluate(util::Timeline timeline);

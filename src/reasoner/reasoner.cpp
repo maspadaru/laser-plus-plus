@@ -34,9 +34,7 @@ void Reasoner::remove_conclusions(uint64_t timepoint) {
 }
 
 void Reasoner::start() {
-    read_secs = 0;
     evaluate_secs = 0;
-    write_secs = 0;
     util::Timeline main_timeline;
     auto start_time = io_manager->read_stream_start_time();
     auto end_time = io_manager->read_stream_end_time();
@@ -50,20 +48,16 @@ void Reasoner::start() {
     read_thread.join();
     evaluate_thread.join();
     write_thread.join();
-    std::cout << "Read / Eval / Write  " << read_secs 
-       << " / " << evaluate_secs << " / " << write_secs << std::endl;
+    std::cout << "Eval secs: " << evaluate_secs << std::endl;
 }
 
 void Reasoner::read(util::Timeline timeline) {
     auto time = timeline.get_time();
     while (!timeline.is_past_max_time()) {
-        clock_t begin = clock();
         auto facts = io_manager->read_stream_data(time);
         insert_facts(time, facts);
         timeline.increment_time();
         time = timeline.get_time();
-        clock_t end = clock();
-        read_secs += double(end - begin) / CLOCKS_PER_SEC;
     }
 }
 
@@ -73,15 +67,15 @@ void Reasoner::evaluate(util::Timeline timeline) {
     while (!timeline.is_past_max_time()) {
         bool has_new_input = fact_map.count(time) > 0;
         if (has_new_input) {
-            clock_t begin = clock();
             auto &facts = fact_map.at(time);
+            clock_t begin = clock();
             auto conclusions = program.evaluate(timeline, facts);
+            clock_t end = clock();
+            evaluate_secs += double(end - begin) / CLOCKS_PER_SEC;
             insert_conclusions(time, conclusions);
             remove_facts(time);
             timeline.increment_time();
             time = timeline.get_time();
-            clock_t end = clock();
-            evaluate_secs += double(end - begin) / CLOCKS_PER_SEC;
         } else {
             std::this_thread::yield();
         }
@@ -93,14 +87,11 @@ void Reasoner::write(util::Timeline timeline) {
     while (!timeline.is_past_max_time()) {
         bool has_new_output = conclusion_map.count(time) > 0;
         if (has_new_output) {
-            clock_t begin = clock();
             auto &conclusions = conclusion_map.at(time);
             io_manager->write_output_data(time, conclusions);
             remove_conclusions(time);
             timeline.increment_time();
             time = timeline.get_time();
-            clock_t end = clock();
-            write_secs += double(end - begin) / CLOCKS_PER_SEC;
         } else {
             std::this_thread::yield();
         }

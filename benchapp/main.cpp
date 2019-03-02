@@ -1,9 +1,8 @@
 #include <ctime>
 #include <iostream>
 
-#include <rule/default_rule_reader.h>
 #include <reasoner/reasoner.h>
-
+#include <rule/default_rule_reader.h>
 #include "file_io_manager.h"
 
 const uint64_t BUILD_NUMBER = 1;
@@ -19,15 +18,14 @@ void run(uint64_t end_time, int facts_per_timepoint,
         FileIOManager(stream_path, output_path, start_time, end_time,
                       facts_per_timepoint, is_output_enabled);
     auto rule_reader = laser::rule::DefaultRuleReader(rules);
-    auto reasoner =
-        laser::reasoner::Reasoner(&rule_reader, &file_io_manager);
+    auto reasoner = laser::reasoner::Reasoner(&rule_reader, &file_io_manager);
 
-    clock_t begin = clock();
+    //clock_t begin = clock();
     reasoner.start();
-    clock_t end = clock();
-    double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl;
-    std::cout << std::endl;
+    //clock_t end = clock();
+    //double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
+    //std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl;
+    //std::cout << std::endl;
 }
 
 void run_atom(uint64_t end_time, int facts_per_timepoint, int window_size,
