@@ -46,10 +46,10 @@ void Reasoner::start() {
     std::thread read_thread(&Reasoner::read, this, main_timeline);
     std::thread evaluate_thread(&Reasoner::evaluate, this,
                                 main_timeline);
-    //std::thread write_thread(&Reasoner::write, this, main_timeline);
+    std::thread write_thread(&Reasoner::write, this, main_timeline);
     read_thread.join();
     evaluate_thread.join();
-    //write_thread.join();
+    write_thread.join();
     std::cout << "Read / Eval / Write  " << read_secs 
        << " / " << evaluate_secs << " / " << write_secs << std::endl;
 }
@@ -78,18 +78,10 @@ void Reasoner::evaluate(util::Timeline timeline) {
             auto conclusions = program.evaluate(timeline, facts);
             insert_conclusions(time, conclusions);
             remove_facts(time);
-            clock_t end = clock();
-            evaluate_secs += double(end - begin) / CLOCKS_PER_SEC;
-            //
-            clock_t wbegin = clock();
-            auto &conclusions_ref = conclusion_map.at(time);
-            io_manager->write_output_data(time, conclusions);
-            remove_conclusions(time);
-            clock_t wend = clock();
-            write_secs += double(wend - wbegin) / CLOCKS_PER_SEC;
-            //
             timeline.increment_time();
             time = timeline.get_time();
+            clock_t end = clock();
+            evaluate_secs += double(end - begin) / CLOCKS_PER_SEC;
         } else {
             std::this_thread::yield();
         }
