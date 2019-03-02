@@ -1,6 +1,6 @@
 #!/bin/bash
 
-./laser.sh b  
+#./laser.sh b  
 
 ./laser.sh bench atom 1000000 100 0 ~/stream_file.txt
 ./laser.sh bench atom 10000 10000 0 ~/stream_file.txt
