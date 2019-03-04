@@ -42,7 +42,7 @@ std::vector<std::shared_ptr<Grounding>> GroundingTable::get_all_groundings() {
     // Merges all lists together
     std::vector<std::shared_ptr<Grounding>> all_groundings;
     for (auto const &map_iterator : grounding_map) {
-        auto grounding_list = map_iterator.second;
+        auto const &grounding_list = map_iterator.second;
         all_groundings.insert(all_groundings.end(), grounding_list.begin(),
                               grounding_list.end());
     }
@@ -84,7 +84,7 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
     recent_groundings_vector.clear();
 }
 
-std::vector<std::string> GroundingTable::get_variable_names() const {
+std::vector<std::string> const &GroundingTable::get_variable_names() const {
     return variable_names;
 }
 
@@ -93,7 +93,7 @@ void GroundingTable::set_variable_names(
     this->variable_names = std::move(variable_names);
     variable_index.clear();
     for (int i = 0; i < this->variable_names.size(); i++) {
-        std::string variable_name = this->variable_names.at(i);
+        std::string const &variable_name = this->variable_names.at(i);
         variable_index.try_emplace(variable_name);
         variable_index.at(variable_name) = i;
     }

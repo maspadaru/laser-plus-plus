@@ -50,8 +50,7 @@ class ExactTime : public Formula {
      * Removes the Time Variable from all the groundings in groundings vector
      */
     std::vector<std::shared_ptr<Grounding>>
-    revert_groundings(util::Timeline const &timeline,
-                      std::vector<std::shared_ptr<Grounding>> groundings) const;
+    revert_groundings(std::vector<std::shared_ptr<Grounding>> groundings) const;
 
     std::shared_ptr<Grounding>
     add_time_variable(util::Timeline const &timeline,
@@ -65,12 +64,12 @@ class ExactTime : public Formula {
     size_t get_time_variable_index() const;
 
     void evaluate_head(
-        util::Timeline timeline,
+        util::Timeline const &timeline,
         std::unordered_map<
             std::string, std::vector<std::shared_ptr<Grounding>>> const &facts);
 
     void evaluate_body(
-        util::Timeline timeline,
+        util::Timeline const &timeline,
         std::unordered_map<
             std::string, std::vector<std::shared_ptr<Grounding>>> const &facts);
 
@@ -98,33 +97,33 @@ class ExactTime : public Formula {
 
     // methods
 
-    std::vector<std::string> get_variable_names() const override;
+    std::vector<std::string> const &get_variable_names() const override;
 
-    std::vector<std::string> get_full_variable_names() const override;
+    std::vector<std::string> const &get_full_variable_names() const override;
 
-    int get_variable_index(std::string variable_name) const override;
+    int get_variable_index(std::string const &variable_name) const override;
 
     bool is_satisfied() const override;
 
     size_t get_number_of_variables() const override;
 
     std::vector<std::shared_ptr<Grounding>>
-    get_groundings(util::Timeline timeline) override;
+    get_groundings(util::Timeline const &timeline) override;
 
     std::vector<std::shared_ptr<Grounding>>
-    get_conclusions_step(util::Timeline timeline) override;
+    get_conclusions_step(util::Timeline const &timeline) override;
     std::vector<std::shared_ptr<Grounding>>
-    get_conclusions_timepoint(util::Timeline timeline) override;
+    get_conclusions_timepoint(util::Timeline const &timeline) override;
 
     std::string debug_string() const override;
 
     bool
-    evaluate(util::Timeline timeline,
+    evaluate(util::Timeline const &timeline,
              std::unordered_map<std::string,
                                 std::vector<std::shared_ptr<Grounding>>> const
                  &facts) override;
 
-    void expire_outdated_groundings(util::Timeline timeline) override;
+    void expire_outdated_groundings(util::Timeline const &timeline) override;
 
     void add_child(formula::Formula *child) override;
 };

@@ -42,15 +42,15 @@ std::vector<std::string> TimeWindow::get_predicate_vector() const {
 
 // methods
 
-std::vector<std::string> TimeWindow::get_variable_names() const {
+std::vector<std::string> const &TimeWindow::get_variable_names() const {
     return child->get_variable_names();
 }
 
-std::vector<std::string> TimeWindow::get_full_variable_names() const {
+std::vector<std::string> const &TimeWindow::get_full_variable_names() const {
     return child->get_full_variable_names();
 }
 
-int TimeWindow::get_variable_index(std::string variable_name) const {
+int TimeWindow::get_variable_index(std::string const &variable_name) const {
     return child->get_variable_index(variable_name);
 }
 
@@ -73,13 +73,13 @@ util::Timeline TimeWindow::alter_timeline(util::Timeline timeline) const {
 }
 
 bool TimeWindow::evaluate(
-    util::Timeline timeline,
+    util::Timeline const &timeline,
     std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>> const &facts) {
     auto window_timeline = alter_timeline(timeline);
     return child->evaluate(window_timeline, facts);
 }
 
-void TimeWindow::expire_outdated_groundings(util::Timeline timeline) {
+void TimeWindow::expire_outdated_groundings(util::Timeline const &timeline) {
     auto window_timeline = alter_timeline(timeline);
     child->expire_outdated_groundings(window_timeline);
 }
@@ -99,27 +99,27 @@ uint64_t TimeWindow::compute_horizon_time(uint64_t grounding_consideration_time,
 }
 
 std::vector<std::shared_ptr<Grounding>>
-TimeWindow::get_groundings(util::Timeline timeline) {
+TimeWindow::get_groundings(util::Timeline const &timeline) {
     auto window_timeline = alter_timeline(timeline);
     auto child_conclusions = child->get_groundings(window_timeline);
     std::vector<std::shared_ptr<Grounding>> result;
-    for (auto const &grounding : child_conclusions) {
+    for (auto &grounding : child_conclusions) {
         uint64_t window_horizon_time = compute_horizon_time(
             grounding->get_consideration_time(), grounding->get_horizon_time(),
             timeline.get_time());
         auto new_grounding = grounding->new_horizon_time(window_horizon_time);
-        result.push_back(new_grounding);
+        result.push_back(std::move(new_grounding));
     }
     return result;
 }
 
 std::vector<std::shared_ptr<Grounding>>
-TimeWindow::get_conclusions_timepoint(util::Timeline timeline) {
+TimeWindow::get_conclusions_timepoint(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
 
 std::vector<std::shared_ptr<Grounding>>
-TimeWindow::get_conclusions_step(util::Timeline timeline) {
+TimeWindow::get_conclusions_step(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
 

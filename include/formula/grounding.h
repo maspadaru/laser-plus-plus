@@ -85,13 +85,13 @@ class Grounding {
      * index
      */
     std::shared_ptr<Grounding> new_constant(size_t index,
-                                            std::string const &constant) const;
+                                            std::string constant) const;
 
     /**
      * Creates a new Grounding containing the new constant vector
      */
     std::shared_ptr<Grounding>
-    new_constant_vector(std::vector<std::string> const &new_vector) const;
+    new_constant_vector(std::vector<std::string> new_vector) const;
 
     /**
      * Creates a new Grounding containing the new annotations

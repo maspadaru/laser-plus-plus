@@ -58,7 +58,7 @@ Grounding::new_annotations(uint64_t consideration_time, uint64_t horizon_time,
                             is_background_fact_m, constant_vector);
     return std::make_shared<Grounding>(result);
 }
-    
+
 std::shared_ptr<Grounding> Grounding::clone() const {
     Grounding clone = Grounding(*this);
     return std::make_shared<Grounding>(clone);
@@ -80,11 +80,11 @@ Grounding::new_horizon_count(uint64_t horizon_count) const {
     return std::make_shared<Grounding>(result);
 }
 
-std::shared_ptr<Grounding> Grounding::new_constant_vector(
-    std::vector<std::string> const &new_vector) const {
-    Grounding result =
-        Grounding(consideration_time, horizon_time, consideration_count,
-                  horizon_count, is_fact_m, is_background_fact_m, new_vector);
+std::shared_ptr<Grounding>
+Grounding::new_constant_vector(std::vector<std::string> new_vector) const {
+    Grounding result = Grounding(consideration_time, horizon_time,
+                                 consideration_count, horizon_count, is_fact_m,
+                                 is_background_fact_m, std::move(new_vector));
     return std::make_shared<Grounding>(result);
 }
 
@@ -110,12 +110,12 @@ bool Grounding::has_expired(uint64_t time, uint64_t tuple_counter) const {
 }
 
 std::shared_ptr<Grounding>
-Grounding::new_constant(size_t index, std::string const &constant) const {
+Grounding::new_constant(size_t index, std::string constant) const {
     std::vector<std::string> new_vector = constant_vector;
-    new_vector.insert(new_vector.begin() + index, constant);
+    new_vector.insert(new_vector.begin() + index, std::move(constant));
     Grounding result =
         Grounding(consideration_time, horizon_time, consideration_count,
-                  horizon_count, new_vector);
+                  horizon_count, std::move(new_vector));
     return std::make_shared<Grounding>(result);
 }
 
@@ -124,7 +124,7 @@ std::shared_ptr<Grounding> Grounding::remove_constant(size_t index) const {
     new_vector.erase(new_vector.begin() + index);
     Grounding result =
         Grounding(consideration_time, horizon_time, consideration_count,
-                  horizon_count, new_vector);
+                  horizon_count, std::move(new_vector));
     return std::make_shared<Grounding>(result);
 }
 

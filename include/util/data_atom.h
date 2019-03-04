@@ -23,9 +23,9 @@ class DataAtom {
     ~DataAtom() = default;
 
     // getters & setters
-    std::string get_predicate() const;
+    std::string const &get_predicate() const;
 
-    std::vector<std::string> get_arguments() const;
+    std::vector<std::string> const &get_arguments() const;
 
     // methods
 };

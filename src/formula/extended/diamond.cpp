@@ -40,15 +40,15 @@ std::vector<std::string> Diamond::get_predicate_vector() const {
 
 // methods
 
-std::vector<std::string> Diamond::get_variable_names() const {
+std::vector<std::string> const &Diamond::get_variable_names() const {
     return child->get_variable_names();
 }
 
-std::vector<std::string> Diamond::get_full_variable_names() const {
+std::vector<std::string> const &Diamond::get_full_variable_names() const {
     return child->get_full_variable_names();
 }
 
-int Diamond::get_variable_index(std::string variable_name) const {
+int Diamond::get_variable_index(std::string const &variable_name) const {
     return child->get_variable_index(variable_name);
 }
 
@@ -62,26 +62,26 @@ std::string Diamond::debug_string() const { return child->debug_string(); }
 
 void Diamond::add_child(formula::Formula *child) {}
 
-std::vector<std::shared_ptr<Grounding>> Diamond::get_groundings(util::Timeline timeline) {
+std::vector<std::shared_ptr<Grounding>> Diamond::get_groundings(util::Timeline const &timeline) {
      auto const &grounding_vector = grounding_table.get_all_groundings();
      std::vector<std::shared_ptr<Grounding>> result;
      for (auto const &grounding : grounding_vector) {
          auto new_grounding = grounding->new_horizon_time(util::Timeline::INFINITE_TIME);
-         result.push_back(new_grounding);
+         result.push_back(std::move(new_grounding));
      } 
      return result;
 }
 
-std::vector<std::shared_ptr<Grounding>> Diamond::get_conclusions_timepoint(util::Timeline timeline) {
+std::vector<std::shared_ptr<Grounding>> Diamond::get_conclusions_timepoint(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
 
-std::vector<std::shared_ptr<Grounding>> Diamond::get_conclusions_step(util::Timeline timeline) {
+std::vector<std::shared_ptr<Grounding>> Diamond::get_conclusions_step(util::Timeline const &timeline) {
     return grounding_table.get_recent_groundings();
 }
 
 bool Diamond::evaluate(
-    util::Timeline timeline,
+    util::Timeline const &timeline,
     std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>> const &facts) {
     bool result = child->evaluate(timeline, facts);
     auto child_facts = child->get_groundings(timeline);
@@ -89,7 +89,7 @@ bool Diamond::evaluate(
     return result;
 }
 
-void Diamond::expire_outdated_groundings(util::Timeline timeline) {
+void Diamond::expire_outdated_groundings(util::Timeline const &timeline) {
     child->expire_outdated_groundings(timeline);
     grounding_table.expire_outdated_groundings(timeline.get_min_time(),
                                                timeline.get_tuple_count());

@@ -10,8 +10,8 @@
  */
 static inline void ltrim(std::string *s) {
     s->erase(s->begin(), std::find_if(s->begin(), s->end(), [](int ch) {
-        return !std::isspace(ch);
-    }));
+                 return !std::isspace(ch);
+             }));
 }
 
 /* trim from end (in place)
@@ -19,9 +19,10 @@ static inline void ltrim(std::string *s) {
  * https://stackoverflow.com/questions/216823/whats-the-best-way-to-trim-stdstring
  */
 static inline void rtrim(std::string *s) {
-    s->erase(std::find_if(s->rbegin(), s->rend(), [](int ch) {
-        return !std::isspace(ch);
-    }).base(), s->end());
+    s->erase(std::find_if(s->rbegin(), s->rend(),
+                          [](int ch) { return !std::isspace(ch); })
+                 .base(),
+             s->end());
 }
 
 /* trim from both ends (in place)
@@ -37,7 +38,6 @@ static inline void syntax_error(std::string error_message) {
     std::string message = "Syntax Error in Simple Parser: " + error_message;
     const char *exception_message = message.c_str();
     throw laser::util::FormatException(exception_message);
-
 }
 
 // === Tokenizer ===
@@ -54,9 +54,9 @@ Token SimpleParser::recognize(std::string token_string) const {
     return token;
 }
 
-std::vector<Token> SimpleParser::add_token_attempt(
-        std::vector<Token> token_vector,
-        std::ostringstream &token_stream) const {
+std::vector<Token>
+SimpleParser::add_token_attempt(std::vector<Token> token_vector,
+                                std::ostringstream &token_stream) const {
     std::string str = token_stream.str();
     if (!str.empty()) {
         Token token = recognize(str);
@@ -67,9 +67,9 @@ std::vector<Token> SimpleParser::add_token_attempt(
     return token_vector;
 }
 
-std::vector<Token> SimpleParser::add_new_token(
-        std::vector<Token> token_vector,
-        TokenType type, char value_char) const {
+std::vector<Token> SimpleParser::add_new_token(std::vector<Token> token_vector,
+                                               TokenType type,
+                                               char value_char) const {
     Token token;
     token.type = type;
     std::string value_string(1, value_char);
@@ -86,18 +86,16 @@ std::vector<Token> SimpleParser::tokenize(std::string rule_string) const {
     while (rule_stream >> c) {
         if (c == ',') {
             token_vector = add_token_attempt(token_vector, token_stream);
-            token_vector = add_new_token(token_vector, TokenType::OPERATOR,
-                    c);
+            token_vector = add_new_token(token_vector, TokenType::OPERATOR, c);
 
         } else if (c == '(') {
             token_vector = add_token_attempt(token_vector, token_stream);
             token_vector =
-                    add_new_token(token_vector, TokenType::OPEN_PARENTHESES, c);
+                add_new_token(token_vector, TokenType::OPEN_PARENTHESES, c);
         } else if (c == ')') {
             token_vector = add_token_attempt(token_vector, token_stream);
             token_vector =
-                    add_new_token(token_vector, TokenType::CLOSED_PARENTHESES,
-                            c);
+                add_new_token(token_vector, TokenType::CLOSED_PARENTHESES, c);
         } else {
             token_stream << c;
         }
@@ -112,56 +110,49 @@ std::vector<Token> SimpleParser::tokenize(std::string rule_string) const {
 
 // ======== Parser =========
 
-
 std::vector<laser::util::DataAtom>
-SimpleParser::parse_token_vector(
-        std::vector<Token> input_token_vector) {
+SimpleParser::parse_token_vector(std::vector<Token> input_token_vector) {
     std::vector<std::string> token_list;
     std::string predicate;
     std::vector<laser::util::DataAtom> result;
     for (auto token : input_token_vector) {
         switch (token.type) {
-            case TokenType::OPEN_PARENTHESES : {
-                // TODO: check there is exactly one element in token_list
-                predicate = token_list.at(0);
-                token_list.clear();
-                break;
-            }
-            case TokenType::OPERATOR : {
-                // TODO: ignore for now, use later for syntax check
-                break;
-            }
-            case TokenType::IDENTIFIER : {
-                token_list.push_back(token.value);
-                break;
-            }
-            case TokenType::CLOSED_PARENTHESES : {
-                result.emplace_back(predicate, token_list);
-                token_list.clear();
-                break;
-            }
+        case TokenType::OPEN_PARENTHESES: {
+            // TODO: check there is exactly one element in token_list
+            predicate = token_list.at(0);
+            token_list.clear();
+            break;
+        }
+        case TokenType::OPERATOR: {
+            // TODO: ignore for now, use later for syntax check
+            break;
+        }
+        case TokenType::IDENTIFIER: {
+            token_list.push_back(token.value);
+            break;
+        }
+        case TokenType::CLOSED_PARENTHESES: {
+            result.emplace_back(predicate, token_list);
+            token_list.clear();
+            break;
+        }
         }
     }
     return result;
 }
 
 std::vector<laser::util::DataAtom>
-SimpleParser::parse_data(
-        std::vector<std::string>
-        raw_data_vector) {
+SimpleParser::parse_data(std::vector<std::string> raw_data_vector) {
     std::vector<laser::util::DataAtom> data_atom_vector;
     for (const auto &raw_string : raw_data_vector) {
         auto token_vector = tokenize(raw_string);
         if (!token_vector.empty()) {
-            auto temp_vector =
-                    parse_token_vector(std::move(token_vector));
-            data_atom_vector
-                    .insert(data_atom_vector.end(), temp_vector.begin(),
-                            temp_vector.end());
+            auto temp_vector = parse_token_vector(std::move(token_vector));
+            data_atom_vector.insert(
+                data_atom_vector.end(),
+                std::make_move_iterator(temp_vector.begin()),
+                std::make_move_iterator(temp_vector.end()));
         }
     }
     return data_atom_vector;
 }
-
-
-

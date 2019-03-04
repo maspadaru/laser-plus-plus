@@ -320,7 +320,7 @@ laser::formula::Formula *DefaultRuleReader::parse_predicate_atom() {
         }
         skip_expected_char(')');
     }
-    return new laser::formula::Atom(predicate, argument_vector);
+    return new laser::formula::Atom(predicate, std::move(argument_vector));
 }
 
 laser::formula::Formula *DefaultRuleReader::parse_comparison_atom() {

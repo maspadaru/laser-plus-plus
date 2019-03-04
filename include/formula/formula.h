@@ -54,31 +54,31 @@ class Formula {
      * Return a list of unique variable names
      * E.g.: p(X, X, Y) -> ["X", "Y"]
      */
-    virtual std::vector<std::string> get_variable_names() const = 0;
+    virtual std::vector<std::string> const &get_variable_names() const = 0;
 
     /**
      * Return a list of all variable names, including duplicates.
      * Useful for formating the output of a program.
      * E.g.: p(X, X, Y) -> ["X", "X", "Y"]
      */
-    virtual std::vector<std::string> get_full_variable_names() const = 0;
+    virtual std::vector<std::string> const &get_full_variable_names() const = 0;
 
-    virtual int get_variable_index(std::string variable_name) const = 0;
+    virtual int get_variable_index(std::string const &variable_name) const = 0;
 
     virtual bool is_satisfied() const = 0;
 
     virtual bool evaluate(
-        util::Timeline timeline,
+        util::Timeline const &timeline,
         std::unordered_map<
             std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
             &facts) = 0;
 
     virtual size_t get_number_of_variables() const = 0;
 
-    virtual void expire_outdated_groundings(util::Timeline timeline) = 0;
+    virtual void expire_outdated_groundings(util::Timeline const &timeline) = 0;
 
     virtual std::vector<std::shared_ptr<Grounding>>
-    get_groundings(util::Timeline timeline) = 0;
+    get_groundings(util::Timeline const &timeline) = 0;
 
     /**
      * Returns only the new conclusion that were derived since the rule was last
@@ -89,7 +89,7 @@ class Formula {
      * Atom and Exact_Time
      */
     virtual std::vector<std::shared_ptr<Grounding>>
-    get_conclusions_step(util::Timeline timeline) = 0;
+    get_conclusions_step(util::Timeline const &timeline) = 0;
 
     /**
      * Returns all the new conclusion that were derived during the current
@@ -97,7 +97,7 @@ class Formula {
      * conclusions from the head of the rule, i.e.: only for Atom and Exact_Time
      */
     virtual std::vector<std::shared_ptr<Grounding>>
-    get_conclusions_timepoint(util::Timeline timeline) = 0;
+    get_conclusions_timepoint(util::Timeline const &timeline) = 0;
 
     virtual std::string debug_string() const = 0;
 };

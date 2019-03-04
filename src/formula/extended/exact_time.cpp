@@ -51,19 +51,18 @@ std::vector<std::string> ExactTime::get_predicate_vector() const {
 
 // methods
 
-std::vector<std::string> ExactTime::get_variable_names() const {
+std::vector<std::string> const &ExactTime::get_variable_names() const {
     return grounding_table.get_variable_names();
 }
 
-std::vector<std::string> ExactTime::get_full_variable_names() const {
+std::vector<std::string> const &ExactTime::get_full_variable_names() const {
     // Only child variable names should be returned. This method is only useful
     // for writing to output. Since the timevariable will not be writed, it
     // should not be returned.
-    auto result = child->get_full_variable_names();
-    return result;
+    return child->get_full_variable_names();
 }
 
-int ExactTime::get_variable_index(std::string variable_name) const {
+int ExactTime::get_variable_index(std::string const &variable_name) const {
     return grounding_table.get_variable_index(variable_name);
 }
 
@@ -80,8 +79,9 @@ void ExactTime::add_child(formula::Formula *child) {}
 std::shared_ptr<Grounding>
 ExactTime::add_time_variable(util::Timeline const &timeline,
                              Grounding const &grounding) const {
-    auto result = grounding.new_constant(get_time_variable_index(),
-                                         std::to_string(timeline.get_time()));
+    auto result =
+        grounding.new_constant(get_time_variable_index(),
+                               std::move(std::to_string(timeline.get_time())));
     return result;
 }
 
@@ -118,18 +118,17 @@ std::vector<std::shared_ptr<Grounding>> ExactTime::convert_groundings_body(
 }
 
 std::vector<std::shared_ptr<Grounding>> ExactTime::revert_groundings(
-    util::Timeline const &timeline,
     std::vector<std::shared_ptr<Grounding>> groundings) const {
     std::vector<std::shared_ptr<Grounding>> result_vector;
     for (auto const &grounding : groundings) {
         auto new_grounding = remove_time_variable(*grounding);
-        result_vector.push_back(new_grounding);
+        result_vector.push_back(std::move(new_grounding));
     }
     return result_vector;
 }
 
 std::vector<std::shared_ptr<Grounding>>
-ExactTime::get_groundings(util::Timeline timeline) {
+ExactTime::get_groundings(util::Timeline const &timeline) {
     auto grounding_vector = grounding_table.get_all_groundings();
     std::vector<std::shared_ptr<Grounding>> result;
     for (auto &grounding : grounding_vector) {
@@ -137,19 +136,19 @@ ExactTime::get_groundings(util::Timeline timeline) {
             grounding->get_constant(get_time_variable_index());
         uint64_t timevar_value = std::stoull(timevar_string);
         if (timevar_value <= timeline.get_time()) {
-            result.push_back(grounding);
+            result.push_back(std::move(grounding));
         }
     }
     return result;
 }
 
 std::vector<std::shared_ptr<Grounding>>
-ExactTime::get_conclusions_timepoint(util::Timeline timeline) {
+ExactTime::get_conclusions_timepoint(util::Timeline const &timeline) {
     return timepoint_conclusions;
 }
 
 std::vector<std::shared_ptr<Grounding>>
-ExactTime::get_conclusions_step(util::Timeline timeline) {
+ExactTime::get_conclusions_step(util::Timeline const &timeline) {
     // 1. Get recent groundings and add them to conclusions_vector or
     // furure_conclusion_map
     std::vector<std::shared_ptr<Grounding>> conclusions_vector;
@@ -159,22 +158,22 @@ ExactTime::get_conclusions_step(util::Timeline timeline) {
             grounding->get_constant(get_time_variable_index());
         uint64_t timevar_value = std::stoull(timevar_string);
         if (timevar_value == timeline.get_time()) {
-            conclusions_vector.push_back(grounding);
+            conclusions_vector.push_back(std::move(grounding));
         } else {
             future_conclusion_map.try_emplace(timevar_value);
             std::set<std::shared_ptr<Grounding>, GroundingFullCompare>
                 &map_set = future_conclusion_map[timevar_value];
-            map_set.insert(grounding);
+            map_set.insert(std::move(grounding));
         }
     }
     // 2. Add all groundings from future_conclusion_map to conclusions_vector
-    std::set<std::shared_ptr<Grounding>, GroundingFullCompare>
-        &grounding_set = future_conclusion_map[timeline.get_time()];
-    std::copy(grounding_set.begin(), grounding_set.end(),
+    std::set<std::shared_ptr<Grounding>, GroundingFullCompare> &grounding_set =
+        future_conclusion_map[timeline.get_time()];
+    std::move(grounding_set.begin(), grounding_set.end(),
               std::back_inserter(conclusions_vector));
     future_conclusion_map.erase(timeline.get_time());
     // 3. Conclusions should not contain the time variable
-    auto result = revert_groundings(timeline, conclusions_vector);
+    auto result = revert_groundings(std::move(conclusions_vector));
     // 4. Copy result into timepoint_conclusions before returning
     std::copy(result.begin(), result.end(),
               std::back_inserter(timepoint_conclusions));
@@ -182,18 +181,17 @@ ExactTime::get_conclusions_step(util::Timeline timeline) {
 }
 
 void ExactTime::evaluate_head(
-    util::Timeline timeline,
+    util::Timeline const &timeline,
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<Grounding>>> const &facts) {
     std::string predicate = get_predicate_vector().at(0);
     auto predicate_facts = facts.at(predicate);
-    auto exact_time_groundings =
-        convert_groundings_head(predicate_facts);
+    auto exact_time_groundings = convert_groundings_head(predicate_facts);
     grounding_table.add_grounding_vector(exact_time_groundings);
 }
 
 void ExactTime::evaluate_body(
-    util::Timeline timeline,
+    util::Timeline const &timeline,
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<Grounding>>> const &facts) {
     child->evaluate(timeline, facts);
@@ -204,7 +202,7 @@ void ExactTime::evaluate_body(
 }
 
 bool ExactTime::evaluate(
-    util::Timeline timeline,
+    util::Timeline const &timeline,
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<Grounding>>> const &facts) {
     // If the formula is in the head of the rule, we know the child can only
@@ -217,7 +215,7 @@ bool ExactTime::evaluate(
     return grounding_table.has_recent_groundings();
 }
 
-void ExactTime::expire_outdated_groundings(util::Timeline timeline) {
+void ExactTime::expire_outdated_groundings(util::Timeline const &timeline) {
     timepoint_conclusions.clear();
     child->expire_outdated_groundings(timeline);
     grounding_table.expire_outdated_groundings(timeline.get_min_time(),

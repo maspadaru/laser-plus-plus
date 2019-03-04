@@ -12,20 +12,20 @@ namespace formula {
 Atom::Atom(std::string predicate) { this->predicate = std::move(predicate); }
 
 Atom::Atom(std::string predicate,
-           std::vector<std::string> const &variable_names) {
+           std::vector<std::string> variable_names) {
     this->predicate = std::move(predicate);
     set_variable_names(variable_names);
 }
 
-void Atom::set_variable_names(std::vector<std::string> const &variable_names) {
-    this->full_variable_names = variable_names;
+void Atom::set_variable_names(std::vector<std::string> &variable_names) {
+    this->full_variable_names = std::move(variable_names);
     std::vector<std::string> result;
     std::unordered_map<std::string, int> temp;
-    for (size_t index = 0; index < variable_names.size(); index++) {
-        std::string name = variable_names.at(index);
+    for (size_t index = 0; index < full_variable_names.size(); index++) {
+        std::string name = full_variable_names.at(index);
         temp.try_emplace(name, -1);
         if (temp.at(name) >= 0) {
-            binding_map.insert({index, temp.at(name)});
+            binding_map.try_emplace(index, temp.at(name));
         } else {
             first_position_vector.push_back(index);
             result.push_back(name);
@@ -67,11 +67,11 @@ std::vector<std::string> Atom::get_predicate_vector() const {
     return result;
 }
 
-std::vector<std::string> Atom::get_variable_names() const {
+std::vector<std::string> const &Atom::get_variable_names() const {
     return grounding_table.get_variable_names();
 }
 
-std::vector<std::string> Atom::get_full_variable_names() const {
+std::vector<std::string> const &Atom::get_full_variable_names() const {
     return full_variable_names;
 }
 
@@ -85,7 +85,7 @@ size_t Atom::get_number_of_variables() const {
     return grounding_table.get_number_of_variables();
 }
 
-void Atom::expire_outdated_groundings(util::Timeline timeline) {
+void Atom::expire_outdated_groundings(util::Timeline const &timeline) {
     grounding_table.expire_outdated_groundings(timeline.get_time(),
                                                timeline.get_tuple_count());
 }
@@ -103,7 +103,7 @@ std::string Atom::debug_string() const {
 }
 
 std::vector<std::shared_ptr<Grounding>>
-Atom::get_groundings(util::Timeline timeline) {
+Atom::get_groundings(util::Timeline const &timeline) {
     return grounding_table.get_all_groundings();
 }
 
@@ -112,24 +112,23 @@ std::vector<std::shared_ptr<Grounding>> Atom::get_conclusion_set() {
 }
 
 std::vector<std::shared_ptr<Grounding>>
-Atom::get_conclusions_timepoint(util::Timeline timeline) {
-    // return grounding_table.get_all_groundings();
+Atom::get_conclusions_timepoint(util::Timeline const &timeline) {
     return get_conclusion_set();
 }
 
 std::vector<std::shared_ptr<Grounding>>
-Atom::get_conclusions_step(util::Timeline timeline) {
+Atom::get_conclusions_step(util::Timeline const &timeline) {
     return grounding_table.get_recent_groundings();
 }
 
 bool Atom::is_satisfied() const { return grounding_table.get_size() > 0; }
 
 bool Atom::evaluate(
-    util::Timeline timeline,
+    util::Timeline const &timeline,
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<Grounding>>> const &facts) {
     if (facts.count(predicate) > 0) {
-        auto grounding_vector = facts.at(predicate);
+        auto const &grounding_vector = facts.at(predicate);
         for (auto const &grounding : grounding_vector) {
             accept(grounding);
         }
@@ -150,7 +149,7 @@ void Atom::accept(std::shared_ptr<Grounding> const &grounding) {
     }
 }
 
-int Atom::get_variable_index(std::string variable_name) const {
+int Atom::get_variable_index(std::string const &variable_name) const {
     return grounding_table.get_variable_index(variable_name);
 }
 
@@ -174,7 +173,7 @@ Atom::remove_duplicate_variables(Grounding const &grounding) {
                                  grounding.get_horizon_time(),
                                  grounding.get_consideration_count(),
                                  grounding.get_horizon_count(), result_values);
-    return std::make_shared<Grounding>(result);
+    return std::make_shared<Grounding>(std::move(result));
 }
 
 void Atom::add_child(formula::Formula *child) {}

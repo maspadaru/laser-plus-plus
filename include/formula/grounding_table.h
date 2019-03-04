@@ -35,7 +35,7 @@ class GroundingTable {
   public:
     size_t get_size() const;
 
-    std::vector<std::string> get_variable_names() const;
+    std::vector<std::string> const &get_variable_names() const;
 
     void set_variable_names(std::vector<std::string> variable_names);
 

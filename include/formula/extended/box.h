@@ -33,12 +33,12 @@ class Box : public Formula {
     std::pair<bool, std::shared_ptr<Grounding>>
     adjust_annotation(std::shared_ptr<Grounding> const &box_grounding,
                       std::shared_ptr<Grounding> const &child_grounding,
-                      util::Timeline timeline) const;
+                      util::Timeline const &timeline) const;
 
-    std::vector<std::shared_ptr<Grounding>> compute_box_conclusions(util::Timeline timeline);
+    std::vector<std::shared_ptr<Grounding>> compute_box_conclusions(util::Timeline const &timeline);
 
     void update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts,
-            util::Timeline timeline);
+            util::Timeline const &timeline);
 
   public:
     // constructors / destructors
@@ -64,32 +64,32 @@ class Box : public Formula {
 
     // methods
 
-    std::vector<std::string> get_variable_names() const override;
+    std::vector<std::string> const &get_variable_names() const override;
 
-    std::vector<std::string> get_full_variable_names() const override;
+    std::vector<std::string> const &get_full_variable_names() const override;
 
-    int get_variable_index(std::string variable_name) const override;
+    int get_variable_index(std::string const &variable_name) const override;
 
     bool is_satisfied() const override;
 
     size_t get_number_of_variables() const override;
 
-    std::vector<std::shared_ptr<Grounding>> get_groundings(util::Timeline timeline) override;
+    std::vector<std::shared_ptr<Grounding>> get_groundings(util::Timeline const &timeline) override;
 
     std::vector<std::shared_ptr<Grounding>>
-    get_conclusions_timepoint(util::Timeline timeline) override;
+    get_conclusions_timepoint(util::Timeline const &timeline) override;
 
     std::vector<std::shared_ptr<Grounding>>
-    get_conclusions_step(util::Timeline timeline) override;
+    get_conclusions_step(util::Timeline const &timeline) override;
 
     std::string debug_string() const override;
 
     bool evaluate(
-        util::Timeline timeline,
+        util::Timeline const &timeline,
         std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>> const
             &facts) override;
 
-    void expire_outdated_groundings(util::Timeline timeline) override;
+    void expire_outdated_groundings(util::Timeline const &timeline) override;
 
     void add_child(formula::Formula *child) override;
 };

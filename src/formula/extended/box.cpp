@@ -36,15 +36,15 @@ std::vector<std::string> Box::get_predicate_vector() const {
 
 // methods
 
-std::vector<std::string> Box::get_variable_names() const {
+std::vector<std::string> const &Box::get_variable_names() const {
     return child->get_variable_names();
 }
 
-std::vector<std::string> Box::get_full_variable_names() const {
+std::vector<std::string> const &Box::get_full_variable_names() const {
     return child->get_full_variable_names();
 }
 
-int Box::get_variable_index(std::string variable_name) const {
+int Box::get_variable_index(std::string const &variable_name) const {
     return child->get_variable_index(variable_name);
 }
 
@@ -58,7 +58,7 @@ std::string Box::debug_string() const { return child->debug_string(); }
 
 void Box::add_child(formula::Formula *child) {}
 
-void Box::expire_outdated_groundings(util::Timeline timeline) {
+void Box::expire_outdated_groundings(util::Timeline const &timeline) {
     child->expire_outdated_groundings(timeline);
     grounding_table.expire_outdated_groundings(timeline.get_time(),
                                                timeline.get_tuple_count());
@@ -67,7 +67,7 @@ void Box::expire_outdated_groundings(util::Timeline timeline) {
     for (auto iterator = box_map.begin(); iterator != box_map.end();
          /*nothing*/) {
         auto const &key = iterator->first;
-        auto grounding = iterator->second;
+        auto const &grounding = iterator->second;
         bool is_expired = grounding->get_horizon_time() < timeline.get_min_time() 
             || grounding->get_horizon_count() <= timeline.get_tuple_count();
         if (is_expired) {
@@ -79,23 +79,25 @@ void Box::expire_outdated_groundings(util::Timeline timeline) {
 }
 
 std::vector<std::shared_ptr<Grounding>>
-Box::get_groundings(util::Timeline timeline) {
+Box::get_groundings(util::Timeline const &timeline) {
     auto grounding_vector = grounding_table.get_all_groundings();
     return grounding_vector;
 }
 
 std::vector<std::shared_ptr<Grounding>>
-Box::get_conclusions_timepoint(util::Timeline timeline) {
-    return get_groundings(timeline);
+Box::get_conclusions_timepoint(util::Timeline const &timeline) {
+    auto result = get_groundings(timeline);
+    return result;
 }
 
 std::vector<std::shared_ptr<Grounding>>
-Box::get_conclusions_step(util::Timeline timeline) {
-    return grounding_table.get_recent_groundings();
+Box::get_conclusions_step(util::Timeline const &timeline) {
+    auto result = grounding_table.get_recent_groundings();
+    return result;
 }
 
 bool Box::evaluate(
-    util::Timeline timeline,
+    util::Timeline const &timeline,
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<Grounding>>> const &facts) {
     bool result = child->evaluate(timeline, facts);
@@ -109,7 +111,7 @@ bool Box::evaluate(
 }
 
 std::vector<std::shared_ptr<Grounding>>
-Box::compute_box_conclusions(util::Timeline timeline) {
+Box::compute_box_conclusions(util::Timeline const &timeline) {
     std::vector<std::shared_ptr<Grounding>> result;
     uint64_t current_time = timeline.get_time();
     uint64_t start_time = timeline.get_min_time();
@@ -126,14 +128,14 @@ Box::compute_box_conclusions(util::Timeline timeline) {
         if (ct <= start_time && ht >= current_time) {
             auto new_grounding = grounding->new_annotations(
                 current_time, current_time, cc, hc);
-            result.push_back(new_grounding);
+            result.push_back(std::move(new_grounding));
         }
     }
     return result;
 }
 
 void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts, 
-        util::Timeline timeline) {
+        util::Timeline const &timeline) {
     bool keep_going = true;
     while (keep_going) {
         // We need to repete as we may have in box p(a)[1, 1], and get
@@ -157,7 +159,7 @@ void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts,
 std::pair<bool, std::shared_ptr<Grounding>> Box::adjust_annotation(
     std::shared_ptr<Grounding> const &box_grounding,
     std::shared_ptr<Grounding> const &child_grounding,
-    util::Timeline timeline) const {
+    util::Timeline const &timeline) const {
     bool is_modified = false;
     auto ct1 = box_grounding->get_consideration_time();
     auto ht1 = box_grounding->get_horizon_time();

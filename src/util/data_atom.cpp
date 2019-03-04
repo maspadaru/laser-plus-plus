@@ -10,9 +10,9 @@ namespace util {
 DataAtom::DataAtom(std::string predicate, std::vector<std::string> arguments)
     : predicate(std::move(predicate)), argument_vector(std::move(arguments)) {}
 
-std::string DataAtom::get_predicate() const { return predicate; }
+std::string const &DataAtom::get_predicate() const { return predicate; }
 
-std::vector<std::string> DataAtom::get_arguments() const {
+std::vector<std::string> const &DataAtom::get_arguments() const {
     return argument_vector;
 }
 

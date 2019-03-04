@@ -35,15 +35,15 @@ std::vector<std::string> TupleWindow::get_predicate_vector() const {
 
 // methods
 
-std::vector<std::string> TupleWindow::get_variable_names() const {
+std::vector<std::string> const &TupleWindow::get_variable_names() const {
     return child->get_variable_names();
 }
 
-std::vector<std::string> TupleWindow::get_full_variable_names() const {
+std::vector<std::string> const &TupleWindow::get_full_variable_names() const {
     return child->get_full_variable_names();
 }
 
-int TupleWindow::get_variable_index(std::string variable_name) const {
+int TupleWindow::get_variable_index(std::string const &variable_name) const {
     return child->get_variable_index(variable_name);
 }
 
@@ -70,7 +70,7 @@ TupleWindow::adjust_annotations(
                 auto horizon_count = compute_horizon_count(
                     fact->get_consideration_count(), fact->get_horizon_count());
                 auto grounding = fact->new_horizon_count(horizon_count);
-                result_vector.push_back(grounding);
+                result_vector.push_back(std::move(grounding));
             }
         }
     }
@@ -105,7 +105,7 @@ util::Timeline TupleWindow::alter_timeline(util::Timeline timeline) const {
 }
 
 bool TupleWindow::evaluate(
-    util::Timeline timeline,
+    util::Timeline const &timeline,
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<Grounding>>> const &facts) {
     auto child_facts = adjust_annotations(facts);
@@ -113,7 +113,7 @@ bool TupleWindow::evaluate(
     return child->evaluate(window_timeline, child_facts);
 }
 
-void TupleWindow::expire_outdated_groundings(util::Timeline timeline) {
+void TupleWindow::expire_outdated_groundings(util::Timeline const &timeline) {
     auto window_timeline = alter_timeline(timeline);
     child->expire_outdated_groundings(window_timeline);
 }
@@ -129,17 +129,17 @@ TupleWindow::compute_horizon_count(uint64_t grounding_consideration_count,
 }
 
 std::vector<std::shared_ptr<Grounding>>
-TupleWindow::get_groundings(util::Timeline timeline) {
+TupleWindow::get_groundings(util::Timeline const &timeline) {
     return child->get_groundings(timeline);
 }
 
 std::vector<std::shared_ptr<Grounding>>
-TupleWindow::get_conclusions_timepoint(util::Timeline timeline) {
+TupleWindow::get_conclusions_timepoint(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
 
 std::vector<std::shared_ptr<Grounding>>
-TupleWindow::get_conclusions_step(util::Timeline timeline) {
+TupleWindow::get_conclusions_step(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
 
