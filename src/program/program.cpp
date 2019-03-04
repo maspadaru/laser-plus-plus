@@ -51,13 +51,13 @@ Program::compute_new_facts() {
     for (auto const &rule : rule_vector) {
         formula::Formula *head = &rule.get_head();
         auto const &predicate_vector = head->get_predicate_vector();
-        for (auto const &conclusion : head->get_conclusions_step(timeline)) {
+        for (auto &conclusion : head->get_conclusions_step(timeline)) {
             // In case head formula has multiple predicates. Might be imposible
             for (auto const &predicate : predicate_vector) {
                 new_conclusions.try_emplace(predicate);
                 std::vector<std::shared_ptr<formula::Grounding>>
                     &conclusions_vector = new_conclusions[predicate];
-                conclusions_vector.push_back(conclusion);
+                conclusions_vector.push_back(std::move(conclusion));
             }
         }
     }

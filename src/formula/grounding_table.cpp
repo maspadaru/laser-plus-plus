@@ -14,7 +14,8 @@ bool GroundingTable::has_recent_groundings() {
 
 std::vector<std::shared_ptr<Grounding>>
 GroundingTable::get_recent_groundings() {
-    std::vector<std::shared_ptr<Grounding>> result = recent_groundings_vector;
+    std::vector<std::shared_ptr<Grounding>> result =
+        std::move(recent_groundings_vector);
     recent_groundings_vector.clear();
     return result;
 }

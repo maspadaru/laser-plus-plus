@@ -1,8 +1,8 @@
 #ifndef LASER_FORMULA_EXTENDED_EXACT_TIME_H
 #define LASER_FORMULA_EXTENDED_EXACT_TIME_H
 
-#include <string>
 #include <set>
+#include <string>
 
 #include "formula/formula.h"
 #include "formula/grounding.h"
@@ -31,37 +31,34 @@ class ExactTime : public Formula {
      *      value: Set of all groundings sharing the same time variable
      */
     std::unordered_map<
-        uint64_t,
-        std::set<std::shared_ptr<Grounding>, GroundingFullCompare>>
+        uint64_t, std::set<std::shared_ptr<Grounding>, GroundingFullCompare>>
         future_conclusion_map;
 
     std::vector<std::shared_ptr<Grounding>> timepoint_conclusions;
 
     std::vector<std::shared_ptr<Grounding>> convert_groundings_head(
-        util::Timeline timeline,
         std::vector<std::shared_ptr<Grounding>> const &groundings) const;
 
     /**
      * Adds the Time Variable to all the groundings in groundings vector
      */
     std::vector<std::shared_ptr<Grounding>> convert_groundings_body(
-        util::Timeline timeline,
+        util::Timeline const &timeline,
         std::vector<std::shared_ptr<Grounding>> groundings) const;
 
     /**
      * Removes the Time Variable from all the groundings in groundings vector
      */
     std::vector<std::shared_ptr<Grounding>>
-    revert_groundings(util::Timeline timeline,
+    revert_groundings(util::Timeline const &timeline,
                       std::vector<std::shared_ptr<Grounding>> groundings) const;
 
     std::shared_ptr<Grounding>
-    add_time_variable(util::Timeline timeline,
+    add_time_variable(util::Timeline const &timeline,
                       Grounding const &grounding) const;
 
     std::shared_ptr<Grounding>
-    remove_time_variable(util::Timeline timeline,
-                         Grounding const &grounding) const;
+    remove_time_variable(Grounding const &grounding) const;
 
     void init();
 

@@ -74,7 +74,7 @@ class Grounding {
 
     // methods
 
-    std::string get_constant(size_t variable_index) const;
+    std::string const &get_constant(size_t variable_index) const;
 
     bool has_expired(uint64_t time, uint64_t tuple_counter) const;
 

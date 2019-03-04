@@ -152,14 +152,14 @@ Conjunction::hash_common_variables(Formula const &child,
     std::stringstream ss;
     for (auto &variable : common_child_variables) {
         size_t variable_index = child.get_variable_index(variable);
-        auto constant = grounding.get_constant(variable_index);
+        auto const &constant = grounding.get_constant(variable_index);
         ss << constant << ";;";
     }
     return ss.str();
 }
 
 std::shared_ptr<Grounding>
-Conjunction::merge_groundings(util::Timeline timeline, Grounding const &left,
+Conjunction::merge_groundings(util::Timeline const &timeline, Grounding const &left,
                               Grounding const &right) const {
     auto ct = timeline.get_time();
     auto ht = timeline.min(left.get_horizon_time(), right.get_horizon_time());

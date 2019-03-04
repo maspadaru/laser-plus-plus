@@ -51,7 +51,7 @@ formula::Formula &Rule::get_head() const { return this->head; }
 
 // methods
 
-void Rule::expire_outdated_groundings(util::Timeline timeline) {
+void Rule::expire_outdated_groundings(util::Timeline const &timeline) {
     head.expire_outdated_groundings(timeline);
     body.expire_outdated_groundings(timeline);
 }
@@ -65,7 +65,7 @@ void Rule::debug_print() const {
 }
 
 bool Rule::evaluate(
-    util::Timeline timeline,
+    util::Timeline const &timeline,
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<formula::Grounding>>> const
         &facts) {
@@ -83,7 +83,7 @@ void Rule::compute_variable_map() {
          head_index++) {
         auto body_index =
             body.get_variable_index(head_variable_vector.at(head_index));
-        variable_map.insert({head_index, body_index});
+        variable_map.try_emplace(head_index, body_index);
     }
 }
 
@@ -102,7 +102,7 @@ Rule::convert_to_head_grounding(formula::Grounding const &grounding) const {
     return std::make_shared<formula::Grounding>(result);
 }
 
-bool Rule::derive_conclusions(util::Timeline timeline) {
+bool Rule::derive_conclusions(util::Timeline const &timeline) {
     bool result = false;
     std::vector<std::shared_ptr<formula::Grounding>> predicate_facts;
     std::vector<std::shared_ptr<formula::Grounding>> body_groundings =
@@ -111,7 +111,7 @@ bool Rule::derive_conclusions(util::Timeline timeline) {
         // SNE: we only evaluate groundings derived at this current timepoint
         if (grounding->get_consideration_time() >= timeline.get_time()) {
             auto head_grounding = convert_to_head_grounding(*grounding);
-            predicate_facts.push_back(head_grounding);
+            predicate_facts.push_back(std::move(head_grounding));
         }
     }
     bool is_body_satisfied = !predicate_facts.empty();
@@ -119,11 +119,8 @@ bool Rule::derive_conclusions(util::Timeline timeline) {
         std::unordered_map<std::string,
                            std::vector<std::shared_ptr<formula::Grounding>>>
             body_facts;
-        // a bit overcomplicated, but this will allow more flexibility in the
-        // head
-        for (auto predicate : head.get_predicate_vector()) {
-            body_facts.insert({predicate, predicate_facts});
-        }
+        auto predicate = head.get_predicate_vector().at(0);
+        body_facts.try_emplace(std::move(predicate), std::move(predicate_facts));
         result = head.evaluate(timeline, body_facts);
     }
     return result;

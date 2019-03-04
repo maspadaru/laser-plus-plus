@@ -61,11 +61,11 @@ IOHandler::handle_output(util::Timeline const &timeline,
             for (auto const &variable_name : variable_names) {
                 size_t variable_index =
                     formula->get_variable_index(variable_name);
-                std::string argument = grounding->get_constant(variable_index);
+                auto const& argument = grounding->get_constant(variable_index);
                 argument_vector.push_back(argument);
             }
             auto data_atom = util::DataAtom(predicate, std::move(argument_vector));
-            result.push_back(data_atom);
+            result.push_back(std::move(data_atom));
         }
     }
     return result;

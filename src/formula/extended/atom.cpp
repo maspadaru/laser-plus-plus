@@ -157,8 +157,8 @@ int Atom::get_variable_index(std::string variable_name) const {
 bool Atom::is_valid_fact(Grounding const &grounding) const {
     bool is_valid = true;
     for (auto const &iterator : binding_map) {
-        auto first = grounding.get_constant(iterator.first);
-        auto second = grounding.get_constant(iterator.second);
+        auto const &first = grounding.get_constant(iterator.first);
+        auto const &second = grounding.get_constant(iterator.second);
         is_valid &= first == second;
     }
     return is_valid;

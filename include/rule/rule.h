@@ -60,14 +60,14 @@ class Rule {
      * time point and tuple counter
      */
     bool evaluate(
-        util::Timeline timeline,
+        util::Timeline const &timeline,
         std::unordered_map<
             std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
             &facts);
 
-    void expire_outdated_groundings(util::Timeline timeline);
+    void expire_outdated_groundings(util::Timeline const &timeline);
 
-    bool derive_conclusions(util::Timeline timeline);
+    bool derive_conclusions(util::Timeline const &timeline);
 
     void debug_print() const;
 

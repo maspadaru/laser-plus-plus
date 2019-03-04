@@ -43,14 +43,17 @@ class Conjunction : public Formula {
                                           std::vector<T, A> right) const;
 
     void populate_variable_collections();
-    void populate_grounding_vector(util::Timeline timeline,
-                                   std::vector<std::shared_ptr<Grounding>> left_groundings,
-                                   std::vector<std::shared_ptr<Grounding>> right_groundings);
+    void populate_grounding_vector(
+        util::Timeline timeline,
+        std::vector<std::shared_ptr<Grounding>> left_groundings,
+        std::vector<std::shared_ptr<Grounding>> right_groundings);
 
-    std::string hash_common_variables(Formula const &child, Grounding const &grounding) const;
+    std::string hash_common_variables(Formula const &child,
+                                      Grounding const &grounding) const;
 
-    std::shared_ptr<Grounding> merge_groundings(util::Timeline timeline, Grounding const &left,
-                               Grounding const &right) const;
+    std::shared_ptr<Grounding> merge_groundings(util::Timeline const &timeline,
+                                                Grounding const &left,
+                                                Grounding const &right) const;
 
   public:
     // constructors / destructors
@@ -85,16 +88,19 @@ class Conjunction : public Formula {
     std::vector<std::shared_ptr<Grounding>>
     get_groundings(util::Timeline timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>> get_conclusions_step(util::Timeline timeline) override;
+    std::vector<std::shared_ptr<Grounding>>
+    get_conclusions_step(util::Timeline timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>> get_conclusions_timepoint(util::Timeline timeline) override;
+    std::vector<std::shared_ptr<Grounding>>
+    get_conclusions_timepoint(util::Timeline timeline) override;
 
     std::string debug_string() const override;
 
     bool
     evaluate(util::Timeline timeline,
-             std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>>
-                 const &facts) override;
+             std::unordered_map<std::string,
+                                std::vector<std::shared_ptr<Grounding>>> const
+                 &facts) override;
 
     void expire_outdated_groundings(util::Timeline timeline) override;
 

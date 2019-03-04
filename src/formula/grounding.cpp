@@ -96,7 +96,7 @@ void Grounding::compute_hash() {
     hash = hasher(hash_str);
 }
 
-std::string Grounding::get_constant(size_t variable_index) const {
+std::string const &Grounding::get_constant(size_t variable_index) const {
     return constant_vector.at(variable_index);
 }
 
