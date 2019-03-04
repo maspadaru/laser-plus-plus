@@ -33,10 +33,10 @@ class Reasoner {
     void evaluate(util::Timeline timeline);
     void write(util::Timeline timeline);
 
-    void insert_facts(uint64_t timepoint, std::vector<util::DataAtom> const &facts);
+    void insert_facts(uint64_t timepoint, std::vector<util::DataAtom> &facts);
     void remove_facts(uint64_t timepoint);
     void insert_conclusions(uint64_t timepoint,
-                            std::vector<util::DataAtom> const &conclusions);
+                            std::vector<util::DataAtom> &conclusions);
     void remove_conclusions(uint64_t timepoint);
 
   public:

@@ -9,7 +9,8 @@ namespace program {
 
 std::unordered_map<std::string,
                    std::vector<std::shared_ptr<formula::Grounding>>>
-IOHandler::handle_input(util::Timeline &timeline, std::vector<util::DataAtom> const &data_vector) {
+IOHandler::handle_input(util::Timeline &timeline,
+                        std::vector<util::DataAtom> const &data_vector) {
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<formula::Grounding>>>
         result;
@@ -25,28 +26,29 @@ IOHandler::handle_input(util::Timeline &timeline, std::vector<util::DataAtom> co
         auto grounding = std::make_shared<laser::formula::Grounding>(
             time, time, current_tuple_counter, max_tuple_counter, true, false,
             data.get_arguments());
-        map_vector.push_back(grounding);
+        map_vector.push_back(std::move(grounding));
     }
     timeline.set_tuple_count(current_tuple_counter);
     return result;
 }
 
 std::vector<std::shared_ptr<formula::Grounding>> IOHandler::remove_duplicates(
-    std::vector<std::shared_ptr<formula::Grounding>> input_groundings) const {
+    std::vector<std::shared_ptr<formula::Grounding>> &input_groundings) const {
     std::set<std::shared_ptr<formula::Grounding>,
              formula::GroundingSubstitutionCompare>
         grounding_set;
-    for (auto const &grounding : input_groundings) {
-        grounding_set.insert(grounding);
+    for (auto &grounding : input_groundings) {
+        grounding_set.insert(std::move(grounding));
     }
     std::vector<std::shared_ptr<formula::Grounding>> result;
-    result.insert(result.end(), grounding_set.begin(), grounding_set.end());
+    result.insert(result.end(), std::make_move_iterator(grounding_set.begin()),
+                  std::make_move_iterator(grounding_set.end()));
     return result;
 }
 
 std::vector<util::DataAtom>
 IOHandler::handle_output(util::Timeline const &timeline,
-              std::vector<formula::Formula *> const &conclusions) {
+                         std::vector<formula::Formula *> const &conclusions) {
     std::vector<util::DataAtom> result;
     for (auto const formula : conclusions) {
         std::string predicate = formula->get_predicate_vector().at(0);
@@ -62,7 +64,7 @@ IOHandler::handle_output(util::Timeline const &timeline,
                 std::string argument = grounding->get_constant(variable_index);
                 argument_vector.push_back(argument);
             }
-            auto data_atom = util::DataAtom(predicate, argument_vector);
+            auto data_atom = util::DataAtom(predicate, std::move(argument_vector));
             result.push_back(data_atom);
         }
     }

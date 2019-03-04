@@ -12,9 +12,9 @@ Reasoner::Reasoner(io::RuleReader *rule_reader,
     : rule_reader(rule_reader), io_manager(io_manager) {}
 
 void Reasoner::insert_facts(
-    uint64_t timepoint, std::vector<util::DataAtom> const &facts) {
+    uint64_t timepoint, std::vector<util::DataAtom> &facts) {
     std::lock_guard<std::mutex> guard(fact_map_mutex);
-    fact_map.try_emplace(timepoint, facts);
+    fact_map.try_emplace(timepoint, std::move(facts));
 }
 
 void Reasoner::remove_facts(uint64_t timepoint) {
@@ -23,9 +23,9 @@ void Reasoner::remove_facts(uint64_t timepoint) {
 }
 
 void Reasoner::insert_conclusions(
-    uint64_t timepoint, std::vector<util::DataAtom> const &conclusions) {
+    uint64_t timepoint, std::vector<util::DataAtom> &conclusions) {
     std::lock_guard<std::mutex> guard(conclusion_map_mutex);
-    conclusion_map.try_emplace(timepoint, conclusions);
+    conclusion_map.try_emplace(timepoint, std::move(conclusions));
 }
 
 void Reasoner::remove_conclusions(uint64_t timepoint) {
@@ -67,7 +67,7 @@ void Reasoner::evaluate(util::Timeline timeline) {
     while (!timeline.is_past_max_time()) {
         bool has_new_input = fact_map.count(time) > 0;
         if (has_new_input) {
-            auto &facts = fact_map.at(time);
+            auto const &facts = fact_map.at(time);
             clock_t begin = clock();
             auto conclusions = program.evaluate(timeline, facts);
             clock_t end = clock();
