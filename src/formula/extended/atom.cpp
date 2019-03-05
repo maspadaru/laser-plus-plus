@@ -41,8 +41,13 @@ Formula &Atom::create() const {
 }
 
 Formula &Atom::clone() const {
-    auto result = new Atom(*this);
-    // TODO ? Is this enough?
+    Atom *result = new Atom(this->predicate);
+    result->is_head_m = this->is_head_m;
+    result->type = this->type;
+    result->full_variable_names = this->full_variable_names;
+    result->binding_map = this->binding_map;
+    result->first_position_vector = this->first_position_vector;
+    result->grounding_table = this->grounding_table;
     return *result;
 }
 

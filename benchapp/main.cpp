@@ -1,4 +1,4 @@
-#include <ctime>
+#include <chrono>
 #include <iostream>
 
 #include <reasoner/reasoner.h>
@@ -20,12 +20,12 @@ void run(uint64_t end_time, int facts_per_timepoint,
     auto rule_reader = laser::rule::DefaultRuleReader(rules);
     auto reasoner = laser::reasoner::Reasoner(&rule_reader, &file_io_manager);
 
-    //clock_t begin = clock();
+    auto clock_start = std::chrono::high_resolution_clock::now();
     reasoner.start();
-    //clock_t end = clock();
-    //double elapsed_secs = double(end - begin) / CLOCKS_PER_SEC;
-    //std::cout << "Elapsed time (sec): " << elapsed_secs << std::endl;
-    //std::cout << std::endl;
+    auto clock_end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> clock_elapsed = clock_end - clock_start;
+    std::cout << "Total seconds: " << clock_elapsed.count() / 1000 << std::endl;
+    std::cout << std::endl;
 }
 
 void run_atom(uint64_t end_time, int facts_per_timepoint, int window_size,

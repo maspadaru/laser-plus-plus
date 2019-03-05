@@ -7,12 +7,11 @@
 namespace laser {
 namespace reasoner {
 
-Reasoner::Reasoner(io::RuleReader *rule_reader,
-                                       io::IOManager *io_manager)
+Reasoner::Reasoner(io::RuleReader *rule_reader, io::IOManager *io_manager)
     : rule_reader(rule_reader), io_manager(io_manager) {}
 
-void Reasoner::insert_facts(
-    uint64_t timepoint, std::vector<util::DataAtom> &facts) {
+void Reasoner::insert_facts(uint64_t timepoint,
+                            std::vector<util::DataAtom> &facts) {
     std::lock_guard<std::mutex> guard(fact_map_mutex);
     fact_map.try_emplace(timepoint, std::move(facts));
 }
@@ -22,8 +21,8 @@ void Reasoner::remove_facts(uint64_t timepoint) {
     fact_map.erase(timepoint);
 }
 
-void Reasoner::insert_conclusions(
-    uint64_t timepoint, std::vector<util::DataAtom> &conclusions) {
+void Reasoner::insert_conclusions(uint64_t timepoint,
+                                  std::vector<util::DataAtom> &conclusions) {
     std::lock_guard<std::mutex> guard(conclusion_map_mutex);
     conclusion_map.try_emplace(timepoint, std::move(conclusions));
 }
@@ -34,7 +33,6 @@ void Reasoner::remove_conclusions(uint64_t timepoint) {
 }
 
 void Reasoner::start() {
-    evaluate_secs = 0;
     util::Timeline main_timeline;
     auto start_time = io_manager->read_stream_start_time();
     auto end_time = io_manager->read_stream_end_time();
@@ -42,13 +40,12 @@ void Reasoner::start() {
     main_timeline.set_min_time(start_time);
     main_timeline.set_max_time(end_time);
     std::thread read_thread(&Reasoner::read, this, main_timeline);
-    std::thread evaluate_thread(&Reasoner::evaluate, this,
-                                main_timeline);
+    std::thread evaluate_thread(&Reasoner::evaluate, this, main_timeline);
     std::thread write_thread(&Reasoner::write, this, main_timeline);
     read_thread.join();
     evaluate_thread.join();
     write_thread.join();
-    std::cout << "Eval secs: " << evaluate_secs << std::endl;
+    std::cout << "Eval seconds: " << clock_eval.count() / 1000 << std::endl;
 }
 
 void Reasoner::read(util::Timeline timeline) {
@@ -67,11 +64,13 @@ void Reasoner::evaluate(util::Timeline timeline) {
     while (!timeline.is_past_max_time()) {
         bool has_new_input = fact_map.count(time) > 0;
         if (has_new_input) {
+            auto clock_start = std::chrono::high_resolution_clock::now();
             auto const &facts = fact_map.at(time);
-            clock_t begin = clock();
             auto conclusions = program.evaluate(timeline, facts);
-            clock_t end = clock();
-            evaluate_secs += double(end - begin) / CLOCKS_PER_SEC;
+            auto clock_end = std::chrono::high_resolution_clock::now();
+            std::chrono::duration<double, std::milli> clock_elapsed =
+                clock_end - clock_start;
+            clock_eval += clock_elapsed;
             insert_conclusions(time, conclusions);
             remove_facts(time);
             timeline.increment_time();

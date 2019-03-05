@@ -9,6 +9,7 @@
 #include <unordered_map>
 #include <vector>
 #include <iostream>
+#include <chrono>
 
 #include "io/io_manager.h"
 #include "io/rule_reader.h"
@@ -27,7 +28,7 @@ class Reasoner {
     std::mutex conclusion_map_mutex;
     io::IOManager *io_manager;
     io::RuleReader *rule_reader;
-    double evaluate_secs = 0;
+    std::chrono::duration<double, std::milli> clock_eval;
 
     void read(util::Timeline timeline);
     void evaluate(util::Timeline timeline);
