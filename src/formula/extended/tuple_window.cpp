@@ -39,15 +39,9 @@ std::vector<std::string> const &TupleWindow::get_variable_names() const {
     return child->get_variable_names();
 }
 
-std::vector<std::string> const &TupleWindow::get_full_variable_names() const {
-    return child->get_full_variable_names();
-}
-
 int TupleWindow::get_variable_index(std::string const &variable_name) const {
     return child->get_variable_index(variable_name);
 }
-
-bool TupleWindow::is_satisfied() const { return child->is_satisfied(); }
 
 size_t TupleWindow::get_number_of_variables() const {
     return child->get_number_of_variables();
@@ -142,8 +136,6 @@ std::vector<std::shared_ptr<Grounding>>
 TupleWindow::get_conclusions_step(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
-
-std::string TupleWindow::debug_string() const { return child->debug_string(); }
 
 TupleWindow::TupleWindow(uint64_t size, Formula *child) {
     this->past_size = size;

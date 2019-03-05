@@ -69,10 +69,6 @@ class Rule {
 
     bool derive_conclusions(util::Timeline const &timeline);
 
-    void debug_print() const;
-
-    template <typename T>
-    void debug_print(std::string const &message, T const &value) const;
 };
 
 } // namespace rule

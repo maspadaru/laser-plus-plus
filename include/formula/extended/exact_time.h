@@ -99,11 +99,7 @@ class ExactTime : public Formula {
 
     std::vector<std::string> const &get_variable_names() const override;
 
-    std::vector<std::string> const &get_full_variable_names() const override;
-
     int get_variable_index(std::string const &variable_name) const override;
-
-    bool is_satisfied() const override;
 
     size_t get_number_of_variables() const override;
 
@@ -114,8 +110,6 @@ class ExactTime : public Formula {
     get_conclusions_step(util::Timeline const &timeline) override;
     std::vector<std::shared_ptr<Grounding>>
     get_conclusions_timepoint(util::Timeline const &timeline) override;
-
-    std::string debug_string() const override;
 
     bool
     evaluate(util::Timeline const &timeline,

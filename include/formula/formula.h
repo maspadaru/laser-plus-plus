@@ -51,21 +51,13 @@ class Formula {
     virtual void add_child(formula::Formula *child) = 0;
 
     /**
-     * Return a list of unique variable names
-     * E.g.: p(X, X, Y) -> ["X", "Y"]
-     */
-    virtual std::vector<std::string> const &get_variable_names() const = 0;
-
-    /**
      * Return a list of all variable names, including duplicates.
      * Useful for formating the output of a program.
      * E.g.: p(X, X, Y) -> ["X", "X", "Y"]
      */
-    virtual std::vector<std::string> const &get_full_variable_names() const = 0;
+    virtual std::vector<std::string> const &get_variable_names() const = 0;
 
     virtual int get_variable_index(std::string const &variable_name) const = 0;
-
-    virtual bool is_satisfied() const = 0;
 
     virtual bool evaluate(
         util::Timeline const &timeline,
@@ -99,7 +91,6 @@ class Formula {
     virtual std::vector<std::shared_ptr<Grounding>>
     get_conclusions_timepoint(util::Timeline const &timeline) = 0;
 
-    virtual std::string debug_string() const = 0;
 };
 
 } // namespace formula

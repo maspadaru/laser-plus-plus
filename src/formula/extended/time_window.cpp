@@ -46,15 +46,9 @@ std::vector<std::string> const &TimeWindow::get_variable_names() const {
     return child->get_variable_names();
 }
 
-std::vector<std::string> const &TimeWindow::get_full_variable_names() const {
-    return child->get_full_variable_names();
-}
-
 int TimeWindow::get_variable_index(std::string const &variable_name) const {
     return child->get_variable_index(variable_name);
 }
-
-bool TimeWindow::is_satisfied() const { return child->is_satisfied(); }
 
 size_t TimeWindow::get_number_of_variables() const {
     return child->get_number_of_variables();
@@ -122,8 +116,6 @@ std::vector<std::shared_ptr<Grounding>>
 TimeWindow::get_conclusions_step(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
-
-std::string TimeWindow::debug_string() const { return child->debug_string(); }
 
 TimeWindow::TimeWindow(uint64_t size, Formula *child) {
     this->past_size = size;

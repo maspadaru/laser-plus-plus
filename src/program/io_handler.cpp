@@ -52,19 +52,13 @@ IOHandler::handle_output(util::Timeline const &timeline,
     std::vector<util::DataAtom> result;
     for (auto const formula : conclusions) {
         std::string predicate = formula->get_predicate_vector().at(0);
-        auto variable_names = formula->get_full_variable_names();
+        auto variable_names = formula->get_variable_names();
         auto formula_groundings = formula->get_conclusions_timepoint(timeline);
         // TODO removing duplicates can slow down things a lot for IO
         auto unique_groundings = remove_duplicates(formula_groundings);
         for (auto const &grounding : unique_groundings) {
-            std::vector<std::string> argument_vector;
-            for (auto const &variable_name : variable_names) {
-                size_t variable_index =
-                    formula->get_variable_index(variable_name);
-                auto const& argument = grounding->get_constant(variable_index);
-                argument_vector.push_back(argument);
-            }
-            auto data_atom = util::DataAtom(predicate, std::move(argument_vector));
+            auto data_atom =
+                util::DataAtom(predicate, grounding->get_constant_vector());
             result.push_back(std::move(data_atom));
         }
     }

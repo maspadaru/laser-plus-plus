@@ -27,32 +27,26 @@ class Atom : public Formula {
     std::string predicate = "Atom";
     GroundingTable grounding_table;
     bool is_head_m = false;
+    bool has_duplicate_variables;
 
     /**
-     * The names of all arguments of the atom
-     * E.g.: p(X, X, Y) -> ["X", "X", "Y"]
+     * The names of all variables of the atom without any duplicates
+     * E.g.: p(X, X, Y) -> ["X", "Y"]
      */
-    std::vector<std::string> full_variable_names;
+    std::vector<std::string> unique_variable_names;
+
 
     /**
-     * If a variable occurs in the atom multiple times, this vector will only
-     * contain the position of the first occurance of each varaible.
-     * E.g.: p(X, X, Y) -> [0, 2]
-     */
-    std::vector<size_t> first_position_vector;
-
-    /**
-     * Position -> position where I can find the first occurance of this bound
+     * Key: Variable Name 
+     * Value: Vector of positions where I can find an occurance of this bound
      * variable
      * E.g.: p(X, X, Y) -> { ("X":0), ("Y":2) }
      */
-    std::unordered_map<size_t, size_t> binding_map;
+    std::unordered_map<std::string, std::vector<size_t>> binding_map;
 
-    /**
-     * Extracts the unique variable names from the list of atom arguments
-     * and passes them to the Grounding Table
-     */
     void set_variable_names(std::vector<std::string> &variable_names);
+
+    void compute_unique_variable_names(std::vector<std::string> &variable_names);
 
     /**
      * If the grounding parameter is valid, it will be added to the atom's
@@ -61,16 +55,6 @@ class Atom : public Formula {
     void accept(std::shared_ptr<Grounding> const &grounding);
 
     bool is_valid_fact(Grounding const &grounding) const;
-
-    /**
-     * A valid grounding is processed to fit in the atom's Grounding Table
-     * E.g: Atom = p(x, x, y); with Grounding Table = ["X", "Y"]
-     * Grounding = ["x1", "x1", "y1"] -> Grounding = ["x1", "y1"]
-     */
-    std::shared_ptr<Grounding> remove_duplicate_variables(Grounding const &grounding);
-
-    template <typename T>
-    void debug_print(std::string const &message, T const &value) const;
 
     /** returns a vector containing only unique groundings in regards to
      * substitutions, not annotations
@@ -107,11 +91,7 @@ class Atom : public Formula {
 
     std::vector<std::string> const &get_variable_names() const override;
 
-    std::vector<std::string> const &get_full_variable_names() const override;
-
     int get_variable_index(std::string const &variable_name) const override;
-
-    bool is_satisfied() const override;
 
     bool evaluate(
         util::Timeline const &timeline,
@@ -133,7 +113,6 @@ class Atom : public Formula {
 
     void add_child(formula::Formula *child) override;
 
-    std::string debug_string() const override;
 };
 
 } // namespace formula

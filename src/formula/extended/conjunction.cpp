@@ -92,11 +92,6 @@ std::vector<std::string> const &Conjunction::get_variable_names() const {
     return variable_names;
 }
 
-std::vector<std::string> const &Conjunction::get_full_variable_names() const {
-    // this method is not at all useful for conjunction
-    return variable_names;
-}
-
 int Conjunction::get_variable_index(std::string const &variable_name) const {
     int result = -1;
     if (variable_map.count(variable_name) > 0) {
@@ -105,17 +100,8 @@ int Conjunction::get_variable_index(std::string const &variable_name) const {
     return result;
 }
 
-bool Conjunction::is_satisfied() const {
-    return left_child->is_satisfied() && right_child->is_satisfied();
-}
-
 size_t Conjunction::get_number_of_variables() const {
     return variable_names.size();
-}
-
-std::string Conjunction::debug_string() const {
-    return left_child->debug_string();
-    // TODO
 }
 
 void Conjunction::add_child(formula::Formula *child) {

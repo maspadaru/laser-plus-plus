@@ -44,21 +44,13 @@ std::vector<std::string> const &Diamond::get_variable_names() const {
     return child->get_variable_names();
 }
 
-std::vector<std::string> const &Diamond::get_full_variable_names() const {
-    return child->get_full_variable_names();
-}
-
 int Diamond::get_variable_index(std::string const &variable_name) const {
     return child->get_variable_index(variable_name);
 }
 
-bool Diamond::is_satisfied() const { return child->is_satisfied(); }
-
 size_t Diamond::get_number_of_variables() const {
     return child->get_number_of_variables();
 }
-
-std::string Diamond::debug_string() const { return child->debug_string(); }
 
 void Diamond::add_child(formula::Formula *child) {}
 

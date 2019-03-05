@@ -55,24 +55,13 @@ std::vector<std::string> const &ExactTime::get_variable_names() const {
     return grounding_table.get_variable_names();
 }
 
-std::vector<std::string> const &ExactTime::get_full_variable_names() const {
-    // Only child variable names should be returned. This method is only useful
-    // for writing to output. Since the timevariable will not be writed, it
-    // should not be returned.
-    return child->get_full_variable_names();
-}
-
 int ExactTime::get_variable_index(std::string const &variable_name) const {
     return grounding_table.get_variable_index(variable_name);
 }
 
-bool ExactTime::is_satisfied() const { return child->is_satisfied(); }
-
 size_t ExactTime::get_number_of_variables() const {
     return grounding_table.get_number_of_variables();
 }
-
-std::string ExactTime::debug_string() const { return child->debug_string(); }
 
 void ExactTime::add_child(formula::Formula *child) {}
 

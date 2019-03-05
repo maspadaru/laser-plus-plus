@@ -40,21 +40,13 @@ std::vector<std::string> const &Box::get_variable_names() const {
     return child->get_variable_names();
 }
 
-std::vector<std::string> const &Box::get_full_variable_names() const {
-    return child->get_full_variable_names();
-}
-
 int Box::get_variable_index(std::string const &variable_name) const {
     return child->get_variable_index(variable_name);
 }
 
-bool Box::is_satisfied() const { return child->is_satisfied(); }
-
 size_t Box::get_number_of_variables() const {
     return child->get_number_of_variables();
 }
-
-std::string Box::debug_string() const { return child->debug_string(); }
 
 void Box::add_child(formula::Formula *child) {}
 

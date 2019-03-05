@@ -56,14 +56,6 @@ void Rule::expire_outdated_groundings(util::Timeline const &timeline) {
     body.expire_outdated_groundings(timeline);
 }
 
-void Rule::debug_print() const {
-    std::cerr << std::endl;
-    std::cerr << "Rule -> head: " << head.debug_string();
-    std::cerr << "Rule body:" << body.debug_string();
-    std::cerr << "// Rule " << std::endl;
-    std::cerr << std::endl;
-}
-
 bool Rule::evaluate(
     util::Timeline const &timeline,
     std::unordered_map<std::string,
@@ -124,13 +116,6 @@ bool Rule::derive_conclusions(util::Timeline const &timeline) {
         result = head.evaluate(timeline, body_facts);
     }
     return result;
-}
-
-template <typename T>
-void Rule::debug_print(std::string const &message, T const &value) const {
-    std::cerr << "Rule -> head predicate: "
-              << this->head.get_predicate_vector().at(0) << " -> ";
-    std::cerr << message << " : " << value << std::endl;
 }
 
 } // namespace rule
