@@ -9,24 +9,32 @@ namespace formula {
 
 // constructors & destructors
 
-Grounding::Grounding(uint64_t consideration_time, uint64_t horizon_time,
-                     uint64_t consideration_count, uint64_t horizon_count,
-                     bool is_fact, bool is_background_fact,
+Grounding::Grounding(std::string predicate, uint64_t consideration_time,
+                     uint64_t horizon_time, uint64_t consideration_count,
+                     uint64_t horizon_count, bool is_fact,
+                     bool is_background_fact,
                      std::vector<std::string> constant_vector)
-    : consideration_time(consideration_time), horizon_time(horizon_time),
-      consideration_count(consideration_count), horizon_count(horizon_count),
-      is_fact_m(is_fact), is_background_fact_m(is_background_fact),
+    : predicate(std::move(predicate)), consideration_time(consideration_time),
+      horizon_time(horizon_time), consideration_count(consideration_count),
+      horizon_count(horizon_count), is_fact_m(is_fact),
+      is_background_fact_m(is_background_fact),
       constant_vector(std::move(constant_vector)) {}
 
-Grounding::Grounding(uint64_t consideration_time, uint64_t horizon_time,
-                     uint64_t consideration_count, uint64_t horizon_count,
+Grounding::Grounding(std::string predicate, uint64_t consideration_time,
+                     uint64_t horizon_time, uint64_t consideration_count,
+                     uint64_t horizon_count,
                      std::vector<std::string> constant_vector)
-    : consideration_time(consideration_time), horizon_time(horizon_time),
-      consideration_count(consideration_count), horizon_count(horizon_count),
+    : predicate(std::move(predicate)), consideration_time(consideration_time),
+      horizon_time(horizon_time), consideration_count(consideration_count),
+      horizon_count(horizon_count),
       constant_vector(std::move(constant_vector)) {}
 
 uint64_t Grounding::get_consideration_time() const {
     return consideration_time;
+}
+
+std::string const &Grounding::get_predicate() const {
+    return predicate;
 }
 
 uint64_t Grounding::get_horizon_time() const { return horizon_time; }
@@ -53,7 +61,7 @@ std::shared_ptr<Grounding>
 Grounding::new_annotations(uint64_t consideration_time, uint64_t horizon_time,
                            uint64_t consideration_count,
                            uint64_t horizon_count) const {
-    auto result = Grounding(consideration_time, horizon_time,
+    auto result = Grounding(predicate, consideration_time, horizon_time,
                             consideration_count, horizon_count, is_fact_m,
                             is_background_fact_m, constant_vector);
     return std::make_shared<Grounding>(result);
@@ -66,7 +74,7 @@ std::shared_ptr<Grounding> Grounding::clone() const {
 
 std::shared_ptr<Grounding>
 Grounding::new_horizon_time(uint64_t horizon_time) const {
-    auto result = Grounding(consideration_time, horizon_time,
+    auto result = Grounding(predicate, consideration_time, horizon_time,
                             consideration_count, horizon_count, is_fact_m,
                             is_background_fact_m, constant_vector);
     return std::make_shared<Grounding>(result);
@@ -74,7 +82,7 @@ Grounding::new_horizon_time(uint64_t horizon_time) const {
 
 std::shared_ptr<Grounding>
 Grounding::new_horizon_count(uint64_t horizon_count) const {
-    auto result = Grounding(consideration_time, horizon_time,
+    auto result = Grounding(predicate, consideration_time, horizon_time,
                             consideration_count, horizon_count, is_fact_m,
                             is_background_fact_m, constant_vector);
     return std::make_shared<Grounding>(result);
@@ -82,7 +90,7 @@ Grounding::new_horizon_count(uint64_t horizon_count) const {
 
 std::shared_ptr<Grounding>
 Grounding::new_constant_vector(std::vector<std::string> new_vector) const {
-    Grounding result = Grounding(consideration_time, horizon_time,
+    Grounding result = Grounding(predicate, consideration_time, horizon_time,
                                  consideration_count, horizon_count, is_fact_m,
                                  is_background_fact_m, std::move(new_vector));
     return std::make_shared<Grounding>(result);
@@ -113,12 +121,12 @@ bool Grounding::has_expired(uint64_t time, uint64_t tuple_counter) const {
     return result;
 }
 
-std::shared_ptr<Grounding>
-Grounding::new_constant(size_t index, std::string constant) const {
+std::shared_ptr<Grounding> Grounding::new_constant(size_t index,
+                                                   std::string constant) const {
     std::vector<std::string> new_vector = constant_vector;
     new_vector.insert(new_vector.begin() + index, std::move(constant));
     Grounding result =
-        Grounding(consideration_time, horizon_time, consideration_count,
+        Grounding(predicate, consideration_time, horizon_time, consideration_count,
                   horizon_count, std::move(new_vector));
     return std::make_shared<Grounding>(result);
 }
@@ -127,7 +135,7 @@ std::shared_ptr<Grounding> Grounding::remove_constant(size_t index) const {
     std::vector<std::string> new_vector = constant_vector;
     new_vector.erase(new_vector.begin() + index);
     Grounding result =
-        Grounding(consideration_time, horizon_time, consideration_count,
+        Grounding(predicate, consideration_time, horizon_time, consideration_count,
                   horizon_count, std::move(new_vector));
     return std::make_shared<Grounding>(result);
 }

@@ -80,7 +80,8 @@ void Rule::compute_variable_map() {
 }
 
 std::shared_ptr<formula::Grounding>
-Rule::convert_to_head_grounding(formula::Grounding const &grounding) const {
+Rule::convert_to_head_grounding(std::string const &head_predicate,
+                                formula::Grounding const &grounding) const {
     std::vector<std::string> result_vector;
     for (size_t head_index = 0; head_index < head.get_number_of_variables();
          head_index++) {
@@ -88,21 +89,23 @@ Rule::convert_to_head_grounding(formula::Grounding const &grounding) const {
             grounding.get_constant(variable_map.at(head_index)));
     }
     formula::Grounding result = formula::Grounding(
-        grounding.get_consideration_time(), grounding.get_horizon_time(),
-        grounding.get_consideration_count(), grounding.get_horizon_count(),
-        result_vector);
+        head_predicate, grounding.get_consideration_time(),
+        grounding.get_horizon_time(), grounding.get_consideration_count(),
+        grounding.get_horizon_count(), result_vector);
     return std::make_shared<formula::Grounding>(result);
 }
 
 bool Rule::derive_conclusions(util::Timeline const &timeline) {
     bool result = false;
+    auto head_predicate = head.get_predicate_vector().at(0);
     std::vector<std::shared_ptr<formula::Grounding>> predicate_facts;
     std::vector<std::shared_ptr<formula::Grounding>> body_groundings =
         body.get_groundings(timeline);
-    for (auto const &grounding : body_groundings) {
+    for (auto const &body_grounding : body_groundings) {
         // SNE: we only evaluate groundings derived at this current timepoint
-        if (grounding->get_consideration_time() >= timeline.get_time()) {
-            auto head_grounding = convert_to_head_grounding(*grounding);
+        if (body_grounding->get_consideration_time() >= timeline.get_time()) {
+            auto head_grounding =
+                convert_to_head_grounding(head_predicate, *body_grounding);
             predicate_facts.push_back(std::move(head_grounding));
         }
     }
@@ -111,8 +114,8 @@ bool Rule::derive_conclusions(util::Timeline const &timeline) {
         std::unordered_map<std::string,
                            std::vector<std::shared_ptr<formula::Grounding>>>
             body_facts;
-        auto predicate = head.get_predicate_vector().at(0);
-        body_facts.try_emplace(std::move(predicate), std::move(predicate_facts));
+        body_facts.try_emplace(std::move(head_predicate),
+                               std::move(predicate_facts));
         result = head.evaluate(timeline, body_facts);
     }
     return result;

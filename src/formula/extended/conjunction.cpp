@@ -169,7 +169,7 @@ Conjunction::merge_groundings(util::Timeline const &timeline,
         }
     }
     auto result = std::make_shared<Grounding>(
-        Grounding(ct, ht, cc, hc, substitution_vector));
+        Grounding("", ct, ht, cc, hc, substitution_vector));
     return result;
 }
 

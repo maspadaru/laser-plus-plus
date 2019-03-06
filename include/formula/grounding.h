@@ -33,6 +33,7 @@ class Grounding {
     bool is_background_fact_m = false;
     bool is_fact_m = false;
     std::vector<std::string> constant_vector;
+    std::string predicate;
 
     bool has_hash = false;
     size_t hash = 0;
@@ -43,11 +44,11 @@ class Grounding {
   public:
     // constructors & destructors
 
-    Grounding(uint64_t consideration_time, uint64_t horizon_time,
+    Grounding(std::string predicate, uint64_t consideration_time, uint64_t horizon_time,
               uint64_t consideration_count, uint64_t horizon_count,
               std::vector<std::string> constant_vector);
 
-    Grounding(uint64_t consideration_time, uint64_t horizon_time,
+    Grounding(std::string predicate, uint64_t consideration_time, uint64_t horizon_time,
               uint64_t consideration_count, uint64_t horizon_count,
               bool is_fact, bool is_background_fact,
               std::vector<std::string> constant_vector);
@@ -57,6 +58,8 @@ class Grounding {
     std::shared_ptr<Grounding> clone() const;
 
     // getters
+
+    std::string const &get_predicate() const;
 
     uint64_t get_consideration_time() const;
 

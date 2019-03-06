@@ -26,7 +26,8 @@ class Rule {
     std::unordered_map<size_t, size_t> variable_map;
 
     std::shared_ptr<formula::Grounding>
-    convert_to_head_grounding(formula::Grounding const &grounding) const;
+    convert_to_head_grounding(std::string const &head_predicate,
+                              formula::Grounding const &grounding) const;
 
     void compute_variable_map();
 
@@ -68,7 +69,6 @@ class Rule {
     void expire_outdated_groundings(util::Timeline const &timeline);
 
     bool derive_conclusions(util::Timeline const &timeline);
-
 };
 
 } // namespace rule

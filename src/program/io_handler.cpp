@@ -24,7 +24,7 @@ IOHandler::handle_input(util::Timeline &timeline,
             result.at(predicate);
         current_tuple_counter++;
         auto grounding = std::make_shared<laser::formula::Grounding>(
-            time, time, current_tuple_counter, max_tuple_counter, true, false,
+            predicate, time, time, current_tuple_counter, max_tuple_counter, true, false,
             data.get_arguments());
         map_vector.push_back(std::move(grounding));
     }
