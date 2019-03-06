@@ -10,26 +10,34 @@ namespace reasoner {
 Reasoner::Reasoner(io::RuleReader *rule_reader, io::IOManager *io_manager)
     : rule_reader(rule_reader), io_manager(io_manager) {}
 
-void Reasoner::insert_facts(uint64_t timepoint,
-                            std::vector<util::DataAtom> &facts) {
+void Reasoner::insert_facts(
+    uint64_t timepoint,
+    std::vector<std::shared_ptr<formula::Grounding>> facts) {
     std::lock_guard<std::mutex> guard(fact_map_mutex);
     fact_map.try_emplace(timepoint, std::move(facts));
 }
 
-void Reasoner::remove_facts(uint64_t timepoint) {
+std::vector<std::shared_ptr<formula::Grounding>>
+Reasoner::get_facts(uint64_t timepoint) {
     std::lock_guard<std::mutex> guard(fact_map_mutex);
+    auto result = std::move(fact_map.at(timepoint));
     fact_map.erase(timepoint);
+    return result;
 }
 
-void Reasoner::insert_conclusions(uint64_t timepoint,
-                                  std::vector<util::DataAtom> &conclusions) {
+void Reasoner::insert_conclusions(
+    uint64_t timepoint,
+    std::vector<std::shared_ptr<formula::Grounding>> conclusions) {
     std::lock_guard<std::mutex> guard(conclusion_map_mutex);
     conclusion_map.try_emplace(timepoint, std::move(conclusions));
 }
 
-void Reasoner::remove_conclusions(uint64_t timepoint) {
+std::vector<std::shared_ptr<formula::Grounding>>
+Reasoner::get_conclusions(uint64_t timepoint) {
     std::lock_guard<std::mutex> guard(conclusion_map_mutex);
+    auto result = std::move(conclusion_map.at(timepoint));
     conclusion_map.erase(timepoint);
+    return result;
 }
 
 void Reasoner::start() {
@@ -51,7 +59,7 @@ void Reasoner::start() {
 void Reasoner::read(util::Timeline timeline) {
     auto time = timeline.get_time();
     while (!timeline.is_past_max_time()) {
-        auto facts = io_manager->read_stream_data(time);
+        auto facts = io_manager->read_stream_data(timeline);
         insert_facts(time, facts);
         timeline.increment_time();
         time = timeline.get_time();
@@ -64,15 +72,14 @@ void Reasoner::evaluate(util::Timeline timeline) {
     while (!timeline.is_past_max_time()) {
         bool has_new_input = fact_map.count(time) > 0;
         if (has_new_input) {
+            auto facts = get_facts(time);
             auto clock_start = std::chrono::high_resolution_clock::now();
-            auto const &facts = fact_map.at(time);
-            auto conclusions = program.evaluate(timeline, facts);
+            auto conclusions = program.evaluate(timeline, std::move(facts));
             auto clock_end = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> clock_elapsed =
                 clock_end - clock_start;
             clock_eval += clock_elapsed;
-            insert_conclusions(time, conclusions);
-            remove_facts(time);
+            insert_conclusions(time, std::move(conclusions));
             timeline.increment_time();
             time = timeline.get_time();
         } else {
@@ -86,9 +93,8 @@ void Reasoner::write(util::Timeline timeline) {
     while (!timeline.is_past_max_time()) {
         bool has_new_output = conclusion_map.count(time) > 0;
         if (has_new_output) {
-            auto &conclusions = conclusion_map.at(time);
-            io_manager->write_output_data(time, conclusions);
-            remove_conclusions(time);
+            auto conclusions = get_conclusions(time);
+            io_manager->write_output_data(time, std::move(conclusions));
             timeline.increment_time();
             time = timeline.get_time();
         } else {

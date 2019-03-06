@@ -10,8 +10,26 @@
 
 // methods
 
+std::vector<std::shared_ptr<laser::formula::Grounding>>
+SimpleWriter::remove_duplicates(
+    std::vector<std::shared_ptr<laser::formula::Grounding>> &input_groundings)
+    const {
+    std::set<std::shared_ptr<laser::formula::Grounding>,
+             laser::formula::GroundingPredicateSubstitutionCompare>
+        grounding_set;
+    for (auto &grounding : input_groundings) {
+        grounding_set.insert(std::move(grounding));
+    }
+    std::vector<std::shared_ptr<laser::formula::Grounding>> result;
+    result.insert(result.end(), std::make_move_iterator(grounding_set.begin()),
+                  std::make_move_iterator(grounding_set.end()));
+    return result;
+}
+
 std::string SimpleWriter::format_output(
-    uint64_t time, std::vector<laser::util::DataAtom> output_vector) const {
+    uint64_t time,
+    std::vector<std::shared_ptr<laser::formula::Grounding>> output_vector)
+    const {
     std::stringstream result_stream;
     const std::string TIME_SEPARATOR = " -> ";
     const std::string ARGUMENTS_START = "(";
@@ -19,11 +37,10 @@ std::string SimpleWriter::format_output(
     const std::string ARGUMENT_DELIMITER = ", ";
     const std::string CONCLUSION_DELIMITER = " ";
     result_stream << time << TIME_SEPARATOR;
-    for (size_t atom_index = 0; atom_index < output_vector.size();
-         atom_index++) {
-        auto const &data_atom = output_vector.at(atom_index);
-        result_stream << data_atom.get_predicate() << ARGUMENTS_START;
-        auto argument_vector = data_atom.get_arguments();
+    auto unique_vector = remove_duplicates(output_vector);
+    for (auto const &data_atom : unique_vector) {
+        result_stream << data_atom->get_predicate() << ARGUMENTS_START;
+        auto argument_vector = data_atom->get_constant_vector();
         for (size_t argument_index = 0; argument_index < argument_vector.size();
              argument_index++) {
             auto const &argument = argument_vector.at(argument_index);
@@ -38,6 +55,6 @@ std::string SimpleWriter::format_output(
     return result_stream.str();
 }
 
-void SimpleWriter::write_output(std::string formatted_output_string) const {
+void SimpleWriter::write_output(std::string const &formatted_output_string) const {
     std::cout << formatted_output_string << std::endl;
 }

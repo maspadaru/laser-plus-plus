@@ -33,9 +33,7 @@ uint64_t Grounding::get_consideration_time() const {
     return consideration_time;
 }
 
-std::string const &Grounding::get_predicate() const {
-    return predicate;
-}
+std::string const &Grounding::get_predicate() const { return predicate; }
 
 uint64_t Grounding::get_horizon_time() const { return horizon_time; }
 
@@ -126,8 +124,8 @@ std::shared_ptr<Grounding> Grounding::new_constant(size_t index,
     std::vector<std::string> new_vector = constant_vector;
     new_vector.insert(new_vector.begin() + index, std::move(constant));
     Grounding result =
-        Grounding(predicate, consideration_time, horizon_time, consideration_count,
-                  horizon_count, std::move(new_vector));
+        Grounding(predicate, consideration_time, horizon_time,
+                  consideration_count, horizon_count, std::move(new_vector));
     return std::make_shared<Grounding>(result);
 }
 
@@ -135,8 +133,8 @@ std::shared_ptr<Grounding> Grounding::remove_constant(size_t index) const {
     std::vector<std::string> new_vector = constant_vector;
     new_vector.erase(new_vector.begin() + index);
     Grounding result =
-        Grounding(predicate, consideration_time, horizon_time, consideration_count,
-                  horizon_count, std::move(new_vector));
+        Grounding(predicate, consideration_time, horizon_time,
+                  consideration_count, horizon_count, std::move(new_vector));
     return std::make_shared<Grounding>(result);
 }
 
@@ -188,21 +186,29 @@ bool Grounding::annotation_less_than(Grounding const &other) const {
     return false; // *this == other
 }
 
+bool Grounding::predsubst_less_than(Grounding const &other) const {
+    if (predicate < other.predicate) {
+        return true;
+    }
+    if (predicate > other.predicate) {
+        return false;
+    }
+    return substitution_less_than(other);
+}
+
 bool Grounding::substitution_less_than(Grounding const &other) const {
     // operator< for std::vector is said to have linear time complexity
     return constant_vector < other.constant_vector;
 }
 
 bool Grounding::operator<(Grounding const &other) const {
-    // !p -> ( !q && (!q -> r) )
-    bool p = annotation_less_than(other);
-    if (p)
+    if (annotation_less_than(other)) {
         return true;
-    bool q = other.annotation_less_than(*this);
-    if (q)
+    }
+    if (other.annotation_less_than(*this)) {
         return false;
-    bool r = substitution_less_than(other);
-    return r;
+    }
+    return substitution_less_than(other);
 }
 
 } // namespace formula

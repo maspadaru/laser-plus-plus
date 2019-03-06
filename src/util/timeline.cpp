@@ -4,7 +4,7 @@ namespace laser {
 namespace util {
 
 Timeline::Timeline()
-    : tuple_count_history(std::make_shared<std::unordered_map<uint64_t, uint64_t>>()) {}
+    : history_mutex(std::make_shared<std::mutex>()), tuple_count_history(std::make_shared<std::unordered_map<uint64_t, uint64_t>>()) {}
 
 const uint64_t Timeline::INFINITE_TIME = ULLONG_MAX;
 
@@ -22,10 +22,8 @@ void Timeline::set_time(uint64_t time) { this->time = time; }
 void Timeline::increment_time() { time++; }
 void Timeline::decrement_time() { time--; }
 
-uint64_t Timeline::get_tuple_count() const { return tuple_count; }
-
 void Timeline::set_tuple_count(uint64_t tuple_count) {
-    // TODO make this thread-safe
+    std::lock_guard<std::mutex> guard(*history_mutex);
     this->tuple_count = tuple_count;
     tuple_count_history->try_emplace(time, tuple_count);
 }
@@ -38,6 +36,7 @@ uint64_t Timeline::get_max_time() const { return max_time; }
 void Timeline::set_max_time(uint64_t max_time) { this->max_time = max_time; }
 
 uint64_t Timeline::get_tuple_count_at(uint64_t timepoint) const {
+    std::lock_guard<std::mutex> guard(*history_mutex);
     return tuple_count_history->at(timepoint);
 }
 

@@ -7,7 +7,6 @@
 namespace laser {
 namespace program {
 
-
 Program::Program(io::RuleReader *rule_reader) {
     rule_vector = rule_reader->get_rules();
 }
@@ -42,37 +41,39 @@ void Program::do_evaluation_loop() {
     } while (has_new_conclusions);
 }
 
-std::vector<std::shared_ptr<formula::Grounding>>
-Program::compute_new_facts() {
+std::vector<std::shared_ptr<formula::Grounding>> Program::compute_new_facts() {
     std::vector<std::shared_ptr<formula::Grounding>> new_conclusions;
     for (auto const &rule : rule_vector) {
         formula::Formula *head = &rule.get_head();
-        for (auto &conclusion : head->get_conclusions_step(timeline)) {
+        auto conclusions = head->get_conclusions_step(timeline);
+        for (auto &conclusion : conclusions ) {
             new_conclusions.push_back(std::move(conclusion));
         }
     }
     return new_conclusions;
 }
 
-std::vector<formula::Formula *> Program::get_conclusions() {
-    std::vector<formula::Formula *> result;
+std::vector<std::shared_ptr<formula::Grounding>> Program::get_conclusions() {
+    std::vector<std::shared_ptr<formula::Grounding>> new_conclusions;
     for (auto const &rule : rule_vector) {
         formula::Formula *head = &rule.get_head();
-        result.push_back(head);
+        auto conclusions = head->get_conclusions_timepoint(timeline);
+        for (auto &conclusion : conclusions ) {
+            new_conclusions.push_back(std::move(conclusion));
+        }
     }
-    return result;
+    return new_conclusions;
 }
 
-std::vector<util::DataAtom>
+std::vector<std::shared_ptr<formula::Grounding>>
 Program::evaluate(util::Timeline const &timeline,
-                  std::vector<util::DataAtom> const &data_facts) {
+                  std::vector<std::shared_ptr<formula::Grounding>> data_facts) {
     this->timeline = timeline;
-    facts = io_handler.handle_input(this->timeline, data_facts);
+    facts = std::move(data_facts);
     do_evaluation_loop();
     auto conclusions = get_conclusions();
     //! if writing is disabled for benchmarking, this means all tests fail
-    auto result = io_handler.handle_output(timeline, conclusions);
-    return result;
+    return conclusions;
 }
 
 } // namespace program

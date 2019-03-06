@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <memory>
 #include <unordered_map>
+#include <mutex>
 
 namespace laser {
 namespace util {
@@ -19,6 +20,7 @@ class Timeline {
     uint64_t tuple_count = 0;
     uint64_t min_time = 0;
     uint64_t max_time = ULLONG_MAX;
+    std::shared_ptr<std::mutex> history_mutex;
 
     /** records the cumulated tuple counter at each timepoint
      * key: timepoint
@@ -37,7 +39,6 @@ class Timeline {
     void increment_time();
     void decrement_time();
 
-    uint64_t get_tuple_count() const;
     void set_tuple_count(uint64_t tuple_count);
 
     uint64_t get_min_time() const;

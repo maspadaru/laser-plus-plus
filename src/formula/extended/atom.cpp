@@ -105,8 +105,9 @@ size_t Atom::get_number_of_variables() const {
 }
 
 void Atom::expire_outdated_groundings(util::Timeline const &timeline) {
-    grounding_table.expire_outdated_groundings(timeline.get_time(),
-                                               timeline.get_tuple_count());
+    auto time = timeline.get_time();
+    auto tuple_count = timeline.get_tuple_count_at(time);
+    grounding_table.expire_outdated_groundings(time, tuple_count);
 }
 
 std::vector<std::shared_ptr<Grounding>>

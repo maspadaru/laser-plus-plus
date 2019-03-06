@@ -7,11 +7,10 @@
 namespace laser {
 namespace program {
 
-                   std::vector<std::shared_ptr<formula::Grounding>>
+std::vector<std::shared_ptr<formula::Grounding>>
 IOHandler::handle_input(util::Timeline &timeline,
                         std::vector<util::DataAtom> const &data_vector) {
-                       std::vector<std::shared_ptr<formula::Grounding>>
-        result;
+    std::vector<std::shared_ptr<formula::Grounding>> result;
     uint64_t time = timeline.get_time();
     uint64_t max_tuple_counter = util::Timeline::INFINITE_TIME;
 
@@ -19,8 +18,8 @@ IOHandler::handle_input(util::Timeline &timeline,
         std::string predicate = data.get_predicate();
         current_tuple_counter++;
         auto grounding = std::make_shared<laser::formula::Grounding>(
-            predicate, time, time, current_tuple_counter, max_tuple_counter, true, false,
-            data.get_arguments());
+            predicate, time, time, current_tuple_counter, max_tuple_counter,
+            true, false, data.get_arguments());
         result.push_back(std::move(grounding));
     }
     timeline.set_tuple_count(current_tuple_counter);

@@ -127,6 +127,7 @@ class Grounding {
     bool operator<(const Grounding &other) const;
 
     bool substitution_less_than(Grounding const &other) const;
+    bool predsubst_less_than(Grounding const &other) const;
 };
 
 struct GroundingFullCompare {
@@ -148,6 +149,17 @@ struct GroundingSubstitutionCompare {
     bool operator()(std::shared_ptr<Grounding> const &x,
                     std::shared_ptr<Grounding> const &y) const {
         return x->substitution_less_than(*y);
+    }
+};
+
+struct GroundingPredicateSubstitutionCompare {
+    bool operator()(Grounding const &x, Grounding const &y) const {
+        return x.predsubst_less_than(y);
+    }
+
+    bool operator()(std::shared_ptr<Grounding> const &x,
+                    std::shared_ptr<Grounding> const &y) const {
+        return x->predsubst_less_than(*y);
     }
 };
 

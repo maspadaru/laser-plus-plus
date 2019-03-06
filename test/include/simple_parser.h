@@ -5,17 +5,17 @@
 #ifndef TEST_SIMPLE_PARSER_H
 #define TEST_SIMPLE_PARSER_H
 
-
-#include <tuple>
-#include <vector>
 #include <algorithm>
-#include <stack>
+#include <memory>
 #include <sstream>
-#include <utility>
 #include <string>
+#include <tuple>
+#include <utility>
+#include <vector>
 
+#include <formula/grounding.h>
 #include <util/format_exception.h>
-#include <util/data_atom.h>
+#include <util/timeline.h>
 
 enum class TokenType {
     OPERATOR,
@@ -29,8 +29,6 @@ struct Token {
     std::string value;
 };
 
-
-
 // Helper functions:
 
 static inline void rtrim(std::string *s);
@@ -42,34 +40,31 @@ static inline void trim(std::string *s);
 static inline void syntax_error(std::string error_message);
 
 class SimpleParser {
-private:
+  private:
+    uint64_t current_tuple_counter = 0;
 
-    std::vector<laser::util::DataAtom> argument_stack;
+    std::vector<std::shared_ptr<laser::formula::Grounding>> argument_stack;
 
     Token recognize(std::string token_string) const;
 
-    std::vector<Token> tokenize(std::string rule_string) const;
+    std::vector<Token> tokenize(std::string const &rule_string) const;
 
-    std::vector<Token> add_token_attempt(
-            std::vector<Token> token_vector,
-            std::ostringstream &token_stream
-    ) const;
+    void add_token_attempt(std::vector<Token> &token_vector,
+                           std::ostringstream &token_stream) const;
 
-    std::vector<Token> add_new_token(
-            std::vector<Token> token_vector,
-            TokenType type, char value_char) const;
+    void add_new_token(std::vector<Token> &token_vector, TokenType type,
+                       char value_char) const;
 
-    std::vector<laser::util::DataAtom>
-    parse_token_vector(std::vector<Token> input_token_vector);
+    std::vector<std::shared_ptr<laser::formula::Grounding>>
+    parse_token_vector(laser::util::Timeline &timeline,
+                       std::vector<Token> const &input_token_vector);
 
-public:
-
+  public:
     ~SimpleParser() = default;
 
-    std::vector<laser::util::DataAtom>
-    parse_data(std::vector<std::string> raw_data_vector);
-
+    std::vector<std::shared_ptr<laser::formula::Grounding>>
+    parse_data(laser::util::Timeline &timeline,
+               std::vector<std::string> const &raw_data_vector);
 };
-
 
 #endif // TEST_SIMPLE_PARSER_H

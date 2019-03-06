@@ -52,8 +52,9 @@ void Box::add_child(formula::Formula *child) {}
 
 void Box::expire_outdated_groundings(util::Timeline const &timeline) {
     child->expire_outdated_groundings(timeline);
-    grounding_table.expire_outdated_groundings(timeline.get_time(),
-                                               timeline.get_tuple_count());
+    auto time = timeline.get_time();
+    auto tuple_count = timeline.get_tuple_count_at(time);
+    grounding_table.expire_outdated_groundings(time, tuple_count);
     // Next we remove all groundings in the map that have the horizon
     // values outside the timeline (imposed or not by a window).
     for (auto iterator = box_map.begin(); iterator != box_map.end();
@@ -62,7 +63,7 @@ void Box::expire_outdated_groundings(util::Timeline const &timeline) {
         auto const &grounding = iterator->second;
         bool is_expired =
             grounding->get_horizon_time() < timeline.get_min_time() ||
-            grounding->get_horizon_count() <= timeline.get_tuple_count();
+            grounding->get_horizon_count() <= tuple_count;
         if (is_expired) {
             iterator = box_map.erase(iterator);
         } else {

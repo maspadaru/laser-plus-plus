@@ -202,8 +202,9 @@ bool ExactTime::evaluate(util::Timeline const &timeline,
 void ExactTime::expire_outdated_groundings(util::Timeline const &timeline) {
     timepoint_conclusions.clear();
     child->expire_outdated_groundings(timeline);
-    grounding_table.expire_outdated_groundings(timeline.get_min_time(),
-                                               timeline.get_tuple_count());
+    auto time = timeline.get_min_time();
+    auto tuple_count = timeline.get_tuple_count_at(timeline.get_time());
+    grounding_table.expire_outdated_groundings(time, tuple_count);
 }
 
 } // namespace formula

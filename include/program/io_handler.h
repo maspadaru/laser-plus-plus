@@ -11,8 +11,8 @@
 #include "formula/extended/atom.h"
 #include "formula/grounding.h"
 #include "io/io_manager.h"
-#include "util/timeline.h"
 #include "util/data_atom.h"
+#include "util/timeline.h"
 
 namespace laser {
 namespace program {

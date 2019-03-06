@@ -61,7 +61,8 @@ std::vector<std::shared_ptr<Grounding>> TupleWindow::adjust_annotations(
 }
 
 util::Timeline TupleWindow::alter_timeline(util::Timeline timeline) const {
-    auto current_tuple_count = timeline.get_tuple_count();
+    auto time = timeline.get_time();
+    auto current_tuple_count = timeline.get_tuple_count_at(time);
     if (current_tuple_count < past_size) {
         // there are not enought facts in the timeline, so there is no need
         // for croping

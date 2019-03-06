@@ -301,6 +301,26 @@ void test_exact_time_recursive() {
     run(name, stream_string, rule_string);
 }
 
+void test_tuple_window_diamond() {
+    const std::string name = "Tuple Window Diamond";
+    std::string stream_string = "0 14 "
+                                "1 : f(x1)\n"
+                                "2 : a(x2)\n"
+                                "3 : f(x3)\n"
+                                "5 : f(x5), f(y5)\n"
+                                "6 : \n"
+                                "7 : f(z), f(z), f(z)\n"
+                                "8 : f(z)\n"
+                                "9 : \n"
+                                "10 : \n"
+                                "11 : \n"
+                                "12 : \n"
+                                "13 : \n"
+                                "14 : \n";
+    std::string rule_string = "u(X) := [#, 1][D]f(X)\n";
+    run(name, stream_string, rule_string);
+}
+
 void test_tuple_window() {
     const std::string name = "Tuple Window";
     std::string stream_string = "0 14 "
@@ -334,20 +354,21 @@ void test_tuple_window() {
 }
 
 int main() {
-    //test_simple();
-    //test_atoms();
-    //test_diamond();
-    //test_time_window();
-    //test_box();
-    //test_conjunction_same_variables();
-    //test_conjunction_two_variables();
-    //test_conjunction_diamond();
-    //test_conjunction_box();
-    //test_conjunction_corss_variables();
-    //test_recursive();
-    //test_exact_time_body();
+    test_simple();
+    test_atoms();
+    test_diamond();
+    test_time_window();
+    test_box();
+    test_conjunction_same_variables();
+    test_conjunction_two_variables();
+    test_conjunction_diamond();
+    test_conjunction_box();
+    test_conjunction_corss_variables();
+    test_recursive();
+    test_exact_time_body();
     test_exact_time_handb();
-    //test_exact_time_head();
-    //test_exact_time_recursive();
-    //test_tuple_window();
+    test_exact_time_head();
+    test_exact_time_recursive();
+    test_tuple_window();
+    test_tuple_window_diamond();
 }

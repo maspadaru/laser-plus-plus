@@ -83,7 +83,7 @@ TEST(ConjunctionTest, TwoVariables) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ConjunctionTest, ConunctionDiamond) {
+TEST(ConjunctionTest, ConjunctionDiamond) {
 
     std::string stream_string = "1 14 "
                                 "1 : a(x)\n"

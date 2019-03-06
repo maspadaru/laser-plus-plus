@@ -5,42 +5,44 @@
 #ifndef LASER_IO_IO_MANAGER_H
 #define LASER_IO_IO_MANAGER_H
 
-#include "util/data_atom.h"
+#include <memory>
+#include <vector>
+
+#include <formula/grounding.h>
+#include <util/timeline.h>
 
 namespace laser {
 namespace io {
 
 class IOManager {
-private:
+  private:
+    // methods
 
-// methods
-
-public:
-
-// constructors & destructors
+  public:
+    // constructors & destructors
 
     virtual ~IOManager() = default;
 
-// getters & setters
+    // getters & setters
 
-// methods
+    // methods
     virtual uint64_t read_stream_start_time() = 0;
 
     virtual uint64_t read_stream_end_time() = 0;
 
-    virtual std::vector<laser::util::DataAtom>
-    read_stream_data(uint64_t time) = 0;
+    virtual std::vector<std::shared_ptr<laser::formula::Grounding>>
+    read_stream_data(laser::util::Timeline &timeline) = 0;
 
-    virtual std::vector<laser::util::DataAtom>
+    virtual std::vector<std::shared_ptr<laser::formula::Grounding>>
     read_background_data() = 0;
 
-    virtual void write_output_data(
-            uint64_t time,
-            std::vector<laser::util::DataAtom> const &output_vector) = 0;
+    virtual void
+    write_output_data(uint64_t time,
+                      std::vector<std::shared_ptr<laser::formula::Grounding>>
+                          output_vector) = 0;
 };
 
-
-} // namespace util
+} // namespace io
 } // namespace laser
 
 #endif // LASER_IO_IO_MANAGER_H
