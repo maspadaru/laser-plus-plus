@@ -177,8 +177,8 @@ void Conjunction::populate_grounding_vector(
     util::Timeline const &timeline,
     std::vector<std::shared_ptr<Grounding>> const &left_groundings,
     std::vector<std::shared_ptr<Grounding>> const &right_groundings) {
-    std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>>
-        hashmap;
+    std::unordered_map <std::string,
+        std::vector<std::shared_ptr<Grounding>>> hashmap;
     for (auto const &gr : right_groundings) {
         auto key = hash_common_variables(*right_child, *gr);
         hashmap.try_emplace(key);
@@ -203,8 +203,7 @@ void Conjunction::populate_grounding_vector(
 
 bool Conjunction::evaluate(
     util::Timeline const &timeline,
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<Grounding>>> const &facts) {
+    std::vector<std::shared_ptr<Grounding>> const &facts) {
     // TODO Here I can split facts in sub-maps, based on predicates of children
     left_child->evaluate(timeline, facts);
     right_child->evaluate(timeline, facts);

@@ -171,18 +171,15 @@ ExactTime::get_conclusions_step(util::Timeline const &timeline) {
 
 void ExactTime::evaluate_head(
     util::Timeline const &timeline,
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<Grounding>>> const &facts) {
+    std::vector<std::shared_ptr<Grounding>> const &facts) {
     std::string predicate = get_predicate_vector().at(0);
-    auto predicate_facts = facts.at(predicate);
-    auto exact_time_groundings = convert_groundings_head(predicate_facts);
+    auto exact_time_groundings = convert_groundings_head(facts);
     grounding_table.add_grounding_vector(exact_time_groundings);
 }
 
 void ExactTime::evaluate_body(
     util::Timeline const &timeline,
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<Grounding>>> const &facts) {
+    std::vector<std::shared_ptr<Grounding>> const &facts) {
     child->evaluate(timeline, facts);
     auto child_conclusions = child->get_groundings(timeline);
     auto exact_time_groundings =
@@ -190,10 +187,8 @@ void ExactTime::evaluate_body(
     grounding_table.add_grounding_vector(exact_time_groundings);
 }
 
-bool ExactTime::evaluate(
-    util::Timeline const &timeline,
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<Grounding>>> const &facts) {
+bool ExactTime::evaluate(util::Timeline const &timeline,
+                         std::vector<std::shared_ptr<Grounding>> const &facts) {
     // If the formula is in the head of the rule, we know the child can only
     // be an Atom. So we can ignore the child.
     if (is_head()) {

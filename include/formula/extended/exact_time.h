@@ -63,15 +63,11 @@ class ExactTime : public Formula {
 
     size_t get_time_variable_index() const;
 
-    void evaluate_head(
-        util::Timeline const &timeline,
-        std::unordered_map<
-            std::string, std::vector<std::shared_ptr<Grounding>>> const &facts);
+    void evaluate_head(util::Timeline const &timeline,
+                       std::vector<std::shared_ptr<Grounding>> const &facts);
 
-    void evaluate_body(
-        util::Timeline const &timeline,
-        std::unordered_map<
-            std::string, std::vector<std::shared_ptr<Grounding>>> const &facts);
+    void evaluate_body(util::Timeline const &timeline,
+                       std::vector<std::shared_ptr<Grounding>> const &facts);
 
   public:
     // constructors / destructors
@@ -113,9 +109,7 @@ class ExactTime : public Formula {
 
     bool
     evaluate(util::Timeline const &timeline,
-             std::unordered_map<std::string,
-                                std::vector<std::shared_ptr<Grounding>>> const
-                 &facts) override;
+             std::vector<std::shared_ptr<Grounding>> const &facts) override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 

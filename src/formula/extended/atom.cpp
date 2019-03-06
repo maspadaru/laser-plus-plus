@@ -128,13 +128,10 @@ Atom::get_conclusions_step(util::Timeline const &timeline) {
     return grounding_table.get_recent_groundings();
 }
 
-bool Atom::evaluate(
-    util::Timeline const &timeline,
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<Grounding>>> const &facts) {
-    if (facts.count(predicate) > 0) {
-        auto const &grounding_vector = facts.at(predicate);
-        for (auto const &grounding : grounding_vector) {
+bool Atom::evaluate(util::Timeline const &timeline,
+                    std::vector<std::shared_ptr<Grounding>> const &facts) {
+    for (auto const &grounding : facts) {
+        if (grounding->get_predicate() == predicate) {
             accept(grounding);
         }
     }
@@ -142,7 +139,8 @@ bool Atom::evaluate(
 }
 
 bool Atom::is_valid_fact(Grounding const &grounding) const {
-    // Check if duplicate variables have the same constant value in grounding
+    // Check if duplicate variables have the same constant value in
+    // grounding
     if (has_duplicate_variables) {
         for (auto const &iterator : binding_map) {
             auto const &variable_vector = iterator.second;

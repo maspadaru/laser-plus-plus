@@ -74,7 +74,7 @@ std::vector<std::shared_ptr<Grounding>> Diamond::get_conclusions_step(util::Time
 
 bool Diamond::evaluate(
     util::Timeline const &timeline,
-    std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>> const &facts) {
+    std::vector<std::shared_ptr<Grounding>> const &facts) {
     bool result = child->evaluate(timeline, facts);
     auto child_facts = child->get_groundings(timeline);
     grounding_table.add_grounding_vector(child_facts);

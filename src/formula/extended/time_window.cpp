@@ -26,13 +26,9 @@ Formula &TimeWindow::move() {
 
 // getters / setters
 
-void TimeWindow::set_head(bool is_head) {
-    child->set_head(is_head);
-}
+void TimeWindow::set_head(bool is_head) { child->set_head(is_head); }
 
-bool TimeWindow::is_head() const {
-    return child->is_head();
-}
+bool TimeWindow::is_head() const { return child->is_head(); }
 
 FormulaType TimeWindow::get_type() const { return FormulaType::TIME_WINDOW; }
 
@@ -55,7 +51,8 @@ size_t TimeWindow::get_number_of_variables() const {
 }
 
 util::Timeline TimeWindow::alter_timeline(util::Timeline timeline) const {
-    uint64_t window_min_time = timeline.substract(timeline.get_time(), past_size);
+    uint64_t window_min_time =
+        timeline.substract(timeline.get_time(), past_size);
     if (timeline.get_min_time() < window_min_time) {
         timeline.set_min_time(window_min_time);
     }
@@ -68,7 +65,7 @@ util::Timeline TimeWindow::alter_timeline(util::Timeline timeline) const {
 
 bool TimeWindow::evaluate(
     util::Timeline const &timeline,
-    std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>> const &facts) {
+    std::vector<std::shared_ptr<Grounding>> const &facts) {
     auto window_timeline = alter_timeline(timeline);
     return child->evaluate(window_timeline, facts);
 }

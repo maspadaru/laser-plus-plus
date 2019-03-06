@@ -28,9 +28,7 @@ class Program {
     IOHandler io_handler;
     std::vector<rule::Rule> rule_vector;
     util::Timeline timeline;
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<formula::Grounding>>>
-        facts;
+    std::vector<std::shared_ptr<formula::Grounding>> facts;
 
     void evaluate_rule_vector();
 
@@ -40,9 +38,7 @@ class Program {
 
     std::vector<formula::Formula *> get_conclusions();
 
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<formula::Grounding>>>
-    compute_new_facts();
+    std::vector<std::shared_ptr<formula::Grounding>> compute_new_facts();
 
   public:
 

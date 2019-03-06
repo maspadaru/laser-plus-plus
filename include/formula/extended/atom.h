@@ -5,12 +5,12 @@
 #define LASER_FORMULA_EXTENDED_ATOM_H
 
 #include <iostream>
+#include <memory>
+#include <set>
 #include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
-#include <memory>
-#include <set>
 
 #include "formula/formula.h"
 #include "formula/grounding_table.h"
@@ -35,9 +35,8 @@ class Atom : public Formula {
      */
     std::vector<std::string> unique_variable_names;
 
-
     /**
-     * Key: Variable Name 
+     * Key: Variable Name
      * Value: Vector of positions where I can find an occurance of this bound
      * variable
      * E.g.: p(X, X, Y) -> { ("X":0), ("Y":2) }
@@ -46,7 +45,8 @@ class Atom : public Formula {
 
     void set_variable_names(std::vector<std::string> &variable_names);
 
-    void compute_unique_variable_names(std::vector<std::string> &variable_names);
+    void
+    compute_unique_variable_names(std::vector<std::string> &variable_names);
 
     /**
      * If the grounding parameter is valid, it will be added to the atom's
@@ -93,17 +93,16 @@ class Atom : public Formula {
 
     int get_variable_index(std::string const &variable_name) const override;
 
-    bool evaluate(
-        util::Timeline const &timeline,
-        std::unordered_map<
-            std::string, std::vector<std::shared_ptr<Grounding>>> const
-            &facts) override;
+    bool
+    evaluate(util::Timeline const &timeline,
+             std::vector<std::shared_ptr<Grounding>> const &facts) override;
 
     size_t get_number_of_variables() const override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>> get_groundings(util::Timeline const &timeline) override;
+    std::vector<std::shared_ptr<Grounding>>
+    get_groundings(util::Timeline const &timeline) override;
 
     std::vector<std::shared_ptr<Grounding>>
     get_conclusions_timepoint(util::Timeline const &timeline) override;
@@ -112,7 +111,6 @@ class Atom : public Formula {
     get_conclusions_step(util::Timeline const &timeline) override;
 
     void add_child(formula::Formula *child) override;
-
 };
 
 } // namespace formula

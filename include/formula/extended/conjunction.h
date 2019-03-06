@@ -92,9 +92,7 @@ class Conjunction : public Formula {
 
     bool
     evaluate(util::Timeline const &timeline,
-             std::unordered_map<std::string,
-                                std::vector<std::shared_ptr<Grounding>>> const
-                 &facts) override;
+             std::vector<std::shared_ptr<Grounding>> const &facts) override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 

@@ -58,9 +58,7 @@ void Rule::expire_outdated_groundings(util::Timeline const &timeline) {
 
 bool Rule::evaluate(
     util::Timeline const &timeline,
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<formula::Grounding>>> const
-        &facts) {
+    std::vector<std::shared_ptr<formula::Grounding>> const &facts) {
     return body.evaluate(timeline, facts);
 }
 
@@ -98,7 +96,7 @@ Rule::convert_to_head_grounding(std::string const &head_predicate,
 bool Rule::derive_conclusions(util::Timeline const &timeline) {
     bool result = false;
     auto head_predicate = head.get_predicate_vector().at(0);
-    std::vector<std::shared_ptr<formula::Grounding>> predicate_facts;
+    std::vector<std::shared_ptr<formula::Grounding>> head_facts;
     std::vector<std::shared_ptr<formula::Grounding>> body_groundings =
         body.get_groundings(timeline);
     for (auto const &body_grounding : body_groundings) {
@@ -106,17 +104,12 @@ bool Rule::derive_conclusions(util::Timeline const &timeline) {
         if (body_grounding->get_consideration_time() >= timeline.get_time()) {
             auto head_grounding =
                 convert_to_head_grounding(head_predicate, *body_grounding);
-            predicate_facts.push_back(std::move(head_grounding));
+            head_facts.push_back(std::move(head_grounding));
         }
     }
-    bool is_body_satisfied = !predicate_facts.empty();
+    bool is_body_satisfied = !head_facts.empty();
     if (is_body_satisfied) {
-        std::unordered_map<std::string,
-                           std::vector<std::shared_ptr<formula::Grounding>>>
-            body_facts;
-        body_facts.try_emplace(std::move(head_predicate),
-                               std::move(predicate_facts));
-        result = head.evaluate(timeline, body_facts);
+        result = head.evaluate(timeline, head_facts);
     }
     return result;
 }

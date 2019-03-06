@@ -47,26 +47,15 @@ size_t TupleWindow::get_number_of_variables() const {
     return child->get_number_of_variables();
 }
 
-std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>>
-TupleWindow::adjust_annotations(
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<Grounding>>> const &facts)
-    const {
-    std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>>
-        result;
-    auto predicates = child->get_predicate_vector();
-    for (auto const &predicate : predicates) {
-        if (facts.count(predicate) > 0) {
-            auto fact_vector = facts.at(predicate);
-            result.try_emplace(predicate);
-            auto &result_vector = result.at(predicate);
-            for (auto const &fact : fact_vector) {
-                auto horizon_count = compute_horizon_count(
-                    fact->get_consideration_count(), fact->get_horizon_count());
-                auto grounding = fact->new_horizon_count(horizon_count);
-                result_vector.push_back(std::move(grounding));
-            }
-        }
+std::vector<std::shared_ptr<Grounding>> TupleWindow::adjust_annotations(
+    std::vector<std::shared_ptr<Grounding>> const &facts) const {
+    std::vector<std::shared_ptr<Grounding>> result;
+    for (auto const &fact : facts) {
+        // TODO check if fact->get_predicate in child->get_predicate_vector();
+        auto horizon_count = compute_horizon_count(
+            fact->get_consideration_count(), fact->get_horizon_count());
+        auto grounding = fact->new_horizon_count(horizon_count);
+        result.push_back(std::move(grounding));
     }
     return result;
 }
@@ -74,13 +63,12 @@ TupleWindow::adjust_annotations(
 util::Timeline TupleWindow::alter_timeline(util::Timeline timeline) const {
     auto current_tuple_count = timeline.get_tuple_count();
     if (current_tuple_count < past_size) {
-        // there are not enought facts in the timeline, so there is no need 
+        // there are not enought facts in the timeline, so there is no need
         // for croping
         return timeline;
     }
 
-    auto low_tuple_count =
-        timeline.substract(current_tuple_count, past_size);
+    auto low_tuple_count = timeline.substract(current_tuple_count, past_size);
     auto current_time = timeline.get_time();
     auto test_time = current_time;
     bool low_time_found = false;
@@ -100,8 +88,7 @@ util::Timeline TupleWindow::alter_timeline(util::Timeline timeline) const {
 
 bool TupleWindow::evaluate(
     util::Timeline const &timeline,
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<Grounding>>> const &facts) {
+    std::vector<std::shared_ptr<Grounding>> const &facts) {
     auto child_facts = adjust_annotations(facts);
     auto window_timeline = alter_timeline(timeline);
     return child->evaluate(window_timeline, child_facts);

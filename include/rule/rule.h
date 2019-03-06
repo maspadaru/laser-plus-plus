@@ -62,8 +62,7 @@ class Rule {
      */
     bool evaluate(
         util::Timeline const &timeline,
-        std::unordered_map<
-            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
+            std::vector<std::shared_ptr<formula::Grounding>> const
             &facts);
 
     void expire_outdated_groundings(util::Timeline const &timeline);

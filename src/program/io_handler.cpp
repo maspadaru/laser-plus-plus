@@ -7,26 +7,21 @@
 namespace laser {
 namespace program {
 
-std::unordered_map<std::string,
-                   std::vector<std::shared_ptr<formula::Grounding>>>
+                   std::vector<std::shared_ptr<formula::Grounding>>
 IOHandler::handle_input(util::Timeline &timeline,
                         std::vector<util::DataAtom> const &data_vector) {
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<formula::Grounding>>>
+                       std::vector<std::shared_ptr<formula::Grounding>>
         result;
     uint64_t time = timeline.get_time();
     uint64_t max_tuple_counter = util::Timeline::INFINITE_TIME;
 
     for (auto const &data : data_vector) {
         std::string predicate = data.get_predicate();
-        result.try_emplace(predicate);
-        std::vector<std::shared_ptr<formula::Grounding>> &map_vector =
-            result.at(predicate);
         current_tuple_counter++;
         auto grounding = std::make_shared<laser::formula::Grounding>(
             predicate, time, time, current_tuple_counter, max_tuple_counter, true, false,
             data.get_arguments());
-        map_vector.push_back(std::move(grounding));
+        result.push_back(std::move(grounding));
     }
     timeline.set_tuple_count(current_tuple_counter);
     return result;

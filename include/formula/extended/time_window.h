@@ -56,17 +56,18 @@ class TimeWindow : public Formula {
 
     bool
     evaluate(util::Timeline const &timeline,
-             std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>>
-                const & facts) override;
+             std::vector<std::shared_ptr<Grounding>> const &facts) override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 
     std::vector<std::shared_ptr<Grounding>>
     get_groundings(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>> get_conclusions_timepoint(util::Timeline const &timeline) override;
+    std::vector<std::shared_ptr<Grounding>>
+    get_conclusions_timepoint(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>> get_conclusions_step(util::Timeline const &timeline) override;
+    std::vector<std::shared_ptr<Grounding>>
+    get_conclusions_step(util::Timeline const &timeline) override;
 
     void add_child(formula::Formula *child) override;
 

@@ -20,13 +20,10 @@ class TupleWindow : public Formula {
 
     util::Timeline alter_timeline(util::Timeline timeline) const;
     uint64_t compute_horizon_count(uint64_t grounding_consideration_count,
-                                  uint64_t grounding_horizon_count) const;
+                                   uint64_t grounding_horizon_count) const;
 
-    std::unordered_map<std::string, std::vector<std::shared_ptr<Grounding>>>
-    adjust_annotations( 
-        std::unordered_map<std::string,
-                           std::vector<std::shared_ptr<Grounding>>> const
-            &facts) const;
+    std::vector<std::shared_ptr<Grounding>> adjust_annotations(
+        std::vector<std::shared_ptr<Grounding>> const &facts) const;
 
   public:
     // from Formula Interface
@@ -55,9 +52,7 @@ class TupleWindow : public Formula {
 
     bool
     evaluate(util::Timeline const &timeline,
-             std::unordered_map<std::string,
-                                std::vector<std::shared_ptr<Grounding>>> const
-                 &facts) override;
+             std::vector<std::shared_ptr<Grounding>> const &facts) override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 

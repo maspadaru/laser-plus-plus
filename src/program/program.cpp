@@ -42,23 +42,13 @@ void Program::do_evaluation_loop() {
     } while (has_new_conclusions);
 }
 
-std::unordered_map<std::string,
-                   std::vector<std::shared_ptr<formula::Grounding>>>
+std::vector<std::shared_ptr<formula::Grounding>>
 Program::compute_new_facts() {
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<formula::Grounding>>>
-        new_conclusions;
+    std::vector<std::shared_ptr<formula::Grounding>> new_conclusions;
     for (auto const &rule : rule_vector) {
         formula::Formula *head = &rule.get_head();
-        auto const &predicate_vector = head->get_predicate_vector();
         for (auto &conclusion : head->get_conclusions_step(timeline)) {
-            // In case head formula has multiple predicates. Might be imposible
-            for (auto const &predicate : predicate_vector) {
-                new_conclusions.try_emplace(predicate);
-                std::vector<std::shared_ptr<formula::Grounding>>
-                    &conclusions_vector = new_conclusions[predicate];
-                conclusions_vector.push_back(std::move(conclusion));
-            }
+            new_conclusions.push_back(std::move(conclusion));
         }
     }
     return new_conclusions;

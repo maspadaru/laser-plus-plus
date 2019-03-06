@@ -60,8 +60,9 @@ void Box::expire_outdated_groundings(util::Timeline const &timeline) {
          /*nothing*/) {
         auto const &key = iterator->first;
         auto const &grounding = iterator->second;
-        bool is_expired = grounding->get_horizon_time() < timeline.get_min_time() 
-            || grounding->get_horizon_count() <= timeline.get_tuple_count();
+        bool is_expired =
+            grounding->get_horizon_time() < timeline.get_min_time() ||
+            grounding->get_horizon_count() <= timeline.get_tuple_count();
         if (is_expired) {
             iterator = box_map.erase(iterator);
         } else {
@@ -88,10 +89,8 @@ Box::get_conclusions_step(util::Timeline const &timeline) {
     return result;
 }
 
-bool Box::evaluate(
-    util::Timeline const &timeline,
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<Grounding>>> const &facts) {
+bool Box::evaluate(util::Timeline const &timeline,
+                   std::vector<std::shared_ptr<Grounding>> const &facts) {
     bool result = child->evaluate(timeline, facts);
     if (result) {
         auto child_facts = child->get_groundings(timeline);
@@ -118,16 +117,16 @@ Box::compute_box_conclusions(util::Timeline const &timeline) {
 
         // One grounding should exist at each timepoint in the timeline
         if (ct <= start_time && ht >= current_time) {
-            auto new_grounding = grounding->new_annotations(
-                current_time, current_time, cc, hc);
+            auto new_grounding =
+                grounding->new_annotations(current_time, current_time, cc, hc);
             result.push_back(std::move(new_grounding));
         }
     }
     return result;
 }
 
-void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts, 
-        util::Timeline const &timeline) {
+void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts,
+                         util::Timeline const &timeline) {
     bool keep_going = true;
     while (keep_going) {
         // We need to repete as we may have in box p(a)[1, 1], and get
@@ -148,10 +147,10 @@ void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts,
     }
 }
 
-std::pair<bool, std::shared_ptr<Grounding>> Box::adjust_annotation(
-    std::shared_ptr<Grounding> const &box_grounding,
-    std::shared_ptr<Grounding> const &child_grounding,
-    util::Timeline const &timeline) const {
+std::pair<bool, std::shared_ptr<Grounding>>
+Box::adjust_annotation(std::shared_ptr<Grounding> const &box_grounding,
+                       std::shared_ptr<Grounding> const &child_grounding,
+                       util::Timeline const &timeline) const {
     bool is_modified = false;
     auto ct1 = box_grounding->get_consideration_time();
     auto ht1 = box_grounding->get_horizon_time();
@@ -179,7 +178,9 @@ std::pair<bool, std::shared_ptr<Grounding>> Box::adjust_annotation(
 
     // Adjust Tuple Counter annotations:
     auto hc = timeline.max(hc1, hc2);
-    if (hc != hc1) { is_modified = true; }
+    if (hc != hc1) {
+        is_modified = true;
+    }
 
     if (is_modified) {
         auto new_box_grounding =

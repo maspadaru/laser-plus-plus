@@ -28,8 +28,7 @@ class IOHandler {
 
   public:
     // methods
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<formula::Grounding>>>
+    std::vector<std::shared_ptr<formula::Grounding>>
     handle_input(util::Timeline &timeline,
                  std::vector<util::DataAtom> const &data_vector);
 

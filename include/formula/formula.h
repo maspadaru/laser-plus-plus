@@ -59,11 +59,9 @@ class Formula {
 
     virtual int get_variable_index(std::string const &variable_name) const = 0;
 
-    virtual bool evaluate(
-        util::Timeline const &timeline,
-        std::unordered_map<
-            std::string, std::vector<std::shared_ptr<formula::Grounding>>> const
-            &facts) = 0;
+    virtual bool
+    evaluate(util::Timeline const &timeline,
+             std::vector<std::shared_ptr<formula::Grounding>> const &facts) = 0;
 
     virtual size_t get_number_of_variables() const = 0;
 
@@ -90,7 +88,6 @@ class Formula {
      */
     virtual std::vector<std::shared_ptr<Grounding>>
     get_conclusions_timepoint(util::Timeline const &timeline) = 0;
-
 };
 
 } // namespace formula
