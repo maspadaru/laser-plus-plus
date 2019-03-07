@@ -13,10 +13,8 @@
 
 #include "formula/formula.h"
 #include "io/rule_reader.h"
-#include "program/io_handler.h"
 #include "rule/default_rule_reader.h"
 #include "rule/rule.h"
-#include "util/data_atom.h"
 #include "util/request_exception.h"
 #include "util/timeline.h"
 
@@ -25,7 +23,6 @@ namespace program {
 
 class Program {
   private:
-    IOHandler io_handler;
     std::vector<rule::Rule> rule_vector;
     util::Timeline timeline;
     std::vector<std::shared_ptr<formula::Grounding>> facts;

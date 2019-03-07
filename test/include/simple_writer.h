@@ -12,7 +12,6 @@
 #include <vector>
 
 #include <formula/grounding.h>
-#include <util/data_atom.h>
 
 class SimpleWriter {
   private:

@@ -15,7 +15,6 @@
 #include "io/io_manager.h"
 #include "io/rule_reader.h"
 #include "program/program.h"
-#include "util/data_atom.h"
 #include "util/timeline.h"
 
 namespace laser {
