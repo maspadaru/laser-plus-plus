@@ -1,6 +1,4 @@
-//
 // Created by mike on 28-11-2018.
-//
 
 #ifndef BENCHAPP_FILE_READER_H
 #define BENCHAPP_FILE_READER_H

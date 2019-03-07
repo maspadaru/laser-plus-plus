@@ -62,13 +62,13 @@
         "alternate": "app_bench/include/{}.h"
     },
 
-    "app_laser/include/*.h": {
-        "type": "laserapp-header",
-        "alternate": "app_laser/src/{}.cpp"
+    "app_simple/include/*.h": {
+        "type": "simpleapp-header",
+        "alternate": "app_simple/src/{}.cpp"
     },
-    "app_laser/src/*.cpp": {
-        "type": "laserapp-source",
-        "alternate": "app_laser/include/{}.h"
+    "app_simple/src/*.cpp": {
+        "type": "simpleapp-source",
+        "alternate": "app_simple/include/{}.h"
     },
 
 }

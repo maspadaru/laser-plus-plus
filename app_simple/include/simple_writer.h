@@ -1,8 +1,9 @@
-// Created by mike on 6/21/18.
+//
+// Created by mike on 03/07/18.
 //
 
-#ifndef BENCHAPP_FILE_WRITER_H
-#define BENCHAPP_FILE_WRITER_H
+#ifndef SIMPLEAPP_SIMPLE_WRITER_H
+#define SIMPLEAPP_SIMPLE_WRITER_H
 
 #include <fstream>
 #include <iostream>
@@ -13,7 +14,7 @@
 
 #include <util/grounding.h>
 
-class FileWriter {
+class SimpleWriter {
   private:
     std::ofstream out;
 
@@ -22,8 +23,9 @@ class FileWriter {
                           input_groundings) const;
 
   public:
-    explicit FileWriter(std::string const &output_path);
-    ~FileWriter();
+    explicit SimpleWriter(std::string const &output_path);
+
+    ~SimpleWriter();
 
     void write_output(std::string const &formatted_output_string);
 
@@ -33,4 +35,4 @@ class FileWriter {
                       output_vector) const;
 };
 
-#endif // BENCHAPP_FILE_WRITER_H
+#endif // SIMPLEAPP_SIMPLE_FORMATTER_H

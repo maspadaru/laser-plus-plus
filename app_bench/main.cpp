@@ -1,9 +1,9 @@
 #include <chrono>
 #include <iostream>
 
+#include "file_io_manager.h"
 #include <core/reasoner.h>
 #include <example/example_rule_reader.h>
-#include "file_io_manager.h"
 
 const uint64_t BUILD_NUMBER = 1;
 
@@ -23,7 +23,8 @@ void run(uint64_t end_time, int facts_per_timepoint,
     auto clock_start = std::chrono::high_resolution_clock::now();
     reasoner.start();
     auto clock_end = std::chrono::high_resolution_clock::now();
-    std::chrono::duration<double, std::milli> clock_elapsed = clock_end - clock_start;
+    std::chrono::duration<double, std::milli> clock_elapsed =
+        clock_end - clock_start;
     std::cout << "Total seconds: " << clock_elapsed.count() / 1000 << std::endl;
     std::cout << std::endl;
 }

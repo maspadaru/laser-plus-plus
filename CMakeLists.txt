@@ -42,6 +42,16 @@ set(BENCHAPP_LASER_SOURCES ${LASER_SOURCES} ${BENCHAPP_SOURCES})
 add_executable(benchapp app_bench/main.cpp ${BENCHAPP_LASER_SOURCES})
 target_link_libraries(benchapp ${CMAKE_THREAD_LIBS_INIT})
 
+################################## SIMPLEAPP ##################################
+include_directories(app_simple/include/)
+file(GLOB SIMPLEAPP_SOURCES
+        "app_simple/src/*.cpp"
+    )
+
+set(SIMPLEAPP_LASER_SOURCES ${LASER_SOURCES} ${SIMPLEAPP_SOURCES})
+add_executable(simpleapp app_simple/main.cpp ${SIMPLEAPP_LASER_SOURCES})
+target_link_libraries(simpleapp ${CMAKE_THREAD_LIBS_INIT})
+
 ################################### TESTS ###################################
 
 find_package(GTest)
