@@ -1,19 +1,19 @@
 #include <iostream>
 
-#include <reasoner/reasoner.h>
-#include <rule/default_rule_reader.h>
+#include <core/reasoner.h>
+#include <example/example_rule_reader.h>
+#include <example/example_io_manager.h>
 
-#include "simple_io_manager.h"
 
 void run(std::string const &name, std::string const &stream_string,
          std::string const &rule_string) {
     std::cout << std::endl;
     std::cout << " Test: " << name << std::endl;
     std::cout << " =================================== " << std::endl;
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto rule_reader = laser::rule::DefaultRuleReader(rule_string);
+    auto example_io_manager = laser::example::ExampleIOManager(stream_string);
+    auto rule_reader = laser::example::ExampleRuleReader(rule_string);
     auto reasoner =
-        laser::reasoner::Reasoner(&rule_reader, &simple_io_manager);
+        laser::core::Reasoner(&rule_reader, &example_io_manager);
 
     reasoner.start();
 

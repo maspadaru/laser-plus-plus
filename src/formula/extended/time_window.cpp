@@ -65,7 +65,7 @@ util::Timeline TimeWindow::alter_timeline(util::Timeline timeline) const {
 
 bool TimeWindow::evaluate(
     util::Timeline const &timeline,
-    std::vector<std::shared_ptr<Grounding>> const &facts) {
+    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     auto window_timeline = alter_timeline(timeline);
     return child->evaluate(window_timeline, facts);
 }
@@ -89,11 +89,11 @@ uint64_t TimeWindow::compute_horizon_time(uint64_t grounding_consideration_time,
     return result;
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 TimeWindow::get_groundings(util::Timeline const &timeline) {
     auto window_timeline = alter_timeline(timeline);
     auto child_conclusions = child->get_groundings(window_timeline);
-    std::vector<std::shared_ptr<Grounding>> result;
+    std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto &grounding : child_conclusions) {
         uint64_t window_horizon_time = compute_horizon_time(
             grounding->get_consideration_time(), grounding->get_horizon_time(),
@@ -104,12 +104,12 @@ TimeWindow::get_groundings(util::Timeline const &timeline) {
     return result;
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 TimeWindow::get_conclusions_timepoint(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 TimeWindow::get_conclusions_step(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }

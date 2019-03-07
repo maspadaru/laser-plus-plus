@@ -8,17 +8,17 @@ namespace test_framework {
 
 void run_test(std::string const &stream_string, std::string const &rule_string, 
          std::vector<std::string> const &expected) {
-    auto simple_io_manager = SimpleIOManager(stream_string);
-    auto rule_reader = laser::rule::DefaultRuleReader(rule_string);
+    auto example_io_manager = laser::example::ExampleIOManager(stream_string);
+    auto rule_reader = laser::example::ExampleRuleReader(rule_string);
     auto reasoner =
-        laser::reasoner::Reasoner(&rule_reader, &simple_io_manager);
+        laser::core::Reasoner(&rule_reader, &example_io_manager);
 
     reasoner.start();
-    auto start_time = simple_io_manager.read_stream_start_time();
-    auto end_time = simple_io_manager.read_stream_end_time();
+    auto start_time = example_io_manager.read_stream_start_time();
+    auto end_time = example_io_manager.read_stream_end_time();
     for (auto current_time = start_time; current_time <= end_time;
          current_time++) {
-        std::string result = simple_io_manager.get_output(current_time);
+        std::string result = example_io_manager.get_output(current_time);
         std::istringstream issr(result);
         std::vector<std::string> results(
             std::istream_iterator<std::string>{issr},

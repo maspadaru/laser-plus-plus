@@ -11,10 +11,9 @@
 
 #include <gtest/gtest.h>
 
-#include <reasoner/reasoner.h>
-#include <rule/default_rule_reader.h>
-
-#include "simple_io_manager.h"
+#include <core/reasoner.h>
+#include <example/example_rule_reader.h>
+#include <example/example_io_manager.h>
 
 namespace test_framework {
 

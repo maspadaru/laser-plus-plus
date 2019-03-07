@@ -13,7 +13,9 @@
 #include <vector>
 
 #include "formula/formula.h"
+#include "formula/formula_type.h"
 #include "formula/grounding_table.h"
+#include "util/grounding.h"
 
 namespace laser {
 namespace formula {
@@ -52,14 +54,14 @@ class Atom : public Formula {
      * If the grounding parameter is valid, it will be added to the atom's
      * Grounding Table
      */
-    void accept(std::shared_ptr<Grounding> const &grounding);
+    void accept(std::shared_ptr<util::Grounding> const &grounding);
 
-    bool is_valid_fact(Grounding const &grounding) const;
+    bool is_valid_fact(util::Grounding const &grounding) const;
 
     /** returns a vector containing only unique groundings in regards to
      * substitutions, not annotations
      */
-    std::vector<std::shared_ptr<Grounding>> get_conclusion_set();
+    std::vector<std::shared_ptr<util::Grounding>> get_conclusion_set();
 
   public:
     // constructors & destructors
@@ -93,21 +95,21 @@ class Atom : public Formula {
 
     int get_variable_index(std::string const &variable_name) const override;
 
-    bool
-    evaluate(util::Timeline const &timeline,
-             std::vector<std::shared_ptr<Grounding>> const &facts) override;
+    bool evaluate(
+        util::Timeline const &timeline,
+        std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
 
     size_t get_number_of_variables() const override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>>
+    std::vector<std::shared_ptr<util::Grounding>>
     get_groundings(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>>
+    std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_timepoint(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>>
+    std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_step(util::Timeline const &timeline) override;
 
     void add_child(formula::Formula *child) override;

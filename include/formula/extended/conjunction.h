@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "formula/formula.h"
-#include "formula/grounding.h"
 #include "formula/grounding_table.h"
+#include "util/grounding.h"
 
 namespace laser {
 namespace formula {
@@ -30,7 +30,7 @@ class Conjunction : public Formula {
      */
     std::unordered_map<std::string, size_t> variable_map;
 
-    std::vector<std::shared_ptr<Grounding>> grounding_vector;
+    std::vector<std::shared_ptr<util::Grounding>> grounding_vector;
 
     // Methods
 
@@ -45,15 +45,16 @@ class Conjunction : public Formula {
     void populate_variable_collections();
     void populate_grounding_vector(
         util::Timeline const &timeline,
-        std::vector<std::shared_ptr<Grounding>> const &left_groundings,
-        std::vector<std::shared_ptr<Grounding>> const &right_groundings);
+        std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
+        std::vector<std::shared_ptr<util::Grounding>> const &right_groundings);
 
     std::string hash_common_variables(Formula const &child,
-                                      Grounding const &grounding) const;
+                                      util::Grounding const &grounding) const;
 
-    std::shared_ptr<Grounding> merge_groundings(util::Timeline const &timeline,
-                                                Grounding const &left,
-                                                Grounding const &right) const;
+    std::shared_ptr<util::Grounding>
+    merge_groundings(util::Timeline const &timeline,
+                     util::Grounding const &left,
+                     util::Grounding const &right) const;
 
   public:
     // constructors / destructors
@@ -81,18 +82,18 @@ class Conjunction : public Formula {
 
     size_t get_number_of_variables() const override;
 
-    std::vector<std::shared_ptr<Grounding>>
+    std::vector<std::shared_ptr<util::Grounding>>
     get_groundings(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>>
+    std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_step(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>>
+    std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_timepoint(util::Timeline const &timeline) override;
 
-    bool
-    evaluate(util::Timeline const &timeline,
-             std::vector<std::shared_ptr<Grounding>> const &facts) override;
+    bool evaluate(
+        util::Timeline const &timeline,
+        std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 

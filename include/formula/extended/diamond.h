@@ -5,8 +5,8 @@
 #include <string>
 
 #include "formula/formula.h"
-#include "formula/grounding.h"
 #include "formula/grounding_table.h"
+#include "util/grounding.h"
 
 namespace laser {
 namespace formula {
@@ -50,18 +50,18 @@ class Diamond : public Formula {
 
     size_t get_number_of_variables() const override;
 
-    std::vector<std::shared_ptr<Grounding>>
+    std::vector<std::shared_ptr<util::Grounding>>
     get_groundings(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>>
+    std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_timepoint(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>>
+    std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_step(util::Timeline const &timeline) override;
 
-    bool
-    evaluate(util::Timeline const &timeline,
-             std::vector<std::shared_ptr<Grounding>> const &facts) override;
+    bool evaluate(
+        util::Timeline const &timeline,
+        std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 

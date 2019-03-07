@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "formula/grounding_table.h"
 #include "formula_type.h"
 #include "util/timeline.h"
+#include "util/grounding.h"
 
 namespace laser {
 namespace formula {
@@ -61,13 +61,13 @@ class Formula {
 
     virtual bool
     evaluate(util::Timeline const &timeline,
-             std::vector<std::shared_ptr<formula::Grounding>> const &facts) = 0;
+             std::vector<std::shared_ptr<util::Grounding>> const &facts) = 0;
 
     virtual size_t get_number_of_variables() const = 0;
 
     virtual void expire_outdated_groundings(util::Timeline const &timeline) = 0;
 
-    virtual std::vector<std::shared_ptr<Grounding>>
+    virtual std::vector<std::shared_ptr<util::Grounding>>
     get_groundings(util::Timeline const &timeline) = 0;
 
     /**
@@ -78,7 +78,7 @@ class Formula {
      * Used to get conclusions from the head of the rule, i.e.: only for
      * Atom and Exact_Time
      */
-    virtual std::vector<std::shared_ptr<Grounding>>
+    virtual std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_step(util::Timeline const &timeline) = 0;
 
     /**
@@ -86,7 +86,7 @@ class Formula {
      * timepoint Useful when writing conclusions to output. Used to get
      * conclusions from the head of the rule, i.e.: only for Atom and Exact_Time
      */
-    virtual std::vector<std::shared_ptr<Grounding>>
+    virtual std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_timepoint(util::Timeline const &timeline) = 0;
 };
 

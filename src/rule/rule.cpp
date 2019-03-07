@@ -58,7 +58,7 @@ void Rule::expire_outdated_groundings(util::Timeline const &timeline) {
 
 bool Rule::evaluate(
     util::Timeline const &timeline,
-    std::vector<std::shared_ptr<formula::Grounding>> const &facts) {
+    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     return body.evaluate(timeline, facts);
 }
 
@@ -77,27 +77,27 @@ void Rule::compute_variable_map() {
     }
 }
 
-std::shared_ptr<formula::Grounding>
+std::shared_ptr<util::Grounding>
 Rule::convert_to_head_grounding(std::string const &head_predicate,
-                                formula::Grounding const &grounding) const {
+                                util::Grounding const &grounding) const {
     std::vector<std::string> result_vector;
     for (size_t head_index = 0; head_index < head.get_number_of_variables();
          head_index++) {
         result_vector.push_back(
             grounding.get_constant(variable_map.at(head_index)));
     }
-    formula::Grounding result = formula::Grounding(
+    util::Grounding result = util::Grounding(
         head_predicate, grounding.get_consideration_time(),
         grounding.get_horizon_time(), grounding.get_consideration_count(),
         grounding.get_horizon_count(), result_vector);
-    return std::make_shared<formula::Grounding>(result);
+    return std::make_shared<util::Grounding>(result);
 }
 
 bool Rule::derive_conclusions(util::Timeline const &timeline) {
     bool result = false;
     auto head_predicate = head.get_predicate_vector().at(0);
-    std::vector<std::shared_ptr<formula::Grounding>> head_facts;
-    std::vector<std::shared_ptr<formula::Grounding>> body_groundings =
+    std::vector<std::shared_ptr<util::Grounding>> head_facts;
+    std::vector<std::shared_ptr<util::Grounding>> body_groundings =
         body.get_groundings(timeline);
     for (auto const &body_grounding : body_groundings) {
         // SNE: we only evaluate groundings derived at this current timepoint

@@ -72,26 +72,26 @@ void Box::expire_outdated_groundings(util::Timeline const &timeline) {
     }
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 Box::get_groundings(util::Timeline const &timeline) {
     auto grounding_vector = grounding_table.get_all_groundings();
     return grounding_vector;
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 Box::get_conclusions_timepoint(util::Timeline const &timeline) {
     auto result = get_groundings(timeline);
     return result;
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 Box::get_conclusions_step(util::Timeline const &timeline) {
     auto result = grounding_table.get_recent_groundings();
     return result;
 }
 
 bool Box::evaluate(util::Timeline const &timeline,
-                   std::vector<std::shared_ptr<Grounding>> const &facts) {
+                   std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     bool result = child->evaluate(timeline, facts);
     if (result) {
         auto child_facts = child->get_groundings(timeline);
@@ -102,9 +102,9 @@ bool Box::evaluate(util::Timeline const &timeline,
     return grounding_table.has_recent_groundings();
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 Box::compute_box_conclusions(util::Timeline const &timeline) {
-    std::vector<std::shared_ptr<Grounding>> result;
+    std::vector<std::shared_ptr<util::Grounding>> result;
     uint64_t current_time = timeline.get_time();
     uint64_t start_time = timeline.get_min_time();
 
@@ -126,8 +126,9 @@ Box::compute_box_conclusions(util::Timeline const &timeline) {
     return result;
 }
 
-void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts,
-                         util::Timeline const &timeline) {
+void Box::update_box_map(
+    std::vector<std::shared_ptr<util::Grounding>> const &facts,
+    util::Timeline const &timeline) {
     bool keep_going = true;
     while (keep_going) {
         // We need to repete as we may have in box p(a)[1, 1], and get
@@ -136,7 +137,7 @@ void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts,
         for (auto const &child_grounding : facts) {
             size_t key = child_grounding->get_hash();
             box_map.try_emplace(key, child_grounding);
-            std::shared_ptr<Grounding> &box_grounding = box_map[key];
+            std::shared_ptr<util::Grounding> &box_grounding = box_map[key];
             auto adjusted_result =
                 adjust_annotation(box_grounding, child_grounding, timeline);
             keep_going |= adjusted_result.first;
@@ -148,9 +149,9 @@ void Box::update_box_map(std::vector<std::shared_ptr<Grounding>> const &facts,
     }
 }
 
-std::pair<bool, std::shared_ptr<Grounding>>
-Box::adjust_annotation(std::shared_ptr<Grounding> const &box_grounding,
-                       std::shared_ptr<Grounding> const &child_grounding,
+std::pair<bool, std::shared_ptr<util::Grounding>>
+Box::adjust_annotation(std::shared_ptr<util::Grounding> const &box_grounding,
+                       std::shared_ptr<util::Grounding> const &child_grounding,
                        util::Timeline const &timeline) const {
     bool is_modified = false;
     auto ct1 = box_grounding->get_consideration_time();

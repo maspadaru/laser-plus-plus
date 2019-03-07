@@ -47,9 +47,9 @@ size_t TupleWindow::get_number_of_variables() const {
     return child->get_number_of_variables();
 }
 
-std::vector<std::shared_ptr<Grounding>> TupleWindow::adjust_annotations(
-    std::vector<std::shared_ptr<Grounding>> const &facts) const {
-    std::vector<std::shared_ptr<Grounding>> result;
+std::vector<std::shared_ptr<util::Grounding>> TupleWindow::adjust_annotations(
+    std::vector<std::shared_ptr<util::Grounding>> const &facts) const {
+    std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto const &fact : facts) {
         // TODO check if fact->get_predicate in child->get_predicate_vector();
         auto horizon_count = compute_horizon_count(
@@ -89,7 +89,7 @@ util::Timeline TupleWindow::alter_timeline(util::Timeline timeline) const {
 
 bool TupleWindow::evaluate(
     util::Timeline const &timeline,
-    std::vector<std::shared_ptr<Grounding>> const &facts) {
+    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     auto child_facts = adjust_annotations(facts);
     auto window_timeline = alter_timeline(timeline);
     return child->evaluate(window_timeline, child_facts);
@@ -110,17 +110,17 @@ TupleWindow::compute_horizon_count(uint64_t grounding_consideration_count,
     return result;
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 TupleWindow::get_groundings(util::Timeline const &timeline) {
     return child->get_groundings(timeline);
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 TupleWindow::get_conclusions_timepoint(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 TupleWindow::get_conclusions_step(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }

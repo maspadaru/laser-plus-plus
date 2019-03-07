@@ -15,9 +15,9 @@ file(GLOB LASER_SOURCES
         "src/formula/*.cpp"
         "src/formula/extended/*.cpp"
         "src/util/*.cpp"
-        "src/program/*.cpp"
         "src/rule/*.cpp"
-        "src/reasoner/*.cpp"
+        "src/core/*.cpp"
+        "src/example/*.cpp"
         )
 
 find_package(Threads)
@@ -33,13 +33,13 @@ add_executable(testapp test/main.cpp ${TESTAPP_LASER_SOURCES})
 target_link_libraries(testapp ${CMAKE_THREAD_LIBS_INIT})
 
 ################################## BENCHAPP ##################################
-include_directories(benchapp/include/)
+include_directories(app_bench/include/)
 file(GLOB BENCHAPP_SOURCES
-        "benchapp/src/*.cpp"
+        "app_bench/src/*.cpp"
     )
 
 set(BENCHAPP_LASER_SOURCES ${LASER_SOURCES} ${BENCHAPP_SOURCES})
-add_executable(benchapp benchapp/main.cpp ${BENCHAPP_LASER_SOURCES})
+add_executable(benchapp app_bench/main.cpp ${BENCHAPP_LASER_SOURCES})
 target_link_libraries(benchapp ${CMAKE_THREAD_LIBS_INIT})
 
 ################################### TESTS ###################################

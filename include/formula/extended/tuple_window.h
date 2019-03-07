@@ -4,7 +4,8 @@
 #include <string>
 
 #include "formula/formula.h"
-#include "formula/grounding.h"
+#include "formula/grounding_table.h"
+#include "util/grounding.h"
 
 namespace laser {
 namespace formula {
@@ -22,8 +23,8 @@ class TupleWindow : public Formula {
     uint64_t compute_horizon_count(uint64_t grounding_consideration_count,
                                    uint64_t grounding_horizon_count) const;
 
-    std::vector<std::shared_ptr<Grounding>> adjust_annotations(
-        std::vector<std::shared_ptr<Grounding>> const &facts) const;
+    std::vector<std::shared_ptr<util::Grounding>> adjust_annotations(
+        std::vector<std::shared_ptr<util::Grounding>> const &facts) const;
 
   public:
     // from Formula Interface
@@ -52,17 +53,17 @@ class TupleWindow : public Formula {
 
     bool
     evaluate(util::Timeline const &timeline,
-             std::vector<std::shared_ptr<Grounding>> const &facts) override;
+             std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>>
+    std::vector<std::shared_ptr<util::Grounding>>
     get_groundings(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>>
+    std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_timepoint(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<Grounding>>
+    std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_step(util::Timeline const &timeline) override;
 
     void add_child(formula::Formula *child) override;

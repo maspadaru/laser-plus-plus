@@ -12,16 +12,16 @@ bool GroundingTable::has_recent_groundings() {
     return !recent_groundings_vector.empty();
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 GroundingTable::get_recent_groundings() {
-    std::vector<std::shared_ptr<Grounding>> result =
+    std::vector<std::shared_ptr<util::Grounding>> result =
         std::move(recent_groundings_vector);
     recent_groundings_vector.clear();
     return result;
 }
 
 void GroundingTable::add_grounding(
-    std::shared_ptr<Grounding> const &grounding) {
+    std::shared_ptr<util::Grounding> const &grounding) {
     auto &groundings = grounding_map[grounding->get_horizon_time()];
     bool was_inserted = false;
     std::tie(std::ignore, was_inserted) = groundings.insert(grounding);
@@ -32,15 +32,15 @@ void GroundingTable::add_grounding(
 }
 
 void GroundingTable::add_grounding_vector(
-    std::vector<std::shared_ptr<Grounding>> const &grounding_vector) {
+    std::vector<std::shared_ptr<util::Grounding>> const &grounding_vector) {
     for (auto const &grounding : grounding_vector) {
         add_grounding(grounding);
     }
 }
 
-std::vector<std::shared_ptr<Grounding>> GroundingTable::get_all_groundings() {
+std::vector<std::shared_ptr<util::Grounding>> GroundingTable::get_all_groundings() {
     // Merges all lists together
-    std::vector<std::shared_ptr<Grounding>> all_groundings;
+    std::vector<std::shared_ptr<util::Grounding>> all_groundings;
     for (auto const &map_iterator : grounding_map) {
         auto const &grounding_list = map_iterator.second;
         all_groundings.insert(all_groundings.end(), grounding_list.begin(),
@@ -68,7 +68,7 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
     }
     // Expire by horizon_count
     for (auto &iterator : grounding_map) {
-        std::set<std::shared_ptr<Grounding>, GroundingFullCompare> &set =
+        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> &set =
             iterator.second;
         for (auto &grounding : set) {
             auto hc = grounding->get_horizon_count();
@@ -103,13 +103,6 @@ size_t GroundingTable::get_number_of_variables() const {
     return variable_names.size();
 }
 
-template <typename T>
-void GroundingTable::debug_print(std::string const &message,
-                                 T const &value) const {
-    std::cerr << "GroundingTable -> "
-              << "";
-    std::cerr << message << " : " << value << std::endl;
-}
 
 } // namespace formula
 } // namespace laser

@@ -3,9 +3,9 @@
         "type": "laser-util-header",
         "alternate": "src/util/{}.cpp"
     },
-    "include/reasoner/*.h": {
-        "type": "laser-formula-header",
-        "alternate": "src/reasoner/{}.cpp"
+    "include/core/*.h": {
+        "type": "laser-core-header",
+        "alternate": "src/core/{}.cpp"
     },
     "include/formula/*.h": {
         "type": "laser-formula-header",
@@ -15,13 +15,9 @@
         "type": "laser-formula-extended-header",
         "alternate": "src/formula/extended/{}.cpp"
     },
-    "include/io/*.h": {
-        "type": "laser-io-header",
-        "alternate": "src/io/{}.cpp"
-    },
-    "include/program/*.h": {
-        "type": "laser-program-header",
-        "alternate": "src/program/{}.cpp"
+    "include/example/*.h": {
+        "type": "laser-example-header",
+        "alternate": "src/example/{}.cpp"
     },
     "include/rule/*.h": {
         "type": "laser-rule-header",
@@ -34,9 +30,9 @@
         "type": "laser-util-source",
         "alternate": "include/util/{}.h"
     },
-    "src/reasoner/*.cpp": {
-        "type": "laser-formula-source",
-        "alternate": "include/reasoner/{}.h"
+    "src/core/*.cpp": {
+        "type": "laser-core-source",
+        "alternate": "include/core/{}.h"
     },
     "src/formula/*.cpp": {
         "type": "laser-formula-source",
@@ -46,13 +42,9 @@
         "type": "laser-formula-extended-source",
         "alternate": "include/formula/extended/{}.h"
     },
-    "src/io/*.cpp": {
-        "type": "laser-io-source",
-        "alternate": "include/io/{}.h"
-    },
-    "src/program/*.cpp": {
-        "type": "laser-program-source",
-        "alternate": "include/program/{}.h"
+    "src/example/*.cpp": {
+        "type": "laser-example-source",
+        "alternate": "include/example/{}.h"
     },
     "src/rule/*.cpp": {
         "type": "laser-rule-source",
@@ -61,23 +53,22 @@
 
 
 
-    "benchapp/include/*.h": {
-        "type": "test-header",
-        "alternate": "benchapp/src/{}.cpp"
+    "app_bench/include/*.h": {
+        "type": "benchapp-header",
+        "alternate": "app_bench/src/{}.cpp"
     },
-    "benchapp/src/*.cpp": {
-        "type": "test-source",
-        "alternate": "benchapp/include/{}.h"
+    "app_bench/src/*.cpp": {
+        "type": "benchapp-source",
+        "alternate": "app_bench/include/{}.h"
     },
 
-
-
-    "test/include/*.h": {
-        "type": "test-header",
-        "alternate": "test/src/{}.cpp"
+    "app_laser/include/*.h": {
+        "type": "laserapp-header",
+        "alternate": "app_laser/src/{}.cpp"
     },
-    "test/src/*.cpp": {
-        "type": "test-source",
-        "alternate": "test/include/{}.h"
+    "app_laser/src/*.cpp": {
+        "type": "laserapp-source",
+        "alternate": "app_laser/include/{}.h"
     },
+
 }

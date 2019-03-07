@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "formula/formula.h"
+#include "util/grounding.h"
 #include "util/timeline.h"
 
 namespace laser {
@@ -25,9 +26,9 @@ class Rule {
      */
     std::unordered_map<size_t, size_t> variable_map;
 
-    std::shared_ptr<formula::Grounding>
+    std::shared_ptr<util::Grounding>
     convert_to_head_grounding(std::string const &head_predicate,
-                              formula::Grounding const &grounding) const;
+                              util::Grounding const &grounding) const;
 
     void compute_variable_map();
 
@@ -60,10 +61,8 @@ class Rule {
      * @return True if new conclusions have been derived at the current
      * time point and tuple counter
      */
-    bool evaluate(
-        util::Timeline const &timeline,
-            std::vector<std::shared_ptr<formula::Grounding>> const
-            &facts);
+    bool evaluate(util::Timeline const &timeline,
+                  std::vector<std::shared_ptr<util::Grounding>> const &facts);
 
     void expire_outdated_groundings(util::Timeline const &timeline);
 

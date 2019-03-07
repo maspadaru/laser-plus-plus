@@ -110,27 +110,28 @@ void Atom::expire_outdated_groundings(util::Timeline const &timeline) {
     grounding_table.expire_outdated_groundings(time, tuple_count);
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 Atom::get_groundings(util::Timeline const &timeline) {
     return grounding_table.get_all_groundings();
 }
 
-std::vector<std::shared_ptr<Grounding>> Atom::get_conclusion_set() {
+std::vector<std::shared_ptr<util::Grounding>> Atom::get_conclusion_set() {
     return grounding_table.get_all_groundings();
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 Atom::get_conclusions_timepoint(util::Timeline const &timeline) {
     return get_conclusion_set();
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 Atom::get_conclusions_step(util::Timeline const &timeline) {
     return grounding_table.get_recent_groundings();
 }
 
-bool Atom::evaluate(util::Timeline const &timeline,
-                    std::vector<std::shared_ptr<Grounding>> const &facts) {
+bool Atom::evaluate(
+    util::Timeline const &timeline,
+    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     for (auto const &grounding : facts) {
         if (grounding->get_predicate() == predicate) {
             accept(grounding);
@@ -139,7 +140,7 @@ bool Atom::evaluate(util::Timeline const &timeline,
     return grounding_table.has_recent_groundings();
 }
 
-bool Atom::is_valid_fact(Grounding const &grounding) const {
+bool Atom::is_valid_fact(util::Grounding const &grounding) const {
     // Check if duplicate variables have the same constant value in
     // grounding
     if (has_duplicate_variables) {
@@ -160,7 +161,7 @@ bool Atom::is_valid_fact(Grounding const &grounding) const {
     return grounding_size == atom_size;
 }
 
-void Atom::accept(std::shared_ptr<Grounding> const &grounding) {
+void Atom::accept(std::shared_ptr<util::Grounding> const &grounding) {
     if (is_valid_fact(*grounding)) {
         grounding_table.add_grounding(grounding);
     } else {

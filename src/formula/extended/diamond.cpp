@@ -50,10 +50,10 @@ size_t Diamond::get_number_of_variables() const {
 
 void Diamond::add_child(formula::Formula *child) {}
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 Diamond::get_groundings(util::Timeline const &timeline) {
     auto const &grounding_vector = grounding_table.get_all_groundings();
-    std::vector<std::shared_ptr<Grounding>> result;
+    std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto const &grounding : grounding_vector) {
         auto new_grounding =
             grounding->new_horizon_time(util::Timeline::INFINITE_TIME);
@@ -62,18 +62,19 @@ Diamond::get_groundings(util::Timeline const &timeline) {
     return result;
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 Diamond::get_conclusions_timepoint(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
 
-std::vector<std::shared_ptr<Grounding>>
+std::vector<std::shared_ptr<util::Grounding>>
 Diamond::get_conclusions_step(util::Timeline const &timeline) {
     return grounding_table.get_recent_groundings();
 }
 
-bool Diamond::evaluate(util::Timeline const &timeline,
-                       std::vector<std::shared_ptr<Grounding>> const &facts) {
+bool Diamond::evaluate(
+    util::Timeline const &timeline,
+    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     bool result = child->evaluate(timeline, facts);
     auto child_facts = child->get_groundings(timeline);
     grounding_table.add_grounding_vector(child_facts);
