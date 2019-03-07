@@ -6,6 +6,7 @@
 #define BENCHAPP_FILE_PARSER_H
 
 #include <algorithm>
+#include <memory>
 #include <sstream>
 #include <stack>
 #include <string>
@@ -13,17 +14,22 @@
 #include <utility>
 #include <vector>
 
-#include <util/data_atom.h>
+#include <formula/grounding.h>
 #include <util/format_exception.h>
+#include <util/timeline.h>
+
 class FileParser {
   private:
-    laser::util::DataAtom parse_string(std::string const &input);
+    uint64_t current_tuple_counter = 0;
+    std::shared_ptr<laser::formula::Grounding>
+    parse_string(laser::util::Timeline const &timeline, std::string const &input);
 
   public:
     ~FileParser() = default;
 
-    std::vector<laser::util::DataAtom>
-    parse_data(std::vector<std::string> raw_data_vector);
+    std::vector<std::shared_ptr<laser::formula::Grounding>>
+    parse_data(laser::util::Timeline &timeline,
+               std::vector<std::string> const &raw_data_vector);
 };
 
 #endif // BENCHAPP_FILE_PARSER_H

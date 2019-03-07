@@ -5,10 +5,16 @@
 #ifndef BENCHAPP_FILE_IO_MANAGER_H
 #define BENCHAPP_FILE_IO_MANAGER_H
 
+#include <memory>
+#include <vector>
+
+#include <io/io_manager.h>
+#include <formula/grounding.h>
+#include <util/timeline.h>
+
 #include "file_parser.h"
 #include "file_reader.h"
 #include "file_writer.h"
-#include <io/io_manager.h>
 
 class FileIOManager : public laser::io::IOManager {
   private:
@@ -31,13 +37,18 @@ class FileIOManager : public laser::io::IOManager {
 
     uint64_t read_stream_end_time() override;
 
-    std::vector<laser::util::DataAtom> read_stream_data(uint64_t time) override;
+    std::vector<std::shared_ptr<laser::formula::Grounding>>
+    read_stream_data(laser::util::Timeline &timeline) override;
 
-    std::vector<laser::util::DataAtom> read_background_data() override;
+    std::vector<std::shared_ptr<laser::formula::Grounding>>
+    read_background_data() override;
 
-    void write_output_data(
-        uint64_t time,
-        std::vector<laser::util::DataAtom> const &output_vector) override;
+    void
+    write_output_data(uint64_t time,
+                      std::vector<std::shared_ptr<laser::formula::Grounding>>
+                          output_vector) override;
+
+
 
     std::string get_output() const;
 };

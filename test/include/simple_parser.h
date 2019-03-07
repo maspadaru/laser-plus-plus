@@ -56,7 +56,7 @@ class SimpleParser {
                        char value_char) const;
 
     std::vector<std::shared_ptr<laser::formula::Grounding>>
-    parse_token_vector(laser::util::Timeline &timeline,
+    parse_token_vector(laser::util::Timeline const &timeline,
                        std::vector<Token> const &input_token_vector);
 
   public:

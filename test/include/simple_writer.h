@@ -20,7 +20,7 @@ class SimpleWriter {
 
     std::vector<std::shared_ptr<laser::formula::Grounding>>
     remove_duplicates(std::vector<std::shared_ptr<laser::formula::Grounding>>
-                          &input_groundings) const;
+                          input_groundings) const;
 
   public:
     // constructors & destructors

@@ -33,14 +33,14 @@ add_executable(testapp test/main.cpp ${TESTAPP_LASER_SOURCES})
 target_link_libraries(testapp ${CMAKE_THREAD_LIBS_INIT})
 
 ################################## BENCHAPP ##################################
-#include_directories(benchapp/include/)
-#file(GLOB BENCHAPP_SOURCES
-        #"benchapp/src/*.cpp"
-    #)
+include_directories(benchapp/include/)
+file(GLOB BENCHAPP_SOURCES
+        "benchapp/src/*.cpp"
+    )
 
-#set(BENCHAPP_LASER_SOURCES ${LASER_SOURCES} ${BENCHAPP_SOURCES})
-#add_executable(benchapp benchapp/main.cpp ${BENCHAPP_LASER_SOURCES})
-#target_link_libraries(benchapp ${CMAKE_THREAD_LIBS_INIT})
+set(BENCHAPP_LASER_SOURCES ${LASER_SOURCES} ${BENCHAPP_SOURCES})
+add_executable(benchapp benchapp/main.cpp ${BENCHAPP_LASER_SOURCES})
+target_link_libraries(benchapp ${CMAKE_THREAD_LIBS_INIT})
 
 ################################### TESTS ###################################
 

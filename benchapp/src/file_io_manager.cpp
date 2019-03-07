@@ -21,22 +21,25 @@ uint64_t FileIOManager::read_stream_start_time() { return start_time; }
 
 uint64_t FileIOManager::read_stream_end_time() { return end_time; }
 
-std::vector<laser::util::DataAtom>
-FileIOManager::read_stream_data(uint64_t time) {
+std::vector<std::shared_ptr<laser::formula::Grounding>>
+FileIOManager::read_stream_data(laser::util::Timeline &timeline) {
+    auto time = timeline.get_time();
     auto data_vector = file_stream_reader.read_next_data(time);
-    auto parsed_data = file_parser.parse_data(data_vector);
+    auto parsed_data = file_parser.parse_data(timeline, data_vector);
     return parsed_data;
 }
 
-std::vector<laser::util::DataAtom> FileIOManager::read_background_data() {
-    return std::vector<laser::util::DataAtom>();
+std::vector<std::shared_ptr<laser::formula::Grounding>>
+FileIOManager::read_background_data() {
+    return std::vector<std::shared_ptr<laser::formula::Grounding>>();
 }
 
 void FileIOManager::write_output_data(
-    uint64_t time, std::vector<laser::util::DataAtom> const &output_vector) {
+    uint64_t time, std::vector<std::shared_ptr<laser::formula::Grounding>> 
+                       output_vector) {
     if (is_output_enabled) {
         latest_output = "";
-        latest_output = file_writer.format_output(time, output_vector);
+        latest_output = file_writer.format_output(time, std::move(output_vector));
         file_writer.write_output(latest_output);
     }
 }

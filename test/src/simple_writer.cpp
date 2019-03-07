@@ -12,7 +12,7 @@
 
 std::vector<std::shared_ptr<laser::formula::Grounding>>
 SimpleWriter::remove_duplicates(
-    std::vector<std::shared_ptr<laser::formula::Grounding>> &input_groundings)
+    std::vector<std::shared_ptr<laser::formula::Grounding>> input_groundings)
     const {
     std::set<std::shared_ptr<laser::formula::Grounding>,
              laser::formula::GroundingPredicateSubstitutionCompare>
@@ -37,7 +37,7 @@ std::string SimpleWriter::format_output(
     const std::string ARGUMENT_DELIMITER = ", ";
     const std::string CONCLUSION_DELIMITER = " ";
     result_stream << time << TIME_SEPARATOR;
-    auto unique_vector = remove_duplicates(output_vector);
+    auto unique_vector = remove_duplicates(std::move(output_vector));
     for (auto const &data_atom : unique_vector) {
         result_stream << data_atom->get_predicate() << ARGUMENTS_START;
         auto argument_vector = data_atom->get_constant_vector();
@@ -55,6 +55,7 @@ std::string SimpleWriter::format_output(
     return result_stream.str();
 }
 
-void SimpleWriter::write_output(std::string const &formatted_output_string) const {
+void SimpleWriter::write_output(
+    std::string const &formatted_output_string) const {
     std::cout << formatted_output_string << std::endl;
 }

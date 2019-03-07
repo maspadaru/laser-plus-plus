@@ -106,7 +106,7 @@ SimpleParser::tokenize(std::string const &rule_string) const {
 // ======== Parser =========
 
 std::vector<std::shared_ptr<laser::formula::Grounding>>
-SimpleParser::parse_token_vector(laser::util::Timeline &timeline,
+SimpleParser::parse_token_vector(laser::util::Timeline const &timeline,
                                  std::vector<Token> const &input_token_vector) {
     uint64_t time = timeline.get_time();
     uint64_t max_tuple_counter = laser::util::Timeline::INFINITE_TIME;
@@ -151,7 +151,7 @@ SimpleParser::parse_data(laser::util::Timeline &timeline,
         auto token_vector = tokenize(raw_string);
         if (!token_vector.empty()) {
             auto temp_vector =
-                parse_token_vector(timeline, std::move(token_vector));
+                parse_token_vector(timeline, token_vector);
             grounding_vector.insert(
                 grounding_vector.end(),
                 std::make_move_iterator(temp_vector.begin()),
