@@ -8,7 +8,7 @@ namespace laser {
 namespace core {
 
 Reasoner::Reasoner(rule::RuleReader *rule_reader, IOManager *io_manager)
-    : rule_reader(rule_reader), io_manager(io_manager) {}
+    : rule_reader(rule_reader), io_manager(io_manager), clock_eval(0) {}
 
 void Reasoner::insert_facts(
     uint64_t timepoint, std::vector<std::shared_ptr<util::Grounding>> facts) {
