@@ -70,16 +70,21 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
     for (auto &iterator : grounding_map) {
         std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> &set =
             iterator.second;
+        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> toRemove;
         for (auto &grounding : set) {
             auto hc = grounding->get_horizon_count();
             if (hc <= tuple_count) {
-                set.erase(grounding);
+		toRemove.insert(grounding);
+                // set.erase(grounding);
             } else {
                 // Sets in map are ordered with lowest horizon_counter
                 // first.
                 break;
             }
         }
+	for (auto &grounding: toRemove) {
+	    set.erase(grounding);
+	}
     }
     recent_groundings_vector.clear();
 }
