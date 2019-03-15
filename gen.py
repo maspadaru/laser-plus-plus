@@ -15,28 +15,52 @@ import string
 import sys
 import os
 
-NUMBER_OF_TUPLES = 100000009
-
 def gen_const():
-    return ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(2))
+    return ''.join(random.choice(string.digits) for _ in range(2))
+
+def gen_const_vect(num_var):
+    vect = []
+    for i in range(num_var):
+        vect.append(gen_const())
+    return vect
+
+def gen_stream(num_fact, num_pred, num_var):
+    random.seed()
+    for i in range(num_fact):
+        pred_id = random.randint(1, num_pred)
+        if (pred_id == 1):
+            vect = gen_const_vect(num_var)
+            var = ' '.join(vect)
+            pred = 'p'
+        elif(pred_id == 2):
+            var = gen_const()
+            pred = 'q'
+        elif(pred_id == 3):
+            var = gen_const()
+            pred = 'r'
+        elif(pred_id == 4):
+            var = gen_const()
+            pred = 's'
+        elif(pred_id == 5):
+            var = gen_const()
+            pred = 't'
+        elif(pred_id == 6):
+            var = gen_const()
+            pred = 'u'
+        elif(pred_id == 7):
+            var = gen_const()
+            pred = 'v'
+        elif(pred_id == 8):
+            var = gen_const()
+            pred = 'w'
+        print("%s %s" % (pred, var))
 
 def main():
-    random.seed()
-
-    for i in range(1,NUMBER_OF_TUPLES):
-        pred = random.randint(1, 6)
-        if (pred == 1):
-            print("%s %s %s %s" % ('a', gen_const(), gen_const(), gen_const() ))
-        elif(pred == 2):
-            print("%s %s %s" % ('b', gen_const(), gen_const() ))
-        elif(pred == 3):
-            print("%s %s %s" % ('c', gen_const(), gen_const() ))
-        elif(pred == 4):
-            print("%s %s %s" % ('d', gen_const(), gen_const() ))
-        elif(pred == 5):
-            print("%s %s %s" % ('e', gen_const(), gen_const() ))
-        elif(pred == 6):
-            print("%s %s" % ('f', gen_const()))
+    if (len(sys.argv) < 4):
+        print ('Usage: python gen.py total_fact_count num_pred num_var_of_first_pred')
+    else:
+        # TODO check sizes argv[2] < 8, etc
+        gen_stream(int(sys.argv[1]), int(sys.argv[2]), int(sys.argv[3]))
 
 
 if __name__ == '__main__':

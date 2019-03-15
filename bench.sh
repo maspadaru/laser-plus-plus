@@ -1,46 +1,63 @@
 #!/bin/bash
 
-#./laser.sh b  
+# input streams generated using:
+# pypy gen.py 100000009 1 1 > ~/stream_100M_1_1.txt
+# pypy gen.py 100000009 1 2 > ~/stream_100M_1_2.txt
+# pypy gen.py 100000009 1 4 > ~/stream_100M_1_4.txt
+# pypy gen.py 100000009 1 8 > ~/stream_100M_1_8.txt
+# pypy gen.py 100000009 2 1 > ~/stream_100M_2_1.txt
+# pypy gen.py 100000009 2 2 > ~/stream_100M_2_2.txt
+# pypy gen.py 100000009 4 1 > ~/stream_100M_4_1.txt
+# pypy gen.py 100000009 8 1 > ~/stream_100M_8_1.txt
 
-time ./laser.sh bench atom 1000000 100 0 ~/stream_file.txt
-time ./laser.sh bench atom 10000 10000 0 ~/stream_file.txt
-time ./laser.sh bench atom 100 1000000 0 ~/stream_file.txt
+# I Benchmark diferent formulas
+./laser.sh bench p1 1000 1000 0 ~/stream_100M_1_2.txt  
+./laser.sh bench p2 1000 1000 0 ~/stream_100M_1_1.txt 
+./laser.sh bench p3 1000 1000 0 ~/stream_100M_1_2.txt  
+./laser.sh bench p4 1000 1000 0 ~/stream_100M_1_2.txt  
+./laser.sh bench p5 1000 1000 0 ~/stream_100M_2_2.txt  
+./laser.sh bench p6 1000 1000 0 ~/stream_100M_2_2.txt  
+./laser.sh bench p7 1000 1000 3 ~/stream_100M_1_1.txt  
+./laser.sh bench p8 1000 1000 3 ~/stream_100M_1_1.txt  
 
-## ATOM
-#./laser.sh bench atom 1000000 1 0 ~/stream_file.txt
-#./laser.sh bench atom 100000 10 0 ~/stream_file.txt
-#./laser.sh bench atom 10000 100 0 ~/stream_file.txt
-#./laser.sh bench atom 1000 1000 0 ~/stream_file.txt
-#./laser.sh bench atom 100 10000 0 ~/stream_file.txt
-#./laser.sh bench atom 10 100000 0 ~/stream_file.txt
-#./laser.sh bench atom 1 1000000 0 ~/stream_file.txt
+# II Benchmark Diferent input shapes
+./laser.sh bench p1 10 100000 0 ~/stream_100M_1_2.txt  
+./laser.sh bench p1 1000 1000 0 ~/stream_100M_1_2.txt  
+./laser.sh bench p1 100000 10 0 ~/stream_100M_1_2.txt  
 
-## Diamond - dif input sizes
-#./laser.sh bench diamond 100000 10 3 ~/stream_file.txt
-#./laser.sh bench diamond 1000 1000 3 ~/stream_file.txt
-#./laser.sh bench diamond 10 100000 3 ~/stream_file.txt
+./laser.sh bench p5 10 100000 0 ~/stream_100M_2_2.txt  
+./laser.sh bench p5 1000 1000 0 ~/stream_100M_2_2.txt  
+./laser.sh bench p5 100000 10 0 ~/stream_100M_2_2.txt  
 
-## Box 
-#./laser.sh bench box 100000 10 3 ~/stream_file.txt
-#./laser.sh bench box 1000 1000 3 ~/stream_file.txt
-#./laser.sh bench box 10 100000 3 ~/stream_file.txt
+./laser.sh bench p7 10 100000 3 ~/stream_100M_1_1.txt  
+./laser.sh bench p7 1000 1000 3 ~/stream_100M_1_1.txt  
+./laser.sh bench p7 100000 10 3 ~/stream_100M_1_1.txt  
 
-## Conjunction
-#./laser.sh bench conjunction 1000000 1 0 ~/stream_file.txt
-#./laser.sh bench conjunction 100000 10 0 ~/stream_file.txt
-#./laser.sh bench conjunction 10000 100 0 ~/stream_file.txt
-#./laser.sh bench conjunction 1000 1000 0 ~/stream_file.txt
-#./laser.sh bench conjunction 100 10000 0 ~/stream_file.txt
-#./laser.sh bench conjunction 10 100000 0 ~/stream_file.txt
-##./laser.sh bench conjunction 1 1000000 0 ~/stream_file.txt
+./laser.sh bench p8 10 100000 3 ~/stream_100M_1_1.txt  
+./laser.sh bench p8 1000 1000 3 ~/stream_100M_1_1.txt  
+./laser.sh bench p8 100000 10 3 ~/stream_100M_1_1.txt  
 
-## Diamond - dif window sizes:
-#./laser.sh bench diamond 1000 1000 1 ~/stream_file.txt
-#./laser.sh bench diamond 1000 1000 10 ~/stream_file.txt
-#./laser.sh bench diamond 1000 1000 100 ~/stream_file.txt
+# III Benchmark diferent window sizes
+./laser.sh bench p7 1000 1000 3 ~/stream_100M_1_1.txt  
+./laser.sh bench p7 1000 1000 9 ~/stream_100M_1_1.txt  
+./laser.sh bench p7 1000 1000 27 ~/stream_100M_1_1.txt  
 
-## Box - dif window sizes:
-#./laser.sh bench box 1000 1000 1 ~/stream_file.txt
-#./laser.sh bench box 1000 1000 10 ~/stream_file.txt
-#./laser.sh bench box 1000 1000 100 ~/stream_file.txt
+./laser.sh bench p8 1000 1000 3 ~/stream_100M_1_1.txt  
+./laser.sh bench p8 1000 1000 9 ~/stream_100M_1_1.txt  
+./laser.sh bench p8 1000 1000 27 ~/stream_100M_1_1.txt  
+
+# IV Benchmark on diferent number of simple rules
+./laser.sh bench p9 1000 1000 0 ~/stream_100M_2_1.txt  
+./laser.sh bench p10 1000 1000 0 ~/stream_100M_4_1.txt  
+./laser.sh bench p11 1000 1000 0 ~/stream_100M_8_1.txt  
+
+# V Benchmark on number of variables present in atoms
+./laser.sh bench p12 1000 1000 0 ~/stream_100M_1_2.txt  
+./laser.sh bench p13 1000 1000 0 ~/stream_100M_1_4.txt  
+./laser.sh bench p14 1000 1000 0 ~/stream_100M_1_8.txt  
+
+# VI Benchmark to see influence of noise in the input stream
+./laser.sh bench p15 1000 1000 0 ~/stream_100M_2_1.txt  
+./laser.sh bench p15 1000 1000 0 ~/stream_100M_4_1.txt  
+./laser.sh bench p15 1000 1000 0 ~/stream_100M_8_1.txt  
 
