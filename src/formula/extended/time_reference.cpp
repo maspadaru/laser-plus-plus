@@ -43,7 +43,7 @@ Formula &TimeReference::move() {
 
 // getters / setters
 
-FormulaType TimeReference::get_type() const { return FormulaType::EXACT_TIME; }
+FormulaType TimeReference::get_type() const { return formula_type; }
 
 std::vector<std::string> TimeReference::get_predicate_vector() const {
     return child->get_predicate_vector();

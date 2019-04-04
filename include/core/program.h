@@ -11,8 +11,9 @@
 #include <utility>
 #include <vector>
 
-#include "rule/rule_reader.h"
 #include "rule/rule.h"
+#include "rule/rule_reader.h"
+#include "util/database.h"
 #include "util/timeline.h"
 
 namespace laser {
@@ -20,19 +21,23 @@ namespace core {
 
 class Program {
   private:
-    std::vector<rule::Rule> rule_vector;
+    std::vector<rule::Rule> simple_rule_vector;
+    std::vector<rule::Rule> existential_rule_vector;
     util::Timeline timeline;
-    std::vector<std::shared_ptr<util::Grounding>> facts;
+    util::Database database;
 
-    void evaluate_rule_vector();
+    void chase_evaluation();
+    void sort_rules(std::vector<rule::Rule> rule_vector);
+    void reset_rules();
+    bool evaluate_rule_vector(std::vector<rule::Rule> &rule_vector);
+    bool evaluate_rule(rule::Rule &rule);
+    std::vector<std::shared_ptr<util::Grounding>> get_conclusions() const;
+    void extract_conclusions(
+        rule::Rule const &rule,
+        std::vector<std::shared_ptr<util::Grounding>> &conclusions) const;
 
-    void do_evaluation_loop();
-
-    void expire_outdated_groundings();
-
-    std::vector<std::shared_ptr<util::Grounding>> get_conclusions();
-
-    std::vector<std::shared_ptr<util::Grounding>> compute_new_facts();
+    // void do_evaluation_loop();
+    // std::vector<std::shared_ptr<util::Grounding>> compute_new_facts();
 
   public:
     explicit Program(rule::RuleReader *rule_reader);
@@ -46,7 +51,7 @@ class Program {
     void set_start_time(uint64_t start_time);
 };
 
-} // namespace core 
+} // namespace core
 } // namespace laser
 
 #endif // LASER_CORE_PROGRAM_H

@@ -16,6 +16,8 @@
 #include "formula/formula_type.h"
 #include "formula/grounding_table.h"
 #include "util/grounding.h"
+#include "util/timeline.h"
+#include "util/database.h"
 
 namespace laser {
 namespace formula {

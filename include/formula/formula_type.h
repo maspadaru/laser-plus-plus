@@ -17,11 +17,12 @@ enum class FormulaType {
     DISJUNCTION,
     IMPLICATION,
     NEGATION,
-    EXACT_TIME,
+    TIME_REFERENCE,
     TUPLE_WINDOW,
     TIME_WINDOW,
     BOX,
-    DIAMOND
+    DIAMOND,
+    EXISTENTIAL 
 };
 
 

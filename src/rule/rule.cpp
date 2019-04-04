@@ -56,10 +56,11 @@ void Rule::expire_outdated_groundings(util::Timeline const &timeline) {
     body.expire_outdated_groundings(timeline);
 }
 
-bool Rule::evaluate(
+void Rule::evaluate(
     util::Timeline const &timeline,
-    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
-    return body.evaluate(timeline, facts);
+    util::Database const &database) {
+    auto facts = database.get_data_since(previous_step);
+    body.evaluate(timeline, facts);
 }
 
 void Rule::init() {
@@ -112,6 +113,19 @@ bool Rule::derive_conclusions(util::Timeline const &timeline) {
         result = head.evaluate(timeline, head_facts);
     }
     return result;
+}
+
+
+bool Rule::is_existential() const {
+    return head.get_type() == formula::FormulaType::EXISTENTIAL;
+}
+
+void Rule::reset_previous_step() {
+    previous_step = 0;
+}
+
+void Rule::set_previous_step(size_t step) {
+    previous_step = step;
 }
 
 } // namespace rule

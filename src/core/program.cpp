@@ -7,16 +7,23 @@
 namespace laser {
 namespace core {
 
-Program::Program(rule::RuleReader *rule_reader) {
-    rule_vector = rule_reader->get_rules();
+Program::~Program() {
+    simple_rule_vector.clear();
+    existential_rule_vector.clear();
 }
 
-Program::~Program() { rule_vector.clear(); }
+Program::Program(rule::RuleReader *rule_reader) {
+    auto rule_vector = rule_reader->get_rules();
+    sort_rules(std::move(rule_vector));
+}
 
-void Program::evaluate_rule_vector() {
+void Program::sort_rules(std::vector<rule::Rule> rule_vector) {
     for (auto &rule : rule_vector) {
-        rule.evaluate(timeline, facts);
-        rule.derive_conclusions(timeline);
+        if (rule.is_existential()) {
+            existential_rule_vector.push_back(std::move(rule));
+        } else {
+            simple_rule_vector.push_back(std::move(rule));
+        }
     }
 }
 
@@ -24,57 +31,80 @@ void Program::set_start_time(uint64_t start_time) {
     timeline.set_start_time(start_time);
 }
 
-void Program::expire_outdated_groundings() {
-    for (auto &rule : rule_vector) {
+void Program::reset_rules() {
+    for (auto &rule : simple_rule_vector) {
+        rule.reset_previous_step();
+        rule.expire_outdated_groundings(timeline);
+    }
+    for (auto &rule : existential_rule_vector) {
+        rule.reset_previous_step();
         rule.expire_outdated_groundings(timeline);
     }
 }
 
-void Program::do_evaluation_loop() {
-    bool has_new_conclusions = false;
-    expire_outdated_groundings();
-    do {
-        evaluate_rule_vector();
-        facts.clear();
-        facts = compute_new_facts();
-        has_new_conclusions = !facts.empty();
-    } while (has_new_conclusions);
-}
-
-std::vector<std::shared_ptr<util::Grounding>> Program::compute_new_facts() {
-    std::vector<std::shared_ptr<util::Grounding>> new_conclusions;
-    for (auto const &rule : rule_vector) {
-        auto *head = &rule.get_head();
-        auto conclusions = head->get_conclusions_step(timeline);
-        for (auto &conclusion : conclusions ) {
-            new_conclusions.push_back(std::move(conclusion));
+void Program::chase_evaluation() {
+    reset_rules();
+    bool changed = true;
+    while (changed) {
+        changed = evaluate_rule_vector(simple_rule_vector);
+        if (!changed) {
+            changed = evaluate_rule_vector(existential_rule_vector);
         }
     }
-    return new_conclusions;
 }
 
-std::vector<std::shared_ptr<util::Grounding>> Program::get_conclusions() {
-    std::vector<std::shared_ptr<util::Grounding>> new_conclusions;
-    for (auto const &rule : rule_vector) {
-        auto *head = &rule.get_head();
-        auto conclusions = head->get_conclusions_timepoint(timeline);
-        for (auto &conclusion : conclusions ) {
-            new_conclusions.push_back(std::move(conclusion));
-        }
+bool Program::evaluate_rule_vector(std::vector<rule::Rule> &rule_vector) {
+    bool changed = false;
+    for (auto &rule : rule_vector) {
+        changed |= evaluate_rule(rule);
     }
-    return new_conclusions;
+    return changed;
+}
+
+bool Program::evaluate_rule(rule::Rule &rule) {
+    rule.evaluate(timeline, database);
+    rule.derive_conclusions(timeline);
+    auto &head = rule.get_head();
+    auto conclusions = head.get_conclusions_step(timeline);
+    bool changed = !conclusions.empty();
+    database.increment_step();
+    auto step = database.get_step();
+    database.insert(step, std::move(conclusions));
+    rule.set_previous_step(step);
+    return changed;
+}
+
+std::vector<std::shared_ptr<util::Grounding>> Program::get_conclusions() const {
+    std::vector<std::shared_ptr<util::Grounding>> result;
+    for (auto const &rule : simple_rule_vector) {
+        extract_conclusions(rule, result);
+    }
+    for (auto const &rule : existential_rule_vector) {
+        extract_conclusions(rule, result);
+    }
+    return result;
+}
+
+void Program::extract_conclusions(
+    rule::Rule const &rule,
+    std::vector<std::shared_ptr<util::Grounding>> &conclusions) const {
+    auto *head = &rule.get_head();
+    auto rule_conclusions = head->get_conclusions_timepoint(timeline);
+    conclusions.insert(conclusions.end(), 
+            make_move_iterator(rule_conclusions.begin()),
+            make_move_iterator(rule_conclusions.end()));
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
 Program::evaluate(util::Timeline const &timeline,
                   std::vector<std::shared_ptr<util::Grounding>> data_facts) {
     this->timeline = timeline;
-    facts = std::move(data_facts);
-    do_evaluation_loop();
+    database.clear();
+    database.insert_facts(std::move(data_facts));
+    chase_evaluation();
     auto conclusions = get_conclusions();
-    //! if writing is disabled for benchmarking, this means all tests fail
     return conclusions;
 }
 
-} // namespace core 
+} // namespace core
 } // namespace laser

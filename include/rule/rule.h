@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "formula/formula.h"
+#include "formula/formula_type.h"
 #include "util/grounding.h"
 #include "util/timeline.h"
+#include "util/database.h"
 
 namespace laser {
 namespace rule {
@@ -18,6 +20,8 @@ class Rule {
   private:
     formula::Formula &head;
     formula::Formula &body;
+
+    size_t previous_step = 0;
 
     /**
      * Maps variables positions in the head's Grounding Table to positions in
@@ -35,8 +39,6 @@ class Rule {
     void init();
 
   public:
-    // constructors & destructors
-
     explicit Rule(formula::Formula *head_formula,
                   formula::Formula *body_formula);
 
@@ -48,11 +50,9 @@ class Rule {
     Rule &operator=(Rule const &other);     // copy assignment
     Rule &operator=(Rule &&other) noexcept; // move assignment
 
-    // getters & setters
-
     formula::Formula &get_head() const;
 
-    // methods
+    bool is_existential() const;
 
     /**
      * Derives new conclusions based on the head of the rule and all groundings
@@ -61,12 +61,16 @@ class Rule {
      * @return True if new conclusions have been derived at the current
      * time point and tuple counter
      */
-    bool evaluate(util::Timeline const &timeline,
-                  std::vector<std::shared_ptr<util::Grounding>> const &facts);
+    void evaluate(util::Timeline const &timeline,
+                  util::Database const &database);
 
     void expire_outdated_groundings(util::Timeline const &timeline);
 
     bool derive_conclusions(util::Timeline const &timeline);
+
+    void reset_previous_step();
+
+    void set_previous_step(size_t step);
 };
 
 } // namespace rule

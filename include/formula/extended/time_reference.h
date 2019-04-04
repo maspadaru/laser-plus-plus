@@ -16,6 +16,7 @@ namespace formula {
  */
 class TimeReference : public Formula {
   private:
+    FormulaType formula_type = FormulaType::TIME_REFERENCE;
     Formula *child;
     GroundingTable grounding_table;
     /** Name of the time variable. Will always be on the last possition in the
