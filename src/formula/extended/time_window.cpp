@@ -24,8 +24,6 @@ Formula &TimeWindow::move() {
     return *result;
 }
 
-// getters / setters
-
 void TimeWindow::set_head(bool is_head) { child->set_head(is_head); }
 
 bool TimeWindow::is_head() const { return child->is_head(); }
@@ -35,8 +33,6 @@ FormulaType TimeWindow::get_type() const { return FormulaType::TIME_WINDOW; }
 std::vector<std::string> TimeWindow::get_predicate_vector() const {
     return child->get_predicate_vector();
 }
-
-// methods
 
 std::vector<std::string> const &TimeWindow::get_variable_names() const {
     return child->get_variable_names();

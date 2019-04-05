@@ -17,6 +17,7 @@
 #include "formula/extended/tuple_window.h"
 #include "formula/extended/conjunction.h"
 #include "formula/extended/time_reference.h"
+#include "formula/extended/existential.h"
 #include "util/format_exception.h"
 
 // Helper functions:
@@ -89,6 +90,7 @@ private:
     laser::formula::Formula* parse_time_reference();
     laser::formula::Formula* parse_time_window();
     laser::formula::Formula* parse_tuple_window();
+    laser::formula::Formula* parse_existential_formula();
 
 public:
 

@@ -353,22 +353,34 @@ void test_tuple_window() {
     run(name, stream_string, rule_string);
 }
 
+void test_existential() {
+    const std::string name = "Existential";
+    std::string stream_string = "1 4 "
+                                "1 : q(x1, y1, z1)\n"
+                                "2 : q(x2, y2, z2)\n"
+                                "3 : q(x3, y3, z3)\n"
+                                "4 : \n";
+    std::string rule_string = "E(a, b) p(X, Y, Z) := q(X, Y, Z)\n";
+    run(name, stream_string, rule_string);
+}
+
 int main() {
-    test_simple();
-    test_atoms();
-    test_diamond();
-    test_time_window();
-    test_box();
-    test_conjunction_same_variables();
-    test_conjunction_two_variables();
-    test_conjunction_diamond();
-    test_conjunction_box();
-    test_conjunction_corss_variables();
-    test_recursive();
-    test_exact_time_body();
-    test_exact_time_handb();
-    test_exact_time_head();
-    test_exact_time_recursive();
-    test_tuple_window();
-    test_tuple_window_diamond();
+    //test_simple();
+    //test_atoms();
+    //test_diamond();
+    //test_time_window();
+    //test_box();
+    //test_conjunction_same_variables();
+    //test_conjunction_two_variables();
+    //test_conjunction_diamond();
+    //test_conjunction_box();
+    //test_conjunction_corss_variables();
+    //test_recursive();
+    //test_exact_time_body();
+    //test_exact_time_handb();
+    //test_exact_time_head();
+    //test_exact_time_recursive();
+    //test_tuple_window();
+    //test_tuple_window_diamond();
+    test_existential();
 }

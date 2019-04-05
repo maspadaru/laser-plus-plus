@@ -1,5 +1,5 @@
-#ifndef LASER_FORMULA_EXTENDED_TIME_WINDOW_H
-#define LASER_FORMULA_EXTENDED_TIME_WINDOW_H
+#ifndef LASER_FORMULA_EXTENDED_EXISTENTIAL_H
+#define LASER_FORMULA_EXTENDED_EXISTENTIAL_H
 
 #include <string>
 
@@ -10,25 +10,18 @@ namespace laser {
 namespace formula {
 
 /**
- * Time Window Formula
+ * Formula begining with a Existential Quantifier operator
  */
-class TimeWindow : public Formula {
+class Existential : public Formula {
   private:
-    uint64_t past_size = 0;   // L
-    uint64_t future_size = 0; // U
-    uint64_t step_size = 0;   // D
-    uint64_t pivot_time = 0;
     Formula *child;
-
-    util::Timeline alter_timeline(util::Timeline timeline) const;
-    uint64_t compute_horizon_time(uint64_t grounding_consideration_time,
-                                  uint64_t grounding_horizon_time,
-                                  uint64_t current_time) const;
+    std::vector<std::string> quantified_variables;
 
   public:
-
-    TimeWindow() = default;
-    ~TimeWindow() override;
+    explicit Existential(std::vector<std::string> argument_vector,
+                         Formula *child);
+    Existential() = default;
+    ~Existential() override;
 
     Formula &create() const override;
     Formula &clone() const override;
@@ -65,16 +58,9 @@ class TimeWindow : public Formula {
     get_conclusions_step(util::Timeline const &timeline) override;
 
     void add_child(formula::Formula *child) override;
-
-    // Own methodds, not inherited from Formula interface:
-
-    explicit TimeWindow(uint64_t size, Formula *child);
-
-    explicit TimeWindow(uint64_t past_size, uint64_t future_size,
-                        uint64_t step_size, Formula *child);
 };
 
 } // namespace formula
 } // namespace laser
 
-#endif // LASER_FORMULA_EXTENDED_TIME_WINDOW_H
+#endif // LASER_FORMULA_EXTENDED_EXISTENTIAL_H
