@@ -15,7 +15,23 @@ namespace formula {
 class Existential : public Formula {
   private:
     Formula *child;
-    std::vector<std::string> quantified_variables;
+    std::vector<std::string> bound_variables;
+    std::vector<std::string> free_variables;
+    std::vector<std::string> child_variables;
+    std::unordered_map<std::string, int> free_variable_index;
+    std::unordered_map<std::string, int> bound_variable_index;
+    std::unordered_map<size_t, std::vector<std::string>> skolem_map;
+    uint64_t null_value_count = 0;
+
+    std::shared_ptr<util::Grounding>
+    make_skolem(std::shared_ptr<util::Grounding> const &body_grounding);
+
+    std::string generate_new_value(std::string const &var_name);
+
+    void init_variable_vectors();
+
+    std::unordered_map<std::string, int>
+    make_index(std::vector<std::string> const &vector);
 
   public:
     explicit Existential(std::vector<std::string> argument_vector,
