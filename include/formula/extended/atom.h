@@ -98,7 +98,7 @@ class Atom : public Formula {
     int get_variable_index(std::string const &variable_name) const override;
 
     bool evaluate(
-        util::Timeline const &timeline,
+        util::Timeline const &timeline, util::Database const &database,
         std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
 
     size_t get_number_of_variables() const override;

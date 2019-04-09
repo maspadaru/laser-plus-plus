@@ -56,11 +56,10 @@ void Rule::expire_outdated_groundings(util::Timeline const &timeline) {
     body.expire_outdated_groundings(timeline);
 }
 
-void Rule::evaluate(
-    util::Timeline const &timeline,
-    util::Database const &database) {
+void Rule::evaluate(util::Timeline const &timeline,
+                    util::Database const &database) {
     auto facts = database.get_data_since(previous_step);
-    body.evaluate(timeline, facts);
+    body.evaluate(timeline, database, facts);
 }
 
 void Rule::init() {
@@ -94,7 +93,8 @@ Rule::convert_to_head_grounding(std::string const &head_predicate,
     return std::make_shared<util::Grounding>(result);
 }
 
-bool Rule::derive_conclusions(util::Timeline const &timeline) {
+bool Rule::derive_conclusions(util::Timeline const &timeline,
+                              util::Database const &database) {
     bool result = false;
     auto head_predicate = head.get_predicate_vector().at(0);
     std::vector<std::shared_ptr<util::Grounding>> head_facts;
@@ -110,23 +110,18 @@ bool Rule::derive_conclusions(util::Timeline const &timeline) {
     }
     bool is_body_satisfied = !head_facts.empty();
     if (is_body_satisfied) {
-        result = head.evaluate(timeline, head_facts);
+        result = head.evaluate(timeline, database, head_facts);
     }
     return result;
 }
-
 
 bool Rule::is_existential() const {
     return head.get_type() == formula::FormulaType::EXISTENTIAL;
 }
 
-void Rule::reset_previous_step() {
-    previous_step = 0;
-}
+void Rule::reset_previous_step() { previous_step = 0; }
 
-void Rule::set_previous_step(size_t step) {
-    previous_step = step;
-}
+void Rule::set_previous_step(size_t step) { previous_step = step; }
 
 } // namespace rule
 } // namespace laser

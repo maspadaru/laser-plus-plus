@@ -41,7 +41,7 @@ class Database {
                                                                  size_t end) const;
     std::vector<std::shared_ptr<util::Grounding>> get_data_range(size_t end) const;
     std::vector<std::shared_ptr<util::Grounding>> get_data_since(size_t start) const;
-    std::vector<std::shared_ptr<util::Grounding>> get_conclusions() const;
+    std::vector<std::shared_ptr<util::Grounding>> get_data_full() const;
     size_t get_step() const;
 };
 

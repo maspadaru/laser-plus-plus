@@ -63,7 +63,7 @@ bool Program::evaluate_rule_vector(std::vector<rule::Rule> &rule_vector) {
 
 bool Program::evaluate_rule(rule::Rule &rule) {
     rule.evaluate(timeline, database);
-    rule.derive_conclusions(timeline);
+    rule.derive_conclusions(timeline, database);
     auto &head = rule.get_head();
     auto conclusions = head.get_conclusions_step(timeline);
     bool changed = !conclusions.empty();

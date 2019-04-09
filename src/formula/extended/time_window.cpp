@@ -60,10 +60,10 @@ util::Timeline TimeWindow::alter_timeline(util::Timeline timeline) const {
 }
 
 bool TimeWindow::evaluate(
-    util::Timeline const &timeline,
+    util::Timeline const &timeline, util::Database const &database,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     auto window_timeline = alter_timeline(timeline);
-    return child->evaluate(window_timeline, facts);
+    return child->evaluate(window_timeline, database, facts);
 }
 
 void TimeWindow::expire_outdated_groundings(util::Timeline const &timeline) {

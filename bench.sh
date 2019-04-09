@@ -16,7 +16,7 @@
 ./laser.sh bench p3 1000 1000 0 ~/stream_100M_1_2.txt  
 ./laser.sh bench p4 1000 1000 0 ~/stream_100M_1_2.txt  
 ./laser.sh bench p5 1000 1000 0 ~/stream_100M_2_2.txt  
-./laser.sh bench p6 1000 1000 0 ~/stream_100M_2_2.txt  
+#./laser.sh bench p6 1000 1000 0 ~/stream_100M_2_2.txt  
 ./laser.sh bench p7 1000 1000 3 ~/stream_100M_1_1.txt  
 ./laser.sh bench p8 1000 1000 3 ~/stream_100M_1_1.txt  
 

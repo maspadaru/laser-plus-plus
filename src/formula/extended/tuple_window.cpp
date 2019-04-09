@@ -88,11 +88,11 @@ util::Timeline TupleWindow::alter_timeline(util::Timeline timeline) const {
 }
 
 bool TupleWindow::evaluate(
-    util::Timeline const &timeline,
+    util::Timeline const &timeline, util::Database const &database,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     auto child_facts = adjust_annotations(facts);
     auto window_timeline = alter_timeline(timeline);
-    return child->evaluate(window_timeline, child_facts);
+    return child->evaluate(window_timeline, database, child_facts);
 }
 
 void TupleWindow::expire_outdated_groundings(util::Timeline const &timeline) {

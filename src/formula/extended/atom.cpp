@@ -130,10 +130,11 @@ Atom::get_conclusions_step(util::Timeline const &timeline) {
 }
 
 bool Atom::evaluate(
-    util::Timeline const &timeline,
+    util::Timeline const &timeline, util::Database const &database,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     for (auto const &grounding : facts) {
-        if (grounding->get_predicate() == predicate) {
+        std::string const &other_predicate = grounding->get_predicate();
+        if (other_predicate == predicate) {
             accept(grounding);
         }
     }

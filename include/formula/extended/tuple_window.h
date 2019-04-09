@@ -51,9 +51,9 @@ class TupleWindow : public Formula {
 
     size_t get_number_of_variables() const override;
 
-    bool
-    evaluate(util::Timeline const &timeline,
-             std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
+    bool evaluate(
+        util::Timeline const &timeline, util::Database const &database,
+        std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 

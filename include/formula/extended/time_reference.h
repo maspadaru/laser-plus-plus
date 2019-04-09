@@ -70,6 +70,7 @@ class TimeReference : public Formula {
 
     void
     evaluate_body(util::Timeline const &timeline,
+                  util::Database const &database,
                   std::vector<std::shared_ptr<util::Grounding>> const &facts);
 
   public:
@@ -111,7 +112,7 @@ class TimeReference : public Formula {
     get_conclusions_timepoint(util::Timeline const &timeline) override;
 
     bool evaluate(
-        util::Timeline const &timeline,
+        util::Timeline const &timeline, util::Database const &database,
         std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;

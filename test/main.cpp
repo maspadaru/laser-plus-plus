@@ -354,23 +354,40 @@ void test_tuple_window() {
 }
 
 void test_existential_simple() {
-    const std::string name = "Existential";
+    const std::string name = "Existential Simple";
     std::string stream_string = "1 4 "
                                 "1 : q(x1, y1, z1)\n"
                                 "2 : q(x2, y2, z2)\n"
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
-    std::string rule_string = "E(a, b) p(a, X, b, Z) := q(X, Y, Z)\n";
+    std::string rule_string = "E(a, b) p(a, Z, b, X, Z) := q(X, Y, Z)\n";
     run(name, stream_string, rule_string);
 }
 
+void test_existential_loop() {
+    const std::string name = "Existential Loop";
+    std::string stream_string = "1 4 "
+                                "1 : Bicycle(x1)\n"
+                                "2 : Bicycle(x2), Bicycle(x3)\n"
+                                "3 : \n"
+                                "4 : \n";
+    std::string rule_string = "E(v) hasPart(X, v) := Bicycle(X)\n"
+                              "Wheel(V) := hasPart(X, V) && Bicycle(X)\n"
+                              "E(w) properPartOf(X, w) := Wheel(X)\n"
+                              "Bicycle(W) := properPartOf(X, W) && Wheel(X)\n"
+                              "partOf(X, Y) := properPartOf(X, Y) \n"
+                              "hasPart(X, Y) := partOf(Y, X) \n"
+                              "partOf(X, Y) := hasPart(Y, X) \n";
+
+    run(name, stream_string, rule_string);
+}
 
 void test_existential_conjunction() {
     //TODO Conujunction needs to split input into groundings that can 
     //be used by childre. In this case, at timepoint 1, conjunction gets
     //the fact: p(x1,z1,a0,b1), and needs to split it into p(a0, x1) and
     //q(b1,z1).
-    const std::string name = "Existential";
+    const std::string name = "Existential Conjunction";
     std::string stream_string = "1 4 "
                                 "1 : q(x1, y1, z1)\n"
                                 "2 : q(x2, y2, z2)\n"
@@ -398,5 +415,6 @@ int main() {
     //test_exact_time_recursive();
     //test_tuple_window();
     //test_tuple_window_diamond();
-    test_existential_simple();
+    //test_existential_simple();
+    test_existential_loop();
 }

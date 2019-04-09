@@ -204,11 +204,11 @@ void Conjunction::populate_grounding_vector(
 }
 
 bool Conjunction::evaluate(
-    util::Timeline const &timeline,
+    util::Timeline const &timeline, util::Database const &database,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     // TODO Here I can split facts in sub-maps, based on predicates of children
-    left_child->evaluate(timeline, facts);
-    right_child->evaluate(timeline, facts);
+    left_child->evaluate(timeline, database, facts);
+    right_child->evaluate(timeline, database, facts);
     populate_grounding_vector(timeline, left_child->get_groundings(timeline),
                               right_child->get_groundings(timeline));
     return !grounding_vector.empty();

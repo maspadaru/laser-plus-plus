@@ -181,9 +181,9 @@ void TimeReference::evaluate_head(
 }
 
 void TimeReference::evaluate_body(
-    util::Timeline const &timeline,
+    util::Timeline const &timeline, util::Database const &database,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
-    child->evaluate(timeline, facts);
+    child->evaluate(timeline, database, facts);
     auto child_conclusions = child->get_groundings(timeline);
     auto exact_time_groundings =
         convert_groundings_body(timeline, child_conclusions);
@@ -191,14 +191,14 @@ void TimeReference::evaluate_body(
 }
 
 bool TimeReference::evaluate(
-    util::Timeline const &timeline,
+    util::Timeline const &timeline, util::Database const &database,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     // If the formula is in the head of the rule, we know the child can only
     // be an Atom. So we can ignore the child.
     if (is_head()) {
         evaluate_head(timeline, facts);
     } else {
-        evaluate_body(timeline, facts);
+        evaluate_body(timeline, database, facts);
     }
     return grounding_table.has_recent_groundings();
 }

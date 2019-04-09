@@ -14,6 +14,7 @@ Existential::Existential(std::vector<std::string> argument_vector,
 
 void Existential::init_variable_vectors() {
     child_variables = child->get_variable_names();
+    child_variable_index = make_index(child_variables);
     bound_variable_index = make_index(bound_variables);
     for (auto const &var_name : child_variables) {
         if (bound_variable_index.count(var_name) == 0) {
@@ -27,7 +28,7 @@ std::unordered_map<std::string, int>
 Existential::make_index(std::vector<std::string> const &vector) {
     std::unordered_map<std::string, int> result;
     size_t index = 0;
-    for (auto const& var_name : vector) {
+    for (auto const &var_name : vector) {
         result.try_emplace(var_name, index);
         index++;
     }
@@ -45,6 +46,7 @@ Formula &Existential::clone() const {
     result->child_variables = this->child_variables;
     result->bound_variables = this->bound_variables;
     result->free_variables = this->free_variables;
+    result->child_variable_index = this->child_variable_index;
     result->bound_variable_index = this->bound_variable_index;
     result->free_variable_index = this->free_variable_index;
     result->skolem_map = this->skolem_map;
@@ -58,6 +60,7 @@ Formula &Existential::move() {
     result->child_variables = std::move(this->child_variables);
     result->bound_variables = std::move(this->bound_variables);
     result->free_variables = std::move(this->free_variables);
+    result->child_variable_index = std::move(this->child_variable_index);
     result->bound_variable_index = std::move(this->bound_variable_index);
     result->free_variable_index = std::move(this->free_variable_index);
     result->skolem_map = std::move(this->skolem_map);
@@ -126,14 +129,46 @@ std::shared_ptr<util::Grounding> Existential::make_skolem(
 }
 
 bool Existential::evaluate(
-    util::Timeline const &timeline,
+    util::Timeline const &timeline, util::Database const &database,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     std::vector<std::shared_ptr<util::Grounding>> skolem_facts;
     for (auto const &grounding : facts) {
-        auto skolem_grounding = make_skolem(grounding);
-        skolem_facts.push_back(skolem_grounding);
+        if (!has_database_match(database, grounding)) {
+            auto skolem_grounding = make_skolem(grounding);
+            skolem_facts.push_back(skolem_grounding);
+        }
     }
-    return child->evaluate(timeline, skolem_facts);
+    return child->evaluate(timeline, database, skolem_facts);
+}
+
+bool Existential::has_database_match(
+    util::Database const &database,
+    std::shared_ptr<util::Grounding> const &input_grounding) const {
+    auto const &data = database.get_data_full();
+    for (auto const &db_grounding : data) {
+        if (is_free_variable_match(db_grounding, input_grounding)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Existential::is_free_variable_match(
+    std::shared_ptr<util::Grounding> const &db_grounding,
+    std::shared_ptr<util::Grounding> const &input_grounding) const {
+    if (db_grounding->get_predicate() != input_grounding->get_predicate()) {
+        return false;
+    }
+    for (auto const &var_name : free_variables) {
+        auto input_index = free_variable_index.at(var_name);
+        auto const &input_value = input_grounding->get_constant(input_index);
+        auto db_index = child_variable_index.at(var_name);
+        auto const &db_value = db_grounding->get_constant(db_index);
+        if (db_value != input_value) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void Existential::expire_outdated_groundings(util::Timeline const &timeline) {

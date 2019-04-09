@@ -9,9 +9,9 @@
 
 #include "formula/formula.h"
 #include "formula/formula_type.h"
+#include "util/database.h"
 #include "util/grounding.h"
 #include "util/timeline.h"
-#include "util/database.h"
 
 namespace laser {
 namespace rule {
@@ -66,7 +66,8 @@ class Rule {
 
     void expire_outdated_groundings(util::Timeline const &timeline);
 
-    bool derive_conclusions(util::Timeline const &timeline);
+    bool derive_conclusions(util::Timeline const &timeline,
+                            util::Database const &database);
 
     void reset_previous_step();
 

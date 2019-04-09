@@ -20,6 +20,7 @@ class Existential : public Formula {
     std::vector<std::string> child_variables;
     std::unordered_map<std::string, int> free_variable_index;
     std::unordered_map<std::string, int> bound_variable_index;
+    std::unordered_map<std::string, int> child_variable_index;
     std::unordered_map<size_t, std::vector<std::string>> skolem_map;
     uint64_t null_value_count = 0;
 
@@ -32,6 +33,14 @@ class Existential : public Formula {
 
     std::unordered_map<std::string, int>
     make_index(std::vector<std::string> const &vector);
+
+    bool has_database_match(
+        util::Database const &database,
+        std::shared_ptr<util::Grounding> const &input_grounding) const;
+
+    bool is_free_variable_match(
+        std::shared_ptr<util::Grounding> const &db_grounding,
+        std::shared_ptr<util::Grounding> const &input_grounding) const;
 
   public:
     explicit Existential(std::vector<std::string> argument_vector,
@@ -59,7 +68,7 @@ class Existential : public Formula {
     size_t get_number_of_variables() const override;
 
     bool evaluate(
-        util::Timeline const &timeline,
+        util::Timeline const &timeline, util::Database const &database,
         std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;

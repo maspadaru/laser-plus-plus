@@ -43,7 +43,7 @@ Database::get_data_since(size_t start) const {
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-Database::get_conclusions() const {
+Database::get_data_full() const {
     return get_data_range(1, current_step);
 }
 void Database::increment_step() { current_step++; }
