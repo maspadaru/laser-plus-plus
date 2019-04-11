@@ -17,6 +17,7 @@ class Existential : public Formula {
     Formula *child;
     std::vector<std::string> bound_variables;
     std::vector<std::string> free_variables;
+    std::vector<std::string> atom_variables; // No Time variable in case of @
     std::vector<std::string> child_variables;
     std::unordered_map<std::string, int> free_variable_index;
     std::unordered_map<std::string, int> bound_variable_index;

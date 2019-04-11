@@ -22,6 +22,13 @@ void Existential::init_variable_vectors() {
         }
     }
     free_variable_index = make_index(free_variables);
+    if (child->get_type() == FormulaType::TIME_REFERENCE) {
+        // Time variable is always the last
+        atom_variables.insert(atom_variables.end(), 
+                free_variables.begin(), free_variables.end() - 1);
+    } else {
+        atom_variables = free_variables;
+    }
 }
 
 std::unordered_map<std::string, int>
@@ -46,6 +53,7 @@ Formula &Existential::clone() const {
     result->child_variables = this->child_variables;
     result->bound_variables = this->bound_variables;
     result->free_variables = this->free_variables;
+    result->atom_variables = this->atom_variables;
     result->child_variable_index = this->child_variable_index;
     result->bound_variable_index = this->bound_variable_index;
     result->free_variable_index = this->free_variable_index;
@@ -60,6 +68,7 @@ Formula &Existential::move() {
     result->child_variables = std::move(this->child_variables);
     result->bound_variables = std::move(this->bound_variables);
     result->free_variables = std::move(this->free_variables);
+    result->atom_variables = std::move(this->atom_variables);
     result->child_variable_index = std::move(this->child_variable_index);
     result->bound_variable_index = std::move(this->bound_variable_index);
     result->free_variable_index = std::move(this->free_variable_index);
@@ -159,7 +168,7 @@ bool Existential::is_free_variable_match(
     if (db_grounding->get_predicate() != input_grounding->get_predicate()) {
         return false;
     }
-    for (auto const &var_name : free_variables) {
+    for (auto const &var_name : atom_variables) {
         auto input_index = free_variable_index.at(var_name);
         auto const &input_value = input_grounding->get_constant(input_index);
         auto db_index = child_variable_index.at(var_name);

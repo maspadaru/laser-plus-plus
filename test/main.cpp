@@ -382,6 +382,69 @@ void test_existential_loop() {
     run(name, stream_string, rule_string);
 }
 
+void test_existential_time_reference_handb() {
+    const std::string name = "Existential Time Reference head and body";
+    std::string stream_string = "1 4 "
+                                "1 : Wheel(w1) \n"
+                                "2 : exploded(w1), Wheel(w2)\n"
+                                "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
+                                "3 : Bicycle(b1)\n"
+                                "4 : \n";
+    std::string rule_string = 
+        "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+        "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+        "E(b) [@, T] hasFlat(b, W) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
+
+    run(name, stream_string, rule_string);
+}
+
+void test_existential_time_reference_head() {
+    const std::string name = "Existential Time Reference head";
+    std::string stream_string = "1 4 "
+                                "1 : problem(sg1) \n"
+                                "2 : willOverheat(sg1, 2), problem(sg2)\n"
+                                "3 : problem(sg3), problem(sg4)\n"
+                                "3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
+                                "4 : \n";
+    std::string rule_string = 
+        "E(alert)[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
+                    "&& [$, 100] [D] problem(SG) \n";
+
+    run(name, stream_string, rule_string);
+}
+
+void test_existential_time_reference_body2() {
+    const std::string name = "Existential Time Reference body 2";
+    std::string stream_string = "1 4 "
+                                "1 : Wheel(w1) \n"
+                                "2 : exploded(w1), Wheel(w2)\n"
+                                "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
+                                "3 : Bicycle(b1)\n"
+                                "4 : \n";
+    std::string rule_string = 
+        "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+        "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+        "E(b) hasFlat(b, W, T) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
+
+    run(name, stream_string, rule_string);
+}
+
+void test_existential_time_reference_body1() {
+    const std::string name = "Existential Time Reference body 1";
+    std::string stream_string = "1 4 "
+                                "1 : Wheel(w1) \n"
+                                "2 : exploded(w1), Wheel(w2)\n"
+                                "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
+                                "3 : Bicycle(b1)\n"
+                                "4 : \n";
+    std::string rule_string = 
+        "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+        "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+        "E(b) hasFlat(b, W, T) := exploded(W) && [$, 100] [D] [@, T] Wheel(W) \n";
+
+    run(name, stream_string, rule_string);
+}
+
 void test_existential_conjunction() {
     //TODO Conujunction needs to split input into groundings that can 
     //be used by childre. In this case, at timepoint 1, conjunction gets
@@ -416,5 +479,9 @@ int main() {
     //test_tuple_window();
     //test_tuple_window_diamond();
     //test_existential_simple();
-    test_existential_loop();
+    //test_existential_loop();
+    test_existential_time_reference_head();
+    //test_existential_time_reference_body1();
+    //test_existential_time_reference_body2();
+    //test_existential_time_reference_handb();
 }
