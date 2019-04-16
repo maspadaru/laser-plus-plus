@@ -196,3 +196,23 @@ TEST(ConjunctionTest, ConjunctionCrossVariables) {
 
     test_framework::run_test(stream_string, rule_string, expected);
 }
+
+TEST(ConjunctionTest, ConjunctionSNE) {
+    std::string stream_string = "1 4 "
+                                "1 : p(x1)\n"
+                                "2 : t(x1)\n"
+                                "3 : s(x1)\n"
+                                "4 : \n";
+    std::string rule_string = 
+                        "q(X) := t(X) && [$, 3] [D] p(X)\n" // old input fact
+                        "r(X) := s(X) && [$, 2] [D] q(X)\n"; // old conclusion
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> ";
+    expected[2] = "2 -> q(x1)";
+    expected[3] = "3 -> r(x1)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected);
+}

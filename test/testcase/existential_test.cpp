@@ -24,7 +24,6 @@ TEST(ExistentialTest, ExistentialSimple) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-
 TEST(ExistentialTest, ExistentialLoop) {
 
     std::string stream_string = "1 4 "
@@ -141,6 +140,84 @@ TEST(ExistentialTest, ExistentialTimeRefHandB) {
     expected[1] = "1 -> ";
     expected[2] = "2 -> hasFlat(b0, w1)";
     expected[3] = "3 -> Bicycle(b1) Wheel(w3) hasFlat(b1, w3)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected);
+}
+
+TEST(ExistentialTest, ExistentialRestrictiveSimple) {
+    // At the same timepoint
+    std::string stream_string = "1 4 "
+                                "1 : q(x1)\n"
+                                "2 : s(x2, y2)\n"
+                                "3 : q(x3), s(x3, y3)\n"
+                                "4 : \n";
+    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
+                              "p (X, Y) := s(X, Y) \n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(x1, z0)";
+    expected[2] = "2 -> p(x2, y2)";
+    expected[3] = "3 -> p(x3, y3)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected);
+}
+
+TEST(ExistentialTest, ExistentialRestrictiveWindow) {
+    // At diferent timepoints
+    std::string stream_string = "1 4 "
+                                "1 : s(x1, y1),q(x1)\n"
+                                "2 : q(x2)\n"
+                                "3 : q(x3)\n"
+                                "4 : q(x4)\n";
+    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
+                              "p (X, Y) := [$, 2] [D] s(X, Y) \n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(x1, y1)";
+    expected[2] = "2 -> p(x1, y1)";
+    expected[3] = "3 -> p(x1, y1)";
+    expected[4] = "4 -> p(x4, z0)";
+
+    test_framework::run_test(stream_string, rule_string, expected);
+}
+
+TEST(ExistentialTest, ExistentialConjunctionTwo) {
+
+    std::string stream_string = "1 4 "
+                                "1 : q(x1, y1, z1)\n"
+                                "2 : q(x2, y2, z2)\n"
+                                "3 : q(x3, y3, z3)\n"
+                                "4 : \n";
+    std::string rule_string = "E(a, b)(p(a, X) && r(b, Z)) := q(X, Y, Z)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(a0, x1) r(b1, z1)";
+    expected[2] = "2 -> p(a2, x2) r(b2, z2)";
+    expected[3] = "3 -> p(a3, x3) r(b4, z3)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected);
+}
+
+TEST(ExistentialTest, ExistentialConjunctionThree) {
+
+    std::string stream_string = "1 4 "
+                                "1 : q(x1, y1, z1)\n"
+                                "2 : q(x2, y2, z2)\n"
+                                "3 : q(x3, y3, z3)\n"
+                                "4 : \n";
+    std::string rule_string = "E(a, b)(p(a, X) && r(b, Z) && s(a, b)) := q(X, Y, Z)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(a0, x1) r(b1, z1) s(a0, b1)";
+    expected[2] = "2 -> p(a2, x2) r(b2, z2) s(a2, b3)";
+    expected[3] = "3 -> p(a3, x3) r(b4, z3) s(a4, b4)";
     expected[4] = "4 -> ";
 
     test_framework::run_test(stream_string, rule_string, expected);

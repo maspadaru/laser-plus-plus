@@ -238,6 +238,19 @@ void test_conjunction_corss_variables() {
     run(name, stream_string, rule_string);
 }
 
+void test_conjunction_sne() {
+    const std::string name = "Simple";
+    std::string stream_string = "1 4 "
+                                "1 : p(x1)\n"
+                                "2 : t(x1)\n"
+                                "3 : s(x1)\n"
+                                "4 : \n";
+    std::string rule_string = 
+                        "q(X) := t(X) && [$, 3] [D] p(X)\n" // old input fact
+                        "r(X) := s(X) && [$, 2] [D] q(X)\n"; // old conclusion
+    run(name, stream_string, rule_string);
+}
+
 void test_recursive() {
     const std::string name = "Recursive";
     std::string stream_string = "1 14 "
@@ -445,18 +458,53 @@ void test_existential_time_reference_body1() {
     run(name, stream_string, rule_string);
 }
 
-void test_existential_conjunction() {
+void test_existential_restrictive_simple() {
+    const std::string name = "Existential Restrictive at same timpoint";
+    std::string stream_string = "1 4 "
+                                "1 : q(x1)\n"
+                                "2 : s(x2, y2)\n"
+                                "3 : q(x3), s(x3, y3)\n"
+                                "4 : \n";
+    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
+                              "p (X, Y) := s(X, Y) \n";
+    run(name, stream_string, rule_string);
+}
+
+void test_existential_restrictive_window() {
+    const std::string name = "Existential Restrictive at diferent timpoints";
+    std::string stream_string = "1 4 "
+                                "1 : s(x1, y1),q(x1)\n"
+                                "2 : q(x2)\n"
+                                "3 : q(x3)\n"
+                                "4 : q(x4)\n";
+    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
+                              "p (X, Y) := [$, 2] [D] s(X, Y) \n";
+    run(name, stream_string, rule_string);
+}
+
+void test_existential_conjunction_two() {
     //TODO Conujunction needs to split input into groundings that can 
     //be used by childre. In this case, at timepoint 1, conjunction gets
     //the fact: p(x1,z1,a0,b1), and needs to split it into p(a0, x1) and
     //q(b1,z1).
-    const std::string name = "Existential Conjunction";
+    const std::string name = "Existential Conjunction two atoms";
     std::string stream_string = "1 4 "
                                 "1 : q(x1, y1, z1)\n"
                                 "2 : q(x2, y2, z2)\n"
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
-    std::string rule_string = "E(a, b)(p(a, X) && q(b, Z)) := q(X, Y, Z)\n";
+    std::string rule_string = "E(a, b)(p(a, X) && r(b, Z)) := q(X, Y, Z)\n";
+    run(name, stream_string, rule_string);
+}
+
+void test_existential_conjunction_three() {
+    const std::string name = "Existential Conjunction three atoms";
+    std::string stream_string = "1 4 "
+                                "1 : q(x1, y1, z1)\n"
+                                "2 : q(x2, y2, z2)\n"
+                                "3 : q(x3, y3, z3)\n"
+                                "4 : \n";
+    std::string rule_string = "E(a, b)(p(a, X) && r(b, Z) && s(a, b)) := q(X, Y, Z)\n";
     run(name, stream_string, rule_string);
 }
 
@@ -471,6 +519,7 @@ int main() {
     //test_conjunction_diamond();
     //test_conjunction_box();
     //test_conjunction_corss_variables();
+    //test_conjunction_sne();
     //test_recursive();
     //test_exact_time_body();
     //test_exact_time_handb();
@@ -480,8 +529,12 @@ int main() {
     //test_tuple_window_diamond();
     //test_existential_simple();
     //test_existential_loop();
-    test_existential_time_reference_head();
+    //test_existential_time_reference_head();
     //test_existential_time_reference_body1();
     //test_existential_time_reference_body2();
     //test_existential_time_reference_handb();
+    //test_existential_restrictive_simple();
+    test_existential_restrictive_window();
+    //test_existential_conjunction_two();
+    //test_existential_conjunction_three();
 }

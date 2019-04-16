@@ -77,6 +77,7 @@ bool Diamond::evaluate(
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     bool result = child->evaluate(timeline, database, facts);
     auto child_facts = child->get_groundings(timeline);
+    //TODO SNE: I think you should only pick the new child facts
     grounding_table.add_grounding_vector(child_facts);
     return result;
 }
