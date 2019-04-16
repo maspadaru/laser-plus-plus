@@ -76,15 +76,17 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
             if (hc <= tuple_count) {
 		toRemove.insert(grounding);
                 // set.erase(grounding);
+                // size--;
             } else {
                 // Sets in map are ordered with lowest horizon_counter
                 // first.
                 break;
             }
         }
-	for (auto &grounding: toRemove) {
-	    set.erase(grounding);
-	}
+        size -=toRemove.size();
+        for (auto &grounding: toRemove) {
+            set.erase(grounding);
+        }
     }
     recent_groundings_vector.clear();
 }
