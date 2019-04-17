@@ -44,13 +44,13 @@ class Grounding {
   public:
     // constructors & destructors
 
-    Grounding(std::string predicate, uint64_t consideration_time, uint64_t horizon_time,
-              uint64_t consideration_count, uint64_t horizon_count,
-              std::vector<std::string> constant_vector);
+    Grounding(std::string predicate, uint64_t consideration_time,
+              uint64_t horizon_time, uint64_t consideration_count,
+              uint64_t horizon_count, std::vector<std::string> constant_vector);
 
-    Grounding(std::string predicate, uint64_t consideration_time, uint64_t horizon_time,
-              uint64_t consideration_count, uint64_t horizon_count,
-              bool is_fact, bool is_background_fact,
+    Grounding(std::string predicate, uint64_t consideration_time,
+              uint64_t horizon_time, uint64_t consideration_count,
+              uint64_t horizon_count, bool is_fact, bool is_background_fact,
               std::vector<std::string> constant_vector);
 
     Grounding() = default;
@@ -78,7 +78,7 @@ class Grounding {
     // methods
 
     std::string const &get_constant(size_t variable_index) const;
-        
+
     std::vector<std::string> const &get_constant_vector() const;
 
     bool has_expired(uint64_t time, uint64_t tuple_counter) const;
@@ -99,6 +99,13 @@ class Grounding {
     new_constant_vector(std::vector<std::string> new_vector) const;
 
     /**
+     * Creates a new Grounding containing the new predicate and constant vector
+     */
+    std::shared_ptr<Grounding>
+    new_pred_constvec(std::string const &predicate,
+                      std::vector<std::string> new_vector) const;
+
+    /**
      * Creates a new Grounding containing the new annotations
      */
     std::shared_ptr<Grounding> new_annotations(uint64_t consideration_time,
@@ -112,7 +119,7 @@ class Grounding {
     std::shared_ptr<Grounding> new_horizon_time(uint64_t horizon_time) const;
 
     /**
-     * Creates a new Grounding containing the new horizon tuple count 
+     * Creates a new Grounding containing the new horizon tuple count
      */
     std::shared_ptr<Grounding> new_horizon_count(uint64_t horizon_count) const;
 
@@ -163,7 +170,7 @@ struct GroundingPredicateSubstitutionCompare {
     }
 };
 
-} // namespace util 
+} // namespace util
 } // namespace laser
 
 #endif // LASER_UTIL_GROUNDING_H

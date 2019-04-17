@@ -36,6 +36,11 @@ void ExampleRuleReader::skip_expected_char(char c) {
     }
 }
 
+void ExampleRuleReader::skip_conjunction_operator() {
+    skip_expected_char('&');
+    skip_expected_char('&');
+}
+
 char ExampleRuleReader::peek_next_char() { return input.peek(); }
 
 bool ExampleRuleReader::is_next_char_letter() {
@@ -54,6 +59,10 @@ bool ExampleRuleReader::is_next_char(char c) { return peek_next_char() == c; }
 
 bool ExampleRuleReader::is_next_char_binary_operator() {
     return is_next_char('&') || is_next_char('|');
+}
+
+bool ExampleRuleReader::is_next_char_conjunction_operator() {
+    return is_next_char('&');
 }
 
 bool ExampleRuleReader::is_next_char_math_operator() {
@@ -110,8 +119,7 @@ char ExampleRuleReader::parse_letter() {
         std::stringstream error_stream;
         error_stream << "Expected letter "
                      << " but actual caracter was [" << input_char
-                     << "], hex=" << std::hex << (uint16_t)input_char
-                     << ".";
+                     << "], hex=" << std::hex << (uint16_t)input_char << ".";
         std::string error_message = error_stream.str();
         syntax_error(error_message);
     }
@@ -193,7 +201,7 @@ std::vector<laser::rule::Rule> ExampleRuleReader::parse_program() {
         input.clear();
         input.str(line);
         auto rule = parse_rule();
-        result.push_back(rule);
+        result.push_back(std::move(rule));
     }
     return result;
 }
@@ -215,10 +223,20 @@ laser::formula::Formula *ExampleRuleReader::parse_head() {
     if (is_next_char('E')) {
         skip_next_char();
         result = parse_existential_formula();
-    } else if (is_next_char('[')) {
+    } else {
+        result = parse_head_atom();
+    }
+    return result;
+}
+
+laser::formula::Formula *ExampleRuleReader::parse_head_atom() {
+    laser::formula::Formula *result;
+    if (is_next_char('[')) {
         skip_next_char();
+        skip_spaces();
         result = parse_time_reference();
     } else {
+        skip_spaces();
         result = parse_predicate_atom();
     }
     return result;
@@ -259,6 +277,19 @@ laser::formula::Formula *ExampleRuleReader::parse_binary_formula() {
         skip_spaces();
     }
     return left_term;
+}
+
+std::vector<laser::formula::Formula *>
+ExampleRuleReader::parse_formula_vector() {
+    std::vector<laser::formula::Formula *> result;
+    result.push_back(parse_head_atom());
+    skip_spaces();
+    while (is_next_char_conjunction_operator()) {
+        skip_conjunction_operator();
+        result.push_back(parse_head_atom());
+        skip_spaces();
+    }
+    return result;
 }
 
 laser::formula::Formula *ExampleRuleReader::parse_binary_operator() {
@@ -444,22 +475,11 @@ laser::formula::Formula *ExampleRuleReader::parse_existential_formula() {
     skip_spaces();
     skip_expected_char(')');
     skip_spaces();
-    // parsing child
-    if (is_next_char('(')) {
-        skip_next_char();
-        child = parse_binary_formula();
-        skip_spaces();
-        skip_expected_char(')');
-    } else if (is_next_char('[')) {
-        skip_next_char();
-        child = parse_time_reference();
-    } else {
-        child = parse_predicate_atom();
-    }
-    result = new laser::formula::Existential(std::move(argument_vector), child);
-    // TODO check if argument_vector variables are also in child
+    auto children = parse_formula_vector();
+    result = new laser::formula::Existential(std::move(argument_vector),
+                                             children);
+    // TODO check if argument_vector variables are also in children
     return result;
-
 }
 
 std::vector<laser::rule::Rule> ExampleRuleReader::get_rules() {

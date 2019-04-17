@@ -445,22 +445,44 @@ laser::formula::Formula *SimpleRuleReader::parse_existential_formula() {
     skip_spaces();
     skip_expected_char(')');
     skip_spaces();
-    // parsing child
-    if (is_next_char('(')) {
-        skip_next_char();
-        child = parse_binary_formula();
-        skip_spaces();
-        skip_expected_char(')');
-    } else if (is_next_char('[')) {
-        skip_next_char();
-        child = parse_time_reference();
-    } else {
-        child = parse_predicate_atom();
-    }
-    result = new laser::formula::Existential(std::move(argument_vector), child);
-    // TODO check if argument_vector variables are also in child
+    auto children = parse_formula_vector();
+    result = new laser::formula::Existential(std::move(argument_vector),
+                                             std::move(children));
+    // TODO check if argument_vector variables are also in children
     return result;
+}
 
+std::vector<laser::formula::Formula *>
+SimpleRuleReader::parse_formula_vector() {
+    std::vector<laser::formula::Formula *> result;
+    result.push_back(parse_head_atom());
+    skip_spaces();
+    while (is_next_char_conjunction_operator()) {
+        skip_conjunction_operator();
+        result.push_back(parse_head_atom());
+        skip_spaces();
+    }
+    return result;
+}
+
+laser::formula::Formula *SimpleRuleReader::parse_head_atom() {
+    laser::formula::Formula *result;
+    if (is_next_char('[')) {
+        skip_next_char();
+        result = parse_time_reference();
+    } else {
+        result = parse_predicate_atom();
+    }
+    return result;
+}
+
+void SimpleRuleReader::skip_conjunction_operator() {
+    skip_expected_char('&');
+    skip_expected_char('&');
+}
+
+bool SimpleRuleReader::is_next_char_conjunction_operator() {
+    return is_next_char('&');
 }
 
 std::vector<laser::rule::Rule> SimpleRuleReader::get_rules() {

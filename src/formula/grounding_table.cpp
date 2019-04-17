@@ -74,7 +74,7 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
         for (auto &grounding : set) {
             auto hc = grounding->get_horizon_count();
             if (hc <= tuple_count) {
-		toRemove.insert(grounding);
+                toRemove.insert(grounding);
                 // set.erase(grounding);
                 // size--;
             } else {
@@ -83,7 +83,7 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
                 break;
             }
         }
-        size -=toRemove.size();
+        size -= toRemove.size();
         for (auto &grounding: toRemove) {
             set.erase(grounding);
         }

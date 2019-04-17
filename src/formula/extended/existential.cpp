@@ -3,17 +3,42 @@
 namespace laser {
 namespace formula {
 
-Existential::~Existential() { delete child; }
+Existential::~Existential() {
+    for (auto child : children) {
+        delete child;
+    }
+    children.clear();
+}
 
 Existential::Existential(std::vector<std::string> argument_vector,
-                         Formula *child) {
+                         std::vector<Formula *> children) {
     this->bound_variables = std::move(argument_vector);
-    this->child = &child->move();
+    this->children = children;
     init_variable_vectors();
 }
 
 void Existential::init_variable_vectors() {
-    child_variables = child->get_variable_names();
+    std::set<std::string> child_variable_set;
+    std::set<std::string> atom_variable_set;
+    for (auto child : children) {
+        child->set_head(true);
+        auto variable_names = child->get_variable_names();
+        predicate_vector.push_back(child->get_predicate_vector()[0]);
+        std::copy(variable_names.begin(), variable_names.end(),
+                  std::inserter(child_variable_set, child_variable_set.end()));
+        if (child->get_type() == FormulaType::TIME_REFERENCE) {
+            // Time variable is always the last
+            std::copy(
+                variable_names.begin(), variable_names.end() - 1,
+                std::inserter(atom_variable_set, atom_variable_set.end()));
+        } else {
+            std::copy(
+                variable_names.begin(), variable_names.end(),
+                std::inserter(atom_variable_set, atom_variable_set.end()));
+        }
+    }
+    std::copy(child_variable_set.begin(), child_variable_set.end(),
+              std::back_inserter(child_variables));
     child_variable_index = make_index(child_variables);
     bound_variable_index = make_index(bound_variables);
     for (auto const &var_name : child_variables) {
@@ -22,13 +47,11 @@ void Existential::init_variable_vectors() {
         }
     }
     free_variable_index = make_index(free_variables);
-    if (child->get_type() == FormulaType::TIME_REFERENCE) {
-        // Time variable is always the last
-        atom_variables.insert(atom_variables.end(), 
-                free_variables.begin(), free_variables.end() - 1);
-    } else {
-        atom_variables = free_variables;
+    for (auto const &variable_name : bound_variables) {
+        atom_variable_set.erase(variable_name);
     }
+    std::copy(atom_variable_set.begin(), atom_variable_set.end(),
+              std::back_inserter(atom_variables));
 }
 
 std::unordered_map<std::string, int>
@@ -49,7 +72,8 @@ Formula &Existential::create() const {
 
 Formula &Existential::clone() const {
     auto result = new Existential();
-    result->child = &this->child->clone();
+    result->children = this->children;
+    result->predicate_vector = this->predicate_vector;
     result->child_variables = this->child_variables;
     result->bound_variables = this->bound_variables;
     result->free_variables = this->free_variables;
@@ -64,7 +88,8 @@ Formula &Existential::clone() const {
 
 Formula &Existential::move() {
     auto result = new Existential();
-    result->child = &this->child->move();
+    result->children = std::move(this->children);
+    result->predicate_vector = std::move(this->predicate_vector);
     result->child_variables = std::move(this->child_variables);
     result->bound_variables = std::move(this->bound_variables);
     result->free_variables = std::move(this->free_variables);
@@ -73,18 +98,18 @@ Formula &Existential::move() {
     result->bound_variable_index = std::move(this->bound_variable_index);
     result->free_variable_index = std::move(this->free_variable_index);
     result->skolem_map = std::move(this->skolem_map);
-    result->null_value_count = std::move(this->null_value_count);
+    result->null_value_count = this->null_value_count;
     return *result;
 }
 
-void Existential::set_head(bool is_head) { child->set_head(is_head); }
+void Existential::set_head(bool is_head) {}
 
-bool Existential::is_head() const { return child->is_head(); }
+bool Existential::is_head() const { return true; }
 
 FormulaType Existential::get_type() const { return FormulaType::EXISTENTIAL; }
 
 std::vector<std::string> Existential::get_predicate_vector() const {
-    return child->get_predicate_vector();
+    return predicate_vector;
 }
 
 std::vector<std::string> const &Existential::get_variable_names() const {
@@ -147,7 +172,28 @@ bool Existential::evaluate(
             skolem_facts.push_back(skolem_grounding);
         }
     }
-    return child->evaluate(timeline, database, skolem_facts);
+    for (auto child : children) {
+        std::vector<std::shared_ptr<util::Grounding>> child_facts;
+        for (auto const &grounding : skolem_facts) {
+            auto child_fact = make_child_fact(grounding, child);
+            child_facts.push_back(child_fact);
+        }
+        child->evaluate(timeline, database, child_facts);
+    }
+    return true;
+}
+
+std::shared_ptr<util::Grounding> Existential::make_child_fact(
+    std::shared_ptr<util::Grounding> const &skolem_fact, Formula *child) const {
+    auto child_variables = child->get_variable_names();
+    auto predicate = child->get_predicate_vector().at(0);
+    std::vector<std::string> child_values;
+    for (auto const &var : child_variables) {
+        auto position = child_variable_index.at(var);
+        auto const &value = skolem_fact->get_constant(position);
+        child_values.push_back(value);
+    }
+    return skolem_fact->new_pred_constvec(predicate, child_values);
 }
 
 bool Existential::has_database_match(
@@ -181,26 +227,48 @@ bool Existential::is_free_variable_match(
 }
 
 void Existential::expire_outdated_groundings(util::Timeline const &timeline) {
-    child->expire_outdated_groundings(timeline);
+    for (auto child : children) {
+        child->expire_outdated_groundings(timeline);
+    }
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
 Existential::get_groundings(util::Timeline const &timeline) {
-    auto result = child->get_groundings(timeline);
+    std::vector<std::shared_ptr<util::Grounding>> result;
+    for (auto child : children) {
+        auto child_groundings = child->get_groundings(timeline);
+        result.insert(result.end(), child_groundings.begin(),
+                      child_groundings.end());
+    }
     return result;
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
 Existential::get_conclusions_timepoint(util::Timeline const &timeline) {
-    return child->get_conclusions_timepoint(timeline);
+    std::vector<std::shared_ptr<util::Grounding>> result;
+    for (auto child : children) {
+        auto child_groundings = child->get_conclusions_timepoint(timeline);
+        result.insert(result.end(), child_groundings.begin(),
+                      child_groundings.end());
+    }
+    return result;
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
 Existential::get_conclusions_step(util::Timeline const &timeline) {
-    return child->get_conclusions_step(timeline);
+    std::vector<std::shared_ptr<util::Grounding>> result;
+    for (auto child : children) {
+        auto child_groundings = child->get_conclusions_step(timeline);
+        result.insert(result.end(), child_groundings.begin(),
+                      child_groundings.end());
+    }
+    return result;
 }
 
-void Existential::add_child(formula::Formula *child) {}
+void Existential::add_child(formula::Formula *child) {
+    children.push_back(child);
+    init_variable_vectors();
+}
 
 } // namespace formula
 } // namespace laser

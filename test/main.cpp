@@ -470,6 +470,19 @@ void test_existential_restrictive_simple() {
     run(name, stream_string, rule_string);
 }
 
+void test_existential_restrictive_conjunction() {
+    const std::string name = "Existential Restrictive Conjunction";
+    std::string stream_string = "1 4 "
+                                "1 : q(x1)\n"
+                                "2 : s(x2, y2)\n"
+                                "3 : q(x3), s(x3, y3)\n"
+                                "4 : q(x4), s(x4, y4), t(x4, y4, z4)\n";
+    std::string rule_string = "E(z) r(X, Y, z)  := p(X, Y) && q(X)\n"
+                              "p (X, Y) := s(X, Y) \n"
+                              "r(X, Y, Z) := t(X, Y, Z)";
+    run(name, stream_string, rule_string);
+}
+
 void test_existential_restrictive_window() {
     const std::string name = "Existential Restrictive at diferent timpoints";
     std::string stream_string = "1 4 "
@@ -493,7 +506,7 @@ void test_existential_conjunction_two() {
                                 "2 : q(x2, y2, z2)\n"
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
-    std::string rule_string = "E(a, b)(p(a, X) && r(b, Z)) := q(X, Y, Z)\n";
+    std::string rule_string = "E(a, b) p(a, X) && r(b, Z) := q(X, Y, Z)\n";
     run(name, stream_string, rule_string);
 }
 
@@ -504,7 +517,7 @@ void test_existential_conjunction_three() {
                                 "2 : q(x2, y2, z2)\n"
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
-    std::string rule_string = "E(a, b)(p(a, X) && r(b, Z) && s(a, b)) := q(X, Y, Z)\n";
+    std::string rule_string = "E(a, b) p(a, X) && r(b, Z) && s(a, b) := q(X, Y, Z)\n";
     run(name, stream_string, rule_string);
 }
 
@@ -534,7 +547,8 @@ int main() {
     //test_existential_time_reference_body2();
     //test_existential_time_reference_handb();
     //test_existential_restrictive_simple();
-    test_existential_restrictive_window();
-    //test_existential_conjunction_two();
+    //test_existential_restrictive_conjunction();
+    //test_existential_restrictive_window();
+    test_existential_conjunction_two();
     //test_existential_conjunction_three();
 }

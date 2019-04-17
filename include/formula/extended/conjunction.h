@@ -61,6 +61,7 @@ class Conjunction : public Formula {
 
     Conjunction() = default;
     explicit Conjunction(Formula *left_child, Formula *right_child);
+    explicit Conjunction(Formula *left_child, Formula *right_child, bool is_head);
     ~Conjunction() override;
 
     Formula &create() const override;

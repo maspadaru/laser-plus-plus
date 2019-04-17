@@ -45,12 +45,14 @@ private:
     void skip_next_char(); 
     char read_next_char(); 
     void skip_expected_char(char c); 
+    void skip_conjunction_operator();
     char peek_next_char(); 
     bool is_next_char_letter(); 
     bool is_next_char_digit();
     bool is_next_char(char c); 
     bool is_next_char_letter_or_digit();
     bool is_next_char_binary_operator();
+    bool is_next_char_conjunction_operator();
     bool is_next_char_math_operator();
     bool is_next_char_comparison_operator();
 
@@ -76,6 +78,7 @@ private:
     std::vector<laser::rule::Rule> parse_program();
     laser::rule::Rule parse_rule(); 
     laser::formula::Formula* parse_head();
+    laser::formula::Formula* parse_head_atom();
     laser::formula::Formula* parse_body();
     laser::formula::Formula* parse_formula();
     laser::formula::Formula* parse_complex_formula();
@@ -94,6 +97,7 @@ private:
     laser::formula::Formula* parse_time_window();
     laser::formula::Formula* parse_tuple_window();
     laser::formula::Formula* parse_existential_formula();
+    std::vector<laser::formula::Formula *> parse_formula_vector(); 
 
 public:
 

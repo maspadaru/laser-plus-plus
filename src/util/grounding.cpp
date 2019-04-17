@@ -94,6 +94,15 @@ Grounding::new_constant_vector(std::vector<std::string> new_vector) const {
     return std::make_shared<Grounding>(result);
 }
 
+std::shared_ptr<Grounding>
+Grounding::new_pred_constvec(std::string const &predicate,
+                             std::vector<std::string> new_vector) const {
+    Grounding result = Grounding(predicate, consideration_time, horizon_time,
+                                 consideration_count, horizon_count, is_fact_m,
+                                 is_background_fact_m, std::move(new_vector));
+    return std::make_shared<Grounding>(result);
+}
+
 void Grounding::compute_hash() {
     // old substitution_hash
     std::string hash_str = std::accumulate(
@@ -211,5 +220,5 @@ bool Grounding::operator<(Grounding const &other) const {
     return substitution_less_than(other);
 }
 
-} // namespace util 
+} // namespace util
 } // namespace laser

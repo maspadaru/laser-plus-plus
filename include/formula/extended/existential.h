@@ -1,7 +1,10 @@
 #ifndef LASER_FORMULA_EXTENDED_EXISTENTIAL_H
 #define LASER_FORMULA_EXTENDED_EXISTENTIAL_H
 
+#include <set>
 #include <string>
+#include <unordered_map>
+#include <vector>
 
 #include "formula/formula.h"
 #include "util/grounding.h"
@@ -14,7 +17,8 @@ namespace formula {
  */
 class Existential : public Formula {
   private:
-    Formula *child;
+    std::vector<Formula *> children;
+    std::vector<std::string> predicate_vector;
     std::vector<std::string> bound_variables;
     std::vector<std::string> free_variables;
     std::vector<std::string> atom_variables; // No Time variable in case of @
@@ -27,6 +31,10 @@ class Existential : public Formula {
 
     std::shared_ptr<util::Grounding>
     make_skolem(std::shared_ptr<util::Grounding> const &body_grounding);
+
+    std::shared_ptr<util::Grounding>
+    make_child_fact(std::shared_ptr<util::Grounding> const &skolem_fact,
+                    Formula *child) const;
 
     std::string generate_new_value(std::string const &var_name);
 
@@ -45,7 +53,7 @@ class Existential : public Formula {
 
   public:
     explicit Existential(std::vector<std::string> argument_vector,
-                         Formula *child);
+                         std::vector<Formula *> children);
     Existential() = default;
     ~Existential() override;
 
