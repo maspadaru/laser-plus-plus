@@ -483,6 +483,24 @@ void test_existential_restrictive_conjunction() {
     run(name, stream_string, rule_string);
 }
 
+void test_existential_restrictive_conjunction_paper() {
+    // Example from paper: "Efficient Model Construction for Horn Logic
+    // with VLog - System Description" - J. Urbani, M. Krotzsch, I. Dragoste,
+    // David Carral - 2018
+    const std::string name = "Existential Restrictive Conjunction";
+    std::string stream_string = "1 2 "
+                                "1 : Bicycle(c) \n"
+                                "2 : \n";
+
+    std::string rule_string = 
+        "E(v) hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
+        "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+        "partOf(X, Y) := properPartOf(X, Y)\n"
+        "partOf(Y, X) := hasPart(X, Y)\n"
+        "hasPart(Y, X) := partOf(X, Y)\n";
+    run(name, stream_string, rule_string);
+}
+
 void test_existential_restrictive_window() {
     const std::string name = "Existential Restrictive at diferent timpoints";
     std::string stream_string = "1 4 "
@@ -548,7 +566,8 @@ int main() {
     //test_existential_time_reference_handb();
     //test_existential_restrictive_simple();
     //test_existential_restrictive_conjunction();
+    test_existential_restrictive_conjunction_paper();
     //test_existential_restrictive_window();
-    test_existential_conjunction_two();
+    //test_existential_conjunction_two();
     //test_existential_conjunction_three();
 }

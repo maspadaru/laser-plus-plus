@@ -165,6 +165,30 @@ TEST(ExistentialTest, ExistentialRestrictiveSimple) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
+TEST(ExistentialTest, ExistentialRestrictiveConjunctionPaper) {
+    // Example from paper: "Efficient Model Construction for Horn Logic
+    // with VLog - System Description" - J. Urbani, M. Krotzsch, I. Dragoste,
+    // David Carral - 2018
+    std::string stream_string = "1 2 "
+                                "1 : Bicycle(c) \n"
+                                "2 : \n";
+
+    std::string rule_string = 
+        "E(v) hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
+        "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+        "partOf(X, Y) := properPartOf(X, Y)\n"
+        "partOf(Y, X) := hasPart(X, Y)\n"
+        "hasPart(Y, X) := partOf(X, Y)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> hasPart(c, v0) Wheel(v0) properPartOf(v0, w0) "
+        "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
+    expected[2] = "2 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected);
+}
+
 TEST(ExistentialTest, ExistentialRestrictiveWindow) {
     // At diferent timepoints
     std::string stream_string = "1 4 "
