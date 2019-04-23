@@ -145,70 +145,6 @@ TEST(ExistentialTest, ExistentialTimeRefHandB) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialRestrictiveSimple) {
-    // At the same timepoint
-    std::string stream_string = "1 4 "
-                                "1 : q(x1)\n"
-                                "2 : s(x2, y2)\n"
-                                "3 : q(x3), s(x3, y3)\n"
-                                "4 : \n";
-    std::string rule_string = "E(z) p(X, z) := q(X)\n"
-                              "p (X, Y) := s(X, Y) \n";
-
-    std::vector<std::string> expected(15);
-    expected[0] = "0 -> ";
-    expected[1] = "1 -> p(x1, z0)";
-    expected[2] = "2 -> p(x2, y2)";
-    expected[3] = "3 -> p(x3, y3)";
-    expected[4] = "4 -> ";
-
-    test_framework::run_test(stream_string, rule_string, expected);
-}
-
-TEST(ExistentialTest, ExistentialRestrictiveConjunctionPaper) {
-    // Example from paper: "Efficient Model Construction for Horn Logic
-    // with VLog - System Description" - J. Urbani, M. Krotzsch, I. Dragoste,
-    // David Carral - 2018
-    std::string stream_string = "1 2 "
-                                "1 : Bicycle(c) \n"
-                                "2 : \n";
-
-    std::string rule_string = 
-        "E(v) hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
-        "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
-        "partOf(X, Y) := properPartOf(X, Y)\n"
-        "partOf(Y, X) := hasPart(X, Y)\n"
-        "hasPart(Y, X) := partOf(X, Y)\n";
-
-    std::vector<std::string> expected(15);
-    expected[0] = "0 -> ";
-    expected[1] = "1 -> hasPart(c, v0) Wheel(v0) properPartOf(v0, w0) "
-        "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
-    expected[2] = "2 -> ";
-
-    test_framework::run_test(stream_string, rule_string, expected);
-}
-
-TEST(ExistentialTest, ExistentialRestrictiveWindow) {
-    // At diferent timepoints
-    std::string stream_string = "1 4 "
-                                "1 : s(x1, y1),q(x1)\n"
-                                "2 : q(x2)\n"
-                                "3 : q(x3)\n"
-                                "4 : q(x4)\n";
-    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
-                              "p (X, Y) := [$, 2] [D] s(X, Y) \n";
-
-    std::vector<std::string> expected(15);
-    expected[0] = "0 -> ";
-    expected[1] = "1 -> p(x1, y1)";
-    expected[2] = "2 -> p(x1, y1)";
-    expected[3] = "3 -> p(x1, y1)";
-    expected[4] = "4 -> p(x4, z0)";
-
-    test_framework::run_test(stream_string, rule_string, expected);
-}
-
 TEST(ExistentialTest, ExistentialConjunctionTwo) {
 
     std::string stream_string = "1 4 "
@@ -243,6 +179,123 @@ TEST(ExistentialTest, ExistentialConjunctionThree) {
     expected[2] = "2 -> p(a2, x2) r(b3, z2) s(a2, b3)";
     expected[3] = "3 -> p(a4, x3) r(b5, z3) s(a4, b5)";
     expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected);
+}
+
+TEST(ExistentialTest, ExistentialRestrictiveSimple) {
+    // At the same timepoint
+    std::string stream_string = "1 4 "
+                                "1 : q(x1)\n"
+                                "2 : s(x2, y2)\n"
+                                "3 : q(x3), s(x3, y3)\n"
+                                "4 : \n";
+    std::string rule_string = "E(z) p(X, z) := q(X)\n"
+                              "p (X, Y) := s(X, Y) \n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(x1, z0)";
+    expected[2] = "2 -> p(x2, y2)";
+    expected[3] = "3 -> p(x3, y3)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected);
+}
+
+TEST(ExistentialTest, ExistentialRestrictiveConjunctionBody) {
+    // A conjunction is pressent is the body of the existential rule
+    std::string stream_string = "1 4 "
+                                "1 : q(x1)\n"
+                                "2 : s(x2, y2)\n"
+                                "3 : q(x3), s(x3, y3)\n"
+                                "4 : q(x4), s(x4, y4), t(x4, y4, z4)\n";
+    std::string rule_string = "E(z) r(X, Y, z)  := p(X, Y) && q(X)\n"
+                              "p (X, Y) := s(X, Y) \n"
+                              "r(X, Y, Z) := t(X, Y, Z)";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> ";
+    expected[2] = "2 -> p(x2, y2)";
+    expected[3] = "3 -> p(x3, y3) r(x3, y3, z0)";
+    expected[4] = "4 -> p(x4, y4) r(x4, y4, z4)";
+
+    test_framework::run_test(stream_string, rule_string, expected);
+}
+
+TEST(ExistentialTest, ExistentialRestrictiveConjunctionHeadPaper) {
+    // Example from paper: "Efficient Model Construction for Horn Logic
+    // with VLog - System Description" - J. Urbani, M. Krotzsch, I. Dragoste,
+    // David Carral - 2018
+    // In this example, the computation will terminate after evaluating each
+    // rule once. When atemting to re-evaluate the first rule on conclusion:
+    // Bicycle(w0), the restrictive chase finds that:
+    // hasPart(w0, v0) && Wheel(v0)
+    // are in the database, so new null values such as 
+    // hasPart(w0, v1) && Wheel(v1)
+    // are not generated. Thus, the computation terminates due to restrictive 
+    // chase conditions. 
+    // See paper for details. 
+    std::string stream_string = "1 2 "
+                                "1 : Bicycle(c) \n"
+                                "2 : \n";
+
+    std::string rule_string = 
+        "E(v) hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
+        "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+        "partOf(X, Y) := properPartOf(X, Y)\n"
+        "partOf(Y, X) := hasPart(X, Y)\n"
+        "hasPart(Y, X) := partOf(X, Y)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> hasPart(c, v0) Wheel(v0) properPartOf(v0, w0) "
+        "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
+    expected[2] = "2 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected);
+}
+
+TEST(ExistentialTest, ExistentialRestrictiveConjunctionHeadSwap) {
+    // see ExistentialRestrictiveConjunctionHeadPaper
+    // same exaple, but atoms in head are swaped in the first rule
+    std::string stream_string = "1 2 "
+                                "1 : Bicycle(c) \n"
+                                "2 : \n";
+
+    std::string rule_string = 
+        "E(v) Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
+        "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+        "partOf(X, Y) := properPartOf(X, Y)\n"
+        "partOf(Y, X) := hasPart(X, Y)\n"
+        "hasPart(Y, X) := partOf(X, Y)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> hasPart(c, v0) Wheel(v0) properPartOf(v0, w0) "
+        "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
+    expected[2] = "2 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected);
+}
+
+TEST(ExistentialTest, ExistentialRestrictiveWindow) {
+    // At diferent timepoints
+    std::string stream_string = "1 4 "
+                                "1 : s(x1, y1),q(x1)\n"
+                                "2 : q(x2)\n"
+                                "3 : q(x1)\n"
+                                "4 : q(x4)\n";
+    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
+                              "p (X, Y) := [$, 2] [D] s(X, Y) \n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(x1, y1)";
+    expected[2] = "2 -> p(x1, y1) p(x2, z0)";
+    expected[3] = "3 -> p(x1, y1)";
+    expected[4] = "4 -> p(x4, z1)";
 
     test_framework::run_test(stream_string, rule_string, expected);
 }

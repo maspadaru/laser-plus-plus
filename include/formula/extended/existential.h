@@ -43,13 +43,23 @@ class Existential : public Formula {
     std::unordered_map<std::string, int>
     make_index(std::vector<std::string> const &vector);
 
-    bool has_database_match(
-        util::Database const &database,
-        std::shared_ptr<util::Grounding> const &input_grounding) const;
+    bool has_database_match(util::Timeline const &timeline, Formula *child,
+                            std::vector<std::string> const &value_vector) const;
 
-    bool is_free_variable_match(
-        std::shared_ptr<util::Grounding> const &db_grounding,
-        std::shared_ptr<util::Grounding> const &input_grounding) const;
+    bool
+    is_variable_match(Formula *child,
+                      std::shared_ptr<util::Grounding> const &child_grounding,
+                      std::vector<std::string> const &input_value_vector) const;
+
+    void evaluate_database_conclusions(util::Timeline const &timeline,
+                                       util::Database const &database);
+
+    std::vector<std::string>
+    make_head_vector(std::vector<std::string> skolem_vector,
+                     std::shared_ptr<util::Grounding> const &grounding) const;
+
+    bool is_predicate_in_head(
+        std::shared_ptr<util::Grounding> const &body_grounding);
 
   public:
     explicit Existential(std::vector<std::string> argument_vector,

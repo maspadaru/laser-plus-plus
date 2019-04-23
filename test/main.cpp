@@ -377,23 +377,23 @@ void test_existential_simple() {
     run(name, stream_string, rule_string);
 }
 
-void test_existential_loop() {
-    const std::string name = "Existential Loop";
-    std::string stream_string = "1 4 "
-                                "1 : Bicycle(x1)\n"
-                                "2 : Bicycle(x2), Bicycle(x3)\n"
-                                "3 : \n"
-                                "4 : \n";
-    std::string rule_string = "E(v) hasPart(X, v) := Bicycle(X)\n"
-                              "Wheel(V) := hasPart(X, V) && Bicycle(X)\n"
-                              "E(w) properPartOf(X, w) := Wheel(X)\n"
-                              "Bicycle(W) := properPartOf(X, W) && Wheel(X)\n"
-                              "partOf(X, Y) := properPartOf(X, Y) \n"
-                              "hasPart(X, Y) := partOf(Y, X) \n"
-                              "partOf(X, Y) := hasPart(Y, X) \n";
+//void test_existential_loop() {
+    //const std::string name = "Existential Loop";
+    //std::string stream_string = "1 4 "
+                                //"1 : Bicycle(x1)\n"
+                                //"2 : Bicycle(x2), Bicycle(x3)\n"
+                                //"3 : \n"
+                                //"4 : \n";
+    //std::string rule_string = "E(v) hasPart(X, v) := Bicycle(X)\n"
+                              //"Wheel(V) := hasPart(X, V) && Bicycle(X)\n"
+                              //"E(w) properPartOf(X, w) := Wheel(X)\n"
+                              //"Bicycle(W) := properPartOf(X, W) && Wheel(X)\n"
+                              //"partOf(X, Y) := properPartOf(X, Y) \n"
+                              //"hasPart(X, Y) := partOf(Y, X) \n"
+                              //"partOf(X, Y) := hasPart(Y, X) \n";
 
-    run(name, stream_string, rule_string);
-}
+    //run(name, stream_string, rule_string);
+//}
 
 void test_existential_time_reference_handb() {
     const std::string name = "Existential Time Reference head and body";
@@ -458,61 +458,6 @@ void test_existential_time_reference_body1() {
     run(name, stream_string, rule_string);
 }
 
-void test_existential_restrictive_simple() {
-    const std::string name = "Existential Restrictive at same timpoint";
-    std::string stream_string = "1 4 "
-                                "1 : q(x1)\n"
-                                "2 : s(x2, y2)\n"
-                                "3 : q(x3), s(x3, y3)\n"
-                                "4 : \n";
-    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
-                              "p (X, Y) := s(X, Y) \n";
-    run(name, stream_string, rule_string);
-}
-
-void test_existential_restrictive_conjunction() {
-    const std::string name = "Existential Restrictive Conjunction";
-    std::string stream_string = "1 4 "
-                                "1 : q(x1)\n"
-                                "2 : s(x2, y2)\n"
-                                "3 : q(x3), s(x3, y3)\n"
-                                "4 : q(x4), s(x4, y4), t(x4, y4, z4)\n";
-    std::string rule_string = "E(z) r(X, Y, z)  := p(X, Y) && q(X)\n"
-                              "p (X, Y) := s(X, Y) \n"
-                              "r(X, Y, Z) := t(X, Y, Z)";
-    run(name, stream_string, rule_string);
-}
-
-void test_existential_restrictive_conjunction_paper() {
-    // Example from paper: "Efficient Model Construction for Horn Logic
-    // with VLog - System Description" - J. Urbani, M. Krotzsch, I. Dragoste,
-    // David Carral - 2018
-    const std::string name = "Existential Restrictive Conjunction";
-    std::string stream_string = "1 2 "
-                                "1 : Bicycle(c) \n"
-                                "2 : \n";
-
-    std::string rule_string = 
-        "E(v) hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
-        "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
-        "partOf(X, Y) := properPartOf(X, Y)\n"
-        "partOf(Y, X) := hasPart(X, Y)\n"
-        "hasPart(Y, X) := partOf(X, Y)\n";
-    run(name, stream_string, rule_string);
-}
-
-void test_existential_restrictive_window() {
-    const std::string name = "Existential Restrictive at diferent timpoints";
-    std::string stream_string = "1 4 "
-                                "1 : s(x1, y1),q(x1)\n"
-                                "2 : q(x2)\n"
-                                "3 : q(x3)\n"
-                                "4 : q(x4)\n";
-    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
-                              "p (X, Y) := [$, 2] [D] s(X, Y) \n";
-    run(name, stream_string, rule_string);
-}
-
 void test_existential_conjunction_two() {
     //TODO Conujunction needs to split input into groundings that can 
     //be used by childre. In this case, at timepoint 1, conjunction gets
@@ -539,6 +484,87 @@ void test_existential_conjunction_three() {
     run(name, stream_string, rule_string);
 }
 
+void test_existential_restrictive_simple() {
+    const std::string name = "Existential Restrictive at same timpoint";
+    std::string stream_string = "1 4 "
+                                "1 : q(x1)\n"
+                                "2 : s(x2, y2)\n"
+                                "3 : q(x3), s(x3, y3)\n"
+                                "4 : \n";
+    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
+                              "p (X, Y) := s(X, Y) \n";
+    run(name, stream_string, rule_string);
+}
+
+void test_existential_restrictive_conjunction_body() {
+    const std::string name = "Existential Restrictive Conjunction Body";
+    std::string stream_string = "1 4 "
+                                "1 : q(x1)\n"
+                                "2 : s(x2, y2)\n"
+                                "3 : q(x3), s(x3, y3)\n"
+                                "4 : q(x4), s(x4, y4), t(x4, y4, z4)\n";
+    std::string rule_string = "E(z) r(X, Y, z)  := p(X, Y) && q(X)\n"
+                              "p (X, Y) := s(X, Y) \n"
+                              "r(X, Y, Z) := t(X, Y, Z)";
+    run(name, stream_string, rule_string);
+}
+
+void test_existential_restrictive_conjunction_head_paper() {
+    // Example from paper: "Efficient Model Construction for Horn Logic
+    // with VLog - System Description" - J. Urbani, M. Krotzsch, I. Dragoste,
+    // David Carral - 2018
+    // In this example, the computation will terminate after evaluating each
+    // rule once. When atemting to re-evaluate the first rule on conclusion:
+    // Bicycle(w0), the restrictive chase finds that:
+    // hasPart(w0, v0) && Wheel(v0)
+    // are in the database, so new null values such as 
+    // hasPart(w0, v1) && Wheel(v1)
+    // are not generated. Thus, the computation terminates due to restrictive 
+    // chase conditions. 
+    // See paper for details. 
+    const std::string name = "Existential Restrictive Conjunction Paper";
+    std::string stream_string = "1 2 "
+                                "1 : Bicycle(c) \n"
+                                "2 : \n";
+
+    std::string rule_string = 
+        "E(v) hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
+        "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+        "partOf(X, Y) := properPartOf(X, Y)\n"
+        "partOf(Y, X) := hasPart(X, Y)\n"
+        "hasPart(Y, X) := partOf(X, Y)\n";
+    run(name, stream_string, rule_string);
+}
+
+void test_existential_restrictive_conjunction_head_swap() {
+    // see test_existential_restrictive_conjunction_head_paper()
+    // same exaple, but atoms in head are swaped in the first rule
+    const std::string name = "Existential Restrictive Conjunction Head";
+    std::string stream_string = "1 2 "
+                                "1 : Bicycle(c) \n"
+                                "2 : \n";
+
+    std::string rule_string = 
+        "E(v) Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
+        "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+        "partOf(X, Y) := properPartOf(X, Y)\n"
+        "partOf(Y, X) := hasPart(X, Y)\n"
+        "hasPart(Y, X) := partOf(X, Y)\n";
+    run(name, stream_string, rule_string);
+}
+
+void test_existential_restrictive_window() {
+    const std::string name = "Existential Restrictive at diferent timpoints";
+    std::string stream_string = "1 4 "
+                                "1 : s(x1, y1),q(x1)\n"
+                                "2 : q(x2)\n"
+                                "3 : q(x1)\n"
+                                "4 : q(x4)\n";
+    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
+                              "p (X, Y) := [$, 2] [D] s(X, Y) \n";
+    run(name, stream_string, rule_string);
+}
+
 int main() {
     //test_simple();
     //test_atoms();
@@ -559,15 +585,16 @@ int main() {
     //test_tuple_window();
     //test_tuple_window_diamond();
     //test_existential_simple();
-    //test_existential_loop();
+    // // // // test_existential_loop();
     //test_existential_time_reference_head();
     //test_existential_time_reference_body1();
     //test_existential_time_reference_body2();
     //test_existential_time_reference_handb();
-    //test_existential_restrictive_simple();
-    //test_existential_restrictive_conjunction();
-    test_existential_restrictive_conjunction_paper();
-    //test_existential_restrictive_window();
     //test_existential_conjunction_two();
     //test_existential_conjunction_three();
+    //test_existential_restrictive_simple();
+    //test_existential_restrictive_conjunction_body();
+    test_existential_restrictive_conjunction_head_paper();
+    //test_existential_restrictive_conjunction_head_swap();
+    //test_existential_restrictive_window();
 }
