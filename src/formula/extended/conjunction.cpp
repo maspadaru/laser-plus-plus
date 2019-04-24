@@ -10,6 +10,13 @@ Conjunction::~Conjunction() {
     delete right_child;
 }
 
+Conjunction::Conjunction(Formula *left_child, Formula *right_child, bool is_head) {
+    this->left_child = &left_child->move();
+    this->right_child = &right_child->move();
+    is_head_m = is_head;
+    populate_variable_collections();
+}
+
 Conjunction::Conjunction(Formula *left_child, Formula *right_child) {
     this->left_child = &left_child->move();
     this->right_child = &right_child->move();
@@ -33,7 +40,13 @@ Formula &Conjunction::move() {
     return *result;
 }
 
-void Conjunction::set_head(bool is_head) { is_head_m = is_head; }
+void Conjunction::set_head(bool is_head) { 
+    // Conjunctino in head is used for Existentialy quantified rules using 
+    // restricted chase algorithm. 
+    // Intentionaly not setting is_head in children. We want ExactTime atoms
+    // to evaluate as if they were in the body.
+    is_head_m = is_head; 
+}
 
 bool Conjunction::is_head() const { return is_head_m; }
 
@@ -181,6 +194,7 @@ void Conjunction::populate_grounding_vector(
                        std::vector<std::shared_ptr<util::Grounding>>>
         hashmap;
     for (auto const &gr : right_groundings) {
+        // TODO no more hash here!
         auto key = hash_common_variables(*right_child, *gr);
         hashmap.try_emplace(key);
         std::vector<std::shared_ptr<util::Grounding>> &map_vector =

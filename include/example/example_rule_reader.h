@@ -17,7 +17,7 @@
 #include "formula/extended/tuple_window.h"
 #include "formula/extended/conjunction.h"
 #include "formula/extended/time_reference.h"
-#include "formula/extended/existential.h"
+#include "formula/extended/existential_restricted.h"
 #include "util/format_exception.h"
 
 // Helper functions:

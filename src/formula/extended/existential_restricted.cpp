@@ -8,10 +8,23 @@ ExistentialRestricted::~ExistentialRestricted() {
         delete child;
     }
     children.clear();
+    delete head_formula;
 }
 
-ExistentialRestricted::ExistentialRestricted(std::vector<std::string> argument_vector,
-                         std::vector<Formula *> children) {
+Formula *ExistentialRestricted::build_head_formula(
+    size_t index, std::vector<Formula *> const &list) const {
+    //TODO check if clone is properly implemented in Atom, TimeReference & Conj
+    if (index == list.size() - 1) {
+        return &children[index]->clone();
+    }
+    auto left = &children[index]->clone();
+    auto right = build_head_formula(index + 1, list);
+    return new Conjunction(left, right, true);
+}
+
+ExistentialRestricted::ExistentialRestricted(
+    std::vector<std::string> argument_vector, std::vector<Formula *> const &children) {
+    head_formula = build_head_formula(0, children);
     this->bound_variables = std::move(argument_vector);
     this->children = children;
     init_variable_vectors();
@@ -72,7 +85,8 @@ Formula &ExistentialRestricted::create() const {
 
 Formula &ExistentialRestricted::clone() const {
     auto result = new ExistentialRestricted();
-    result->children = this->children;
+    result->children = this->children; // TODO clone each child
+    result->head_formula = &this->head_formula->clone();
     result->predicate_vector = this->predicate_vector;
     result->child_variables = this->child_variables;
     result->bound_variables = this->bound_variables;
@@ -87,8 +101,9 @@ Formula &ExistentialRestricted::clone() const {
 }
 
 Formula &ExistentialRestricted::move() {
-    auto result = new ExistentialRestricted();
-    result->children = std::move(this->children);
+    auto result = new ExistentialRestricted(); 
+    result->children = std::move(this->children);//TODO move each child
+    result->head_formula = &this->head_formula->move();
     result->predicate_vector = std::move(this->predicate_vector);
     result->child_variables = std::move(this->child_variables);
     result->bound_variables = std::move(this->bound_variables);
@@ -106,17 +121,21 @@ void ExistentialRestricted::set_head(bool is_head) {}
 
 bool ExistentialRestricted::is_head() const { return true; }
 
-FormulaType ExistentialRestricted::get_type() const { return FormulaType::EXISTENTIAL; }
+FormulaType ExistentialRestricted::get_type() const {
+    return FormulaType::EXISTENTIAL;
+}
 
 std::vector<std::string> ExistentialRestricted::get_predicate_vector() const {
     return predicate_vector;
 }
 
-std::vector<std::string> const &ExistentialRestricted::get_variable_names() const {
+std::vector<std::string> const &
+ExistentialRestricted::get_variable_names() const {
     return free_variables;
 }
 
-int ExistentialRestricted::get_variable_index(std::string const &variable_name) const {
+int ExistentialRestricted::get_variable_index(
+    std::string const &variable_name) const {
     int result = -1;
     if (free_variable_index.count(variable_name) > 0) {
         result = free_variable_index.at(variable_name);
@@ -128,7 +147,8 @@ size_t ExistentialRestricted::get_number_of_variables() const {
     return free_variables.size();
 }
 
-std::string ExistentialRestricted::generate_new_value(std::string const &var_name) {
+std::string
+ExistentialRestricted::generate_new_value(std::string const &var_name) {
     // TODO
     // The value needs to be more random, as is two rules have the same
     // existential quantified variable names, the same null value will be
@@ -140,46 +160,15 @@ std::string ExistentialRestricted::generate_new_value(std::string const &var_nam
     return result;
 }
 
-std::shared_ptr<util::Grounding> ExistentialRestricted::make_skolem(
-    std::shared_ptr<util::Grounding> const &body_grounding) {
-    std::vector<std::string> child_values;
-    std::vector<std::string> bound_values;
-    auto key = body_grounding->get_hash();
-    if (skolem_map.count(key) > 0) {
-        bound_values = skolem_map.at(key);
-    } else {
-        for (auto const &var_name : bound_variables) {
-            auto new_null = generate_new_value(var_name);
-            bound_values.push_back(std::move(new_null));
-        }
-        skolem_map.try_emplace(key, bound_values);
-    }
-    for (auto const &var_name : child_variables) {
-        if (bound_variable_index.count(var_name) > 0) {
-            auto index = bound_variable_index.at(var_name);
-            auto value = bound_values.at(index);
-            child_values.push_back(value);
-        } else {
-            auto index = free_variable_index.at(var_name);
-            auto value = body_grounding->get_constant(index);
-            child_values.push_back(value);
-        }
-    }
-    return body_grounding->new_constant_vector(child_values);
-}
-
 void ExistentialRestricted::evaluate_database_conclusions(
     util::Timeline const &timeline, util::Database const &database) {
     auto const &facts = database.get_data_full();
-    for (auto child : children) {
-        if (child->get_type() == FormulaType::TIME_REFERENCE) {
-            child->set_head(false);
-            child->evaluate(timeline, database, facts);
-            child->set_head(true);
-        } else {
-            child->evaluate(timeline, database, facts);
-        }
-    }
+    head_formula->evaluate(timeline, database, facts);
+    // TODO we might want to store results in a grounding table, since we don't
+    // want some conclusions to be skipped due to SNE. Alternative, disable 
+    // SNE in conjunction if (is_head_m == true) {}
+    // If we do use local grounding table, get conclusions here using 
+    // head_formula.get_conclusions_step(timeline);
 }
 
 std::vector<std::string> ExistentialRestricted::make_head_vector(
@@ -200,29 +189,17 @@ std::vector<std::string> ExistentialRestricted::make_head_vector(
     return result;
 }
 
-bool ExistentialRestricted::is_predicate_in_head(
-    std::shared_ptr<util::Grounding> const &body_grounding) {
-    auto const &predicate = body_grounding->get_predicate();
-    for (auto child : children) {
-        auto child_predicate = child->get_predicate_vector()[0];
-        if (predicate == child_predicate) {
-            return true;
-        }
-    }
-    return false;
-}
-
-bool ExistentialRestricted::evaluate(
-    util::Timeline const &timeline, util::Database const &database,
-    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
-    evaluate_database_conclusions(timeline, database);
-    std::vector<std::shared_ptr<util::Grounding>> skolem_facts;
+std::vector<std::shared_ptr<util::Grounding>>
+build_chase_facts(util::Timeline const &timeline,
+                  util::Database const &database,
+                  std::vector<std::shared_ptr<util::Grounding>> const &facts) {
+    std::vector<std::shared_ptr<util::Grounding>> chase_facts;
     for (auto const &body_grounding : facts) {
-            /*TODO I think is_predicate_in_head is a useless check
-             * since all the body_groundings have the same predicate 
-             * as the head. 
-             */
-        if (is_predicate_in_head(body_grounding)) { 
+        /*TODO I think is_predicate_in_head is a useless check
+         * since all the body_groundings have the same predicate
+         * as the head.
+         */
+        if (false) {
             auto key = body_grounding->get_hash();
             bool has_match = skolem_map.count(key) > 0;
             if (has_match) {
@@ -234,13 +211,10 @@ bool ExistentialRestricted::evaluate(
                         has_database_match(timeline, child, head_values);
                 }
             } else {
-                //TODO e.g. for Bicycle(w0), skolem_map.count == 0;
-                //so we need to go through all atoms, and find matches for w0
-                //and everytime we find a match, we need to check 
-                //has_database_match on all children, except for this one.
-
-
-
+                // TODO e.g. for Bicycle(w0), skolem_map.count == 0;
+                // so we need to go through all atoms, and find matches for w0
+                // and everytime we find a match, we need to check
+                // has_database_match on all children, except for this one.
             }
             if (!has_match) {
                 auto skolem_grounding = make_skolem(body_grounding);
@@ -248,9 +222,31 @@ bool ExistentialRestricted::evaluate(
             }
         }
     }
+}
+
+std::vector<std::shared_ptr<util::Grounding>>
+build_chase_facts(util::Timeline const &timeline,
+                  util::Database const &database,
+                  std::vector<std::shared_ptr<util::Grounding>> const &facts) {
+    std::vector<std::shared_ptr<util::Grounding>> chase_facts;
+    auto database_facts = head_formula->get_conclusions_timepoint(timeline);
+    for (auto const &body_grounding : facts) {
+        // check if free variables match any of the database groundings
+        //    yes: break. Construct gronding using values in database grounding
+        //     no: Construct gronding using new null velues
+        //add new grounding to chase_facts
+    }
+    return chase_facts;
+}
+
+bool ExistentialRestricted::evaluate(
+    util::Timeline const &timeline, util::Database const &database,
+    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
+    evaluate_database_conclusions(timeline, database);
+    auto chase_facts = build_chase_facts(timeline, database, facts);
     for (auto child : children) {
         std::vector<std::shared_ptr<util::Grounding>> child_facts;
-        for (auto const &grounding : skolem_facts) {
+        for (auto const &grounding : chase_facts) {
             auto child_fact = make_child_fact(grounding, child);
             child_facts.push_back(child_fact);
         }
@@ -301,7 +297,8 @@ bool ExistentialRestricted::is_variable_match(
     return true;
 }
 
-void ExistentialRestricted::expire_outdated_groundings(util::Timeline const &timeline) {
+void ExistentialRestricted::expire_outdated_groundings(
+    util::Timeline const &timeline) {
     for (auto child : children) {
         child->expire_outdated_groundings(timeline);
     }
@@ -319,7 +316,8 @@ ExistentialRestricted::get_groundings(util::Timeline const &timeline) {
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-ExistentialRestricted::get_conclusions_timepoint(util::Timeline const &timeline) {
+ExistentialRestricted::get_conclusions_timepoint(
+    util::Timeline const &timeline) {
     std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto child : children) {
         auto child_groundings = child->get_conclusions_timepoint(timeline);

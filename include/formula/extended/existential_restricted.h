@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "formula/extended/conjunction.h"
 #include "formula/formula.h"
 #include "util/grounding.h"
 
@@ -18,6 +19,7 @@ namespace formula {
 class ExistentialRestricted : public Formula {
   private:
     std::vector<Formula *> children;
+    Formula *head_formula;
     std::vector<std::string> predicate_vector;
     std::vector<std::string> bound_variables;
     std::vector<std::string> free_variables;
@@ -28,6 +30,13 @@ class ExistentialRestricted : public Formula {
     std::unordered_map<std::string, int> child_variable_index;
     std::unordered_map<size_t, std::vector<std::string>> skolem_map;
     uint64_t null_value_count = 0;
+
+    Formula *build_head_formula(size_t index,
+                                std::vector<Formula *> const &list) const;
+
+    std::vector<std::shared_ptr<util::Grounding>> build_chase_facts(
+        util::Timeline const &timeline, util::Database const &database,
+        std::vector<std::shared_ptr<util::Grounding>> const &facts);
 
     std::shared_ptr<util::Grounding>
     make_skolem(std::shared_ptr<util::Grounding> const &body_grounding);
@@ -63,7 +72,7 @@ class ExistentialRestricted : public Formula {
 
   public:
     explicit ExistentialRestricted(std::vector<std::string> argument_vector,
-                         std::vector<Formula *> children);
+                                   std::vector<Formula *> const &children);
     ExistentialRestricted() = default;
     ~ExistentialRestricted() override;
 

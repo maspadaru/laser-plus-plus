@@ -4,7 +4,7 @@
 
 #include "test_framework.h"
 
-TEST(ExistentialTest, ExistentialSimple) {
+TEST(RestrictiveChaseTest, Simple) {
 
     std::string stream_string = "1 4 "
                                 "1 : q(x1, y1, z1)\n"
@@ -24,7 +24,7 @@ TEST(ExistentialTest, ExistentialSimple) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialLoop) {
+TEST(RestrictiveChaseTest, Loop) {
 
     std::string stream_string = "1 4 "
                                 "1 : Bicycle(x1)\n"
@@ -50,7 +50,7 @@ TEST(ExistentialTest, ExistentialLoop) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialTimeRefHead) {
+TEST(RestrictiveChaseTest, TimeRefHead) {
 
     std::string stream_string = "1 4 "
                                 "1 : problem(sg1) \n"
@@ -73,7 +73,7 @@ TEST(ExistentialTest, ExistentialTimeRefHead) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialTimeRefBody1) {
+TEST(RestrictiveChaseTest, TimeRefBody1) {
 
     std::string stream_string = "1 4 "
                                 "1 : Wheel(w1) \n"
@@ -97,7 +97,7 @@ TEST(ExistentialTest, ExistentialTimeRefBody1) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialTimeRefBody2) {
+TEST(RestrictiveChaseTest, TimeRefBody2) {
 
     std::string stream_string = "1 4 "
                                 "1 : Wheel(w1) \n"
@@ -121,7 +121,7 @@ TEST(ExistentialTest, ExistentialTimeRefBody2) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialTimeRefHandB) {
+TEST(RestrictiveChaseTest, TimeRefHandB) {
 
     std::string stream_string = "1 4 "
                                 "1 : Wheel(w1) \n"
@@ -145,7 +145,7 @@ TEST(ExistentialTest, ExistentialTimeRefHandB) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialConjunctionTwo) {
+TEST(RestrictiveChaseTest, ConjunctionTwo) {
 
     std::string stream_string = "1 4 "
                                 "1 : q(x1, y1, z1)\n"
@@ -164,7 +164,7 @@ TEST(ExistentialTest, ExistentialConjunctionTwo) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialConjunctionThree) {
+TEST(RestrictiveChaseTest, ConjunctionThree) {
 
     std::string stream_string = "1 4 "
                                 "1 : q(x1, y1, z1)\n"
@@ -183,7 +183,7 @@ TEST(ExistentialTest, ExistentialConjunctionThree) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialRestrictiveSimple) {
+TEST(RestrictiveChaseTest, RestrictiveSimple) {
     // At the same timepoint
     std::string stream_string = "1 4 "
                                 "1 : q(x1)\n"
@@ -203,7 +203,7 @@ TEST(ExistentialTest, ExistentialRestrictiveSimple) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialRestrictiveConjunctionBody) {
+TEST(RestrictiveChaseTest, RestrictiveConjunctionBody) {
     // A conjunction is pressent is the body of the existential rule
     std::string stream_string = "1 4 "
                                 "1 : q(x1)\n"
@@ -224,7 +224,7 @@ TEST(ExistentialTest, ExistentialRestrictiveConjunctionBody) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialRestrictiveConjunctionHeadPaper) {
+TEST(RestrictiveChaseTest, RestrictiveConjunctionHeadPaper) {
     // Example from paper: "Efficient Model Construction for Horn Logic
     // with VLog - System Description" - J. Urbani, M. Krotzsch, I. Dragoste,
     // David Carral - 2018
@@ -257,7 +257,7 @@ TEST(ExistentialTest, ExistentialRestrictiveConjunctionHeadPaper) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialRestrictiveConjunctionHeadSwap) {
+TEST(RestrictiveChaseTest, RestrictiveConjunctionHeadSwap) {
     // see ExistentialRestrictiveConjunctionHeadPaper
     // same exaple, but atoms in head are swaped in the first rule
     std::string stream_string = "1 2 "
@@ -280,7 +280,7 @@ TEST(ExistentialTest, ExistentialRestrictiveConjunctionHeadSwap) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExistentialTest, ExistentialRestrictiveWindow) {
+TEST(RestrictiveChaseTest, RestrictiveWindow) {
     // At diferent timepoints
     std::string stream_string = "1 4 "
                                 "1 : s(x1, y1),q(x1)\n"

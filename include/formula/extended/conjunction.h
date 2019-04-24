@@ -32,8 +32,6 @@ class Conjunction : public Formula {
 
     std::vector<std::shared_ptr<util::Grounding>> grounding_vector;
 
-    // Methods
-
     void set_head(bool is_head) override;
 
     bool is_head() const override;
@@ -57,8 +55,6 @@ class Conjunction : public Formula {
                      util::Grounding const &right) const;
 
   public:
-    // constructors / destructors
-
     Conjunction() = default;
     explicit Conjunction(Formula *left_child, Formula *right_child);
     explicit Conjunction(Formula *left_child, Formula *right_child, bool is_head);
@@ -69,13 +65,9 @@ class Conjunction : public Formula {
 
     Formula &move() override;
 
-    // getters / setters
-
     FormulaType get_type() const override;
 
     std::vector<std::string> get_predicate_vector() const override;
-
-    // methods
 
     std::vector<std::string> const &get_variable_names() const override;
 
