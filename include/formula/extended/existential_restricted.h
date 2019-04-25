@@ -35,7 +35,7 @@ class ExistentialRestricted : public Formula {
                                 std::vector<Formula *> const &list) const;
 
     std::vector<std::shared_ptr<util::Grounding>> build_chase_facts(
-        util::Timeline const &timeline, util::Database const &database,
+        util::Timeline const &timeline,
         std::vector<std::shared_ptr<util::Grounding>> const &facts);
 
     std::shared_ptr<util::Grounding>
@@ -52,13 +52,13 @@ class ExistentialRestricted : public Formula {
     std::unordered_map<std::string, int>
     make_index(std::vector<std::string> const &vector);
 
-    bool has_database_match(util::Timeline const &timeline, Formula *child,
-                            std::vector<std::string> const &value_vector) const;
+    bool has_database_match(
+        std::vector<std::shared_ptr<util::Grounding>> const &data,
+        std::shared_ptr<util::Grounding> const &input_grounding) const;
 
-    bool
-    is_variable_match(Formula *child,
-                      std::shared_ptr<util::Grounding> const &child_grounding,
-                      std::vector<std::string> const &input_value_vector) const;
+    bool is_free_variable_match(
+        std::shared_ptr<util::Grounding> const &db_grounding,
+        std::shared_ptr<util::Grounding> const &input_grounding) const;
 
     void evaluate_database_conclusions(util::Timeline const &timeline,
                                        util::Database const &database);
@@ -70,9 +70,12 @@ class ExistentialRestricted : public Formula {
     bool is_predicate_in_head(
         std::shared_ptr<util::Grounding> const &body_grounding);
 
+    std::shared_ptr<util::Grounding> generate_new_grounding(
+        std::shared_ptr<util::Grounding> const &body_grounding);
+
   public:
     explicit ExistentialRestricted(std::vector<std::string> argument_vector,
-                                   std::vector<Formula *> const &children);
+                                   std::vector<Formula *> children);
     ExistentialRestricted() = default;
     ~ExistentialRestricted() override;
 

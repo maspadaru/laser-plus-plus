@@ -135,6 +135,7 @@ TimeReference::get_groundings(util::Timeline const &timeline) {
 
 std::vector<std::shared_ptr<util::Grounding>>
 TimeReference::get_conclusions_timepoint(util::Timeline const &timeline) {
+    get_conclusions_step(timeline); // just to populate timepoint_conclusions
     return timepoint_conclusions;
 }
 

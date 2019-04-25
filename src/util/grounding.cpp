@@ -149,15 +149,15 @@ std::shared_ptr<Grounding> Grounding::remove_constant(size_t index) const {
 
 size_t Grounding::get_size() const { return constant_vector.size(); }
 
-std::string Grounding::debug_string() const {
+std::string Grounding::to_string() const {
     std::stringstream os;
-    os << "Grounding -> size: " << get_size() << "; annotation vector: [ "
+    os << predicate << "("; 
+    for (auto const &value : constant_vector) {
+        os << value << ", ";
+    }
+    os << " ) [ "
        << consideration_time << ", " << horizon_time << ", "
        << consideration_count << ", " << horizon_count << "] ";
-    os << "; Constants: ";
-    for (auto const &variable : constant_vector) {
-        os << variable << ", ";
-    }
     return os.str();
 }
 

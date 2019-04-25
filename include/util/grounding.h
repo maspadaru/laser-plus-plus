@@ -7,6 +7,7 @@
 
 #include <climits>
 #include <functional> // std::hash<std::string>
+#include <iostream>
 #include <memory>
 #include <numeric>
 #include <sstream>
@@ -129,7 +130,7 @@ class Grounding {
      */
     std::shared_ptr<Grounding> remove_constant(size_t index) const;
 
-    std::string debug_string() const;
+    std::string to_string() const;
 
     bool operator<(const Grounding &other) const;
 

@@ -485,7 +485,7 @@ void test_existential_conjunction_three() {
 }
 
 void test_existential_restrictive_simple() {
-    const std::string name = "Existential Restrictive at same timpoint";
+    const std::string name = "Existential Restrictive Simple: at same timpoint";
     std::string stream_string = "1 4 "
                                 "1 : q(x1)\n"
                                 "2 : s(x2, y2)\n"
@@ -586,7 +586,7 @@ int main() {
     //test_tuple_window_diamond();
     //test_existential_simple();
     // // // // test_existential_loop();
-    //test_existential_time_reference_head();
+    test_existential_time_reference_head();
     //test_existential_time_reference_body1();
     //test_existential_time_reference_body2();
     //test_existential_time_reference_handb();
@@ -594,7 +594,7 @@ int main() {
     //test_existential_conjunction_three();
     //test_existential_restrictive_simple();
     //test_existential_restrictive_conjunction_body();
-    test_existential_restrictive_conjunction_head_paper();
+    //test_existential_restrictive_conjunction_head_paper();
     //test_existential_restrictive_conjunction_head_swap();
     //test_existential_restrictive_window();
 }

@@ -477,7 +477,7 @@ laser::formula::Formula *ExampleRuleReader::parse_existential_formula() {
     skip_spaces();
     auto children = parse_formula_vector();
     result = new laser::formula::ExistentialRestricted(std::move(argument_vector),
-                                             children);
+                                             std::move(children));
     // TODO check if argument_vector variables are also in children
     return result;
 }
