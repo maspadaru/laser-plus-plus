@@ -1,11 +1,9 @@
-//
-// Created by mike on 6/15/18.
-//
 #ifndef LASER_RULE_RULE_H
 #define LASER_RULE_RULE_H
 
 #include <iostream>
 #include <memory>
+#include <utility>
 
 #include "formula/formula.h"
 #include "formula/formula_type.h"

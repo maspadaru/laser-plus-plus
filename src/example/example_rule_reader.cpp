@@ -217,20 +217,27 @@ laser::rule::Rule ExampleRuleReader::parse_rule() {
     return result;
 }
 
+//laser::formula::Formula *ExampleRuleReader::parse_head() {
+    //laser::formula::Formula *result;
+    //skip_spaces();
+    //if (is_next_char('E')) {
+        //skip_next_char();
+        //result = parse_existential_formula();
+    //} else {
+        //result = parse_head_atom();
+    //}
+    //return result;
+//}
+
 laser::formula::Formula *ExampleRuleReader::parse_head() {
     laser::formula::Formula *result;
-    skip_spaces();
-    if (is_next_char('E')) {
-        skip_next_char();
-        result = parse_existential_formula();
-    } else {
-        result = parse_head_atom();
-    }
+    result = parse_existential_formula();
     return result;
 }
 
 laser::formula::Formula *ExampleRuleReader::parse_head_atom() {
     laser::formula::Formula *result;
+    skip_spaces();
     if (is_next_char('[')) {
         skip_next_char();
         skip_spaces();
@@ -425,7 +432,7 @@ laser::formula::Formula *ExampleRuleReader::parse_time_reference() {
     std::string argument = parse_identifier();
     skip_spaces();
     skip_expected_char(']');
-    auto child = parse_formula(); // shouldn't this be parse_atom()?
+    auto child = parse_formula();
     return new laser::formula::TimeReference(argument, child);
 }
 
@@ -455,29 +462,41 @@ laser::formula::Formula *ExampleRuleReader::parse_tuple_window() {
     return new laser::formula::TupleWindow(window_size, child);
 }
 
+//laser::formula::Formula *ExampleRuleReader::parse_existential_formula() {
+    //std::vector<std::string> argument_vector;
+    //laser::formula::Formula *result;
+    //laser::formula::Formula *child;
+    //// parsing existential quantified variable list
+    //skip_spaces();
+    //skip_expected_char('(');
+    //std::string argument = parse_identifier();
+    //argument_vector.push_back(argument);
+    //skip_spaces();
+    //while (is_next_char(',')) {
+        //skip_next_char();
+        //skip_spaces();
+        //std::string argument = parse_identifier();
+        //argument_vector.push_back(argument);
+        //skip_spaces();
+    //}
+    //skip_spaces();
+    //skip_expected_char(')');
+    //skip_spaces();
+    //auto children = parse_formula_vector();
+    //result = new laser::formula::ExistentialRestricted(std::move(argument_vector),
+                                             //std::move(children));
+    //// TODO check if argument_vector variables are also in children
+    //return result;
+//}
+
 laser::formula::Formula *ExampleRuleReader::parse_existential_formula() {
     std::vector<std::string> argument_vector;
     laser::formula::Formula *result;
     laser::formula::Formula *child;
     // parsing existential quantified variable list
     skip_spaces();
-    skip_expected_char('(');
-    std::string argument = parse_identifier();
-    argument_vector.push_back(argument);
-    skip_spaces();
-    while (is_next_char(',')) {
-        skip_next_char();
-        skip_spaces();
-        std::string argument = parse_identifier();
-        argument_vector.push_back(argument);
-        skip_spaces();
-    }
-    skip_spaces();
-    skip_expected_char(')');
-    skip_spaces();
     auto children = parse_formula_vector();
-    result = new laser::formula::ExistentialRestricted(std::move(argument_vector),
-                                             std::move(children));
+    result = new laser::formula::ExistentialRestricted(std::move(children));
     // TODO check if argument_vector variables are also in children
     return result;
 }

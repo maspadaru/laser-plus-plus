@@ -1,9 +1,8 @@
 #include <iostream>
 
 #include <core/reasoner.h>
-#include <example/example_rule_reader.h>
 #include <example/example_io_manager.h>
-
+#include <example/example_rule_reader.h>
 
 void run(std::string const &name, std::string const &stream_string,
          std::string const &rule_string) {
@@ -12,8 +11,7 @@ void run(std::string const &name, std::string const &stream_string,
     std::cout << " =================================== " << std::endl;
     auto example_io_manager = laser::example::ExampleIOManager(stream_string);
     auto rule_reader = laser::example::ExampleRuleReader(rule_string);
-    auto reasoner =
-        laser::core::Reasoner(&rule_reader, &example_io_manager);
+    auto reasoner = laser::core::Reasoner(&rule_reader, &example_io_manager);
 
     reasoner.start();
 
@@ -245,14 +243,27 @@ void test_conjunction_sne() {
                                 "2 : t(x1)\n"
                                 "3 : s(x1)\n"
                                 "4 : \n";
-    std::string rule_string = 
-                        "q(X) := t(X) && [$, 3] [D] p(X)\n" // old input fact
-                        "r(X) := s(X) && [$, 2] [D] q(X)\n"; // old conclusion
+    std::string rule_string =
+        "q(X) := t(X) && [$, 3] [D] p(X)\n"  // old input fact
+        "r(X) := s(X) && [$, 2] [D] q(X)\n"; // old conclusion
     run(name, stream_string, rule_string);
 }
 
-void test_recursive() {
-    const std::string name = "Recursive";
+void test_recursive_simple() {
+    const std::string name = "Recursive Simple";
+    std::string stream_string = "1 6 "
+                                "1 : p(1), q(1)\n"
+                                "2 : p(1)\n"
+                                "3 : p(1), q(1)\n"
+                                "4 : \n";
+    std::string rule_string = 
+                              "b(X) := [$, 3] [D] d(X)\n"
+                              "d(X) := q(X) && p(X)\n";
+    run(name, stream_string, rule_string);
+}
+
+void test_recursive_complex() {
+    const std::string name = "Recursive Complex";
     std::string stream_string = "1 14 "
                                 "1 : q(1), p(1)\n"
                                 "2 : p(1)\n"
@@ -377,22 +388,22 @@ void test_existential_simple() {
     run(name, stream_string, rule_string);
 }
 
-//void test_existential_loop() {
-    //const std::string name = "Existential Loop";
-    //std::string stream_string = "1 4 "
-                                //"1 : Bicycle(x1)\n"
-                                //"2 : Bicycle(x2), Bicycle(x3)\n"
-                                //"3 : \n"
-                                //"4 : \n";
-    //std::string rule_string = "E(v) hasPart(X, v) := Bicycle(X)\n"
-                              //"Wheel(V) := hasPart(X, V) && Bicycle(X)\n"
-                              //"E(w) properPartOf(X, w) := Wheel(X)\n"
-                              //"Bicycle(W) := properPartOf(X, W) && Wheel(X)\n"
-                              //"partOf(X, Y) := properPartOf(X, Y) \n"
-                              //"hasPart(X, Y) := partOf(Y, X) \n"
-                              //"partOf(X, Y) := hasPart(Y, X) \n";
+// void test_existential_loop() {
+// const std::string name = "Existential Loop";
+// std::string stream_string = "1 4 "
+//"1 : Bicycle(x1)\n"
+//"2 : Bicycle(x2), Bicycle(x3)\n"
+//"3 : \n"
+//"4 : \n";
+// std::string rule_string = "E(v) hasPart(X, v) := Bicycle(X)\n"
+//"Wheel(V) := hasPart(X, V) && Bicycle(X)\n"
+//"E(w) properPartOf(X, w) := Wheel(X)\n"
+//"Bicycle(W) := properPartOf(X, W) && Wheel(X)\n"
+//"partOf(X, Y) := properPartOf(X, Y) \n"
+//"hasPart(X, Y) := partOf(Y, X) \n"
+//"partOf(X, Y) := hasPart(Y, X) \n";
 
-    //run(name, stream_string, rule_string);
+// run(name, stream_string, rule_string);
 //}
 
 void test_existential_time_reference_handb() {
@@ -403,25 +414,26 @@ void test_existential_time_reference_handb() {
                                 "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
                                 "3 : Bicycle(b1)\n"
                                 "4 : \n";
-    std::string rule_string = 
-        "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
-        "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-        "E(b) [@, T] hasFlat(b, W) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
+    std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+                              "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+                              "E(b) [@, T] hasFlat(b, W) := [@, T] exploded(W) "
+                              "&& [$, 100] [D] Wheel(W) \n";
 
     run(name, stream_string, rule_string);
 }
 
 void test_existential_time_reference_head() {
     const std::string name = "Existential Time Reference head";
-    std::string stream_string = "1 4 "
-                                "1 : problem(sg1) \n"
-                                "2 : willOverheat(sg1, 2), problem(sg2)\n"
-                                "3 : problem(sg3), problem(sg4)\n"
-                                "3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
-                                "4 : \n";
-    std::string rule_string = 
+    std::string stream_string =
+        "1 4 "
+        "1 : problem(sg1) \n"
+        "2 : willOverheat(sg1, 2), problem(sg2)\n"
+        "3 : problem(sg3), problem(sg4)\n"
+        "3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
+        "4 : \n";
+    std::string rule_string =
         "E(alert)[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
-                    "&& [$, 100] [D] problem(SG) \n";
+        "&& [$, 100] [D] problem(SG) \n";
 
     run(name, stream_string, rule_string);
 }
@@ -434,10 +446,10 @@ void test_existential_time_reference_body2() {
                                 "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
                                 "3 : Bicycle(b1)\n"
                                 "4 : \n";
-    std::string rule_string = 
-        "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
-        "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-        "E(b) hasFlat(b, W, T) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
+    std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+                              "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+                              "E(b) hasFlat(b, W, T) := [@, T] exploded(W) && "
+                              "[$, 100] [D] Wheel(W) \n";
 
     run(name, stream_string, rule_string);
 }
@@ -450,19 +462,19 @@ void test_existential_time_reference_body1() {
                                 "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
                                 "3 : Bicycle(b1)\n"
                                 "4 : \n";
-    std::string rule_string = 
-        "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
-        "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-        "E(b) hasFlat(b, W, T) := exploded(W) && [$, 100] [D] [@, T] Wheel(W) \n";
+    std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+                              "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+                              "E(b) hasFlat(b, W, T) := exploded(W) && [$, "
+                              "100] [D] [@, T] Wheel(W) \n";
 
     run(name, stream_string, rule_string);
 }
 
 void test_existential_conjunction_two() {
-    //TODO Conujunction needs to split input into groundings that can 
-    //be used by childre. In this case, at timepoint 1, conjunction gets
-    //the fact: p(x1,z1,a0,b1), and needs to split it into p(a0, x1) and
-    //q(b1,z1).
+    // TODO Conujunction needs to split input into groundings that can
+    // be used by childre. In this case, at timepoint 1, conjunction gets
+    // the fact: p(x1,z1,a0,b1), and needs to split it into p(a0, x1) and
+    // q(b1,z1).
     const std::string name = "Existential Conjunction two atoms";
     std::string stream_string = "1 4 "
                                 "1 : q(x1, y1, z1)\n"
@@ -480,7 +492,8 @@ void test_existential_conjunction_three() {
                                 "2 : q(x2, y2, z2)\n"
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
-    std::string rule_string = "E(a, b) p(a, X) && r(b, Z) && s(a, b) := q(X, Y, Z)\n";
+    std::string rule_string =
+        "E(a, b) p(a, X) && r(b, Z) && s(a, b) := q(X, Y, Z)\n";
     run(name, stream_string, rule_string);
 }
 
@@ -517,17 +530,17 @@ void test_existential_restrictive_conjunction_head_paper() {
     // rule once. When atemting to re-evaluate the first rule on conclusion:
     // Bicycle(w0), the restrictive chase finds that:
     // hasPart(w0, v0) && Wheel(v0)
-    // are in the database, so new null values such as 
+    // are in the database, so new null values such as
     // hasPart(w0, v1) && Wheel(v1)
-    // are not generated. Thus, the computation terminates due to restrictive 
-    // chase conditions. 
-    // See paper for details. 
+    // are not generated. Thus, the computation terminates due to restrictive
+    // chase conditions.
+    // See paper for details.
     const std::string name = "Existential Restrictive Conjunction Paper";
     std::string stream_string = "1 2 "
                                 "1 : Bicycle(c) \n"
                                 "2 : \n";
 
-    std::string rule_string = 
+    std::string rule_string =
         "E(v) hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
         "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
         "partOf(X, Y) := properPartOf(X, Y)\n"
@@ -544,7 +557,7 @@ void test_existential_restrictive_conjunction_head_swap() {
                                 "1 : Bicycle(c) \n"
                                 "2 : \n";
 
-    std::string rule_string = 
+    std::string rule_string =
         "E(v) Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
         "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
         "partOf(X, Y) := properPartOf(X, Y)\n"
@@ -565,36 +578,69 @@ void test_existential_restrictive_window() {
     run(name, stream_string, rule_string);
 }
 
+void test_conjunction_head() {
+    const std::string name = "Conjunction Head";
+    std::string stream_string = "1 2 "
+                                "1 : hasPart(x1, y1, z1)\n"
+                                "2 : \n";
+
+    std::string rule_string =
+        "Bicycle(X) && Wheel(Y) && Wheel(Z) && hasWheel(X,Y) && "
+        "hasWheel(X,Z) && partOf(Y,X) && pairOf(Z, Y) && pairOf(Y, Z):= "
+        "hasPart(X, Y, Z)\n";
+    run(name, stream_string, rule_string);
+}
+
+void test_conjunction_head_timeref() {
+    const std::string name = "Conjunction Head Time Reference";
+    std::string stream_string = "1 4 "
+                                "1 : hasPart(x1, y1, z1)\n"
+                                "2 : scheduleRepair(y1, 3)\n"
+                                "3 : \n"
+                                "4 : \n";
+
+    std::string rule_string =
+        "Bicycle(X) && Wheel(Y) && Wheel(Z) && hasWheel(X,Y) && "
+        "hasWheel(X,Z) && partOf(Y,X) && pairOf(Z, Y) && pairOf(Y, Z):= "
+        "hasPart(X, Y, Z)\n"
+        "hasFlat(X) && [@, T] fixing(Y) := scheduleRepair(Y, T) && "
+        "[$, 3] [D]partOf(Y, X)\n";
+    run(name, stream_string, rule_string);
+}
+
 int main() {
-    //test_simple();
-    //test_atoms();
-    //test_diamond();
-    //test_time_window();
-    //test_box();
-    //test_conjunction_same_variables();
-    //test_conjunction_two_variables();
-    //test_conjunction_diamond();
-    //test_conjunction_box();
-    //test_conjunction_corss_variables();
-    //test_conjunction_sne();
-    //test_recursive();
-    //test_exact_time_body();
-    //test_exact_time_handb();
-    //test_exact_time_head();
-    //test_exact_time_recursive();
-    //test_tuple_window();
-    //test_tuple_window_diamond();
-    //test_existential_simple();
+    // test_simple();
+    // test_atoms();
+    // test_diamond();
+    // test_time_window();
+    // test_box();
+    // test_conjunction_same_variables();
+    // test_conjunction_two_variables();
+    // test_conjunction_diamond();
+    // test_conjunction_box();
+    // test_conjunction_corss_variables();
+    // test_conjunction_sne();
+    test_recursive_simple();
+    // test_recursive_complex();
+    // test_exact_time_body();
+    // test_exact_time_handb();
+    // test_exact_time_head();
+    // test_exact_time_recursive();
+    // test_tuple_window();
+    // test_tuple_window_diamond();
+    // test_existential_simple();
     // // // // test_existential_loop();
-    test_existential_time_reference_head();
-    //test_existential_time_reference_body1();
-    //test_existential_time_reference_body2();
-    //test_existential_time_reference_handb();
-    //test_existential_conjunction_two();
-    //test_existential_conjunction_three();
-    //test_existential_restrictive_simple();
-    //test_existential_restrictive_conjunction_body();
-    //test_existential_restrictive_conjunction_head_paper();
-    //test_existential_restrictive_conjunction_head_swap();
-    //test_existential_restrictive_window();
+    // test_existential_time_reference_head();
+    // test_existential_time_reference_body1();
+    // test_existential_time_reference_body2();
+    // test_existential_time_reference_handb();
+    // test_existential_conjunction_two();
+    // test_existential_conjunction_three();
+    // test_existential_restrictive_simple();
+    // test_existential_restrictive_conjunction_body();
+    // test_existential_restrictive_conjunction_head_paper();
+    // test_existential_restrictive_conjunction_head_swap();
+    // test_existential_restrictive_window();
+    //test_conjunction_head();
+    //test_conjunction_head_timeref();
 }

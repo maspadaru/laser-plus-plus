@@ -3,6 +3,14 @@
 namespace laser {
 namespace formula {
 
+ExistentialRestricted::ExistentialRestricted(std::vector<Formula *> children) {
+    head_formula = build_head_formula(0, children);
+    // TODO generate std::vector<std::string> argument_vector
+    // this->bound_variables = std::move(argument_vector);
+    this->children = std::move(children);
+    init_variable_vectors();
+}
+
 ExistentialRestricted::~ExistentialRestricted() {
     for (auto child : children) {
         delete child;
@@ -20,15 +28,6 @@ Formula *ExistentialRestricted::build_head_formula(
     auto left = &list[index]->clone();
     auto right = build_head_formula(index + 1, list);
     return new Conjunction(left, right, true);
-}
-
-ExistentialRestricted::ExistentialRestricted(
-    std::vector<std::string> argument_vector,
-    std::vector<Formula *> children) {
-    head_formula = build_head_formula(0, children);
-    this->bound_variables = std::move(argument_vector);
-    this->children = std::move(children);
-    init_variable_vectors();
 }
 
 void ExistentialRestricted::init_variable_vectors() {
@@ -68,41 +67,41 @@ void ExistentialRestricted::init_variable_vectors() {
               std::back_inserter(atom_variables));
 }
 
-//void ExistentialRestricted::init_variable_vectors() {
-    //std::set<std::string> child_variable_set;
-    //std::set<std::string> atom_variable_set;
-    //for (auto child : children) {
-        //child->set_head(true);
-        //auto variable_names = child->get_variable_names();
-        //predicate_vector.push_back(child->get_predicate_vector()[0]);
-        //std::copy(variable_names.begin(), variable_names.end(),
-                  //std::inserter(child_variable_set, child_variable_set.end()));
-        //if (child->get_type() == FormulaType::TIME_REFERENCE) {
-            //// Time variable is always the last
-            //std::copy(
-                //variable_names.begin(), variable_names.end() - 1,
-                //std::inserter(atom_variable_set, atom_variable_set.end()));
-        //} else {
-            //std::copy(
-                //variable_names.begin(), variable_names.end(),
-                //std::inserter(atom_variable_set, atom_variable_set.end()));
-        //}
-    //}
-    //std::copy(child_variable_set.begin(), child_variable_set.end(),
-              //std::back_inserter(child_variables));
-    //child_variable_index = make_index(child_variables);
-    //bound_variable_index = make_index(bound_variables);
-    //for (auto const &var_name : child_variables) {
-        //if (bound_variable_index.count(var_name) == 0) {
-            //free_variables.push_back(var_name);
-        //}
-    //}
-    //free_variable_index = make_index(free_variables);
-    //for (auto const &variable_name : bound_variables) {
-        //atom_variable_set.erase(variable_name);
-    //}
-    //std::copy(atom_variable_set.begin(), atom_variable_set.end(),
-              //std::back_inserter(atom_variables));
+// void ExistentialRestricted::init_variable_vectors() {
+// std::set<std::string> child_variable_set;
+// std::set<std::string> atom_variable_set;
+// for (auto child : children) {
+// child->set_head(true);
+// auto variable_names = child->get_variable_names();
+// predicate_vector.push_back(child->get_predicate_vector()[0]);
+// std::copy(variable_names.begin(), variable_names.end(),
+// std::inserter(child_variable_set, child_variable_set.end()));
+// if (child->get_type() == FormulaType::TIME_REFERENCE) {
+//// Time variable is always the last
+// std::copy(
+// variable_names.begin(), variable_names.end() - 1,
+// std::inserter(atom_variable_set, atom_variable_set.end()));
+//} else {
+// std::copy(
+// variable_names.begin(), variable_names.end(),
+// std::inserter(atom_variable_set, atom_variable_set.end()));
+//}
+//}
+// std::copy(child_variable_set.begin(), child_variable_set.end(),
+// std::back_inserter(child_variables));
+// child_variable_index = make_index(child_variables);
+// bound_variable_index = make_index(bound_variables);
+// for (auto const &var_name : child_variables) {
+// if (bound_variable_index.count(var_name) == 0) {
+// free_variables.push_back(var_name);
+//}
+//}
+// free_variable_index = make_index(free_variables);
+// for (auto const &variable_name : bound_variables) {
+// atom_variable_set.erase(variable_name);
+//}
+// std::copy(atom_variable_set.begin(), atom_variable_set.end(),
+// std::back_inserter(atom_variables));
 //}
 
 std::unordered_map<std::string, int>
@@ -263,7 +262,6 @@ bool ExistentialRestricted::has_database_match(
 bool ExistentialRestricted::is_free_variable_match(
     std::shared_ptr<util::Grounding> const &db_grounding,
     std::shared_ptr<util::Grounding> const &input_grounding) const {
-    // TODO should also check annotations, not just free variables
     for (auto const &var_name : atom_variables) {
         auto input_index = free_variable_index.at(var_name);
         auto const &input_value = input_grounding->get_constant(input_index);
@@ -273,12 +271,16 @@ bool ExistentialRestricted::is_free_variable_match(
             return false;
         }
     }
-    return true;
+    // TODO should I check all annotations?
+    // return false if there is a match but the new grounding expires later
+    return input_grounding->get_horizon_time() <=
+           db_grounding->get_horizon_time();
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-ExistentialRestricted::build_chase_facts(util::Timeline const &timeline,
-                  std::vector<std::shared_ptr<util::Grounding>> const &facts) {
+ExistentialRestricted::build_chase_facts(
+    util::Timeline const &timeline,
+    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     std::vector<std::shared_ptr<util::Grounding>> chase_facts;
     auto database_facts = head_formula->get_conclusions_timepoint(timeline);
     for (auto const &body_grounding : facts) {

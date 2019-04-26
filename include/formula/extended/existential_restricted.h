@@ -74,8 +74,7 @@ class ExistentialRestricted : public Formula {
         std::shared_ptr<util::Grounding> const &body_grounding);
 
   public:
-    explicit ExistentialRestricted(std::vector<std::string> argument_vector,
-                                   std::vector<Formula *> children);
+    explicit ExistentialRestricted(std::vector<Formula *> children);
     ExistentialRestricted() = default;
     ~ExistentialRestricted() override;
 

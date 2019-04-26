@@ -1,15 +1,7 @@
-//
-// Created by mike on 6/15/18.
-//
-
 #include "rule/rule.h"
-
-#include <utility>
 
 namespace laser {
 namespace rule {
-
-// constructors & destructors
 
 Rule::Rule(formula::Formula *head_formula, formula::Formula *body_formula)
     : head(head_formula->clone()), body(body_formula->clone()) {
@@ -45,11 +37,7 @@ Rule &Rule::operator=(Rule &&other) noexcept {
     return *this;
 }
 
-// getters & setters
-
 formula::Formula &Rule::get_head() const { return this->head; }
-
-// methods
 
 void Rule::expire_outdated_groundings(util::Timeline const &timeline) {
     head.expire_outdated_groundings(timeline);
@@ -102,6 +90,7 @@ bool Rule::derive_conclusions(util::Timeline const &timeline,
         body.get_groundings(timeline);
     for (auto const &body_grounding : body_groundings) {
         // SNE: we only evaluate groundings derived at this current timepoint
+        // TODO I sould only get the ones derived at the cureent STEP
         if (body_grounding->get_consideration_time() >= timeline.get_time()) {
             auto head_grounding =
                 convert_to_head_grounding(head_predicate, *body_grounding);

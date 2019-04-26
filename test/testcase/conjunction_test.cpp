@@ -213,6 +213,53 @@ TEST(ConjunctionTest, ConjunctionSNE) {
     expected[2] = "2 -> q(x1)";
     expected[3] = "3 -> r(x1)";
     expected[4] = "4 -> ";
+    
+    test_framework::run_test(stream_string, rule_string, expected);
+}
+
+TEST(ConjunctionTest, ConjunctionHead) {
+    std::string stream_string = "1 2 "
+                                "1 : hasPart(x1, y1, z1)\n"
+                                "2 : \n";
+
+    std::string rule_string =
+        "Bicycle(X) && Wheel(Y) && Wheel(Z) && hasWheel(X,Y) && "
+        "hasWheel(X,Z) && partOf(Y,X) && pairOf(Z, Y) && pairOf(Y, Z):= "
+        "hasPart(X, Y, Z)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> Bicycle(x1) Wheel(y1) Wheel(z1) hasWheel(x1, y1)"
+        " hasWheel(x1, z1) pairOf(y1, z1) pairOf(z1, y1) partOf(y1, x1) ";
+    expected[2] = "2 -> ";
+    expected[3] = "3 -> ";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected);
+}
+
+TEST(ConjunctionTest, ConjunctionHeadTimeReference) {
+    std::string stream_string = "1 4 "
+                                "1 : hasPart(x1, y1, z1)\n"
+                                "2 : scheduleRepair(y1, 3)\n"
+                                "3 : \n"
+                                "4 : \n";
+
+    std::string rule_string =
+        "Bicycle(X) && Wheel(Y) && Wheel(Z) && hasWheel(X,Y) && "
+        "hasWheel(X,Z) && partOf(Y,X) && pairOf(Z, Y) && pairOf(Y, Z):= "
+        "hasPart(X, Y, Z)\n"
+        "hasFlat(X) && [@, T] fixing(Y) := scheduleRepair(Y, T) && "
+        "[$, 3] [D]partOf(Y, X)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> Bicycle(x1) Wheel(y1) Wheel(z1) hasWheel(x1, y1)"
+        " hasWheel(x1, z1) pairOf(y1, z1) pairOf(z1, y1) partOf(y1, x1) ";
+    expected[2] = "2 -> hasFlat(x1)";
+    expected[3] = "3 -> fixing(y1)";
+    expected[4] = "4 -> ";
+
 
     test_framework::run_test(stream_string, rule_string, expected);
 }
