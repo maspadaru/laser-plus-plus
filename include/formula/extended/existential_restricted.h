@@ -39,9 +39,6 @@ class ExistentialRestricted : public Formula {
         std::vector<std::shared_ptr<util::Grounding>> const &facts);
 
     std::shared_ptr<util::Grounding>
-    make_skolem(std::shared_ptr<util::Grounding> const &body_grounding);
-
-    std::shared_ptr<util::Grounding>
     make_child_fact(std::shared_ptr<util::Grounding> const &skolem_fact,
                     Formula *child) const;
 
@@ -63,14 +60,7 @@ class ExistentialRestricted : public Formula {
     void evaluate_database_conclusions(util::Timeline const &timeline,
                                        util::Database const &database);
 
-    std::vector<std::string>
-    make_head_vector(std::vector<std::string> skolem_vector,
-                     std::shared_ptr<util::Grounding> const &grounding) const;
-
-    bool is_predicate_in_head(
-        std::shared_ptr<util::Grounding> const &body_grounding);
-
-    std::shared_ptr<util::Grounding> generate_new_grounding(
+    std::shared_ptr<util::Grounding> generate_chase_fact(
         std::shared_ptr<util::Grounding> const &body_grounding);
 
   public:
@@ -80,7 +70,6 @@ class ExistentialRestricted : public Formula {
 
     Formula &create() const override;
     Formula &clone() const override;
-
     Formula &move() override;
 
     void set_head(bool is_head) override;

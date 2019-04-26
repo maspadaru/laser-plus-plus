@@ -3,45 +3,85 @@
 namespace laser {
 namespace rule {
 
-Rule::Rule(formula::Formula *head_formula, formula::Formula *body_formula)
-    : head(head_formula->clone()), body(body_formula->clone()) {
-    init();
+Rule::Rule(formula::Formula *body_formula,
+           std::vector<formula::Formula *> head_atoms)
+    : body(body_formula->clone()) {
+    init(std::move(head_atoms));
 }
 
 Rule::~Rule() {
-    delete &head;
     delete &body;
+    for (auto head_atom : head_atoms) {
+        delete head_atom;
+    }
+    head_atoms.clear();
 }
 
 Rule::Rule(Rule const &other)
-    : head(other.head.clone()), body(other.body.clone()) {
+    : body(other.body.clone()) {
     variable_map = other.variable_map;
+    head_atoms = other.head_atoms;
 }
 
 Rule::Rule(Rule &&other) noexcept
-    : head(other.head.move()), body(other.body.move()) {
+    : body(other.body.move()) {
     variable_map = std::move(other.variable_map);
+    head_atoms = std::move(other.head_atoms);
 }
 
 Rule &Rule::operator=(Rule const &other) {
-    this->head = other.head.clone();
     this->body = other.body.clone();
     this->variable_map = other.variable_map;
+    this->head_atoms = other.head_atoms;
     return *this;
 }
 
 Rule &Rule::operator=(Rule &&other) noexcept {
-    this->head = other.head.move();
     this->body = other.body.move();
-    variable_map = std::move(other.variable_map);
+    this->variable_map = std::move(other.variable_map);
+    this->head_atoms = std::move(other.head_atoms);
     return *this;
 }
 
-formula::Formula &Rule::get_head() const { return this->head; }
+bool Rule::is_existential() const {
+    return is_existential_m;
+}
+
+void Rule::reset_previous_step() { previous_step = 0; }
+
+void Rule::set_previous_step(size_t step) { previous_step = step; }
+
+std::vector<std::shared_ptr<util::Grounding>>
+Rule::get_conclusions_step(util::Timeline const &timeline) {
+    std::vector<std::shared_ptr<util::Grounding>> result;
+    for (auto head_atom : head_atoms) {
+        auto head_groundings = head_atom->get_conclusions_step(timeline);
+        result.insert(result.end(), head_groundings.begin(),
+                      head_groundings.end());
+    }
+    return result;
+}
+
+std::vector<std::shared_ptr<util::Grounding>>
+Rule::get_conclusions_timepoint(util::Timeline const &timeline) {
+    std::vector<std::shared_ptr<util::Grounding>> result;
+    for (auto head_atom : head_atoms) {
+        auto head_groundings = head_atom->get_conclusions_timepoint(timeline);
+        result.insert(result.end(), head_groundings.begin(),
+                      head_groundings.end());
+    }
+    return result;
+}
 
 void Rule::expire_outdated_groundings(util::Timeline const &timeline) {
-    head.expire_outdated_groundings(timeline);
+    expire_head_groundings(timeline);
     body.expire_outdated_groundings(timeline);
+}
+
+void Rule::expire_head_groundings(util::Timeline const &timeline) {
+    for (auto atom : head_atoms) {
+        atom->expire_outdated_groundings(timeline);
+    }
 }
 
 void Rule::evaluate(util::Timeline const &timeline,
@@ -50,67 +90,60 @@ void Rule::evaluate(util::Timeline const &timeline,
     body.evaluate(timeline, database, facts);
 }
 
-void Rule::init() {
-    head.set_head(true);
-    compute_variable_map();
-}
-
-void Rule::compute_variable_map() {
-    auto head_variable_vector = head.get_variable_names();
-    for (size_t head_index = 0; head_index < head_variable_vector.size();
-         head_index++) {
-        auto body_index =
-            body.get_variable_index(head_variable_vector.at(head_index));
-        variable_map.try_emplace(head_index, body_index);
+void Rule::init(std::vector<formula::Formula *> head_atoms) {
+    this->head_atoms = std::move(head_atoms);
+    for (auto *head_atom : this->head_atoms) {
+        head_atom->set_head(true);
     }
-}
-
-std::shared_ptr<util::Grounding>
-Rule::convert_to_head_grounding(std::string const &head_predicate,
-                                util::Grounding const &grounding) const {
-    std::vector<std::string> result_vector;
-    for (size_t head_index = 0; head_index < head.get_number_of_variables();
-         head_index++) {
-        result_vector.push_back(
-            grounding.get_constant(variable_map.at(head_index)));
-    }
-    util::Grounding result = util::Grounding(
-        head_predicate, grounding.get_consideration_time(),
-        grounding.get_horizon_time(), grounding.get_consideration_count(),
-        grounding.get_horizon_count(), result_vector);
-    return std::make_shared<util::Grounding>(result);
+    // TODO compute_variable_map(); will be called by chase
+    // TODO check if all variables from head are found in body and generate maps
+    // and set is_existential_m
 }
 
 bool Rule::derive_conclusions(util::Timeline const &timeline,
                               util::Database const &database) {
     bool result = false;
-    auto head_predicate = head.get_predicate_vector().at(0);
-    std::vector<std::shared_ptr<util::Grounding>> head_facts;
     std::vector<std::shared_ptr<util::Grounding>> body_groundings =
         body.get_groundings(timeline);
-    for (auto const &body_grounding : body_groundings) {
-        // SNE: we only evaluate groundings derived at this current timepoint
-        // TODO I sould only get the ones derived at the cureent STEP
-        if (body_grounding->get_consideration_time() >= timeline.get_time()) {
-            auto head_grounding =
-                convert_to_head_grounding(head_predicate, *body_grounding);
-            head_facts.push_back(std::move(head_grounding));
+    evaluate_head(timeline, database, body_groundings);
+    return true;
+}
+
+void Rule::evaluate_head(
+    util::Timeline const &timeline, util::Database const &database,
+    std::vector<std::shared_ptr<util::Grounding>> const &body_facts) {
+    auto head_facts = body_facts; // do chase stuff here
+    evaluate_head_atoms(timeline, database, head_facts);
+}
+
+void Rule::evaluate_head_atoms(
+    util::Timeline const &timeline, util::Database const &database,
+    std::vector<std::shared_ptr<util::Grounding>> const &body_facts) {
+    for (auto head_atom : head_atoms) {
+        std::vector<std::shared_ptr<util::Grounding>> head_facts;
+        for (auto const &grounding : body_facts) {
+            auto head_fact = make_atom_fact(grounding, head_atom);
+            head_facts.push_back(head_fact);
+        }
+        if (!head_facts.empty()) {
+            head_atom->evaluate(timeline, database, head_facts);
         }
     }
-    bool is_body_satisfied = !head_facts.empty();
-    if (is_body_satisfied) {
-        result = head.evaluate(timeline, database, head_facts);
+}
+
+std::shared_ptr<util::Grounding>
+Rule::make_atom_fact(std::shared_ptr<util::Grounding> const &body_fact,
+                     formula::Formula *atom) const {
+    auto atom_variables = atom->get_variable_names();
+    auto predicate = atom->get_predicate_vector().at(0);
+    std::vector<std::string> atom_values;
+    for (auto const &var : atom_variables) {
+        auto position = body.get_variable_index(var);
+        auto const &value = body_fact->get_constant(position);
+        atom_values.push_back(value);
     }
-    return result;
+    return body_fact->new_pred_constvec(predicate, atom_values);
 }
-
-bool Rule::is_existential() const {
-    return head.get_type() == formula::FormulaType::EXISTENTIAL;
-}
-
-void Rule::reset_previous_step() { previous_step = 0; }
-
-void Rule::set_previous_step(size_t step) { previous_step = step; }
 
 } // namespace rule
 } // namespace laser

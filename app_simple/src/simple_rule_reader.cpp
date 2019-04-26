@@ -108,8 +108,7 @@ char SimpleRuleReader::parse_letter() {
         std::stringstream error_stream;
         error_stream << "Expected letter "
                      << " but actual caracter was [" << input_char
-                     << "], hex=" << std::hex << (uint16_t)input_char
-                     << ".";
+                     << "], hex=" << std::hex << (uint16_t)input_char << ".";
         std::string error_message = error_stream.str();
         syntax_error(error_message);
     }
@@ -206,23 +205,12 @@ laser::rule::Rule SimpleRuleReader::parse_rule() {
     skip_expected_char('=');
     auto body = parse_body();
     parse_eoln();
-    auto result = laser::rule::Rule(head, body);
+    auto result = laser::rule::Rule(body, head);
     return result;
 }
 
-laser::formula::Formula *SimpleRuleReader::parse_head() {
-    laser::formula::Formula *result;
-    skip_spaces();
-    if (is_next_char('E')) {
-        skip_next_char();
-        result = parse_existential_formula();
-    } else if (is_next_char('[')) {
-        skip_next_char();
-        result = parse_time_reference();
-    } else {
-        result = parse_predicate_atom();
-    }
-    return result;
+std::vector<laser::formula::Formula *> SimpleRuleReader::parse_head() {
+    return parse_formula_vector();
 }
 
 laser::formula::Formula *SimpleRuleReader::parse_body() {
@@ -423,33 +411,6 @@ laser::formula::Formula *SimpleRuleReader::parse_tuple_window() {
     auto child = parse_formula();
     uint64_t window_size = std::stoull(argument);
     return new laser::formula::TupleWindow(window_size, child);
-}
-
-laser::formula::Formula *SimpleRuleReader::parse_existential_formula() {
-    std::vector<std::string> argument_vector;
-    laser::formula::Formula *result;
-    laser::formula::Formula *child;
-    // parsing existential quantified variable list
-    skip_spaces();
-    skip_expected_char('(');
-    std::string argument = parse_identifier();
-    argument_vector.push_back(argument);
-    skip_spaces();
-    while (is_next_char(',')) {
-        skip_next_char();
-        skip_spaces();
-        std::string argument = parse_identifier();
-        argument_vector.push_back(argument);
-        skip_spaces();
-    }
-    skip_spaces();
-    skip_expected_char(')');
-    skip_spaces();
-    auto children = parse_formula_vector();
-    result = new laser::formula::Existential(std::move(argument_vector),
-                                             std::move(children));
-    // TODO check if argument_vector variables are also in children
-    return result;
 }
 
 std::vector<laser::formula::Formula *>

@@ -31,9 +31,9 @@ class Program {
     void reset_rules();
     bool evaluate_rule_vector(std::vector<rule::Rule> &rule_vector);
     bool evaluate_rule(rule::Rule &rule);
-    std::vector<std::shared_ptr<util::Grounding>> get_conclusions() const;
+    std::vector<std::shared_ptr<util::Grounding>> get_conclusions();
     void extract_conclusions(
-        rule::Rule const &rule,
+        rule::Rule &rule,
         std::vector<std::shared_ptr<util::Grounding>> &conclusions) const;
 
     // void do_evaluation_loop();

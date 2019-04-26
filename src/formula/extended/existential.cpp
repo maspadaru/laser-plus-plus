@@ -3,18 +3,18 @@
 namespace laser {
 namespace formula {
 
+Existential::Existential(std::vector<Formula *> children) {
+    // this->bound_variables = std::move(argument_vector);
+    // TODO generate bound variables
+    this->children = std::move(children);
+    init_variable_vectors();
+}
+
 Existential::~Existential() {
     for (auto child : children) {
         delete child;
     }
     children.clear();
-}
-
-Existential::Existential(std::vector<std::string> argument_vector,
-                         std::vector<Formula *> children) {
-    this->bound_variables = std::move(argument_vector);
-    this->children = children;
-    init_variable_vectors();
 }
 
 void Existential::init_variable_vectors() {
@@ -123,7 +123,7 @@ std::string Existential::generate_new_value(std::string const &var_name) {
     return result;
 }
 
-std::shared_ptr<util::Grounding> Existential::make_skolem(
+std::shared_ptr<util::Grounding> Existential::generate_chase_fact(
     std::shared_ptr<util::Grounding> const &body_grounding) {
     std::vector<std::string> child_values;
     std::vector<std::string> bound_values;
@@ -151,36 +151,64 @@ std::shared_ptr<util::Grounding> Existential::make_skolem(
     return body_grounding->new_constant_vector(child_values);
 }
 
-bool Existential::evaluate(
+bool Existential::is_valid_sne(
+    util::Timeline const &timeline,
+    std::shared_ptr<util::Grounding> grounding) const {
+    // SNE: we only evaluate groundings derived at this current timepoint
+    // checking ct >= because facts can be derived at future timepoints from
+    // TimeReference formulas in head of rules
+    // TODO I sould only get the ones derived at the cureent STEP
+    return grounding->get_consideration_time() >= timeline.get_time();
+}
+
+std::vector<std::shared_ptr<util::Grounding>> Existential::build_chase_facts(
+    util::Timeline const &timeline,
+    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
+    std::vector<std::shared_ptr<util::Grounding>> chase_facts;
+    for (auto const &body_grounding : facts) {
+        if (is_valid_sne(timeline, body_grounding)) {
+            auto chase_fact = generate_chase_fact(body_grounding);
+            chase_facts.push_back(chase_fact);
+        }
+    }
+    return chase_facts;
+}
+
+void Existential::evaluate_children(
     util::Timeline const &timeline, util::Database const &database,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
-    std::vector<std::shared_ptr<util::Grounding>> skolem_facts;
-    for (auto const &body_grounding : facts) {
-        auto skolem_grounding = make_skolem(body_grounding);
-        skolem_facts.push_back(skolem_grounding);
-    }
     for (auto child : children) {
         std::vector<std::shared_ptr<util::Grounding>> child_facts;
-        for (auto const &grounding : skolem_facts) {
+        for (auto const &grounding : facts) {
             auto child_fact = make_child_fact(grounding, child);
             child_facts.push_back(child_fact);
         }
-        child->evaluate(timeline, database, child_facts);
+        if (!child_facts.empty()) {
+            child->evaluate(timeline, database, child_facts);
+        }
     }
+}
+
+bool Existential::evaluate(
+    util::Timeline const &timeline, util::Database const &database,
+    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
+    auto chase_facts = build_chase_facts(timeline, facts);
+    evaluate_children(timeline, database, chase_facts);
     return true;
 }
 
-std::shared_ptr<util::Grounding> Existential::make_child_fact(
-    std::shared_ptr<util::Grounding> const &skolem_fact, Formula *child) const {
+std::shared_ptr<util::Grounding>
+Existential::make_child_fact(std::shared_ptr<util::Grounding> const &child_fact,
+                             Formula *child) const {
     auto child_variables = child->get_variable_names();
     auto predicate = child->get_predicate_vector().at(0);
     std::vector<std::string> child_values;
     for (auto const &var : child_variables) {
         auto position = child_variable_index.at(var);
-        auto const &value = skolem_fact->get_constant(position);
+        auto const &value = child_fact->get_constant(position);
         child_values.push_back(value);
     }
-    return skolem_fact->new_pred_constvec(predicate, child_values);
+    return child_fact->new_pred_constvec(predicate, child_values);
 }
 
 void Existential::expire_outdated_groundings(util::Timeline const &timeline) {

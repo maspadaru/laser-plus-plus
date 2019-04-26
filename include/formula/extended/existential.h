@@ -28,8 +28,19 @@ class Existential : public Formula {
     std::unordered_map<size_t, std::vector<std::string>> skolem_map;
     uint64_t null_value_count = 0;
 
+    void evaluate_children(
+        util::Timeline const &timeline, util::Database const &database,
+        std::vector<std::shared_ptr<util::Grounding>> const &facts);
+
+    bool is_valid_sne(util::Timeline const &timeline,
+                      std::shared_ptr<util::Grounding> grounding) const;
+
+    std::vector<std::shared_ptr<util::Grounding>> build_chase_facts(
+        util::Timeline const &timeline,
+        std::vector<std::shared_ptr<util::Grounding>> const &facts);
+
     std::shared_ptr<util::Grounding>
-    make_skolem(std::shared_ptr<util::Grounding> const &body_grounding);
+    generate_chase_fact(std::shared_ptr<util::Grounding> const &body_grounding);
 
     std::shared_ptr<util::Grounding>
     make_child_fact(std::shared_ptr<util::Grounding> const &skolem_fact,
@@ -43,14 +54,12 @@ class Existential : public Formula {
     make_index(std::vector<std::string> const &vector);
 
   public:
-    explicit Existential(std::vector<std::string> argument_vector,
-                         std::vector<Formula *> children);
+    explicit Existential(std::vector<Formula *> children);
     Existential() = default;
     ~Existential() override;
 
     Formula &create() const override;
     Formula &clone() const override;
-
     Formula &move() override;
 
     void set_head(bool is_head) override;

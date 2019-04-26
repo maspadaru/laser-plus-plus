@@ -5,7 +5,7 @@
 #include "test_framework.h"
 
 TEST(ExactTimeTest, ExactTimeBody) {
-    std::string stream_string = "1 14 "
+    std::string stream_string = "1 4 "
                                 "1 : b(1), b(2)\n"
                                 "2 : b(3)\n"
                                 "3 : b(4), b(5)\n"
@@ -19,16 +19,6 @@ TEST(ExactTimeTest, ExactTimeBody) {
     expected[2] = "2 -> a(2, 3)";
     expected[3] = "3 -> a(3, 4) a(3, 5)";
     expected[4] = "4 -> ";
-    expected[5] = "5 -> ";
-    expected[6] = "6 -> ";
-    expected[7] = "7 -> ";
-    expected[8] = "8 -> ";
-    expected[9] = "9 -> ";
-    expected[10] = "10 -> ";
-    expected[11] = "11 -> ";
-    expected[12] = "12 -> ";
-    expected[13] = "13 -> ";
-    expected[14] = "14 -> ";
 
     test_framework::run_test(stream_string, rule_string, expected);
 }

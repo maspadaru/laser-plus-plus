@@ -4,17 +4,25 @@ EXECUTABLE=testapp
 TEST_EXECUTABLE=run_test
 BENCHAPP_EXECUTABLE=benchapp
 
-build() {
+build_release() {
     mkdir -p cmake-build-release
     cd cmake-build-release
     cmake -DCMAKE_BUILD_TYPE=Release ..
     make
     cd ..
+}
+
+build_debug() {
     mkdir -p cmake-build-debug
     cd cmake-build-debug
     cmake -DCMAKE_CXX_FLAGS=-pg -DCMAKE_EXE_LINKER_FLAGS=-pg -DCMAKE_SHARED_LINKER_FLAGS=-pg -DCMAKE_BUILD_TYPE=Debug ..
     make
     cd ..
+}
+
+build() {
+    #build_release
+    build_debug
 }
 
 clean_up () {

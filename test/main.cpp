@@ -277,9 +277,9 @@ void test_recursive_complex() {
     run(name, stream_string, rule_string);
 }
 
-void test_exact_time_body() {
+void test_time_reference_body() {
     const std::string name = "Time Reference Body";
-    std::string stream_string = "1 14 "
+    std::string stream_string = "1 4 "
                                 "1 : b(1), b(2)\n"
                                 "2 : b(3)\n"
                                 "3 : b(4), b(5)\n"
@@ -288,7 +288,7 @@ void test_exact_time_body() {
     run(name, stream_string, rule_string);
 }
 
-void test_exact_time_handb() {
+void test_time_reference_handb() {
     const std::string name = "Time Reference head and body";
     std::string stream_string = "1 14 "
                                 "1 : b(1), b(2)\n"
@@ -299,7 +299,7 @@ void test_exact_time_handb() {
     run(name, stream_string, rule_string);
 }
 
-void test_exact_time_head() {
+void test_time_reference_head() {
     const std::string name = "Time Reference Head";
     std::string stream_string = "1 10 "
                                 "1 : b(1,x1), b(2, x1)\n"
@@ -310,7 +310,7 @@ void test_exact_time_head() {
     run(name, stream_string, rule_string);
 }
 
-void test_exact_time_recursive() {
+void test_time_reference_recursive() {
     const std::string name = "Time Reference Recursive";
     std::string stream_string =
         "1 10 "
@@ -620,12 +620,12 @@ int main() {
     // test_conjunction_box();
     // test_conjunction_corss_variables();
     // test_conjunction_sne();
-    test_recursive_simple();
+    //test_recursive_simple();
     // test_recursive_complex();
-    // test_exact_time_body();
-    // test_exact_time_handb();
-    // test_exact_time_head();
-    // test_exact_time_recursive();
+     test_time_reference_body();
+    // test_time_reference_handb();
+    // test_time_reference_head();
+    // test_time_reference_recursive();
     // test_tuple_window();
     // test_tuple_window_diamond();
     // test_existential_simple();

@@ -21,7 +21,6 @@
 #include <formula/extended/tuple_window.h>
 #include <formula/extended/conjunction.h>
 #include <formula/extended/time_reference.h>
-#include "formula/extended/existential.h"
 #include <util/format_exception.h>
 #include <util/read_exception.h>
 
@@ -77,7 +76,7 @@ private:
     // rules and formulas
     std::vector<laser::rule::Rule> parse_program();
     laser::rule::Rule parse_rule(); 
-    laser::formula::Formula* parse_head();
+    std::vector<laser::formula::Formula *> parse_head();
     laser::formula::Formula* parse_head_atom();
     laser::formula::Formula* parse_body();
     laser::formula::Formula* parse_formula();
@@ -96,7 +95,6 @@ private:
     laser::formula::Formula* parse_time_reference();
     laser::formula::Formula* parse_time_window();
     laser::formula::Formula* parse_tuple_window();
-    laser::formula::Formula* parse_existential_formula();
     std::vector<laser::formula::Formula *> parse_formula_vector(); 
 
 public:

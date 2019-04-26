@@ -64,8 +64,7 @@ bool Program::evaluate_rule_vector(std::vector<rule::Rule> &rule_vector) {
 bool Program::evaluate_rule(rule::Rule &rule) {
     rule.evaluate(timeline, database);
     rule.derive_conclusions(timeline, database);
-    auto &head = rule.get_head();
-    auto conclusions = head.get_conclusions_step(timeline);
+    auto conclusions = rule.get_conclusions_step(timeline);
     bool changed = !conclusions.empty();
     database.increment_step();
     auto step = database.get_step();
@@ -74,25 +73,24 @@ bool Program::evaluate_rule(rule::Rule &rule) {
     return changed;
 }
 
-std::vector<std::shared_ptr<util::Grounding>> Program::get_conclusions() const {
+std::vector<std::shared_ptr<util::Grounding>> Program::get_conclusions() {
     std::vector<std::shared_ptr<util::Grounding>> result;
-    for (auto const &rule : simple_rule_vector) {
+    for (auto &rule : simple_rule_vector) {
         extract_conclusions(rule, result);
     }
-    for (auto const &rule : existential_rule_vector) {
+    for (auto &rule : existential_rule_vector) {
         extract_conclusions(rule, result);
     }
     return result;
 }
 
 void Program::extract_conclusions(
-    rule::Rule const &rule,
+    rule::Rule &rule,
     std::vector<std::shared_ptr<util::Grounding>> &conclusions) const {
-    auto *head = &rule.get_head();
-    auto rule_conclusions = head->get_conclusions_timepoint(timeline);
-    conclusions.insert(conclusions.end(), 
-            make_move_iterator(rule_conclusions.begin()),
-            make_move_iterator(rule_conclusions.end()));
+    auto rule_conclusions = rule.get_conclusions_timepoint(timeline);
+    conclusions.insert(conclusions.end(),
+                       make_move_iterator(rule_conclusions.begin()),
+                       make_move_iterator(rule_conclusions.end()));
 }
 
 std::vector<std::shared_ptr<util::Grounding>>

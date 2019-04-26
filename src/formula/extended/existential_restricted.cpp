@@ -67,43 +67,6 @@ void ExistentialRestricted::init_variable_vectors() {
               std::back_inserter(atom_variables));
 }
 
-// void ExistentialRestricted::init_variable_vectors() {
-// std::set<std::string> child_variable_set;
-// std::set<std::string> atom_variable_set;
-// for (auto child : children) {
-// child->set_head(true);
-// auto variable_names = child->get_variable_names();
-// predicate_vector.push_back(child->get_predicate_vector()[0]);
-// std::copy(variable_names.begin(), variable_names.end(),
-// std::inserter(child_variable_set, child_variable_set.end()));
-// if (child->get_type() == FormulaType::TIME_REFERENCE) {
-//// Time variable is always the last
-// std::copy(
-// variable_names.begin(), variable_names.end() - 1,
-// std::inserter(atom_variable_set, atom_variable_set.end()));
-//} else {
-// std::copy(
-// variable_names.begin(), variable_names.end(),
-// std::inserter(atom_variable_set, atom_variable_set.end()));
-//}
-//}
-// std::copy(child_variable_set.begin(), child_variable_set.end(),
-// std::back_inserter(child_variables));
-// child_variable_index = make_index(child_variables);
-// bound_variable_index = make_index(bound_variables);
-// for (auto const &var_name : child_variables) {
-// if (bound_variable_index.count(var_name) == 0) {
-// free_variables.push_back(var_name);
-//}
-//}
-// free_variable_index = make_index(free_variables);
-// for (auto const &variable_name : bound_variables) {
-// atom_variable_set.erase(variable_name);
-//}
-// std::copy(atom_variable_set.begin(), atom_variable_set.end(),
-// std::back_inserter(atom_variables));
-//}
-
 std::unordered_map<std::string, int>
 ExistentialRestricted::make_index(std::vector<std::string> const &vector) {
     std::unordered_map<std::string, int> result;
@@ -208,25 +171,7 @@ void ExistentialRestricted::evaluate_database_conclusions(
     // head_formula.get_conclusions_step(timeline);
 }
 
-std::vector<std::string> ExistentialRestricted::make_head_vector(
-    std::vector<std::string> bound_values,
-    std::shared_ptr<util::Grounding> const &grounding) const {
-    std::vector<std::string> result;
-    for (auto const &var_name : child_variables) {
-        if (bound_variable_index.count(var_name) > 0) {
-            auto index = bound_variable_index.at(var_name);
-            auto value = bound_values.at(index);
-            result.push_back(value);
-        } else {
-            auto index = free_variable_index.at(var_name);
-            auto value = grounding->get_constant(index);
-            result.push_back(value);
-        }
-    }
-    return result;
-}
-
-std::shared_ptr<util::Grounding> ExistentialRestricted::generate_new_grounding(
+std::shared_ptr<util::Grounding> ExistentialRestricted::generate_chase_fact(
     std::shared_ptr<util::Grounding> const &body_grounding) {
     std::vector<std::string> child_values;
     std::vector<std::string> bound_values;
@@ -262,6 +207,7 @@ bool ExistentialRestricted::has_database_match(
 bool ExistentialRestricted::is_free_variable_match(
     std::shared_ptr<util::Grounding> const &db_grounding,
     std::shared_ptr<util::Grounding> const &input_grounding) const {
+    // TODO should I check all annotations or is ht enough?
     for (auto const &var_name : atom_variables) {
         auto input_index = free_variable_index.at(var_name);
         auto const &input_value = input_grounding->get_constant(input_index);
@@ -271,7 +217,6 @@ bool ExistentialRestricted::is_free_variable_match(
             return false;
         }
     }
-    // TODO should I check all annotations?
     // return false if there is a match but the new grounding expires later
     return input_grounding->get_horizon_time() <=
            db_grounding->get_horizon_time();
@@ -285,8 +230,8 @@ ExistentialRestricted::build_chase_facts(
     auto database_facts = head_formula->get_conclusions_timepoint(timeline);
     for (auto const &body_grounding : facts) {
         if (!has_database_match(database_facts, body_grounding)) {
-            auto chase_grounding = generate_new_grounding(body_grounding);
-            chase_facts.push_back(chase_grounding);
+            auto chase_fact = generate_chase_fact(body_grounding);
+            chase_facts.push_back(chase_fact);
         }
     }
     return chase_facts;
