@@ -4,9 +4,12 @@
 #include <iostream>
 #include <memory>
 #include <utility>
+#include <set>
 
+#include "rule/share.h"
 #include "rule/chase_filter.h"
 #include "rule/filter/oblivious_filter.h"
+#include "rule/filter/skolem_filter.h"
 #include "formula/formula.h"
 #include "formula/formula_type.h"
 #include "util/database.h"
@@ -22,7 +25,7 @@ class Rule {
     formula::Formula &body;
     std::vector<formula::Formula *> head_atoms;
     ChaseFilter* chase_filter;
-
+    std::unordered_map<std::string, int> head_variable_index;
     size_t previous_step = 0;
 
     std::shared_ptr<util::Grounding>

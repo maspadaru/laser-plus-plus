@@ -17,22 +17,23 @@ Rule::~Rule() {
     head_atoms.clear();
 }
 
-Rule::Rule(Rule const &other)
-    : body(other.body.clone()) {
+Rule::Rule(Rule const &other) : body(other.body.clone()) {
     chase_filter = other.chase_filter;
     head_atoms = other.head_atoms;
+    head_variable_index = other.head_variable_index;
 }
 
-Rule::Rule(Rule &&other) noexcept
-    : body(other.body.move()) {
+Rule::Rule(Rule &&other) noexcept : body(other.body.move()) {
     chase_filter = std::move(other.chase_filter);
     head_atoms = std::move(other.head_atoms);
+    head_variable_index = std::move(other.head_variable_index);
 }
 
 Rule &Rule::operator=(Rule const &other) {
     this->body = other.body.clone();
     this->chase_filter = other.chase_filter;
-    this->head_atoms = other.head_atoms;
+    head_atoms = other.head_atoms;
+    this->head_variable_index = other.head_variable_index;
     return *this;
 }
 
@@ -40,12 +41,11 @@ Rule &Rule::operator=(Rule &&other) noexcept {
     this->body = other.body.move();
     this->chase_filter = std::move(other.chase_filter);
     this->head_atoms = std::move(other.head_atoms);
+    head_variable_index = std::move(other.head_variable_index);
     return *this;
 }
 
-bool Rule::is_existential() const {
-    return is_existential_m;
-}
+bool Rule::is_existential() const { return is_existential_m; }
 
 void Rule::reset_previous_step() { previous_step = 0; }
 
@@ -91,11 +91,34 @@ void Rule::evaluate(util::Timeline const &timeline,
 }
 
 void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
-    // TODO check if all variables from head are found in body and generate maps
-    // and set is_existential_m
-    //
-    chase_filter = new ObliviousFilter();
-    chase_filter->init(head_atoms);
+    std::vector<std::string> free_variables = body.get_variable_names();
+    std::set<std::string> free_variable_set(free_variables.begin(),
+                                            free_variables.end());
+    std::vector<std::string> head_variables;
+    head_variables = free_variables;
+    std::vector<std::string> bound_variables;
+    std::set<std::string> bound_variable_set;
+    for (auto atom : head_atoms) {
+        auto const &variable_names = atom->get_variable_names();
+        for (auto const &var_name : variable_names) {
+            if (free_variable_set.count(var_name) == 0) {
+                bound_variable_set.insert(var_name);
+            }
+        }
+    }
+    if(bound_variable_set.empty()) {
+        is_existential_m = false;
+        chase_filter = new ObliviousFilter();
+    } else {
+        is_existential_m = true;
+        std::copy(bound_variable_set.begin(), bound_variable_set.end(),
+              std::back_inserter(bound_variables));
+        head_variables.insert(head_variables.end(),
+            bound_variables.begin(), bound_variables.end());
+        chase_filter = new SkolemFilter();
+        chase_filter->init(head_atoms);
+    }
+    head_variable_index = rule::share::make_index(head_variables);
 }
 
 void Rule::init(std::vector<formula::Formula *> head_atoms) {
@@ -119,7 +142,7 @@ void Rule::evaluate_head(
     util::Timeline const &timeline, util::Database const &database,
     std::vector<std::shared_ptr<util::Grounding>> const &body_facts) {
     chase_filter->update(timeline, database);
-    auto head_facts = chase_filter->build_chase_facts(timeline, body_facts); 
+    auto head_facts = chase_filter->build_chase_facts(timeline, body_facts);
     evaluate_head_atoms(timeline, database, head_facts);
 }
 
@@ -145,7 +168,8 @@ Rule::make_atom_fact(std::shared_ptr<util::Grounding> const &body_fact,
     auto predicate = atom->get_predicate_vector().at(0);
     std::vector<std::string> atom_values;
     for (auto const &var : atom_variables) {
-        auto position = body.get_variable_index(var);
+        auto position = head_variable_index.at(var);
+        //auto position = body.get_variable_index(var);
         auto const &value = body_fact->get_constant(position);
         atom_values.push_back(value);
     }
