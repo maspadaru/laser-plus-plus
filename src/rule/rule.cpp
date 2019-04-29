@@ -15,33 +15,40 @@ Rule::~Rule() {
         delete head_atom;
     }
     head_atoms.clear();
+    delete chase_filter;
 }
 
 Rule::Rule(Rule const &other) : body(other.body.clone()) {
-    chase_filter = other.chase_filter;
+    // body = other.body.clone();
+    //TODO if I uncomment the line above tests will fail for conjunction.
+    // See why clone and move are not properly implmemented in conjunction.
     head_atoms = other.head_atoms;
+    chase_filter = other.chase_filter->clone();
     head_variable_index = other.head_variable_index;
 }
 
 Rule::Rule(Rule &&other) noexcept : body(other.body.move()) {
-    chase_filter = std::move(other.chase_filter);
+    // body = other.body.move();
+    //TODO if I uncomment the line above tests will fail for conjunction.
+    // See why clone and move are not properly implmemented in conjunction.
     head_atoms = std::move(other.head_atoms);
+    chase_filter = other.chase_filter->move();
     head_variable_index = std::move(other.head_variable_index);
 }
 
 Rule &Rule::operator=(Rule const &other) {
     this->body = other.body.clone();
-    this->chase_filter = other.chase_filter;
-    head_atoms = other.head_atoms;
+    this->head_atoms = other.head_atoms;
+    this->chase_filter = other.chase_filter->clone();
     this->head_variable_index = other.head_variable_index;
     return *this;
 }
 
 Rule &Rule::operator=(Rule &&other) noexcept {
     this->body = other.body.move();
-    this->chase_filter = std::move(other.chase_filter);
     this->head_atoms = std::move(other.head_atoms);
-    head_variable_index = std::move(other.head_variable_index);
+    this->chase_filter = other.chase_filter->move();
+    this->head_variable_index = std::move(other.head_variable_index);
     return *this;
 }
 
@@ -108,14 +115,17 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
     }
     if (bound_variable_set.empty()) {
         is_existential_m = false;
-        chase_filter = new ObliviousFilter();
+        //chase_filter = new ObliviousFilter();
+        chase_filter = new RestrictedFilter();
+        chase_filter->init(head_atoms, head_variables, free_variables,
+                           bound_variables);
     } else {
         is_existential_m = true;
         std::copy(bound_variable_set.begin(), bound_variable_set.end(),
                   std::back_inserter(bound_variables));
         head_variables.insert(head_variables.end(), bound_variables.begin(),
                               bound_variables.end());
-        chase_filter = new SkolemFilter();
+        chase_filter = new RestrictedFilter();
         chase_filter->init(head_atoms, head_variables, free_variables,
                            bound_variables);
     }

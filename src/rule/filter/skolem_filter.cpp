@@ -10,11 +10,25 @@ ChaseFilter *SkolemFilter::create() const {
 
 ChaseFilter *SkolemFilter::clone() const {
     auto result = new SkolemFilter();
+    result->head_variables = this->head_variables;
+    result->free_variables = this->free_variables;
+    result->bound_variables = this->bound_variables;
+    result->free_variable_index = this->free_variable_index;
+    result->bound_variable_index = this->bound_variable_index;
+    result->skolem_map = this->skolem_map;
+    result->null_value_count = this->null_value_count;
     return result;
 }
 
 ChaseFilter *SkolemFilter::move() {
     auto result = new SkolemFilter();
+    result->head_variables = std::move(this->head_variables);
+    result->free_variables = std::move(this->free_variables);
+    result->bound_variables = std::move(this->bound_variables);
+    result->free_variable_index = std::move(this->free_variable_index);
+    result->bound_variable_index = std::move(this->bound_variable_index);
+    result->skolem_map = std::move(this->skolem_map);
+    result->null_value_count = this->null_value_count;
     return result;
 }
 
@@ -52,7 +66,7 @@ std::shared_ptr<util::Grounding> SkolemFilter::generate_chase_fact(
     std::shared_ptr<util::Grounding> const &input_fact) {
     std::vector<std::string> child_values;
     std::vector<std::string> bound_values;
-    //TODO this should not use hash
+    // TODO this should not use hash
     auto key = input_fact->get_hash();
     if (skolem_map.count(key) > 0) {
         bound_values = skolem_map.at(key);

@@ -609,8 +609,8 @@ void test_conjunction_head_timeref() {
 }
 
 int main() {
-    // test_simple();
-    // test_atoms();
+    //test_simple();
+    //test_atoms();
     // test_diamond();
     // test_time_window();
     // test_box();
@@ -620,15 +620,15 @@ int main() {
     // test_conjunction_box();
     // test_conjunction_corss_variables();
     // test_conjunction_sne();
-    //test_recursive_simple();
+    // test_recursive_simple();
     // test_recursive_complex();
-     //test_time_reference_body();
+    // test_time_reference_body();
     // test_time_reference_handb();
     // test_time_reference_head();
     // test_time_reference_recursive();
     // test_tuple_window();
-    // test_tuple_window_diamond();
-     test_existential_simple();
+     test_tuple_window_diamond();
+    // test_existential_simple();
     // // // // test_existential_loop();
     // test_existential_time_reference_head();
     // test_existential_time_reference_body1();
@@ -641,6 +641,6 @@ int main() {
     // test_existential_restrictive_conjunction_head_paper();
     // test_existential_restrictive_conjunction_head_swap();
     // test_existential_restrictive_window();
-    //test_conjunction_head();
-    //test_conjunction_head_timeref();
+    // test_conjunction_head();
+    // test_conjunction_head_timeref();
 }
