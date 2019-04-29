@@ -22,8 +22,6 @@ namespace formula {
 class Formula {
   private:
   public:
-    // constructors / destructors
-
     virtual ~Formula() = default;
 
     virtual Formula &create() const = 0; // Virtual constructor (creation)
@@ -37,8 +35,6 @@ class Formula {
      */
     virtual Formula &move() = 0;
 
-    // getters / setters
-
     virtual void set_head(bool is_head) = 0;
 
     virtual bool is_head() const = 0;
@@ -46,8 +42,6 @@ class Formula {
     virtual FormulaType get_type() const = 0;
 
     virtual std::vector<std::string> get_predicate_vector() const = 0;
-
-    // methods
 
     virtual void add_child(formula::Formula *child) = 0;
 

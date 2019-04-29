@@ -16,6 +16,7 @@ file(GLOB LASER_SOURCES
         "src/formula/extended/*.cpp"
         "src/util/*.cpp"
         "src/rule/*.cpp"
+        "src/rule/filter/*.cpp"
         "src/core/*.cpp"
         "src/example/*.cpp"
         )

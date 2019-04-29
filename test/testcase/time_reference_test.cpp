@@ -4,7 +4,7 @@
 
 #include "test_framework.h"
 
-TEST(ExactTimeTest, ExactTimeBody) {
+TEST(TimeReferenceTest, TimeReferenceBody) {
     std::string stream_string = "1 4 "
                                 "1 : b(1), b(2)\n"
                                 "2 : b(3)\n"
@@ -23,7 +23,7 @@ TEST(ExactTimeTest, ExactTimeBody) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExactTimeTest, ExactTimeHead) {
+TEST(TimeReferenceTest, TimeReferenceHead) {
 
     std::string stream_string = "1 10 "
                                 "1 : b(1,x1), b(2, x1)\n"
@@ -53,7 +53,7 @@ TEST(ExactTimeTest, ExactTimeHead) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExactTimeTest, ExactTimeHeadAndBody) {
+TEST(TimeReferenceTest, TimeReferenceHeadAndBody) {
 
     std::string stream_string = "1 14 "
                                 "1 : b(1), b(2)\n"
@@ -83,7 +83,7 @@ TEST(ExactTimeTest, ExactTimeHeadAndBody) {
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(ExactTimeTest, ExactTimeRecursive) {
+TEST(TimeReferenceTest, TimeReferenceRecursive) {
 
     std::string stream_string =
         "1 10 "

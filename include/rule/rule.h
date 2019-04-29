@@ -5,6 +5,8 @@
 #include <memory>
 #include <utility>
 
+#include "rule/chase_filter.h"
+#include "rule/filter/oblivious_filter.h"
 #include "formula/formula.h"
 #include "formula/formula_type.h"
 #include "util/database.h"
@@ -19,19 +21,15 @@ class Rule {
     bool is_existential_m = false;
     formula::Formula &body;
     std::vector<formula::Formula *> head_atoms;
+    ChaseFilter* chase_filter;
 
     size_t previous_step = 0;
-
-    /**
-     * Maps variables positions in the head's Grounding Table to positions in
-     * the body's Grounding Table.
-     * E.g.: p(X, Y) :- q(Y, Z, X) -> { [0, 2], [1, 0] }
-     */
-    std::unordered_map<size_t, size_t> variable_map;
 
     std::shared_ptr<util::Grounding>
     convert_to_head_grounding(std::string const &head_predicate,
                               util::Grounding const &grounding) const;
+        
+    void init_chase(std::vector<formula::Formula *> const &head_atoms); 
 
     void init(std::vector<formula::Formula *> head_atoms);
 

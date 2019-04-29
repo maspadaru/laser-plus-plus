@@ -1,6 +1,3 @@
-//
-// Created by mike on 6/15/18.
-//
 #ifndef LASER_FORMULA_EXTENDED_ATOM_H
 #define LASER_FORMULA_EXTENDED_ATOM_H
 
@@ -66,8 +63,6 @@ class Atom : public Formula {
     std::vector<std::shared_ptr<util::Grounding>> get_conclusion_set();
 
   public:
-    // constructors & destructors
-
     Atom() = default;
 
     explicit Atom(std::string predicate);
@@ -81,8 +76,6 @@ class Atom : public Formula {
     Formula &clone() const override;
     Formula &move() override;
 
-    // getters & setters
-
     FormulaType get_type() const override;
 
     std::vector<std::string> get_predicate_vector() const override;
@@ -90,8 +83,6 @@ class Atom : public Formula {
     void set_head(bool is_head) override;
 
     bool is_head() const override;
-
-    // methods
 
     std::vector<std::string> const &get_variable_names() const override;
 

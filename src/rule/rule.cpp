@@ -19,26 +19,26 @@ Rule::~Rule() {
 
 Rule::Rule(Rule const &other)
     : body(other.body.clone()) {
-    variable_map = other.variable_map;
+    chase_filter = other.chase_filter;
     head_atoms = other.head_atoms;
 }
 
 Rule::Rule(Rule &&other) noexcept
     : body(other.body.move()) {
-    variable_map = std::move(other.variable_map);
+    chase_filter = std::move(other.chase_filter);
     head_atoms = std::move(other.head_atoms);
 }
 
 Rule &Rule::operator=(Rule const &other) {
     this->body = other.body.clone();
-    this->variable_map = other.variable_map;
+    this->chase_filter = other.chase_filter;
     this->head_atoms = other.head_atoms;
     return *this;
 }
 
 Rule &Rule::operator=(Rule &&other) noexcept {
     this->body = other.body.move();
-    this->variable_map = std::move(other.variable_map);
+    this->chase_filter = std::move(other.chase_filter);
     this->head_atoms = std::move(other.head_atoms);
     return *this;
 }
@@ -90,14 +90,20 @@ void Rule::evaluate(util::Timeline const &timeline,
     body.evaluate(timeline, database, facts);
 }
 
+void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
+    // TODO check if all variables from head are found in body and generate maps
+    // and set is_existential_m
+    //
+    chase_filter = new ObliviousFilter();
+    chase_filter->init(head_atoms);
+}
+
 void Rule::init(std::vector<formula::Formula *> head_atoms) {
+    init_chase(head_atoms);
     this->head_atoms = std::move(head_atoms);
     for (auto *head_atom : this->head_atoms) {
         head_atom->set_head(true);
     }
-    // TODO compute_variable_map(); will be called by chase
-    // TODO check if all variables from head are found in body and generate maps
-    // and set is_existential_m
 }
 
 bool Rule::derive_conclusions(util::Timeline const &timeline,
@@ -112,7 +118,8 @@ bool Rule::derive_conclusions(util::Timeline const &timeline,
 void Rule::evaluate_head(
     util::Timeline const &timeline, util::Database const &database,
     std::vector<std::shared_ptr<util::Grounding>> const &body_facts) {
-    auto head_facts = body_facts; // do chase stuff here
+    chase_filter->update(timeline, database);
+    auto head_facts = chase_filter->build_chase_facts(timeline, body_facts); 
     evaluate_head_atoms(timeline, database, head_facts);
 }
 

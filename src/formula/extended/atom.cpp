@@ -1,13 +1,7 @@
-//
-// Created by mike on 6/15/18.
-//
-
 #include "formula/extended/atom.h"
 
 namespace laser {
 namespace formula {
-
-// constructors & destructors
 
 Atom::Atom(std::string predicate) { this->predicate = std::move(predicate); }
 
@@ -80,8 +74,6 @@ Formula &Atom::move() {
     return *result;
 }
 
-// getters & setters
-
 FormulaType Atom::get_type() const { return this->type; }
 
 std::vector<std::string> Atom::get_predicate_vector() const {
@@ -97,8 +89,6 @@ std::vector<std::string> const &Atom::get_variable_names() const {
 void Atom::set_head(bool is_head) { is_head_m = is_head; }
 
 bool Atom::is_head() const { return is_head_m; }
-
-// methods
 
 size_t Atom::get_number_of_variables() const {
     return grounding_table.get_number_of_variables();
