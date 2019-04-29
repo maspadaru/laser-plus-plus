@@ -19,21 +19,19 @@ Rule::~Rule() {
 }
 
 Rule::Rule(Rule const &other) : body(other.body.clone()) {
-    // body = other.body.clone();
-    //TODO if I uncomment the line above tests will fail for conjunction.
-    // See why clone and move are not properly implmemented in conjunction.
     head_atoms = other.head_atoms;
     chase_filter = other.chase_filter->clone();
     head_variable_index = other.head_variable_index;
+    is_existential_m = other.is_existential_m; 
+    previous_step = other.previous_step;
 }
 
 Rule::Rule(Rule &&other) noexcept : body(other.body.move()) {
-    // body = other.body.move();
-    //TODO if I uncomment the line above tests will fail for conjunction.
-    // See why clone and move are not properly implmemented in conjunction.
     head_atoms = std::move(other.head_atoms);
     chase_filter = other.chase_filter->move();
     head_variable_index = std::move(other.head_variable_index);
+    is_existential_m = other.is_existential_m; 
+    previous_step = other.previous_step;
 }
 
 Rule &Rule::operator=(Rule const &other) {
@@ -41,6 +39,8 @@ Rule &Rule::operator=(Rule const &other) {
     this->head_atoms = other.head_atoms;
     this->chase_filter = other.chase_filter->clone();
     this->head_variable_index = other.head_variable_index;
+    this->is_existential_m = other.is_existential_m; 
+    this->previous_step = other.previous_step;
     return *this;
 }
 
@@ -49,6 +49,8 @@ Rule &Rule::operator=(Rule &&other) noexcept {
     this->head_atoms = std::move(other.head_atoms);
     this->chase_filter = other.chase_filter->move();
     this->head_variable_index = std::move(other.head_variable_index);
+    this->is_existential_m = other.is_existential_m; 
+    this->previous_step = other.previous_step;
     return *this;
 }
 
@@ -83,6 +85,7 @@ Rule::get_conclusions_timepoint(util::Timeline const &timeline) {
 void Rule::expire_outdated_groundings(util::Timeline const &timeline) {
     expire_head_groundings(timeline);
     body.expire_outdated_groundings(timeline);
+    chase_filter->expire_outdated_groundings(timeline);
 }
 
 void Rule::expire_head_groundings(util::Timeline const &timeline) {
@@ -115,10 +118,7 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
     }
     if (bound_variable_set.empty()) {
         is_existential_m = false;
-        //chase_filter = new ObliviousFilter();
-        chase_filter = new RestrictedFilter();
-        chase_filter->init(head_atoms, head_variables, free_variables,
-                           bound_variables);
+        chase_filter = new ObliviousFilter();
     } else {
         is_existential_m = true;
         std::copy(bound_variable_set.begin(), bound_variable_set.end(),
@@ -126,6 +126,7 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
         head_variables.insert(head_variables.end(), bound_variables.begin(),
                               bound_variables.end());
         chase_filter = new RestrictedFilter();
+        //chase_filter = new SkolemFilter();
         chase_filter->init(head_atoms, head_variables, free_variables,
                            bound_variables);
     }

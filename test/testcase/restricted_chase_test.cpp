@@ -12,7 +12,7 @@ TEST(RestrictiveChaseTest, Simple) {
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
 
-    std::string rule_string = "E(a, b) p(a, Z, b, X, Z) := q(X, Y, Z)\n";
+    std::string rule_string = "p(a, Z, b, X, Z) := q(X, Y, Z)\n";
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -32,9 +32,9 @@ TEST(RestrictiveChaseTest, Loop) {
                                 "3 : \n"
                                 "4 : \n";
 
-    std::string rule_string = "E(v) hasPart(X, v) := Bicycle(X)\n"
+    std::string rule_string = "hasPart(X, v) := Bicycle(X)\n"
                               "Wheel(V) := hasPart(X, V) && Bicycle(X)\n"
-                              "E(w) properPartOf(X, w) := Wheel(X)\n"
+                              "properPartOf(X, w) := Wheel(X)\n"
                               "Bicycle(W) := properPartOf(X, W) && Wheel(X)\n"
                               "partOf(X, Y) := properPartOf(X, Y) \n"
                               "hasPart(X, Y) := partOf(Y, X) \n"
@@ -60,7 +60,7 @@ TEST(RestrictiveChaseTest, TimeRefHead) {
                                 "4 : \n";
 
     std::string rule_string = 
-        "E(alert)[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
+        "[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
                     "&& [$, 100] [D] problem(SG) \n";
 
     std::vector<std::string> expected(15);
@@ -85,7 +85,7 @@ TEST(RestrictiveChaseTest, TimeRefBody1) {
     std::string rule_string = 
         "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
         "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-        "E(b) hasFlat(b, W, T) := exploded(W) && [$, 100] [D] [@, T] Wheel(W) \n";
+        "hasFlat(b, W, T) := exploded(W) && [$, 100] [D] [@, T] Wheel(W) \n";
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -109,7 +109,7 @@ TEST(RestrictiveChaseTest, TimeRefBody2) {
     std::string rule_string = 
         "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
         "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-        "E(b) hasFlat(b, W, T) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
+        "hasFlat(b, W, T) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -133,7 +133,7 @@ TEST(RestrictiveChaseTest, TimeRefHandB) {
     std::string rule_string = 
         "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
         "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-        "E(b) [@, T] hasFlat(b, W) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
+        "[@, T] hasFlat(b, W) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -152,7 +152,7 @@ TEST(RestrictiveChaseTest, ConjunctionTwo) {
                                 "2 : q(x2, y2, z2)\n"
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
-    std::string rule_string = "E(a, b) p(a, X) && r(b, Z) := q(X, Y, Z)\n";
+    std::string rule_string = "p(a, X) && r(b, Z) := q(X, Y, Z)\n";
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -171,7 +171,7 @@ TEST(RestrictiveChaseTest, ConjunctionThree) {
                                 "2 : q(x2, y2, z2)\n"
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
-    std::string rule_string = "E(a, b) p(a, X) && r(b, Z) && s(a, b) := q(X, Y, Z)\n";
+    std::string rule_string = "p(a, X) && r(b, Z) && s(a, b) := q(X, Y, Z)\n";
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -190,8 +190,8 @@ TEST(RestrictiveChaseTest, RestrictiveSimple) {
                                 "2 : s(x2, y2)\n"
                                 "3 : q(x3), s(x3, y3)\n"
                                 "4 : \n";
-    std::string rule_string = "E(z) p(X, z) := q(X)\n"
-                              "p (X, Y) := s(X, Y) \n";
+    std::string rule_string = "p(X, z) := q(X)\n"
+                              "p(X, Y) := s(X, Y) \n";
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -210,7 +210,7 @@ TEST(RestrictiveChaseTest, RestrictiveConjunctionBody) {
                                 "2 : s(x2, y2)\n"
                                 "3 : q(x3), s(x3, y3)\n"
                                 "4 : q(x4), s(x4, y4), t(x4, y4, z4)\n";
-    std::string rule_string = "E(z) r(X, Y, z)  := p(X, Y) && q(X)\n"
+    std::string rule_string = "r(X, Y, z)  := p(X, Y) && q(X)\n"
                               "p (X, Y) := s(X, Y) \n"
                               "r(X, Y, Z) := t(X, Y, Z)";
 
@@ -242,8 +242,8 @@ TEST(RestrictiveChaseTest, RestrictiveConjunctionHeadPaper) {
                                 "2 : \n";
 
     std::string rule_string = 
-        "E(v) hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
-        "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+        "hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
+        "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
         "partOf(X, Y) := properPartOf(X, Y)\n"
         "partOf(Y, X) := hasPart(X, Y)\n"
         "hasPart(Y, X) := partOf(X, Y)\n";
@@ -265,8 +265,8 @@ TEST(RestrictiveChaseTest, RestrictiveConjunctionHeadSwap) {
                                 "2 : \n";
 
     std::string rule_string = 
-        "E(v) Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
-        "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+        "Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
+        "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
         "partOf(X, Y) := properPartOf(X, Y)\n"
         "partOf(Y, X) := hasPart(X, Y)\n"
         "hasPart(Y, X) := partOf(X, Y)\n";
@@ -287,7 +287,7 @@ TEST(RestrictiveChaseTest, RestrictiveWindow) {
                                 "2 : q(x2)\n"
                                 "3 : q(x1)\n"
                                 "4 : q(x4)\n";
-    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
+    std::string rule_string = "p(X, z)  := q(X)\n"
                               "p (X, Y) := [$, 2] [D] s(X, Y) \n";
 
     std::vector<std::string> expected(15);

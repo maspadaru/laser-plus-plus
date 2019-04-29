@@ -71,6 +71,8 @@ class RestrictedFilter : public ChaseFilter {
     build_chase_facts(util::Timeline const &timeline,
                       std::vector<std::shared_ptr<util::Grounding>> const
                           &input_facts) override;
+
+    void expire_outdated_groundings(util::Timeline const &timeline) override;
 };
 
 } // namespace rule

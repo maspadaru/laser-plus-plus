@@ -609,8 +609,8 @@ void test_conjunction_head_timeref() {
 }
 
 int main() {
-    //test_simple();
-    //test_atoms();
+    // test_simple();
+    // test_atoms();
     // test_diamond();
     // test_time_window();
     // test_box();
@@ -627,13 +627,13 @@ int main() {
     // test_time_reference_head();
     // test_time_reference_recursive();
     // test_tuple_window();
-     test_tuple_window_diamond();
+    // test_tuple_window_diamond();
     // test_existential_simple();
     // // // // test_existential_loop();
     // test_existential_time_reference_head();
     // test_existential_time_reference_body1();
     // test_existential_time_reference_body2();
-    // test_existential_time_reference_handb();
+     test_existential_time_reference_handb();
     // test_existential_conjunction_two();
     // test_existential_conjunction_three();
     // test_existential_restrictive_simple();

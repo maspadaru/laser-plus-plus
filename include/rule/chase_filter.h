@@ -4,10 +4,10 @@
 #include <memory>
 #include <vector>
 
+#include "formula/formula.h"
 #include "util/database.h"
 #include "util/grounding.h"
 #include "util/timeline.h"
-#include "formula/formula.h"
 
 namespace laser {
 namespace rule {
@@ -24,9 +24,9 @@ class ChaseFilter {
     virtual ChaseFilter *move() = 0;
 
     virtual void init(std::vector<formula::Formula *> const &head_atoms,
-              std::vector<std::string> const &head_variables,
-              std::vector<std::string> const &free_variables,
-              std::vector<std::string> const &bound_variables) = 0;
+                      std::vector<std::string> const &head_variables,
+                      std::vector<std::string> const &free_variables,
+                      std::vector<std::string> const &bound_variables) = 0;
 
     virtual void update(util::Timeline const &timeline,
                         util::Database const &database) = 0;
@@ -34,10 +34,11 @@ class ChaseFilter {
     virtual std::vector<std::shared_ptr<util::Grounding>> build_chase_facts(
         util::Timeline const &timeline,
         std::vector<std::shared_ptr<util::Grounding>> const &input_facts) = 0;
-    
+
+    virtual void expire_outdated_groundings(util::Timeline const &timeline) = 0;
 };
 
 } // namespace rule
-} // namespace laser 
+} // namespace laser
 
 #endif // LASER_RULE_CHASE_FILTER_H

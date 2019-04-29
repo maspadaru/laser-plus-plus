@@ -178,5 +178,10 @@ void RestrictedFilter::init_free_head_variables(
               std::back_inserter(free_head_variables));
 }
 
+void RestrictedFilter::expire_outdated_groundings(
+        util::Timeline const &timeline) {
+    head_formula->expire_outdated_groundings(timeline);
+}
+
 } // namespace rule
 } // namespace laser

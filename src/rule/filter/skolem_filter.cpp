@@ -104,5 +104,8 @@ std::string SkolemFilter::generate_new_value(std::string const &var_name) {
     return result;
 }
 
+void SkolemFilter::expire_outdated_groundings(
+    util::Timeline const &timeline) {}
+
 } // namespace rule
 } // namespace laser
