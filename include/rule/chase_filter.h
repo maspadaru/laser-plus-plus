@@ -23,7 +23,10 @@ class ChaseFilter {
     virtual ChaseFilter *clone() const = 0;  // Virtual constructor (copying)
     virtual ChaseFilter *move() = 0;
 
-    virtual void init(std::vector<formula::Formula *> const &head_atoms) = 0;
+    virtual void init(std::vector<formula::Formula *> const &head_atoms,
+              std::vector<std::string> const &head_variables,
+              std::vector<std::string> const &free_variables,
+              std::vector<std::string> const &bound_variables) = 0;
 
     virtual void update(util::Timeline const &timeline,
                         util::Database const &database) = 0;

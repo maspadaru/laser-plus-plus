@@ -1,5 +1,5 @@
-#ifndef LASER_RULE_SHARE_H
-#define LASER_RULE_SHARE_H
+#ifndef LASER_RULE_SHARED_H
+#define LASER_RULE_SHARED_H
 
 #include <cstdint>
 #include <memory>
@@ -10,7 +10,7 @@
 
 namespace laser {
 namespace rule {
-namespace share {
+namespace shared {
 
 bool is_valid_sne(uint64_t now,
                   std::shared_ptr<util::Grounding> const &grounding);
@@ -18,8 +18,8 @@ bool is_valid_sne(uint64_t now,
 std::unordered_map<std::string, int>
 make_index(std::vector<std::string> const &vector);
 
-} // namespace share
+} // namespace shared
 } // namespace rule
 } // namespace laser
 
-#endif // LASER_RULE_SHARE_H
+#endif // LASER_RULE_SHARED_H

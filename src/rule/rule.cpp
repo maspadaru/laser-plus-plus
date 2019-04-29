@@ -106,19 +106,20 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
             }
         }
     }
-    if(bound_variable_set.empty()) {
+    if (bound_variable_set.empty()) {
         is_existential_m = false;
         chase_filter = new ObliviousFilter();
     } else {
         is_existential_m = true;
         std::copy(bound_variable_set.begin(), bound_variable_set.end(),
-              std::back_inserter(bound_variables));
-        head_variables.insert(head_variables.end(),
-            bound_variables.begin(), bound_variables.end());
+                  std::back_inserter(bound_variables));
+        head_variables.insert(head_variables.end(), bound_variables.begin(),
+                              bound_variables.end());
         chase_filter = new SkolemFilter();
-        chase_filter->init(head_atoms);
+        chase_filter->init(head_atoms, head_variables, free_variables,
+                           bound_variables);
     }
-    head_variable_index = rule::share::make_index(head_variables);
+    head_variable_index = rule::shared::make_index(head_variables);
 }
 
 void Rule::init(std::vector<formula::Formula *> head_atoms) {
@@ -169,7 +170,7 @@ Rule::make_atom_fact(std::shared_ptr<util::Grounding> const &body_fact,
     std::vector<std::string> atom_values;
     for (auto const &var : atom_variables) {
         auto position = head_variable_index.at(var);
-        //auto position = body.get_variable_index(var);
+        // auto position = body.get_variable_index(var);
         auto const &value = body_fact->get_constant(position);
         atom_values.push_back(value);
     }

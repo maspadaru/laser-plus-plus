@@ -384,7 +384,7 @@ void test_existential_simple() {
                                 "2 : q(x2, y2, z2)\n"
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
-    std::string rule_string = "E(a, b) p(a, Z, b, X, Z) := q(X, Y, Z)\n";
+    std::string rule_string = "p(a, Z, b, X, Z) := q(X, Y, Z)\n";
     run(name, stream_string, rule_string);
 }
 
@@ -416,7 +416,7 @@ void test_existential_time_reference_handb() {
                                 "4 : \n";
     std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
                               "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-                              "E(b) [@, T] hasFlat(b, W) := [@, T] exploded(W) "
+                              "[@, T] hasFlat(b, W) := [@, T] exploded(W) "
                               "&& [$, 100] [D] Wheel(W) \n";
 
     run(name, stream_string, rule_string);
@@ -432,7 +432,7 @@ void test_existential_time_reference_head() {
         "3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
         "4 : \n";
     std::string rule_string =
-        "E(alert)[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
+        "[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
         "&& [$, 100] [D] problem(SG) \n";
 
     run(name, stream_string, rule_string);
@@ -448,7 +448,7 @@ void test_existential_time_reference_body2() {
                                 "4 : \n";
     std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
                               "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-                              "E(b) hasFlat(b, W, T) := [@, T] exploded(W) && "
+                              "hasFlat(b, W, T) := [@, T] exploded(W) && "
                               "[$, 100] [D] Wheel(W) \n";
 
     run(name, stream_string, rule_string);
@@ -464,7 +464,7 @@ void test_existential_time_reference_body1() {
                                 "4 : \n";
     std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
                               "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-                              "E(b) hasFlat(b, W, T) := exploded(W) && [$, "
+                              "hasFlat(b, W, T) := exploded(W) && [$, "
                               "100] [D] [@, T] Wheel(W) \n";
 
     run(name, stream_string, rule_string);
@@ -481,7 +481,7 @@ void test_existential_conjunction_two() {
                                 "2 : q(x2, y2, z2)\n"
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
-    std::string rule_string = "E(a, b) p(a, X) && r(b, Z) := q(X, Y, Z)\n";
+    std::string rule_string = "p(a, X) && r(b, Z) := q(X, Y, Z)\n";
     run(name, stream_string, rule_string);
 }
 
@@ -493,7 +493,7 @@ void test_existential_conjunction_three() {
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
     std::string rule_string =
-        "E(a, b) p(a, X) && r(b, Z) && s(a, b) := q(X, Y, Z)\n";
+        "p(a, X) && r(b, Z) && s(a, b) := q(X, Y, Z)\n";
     run(name, stream_string, rule_string);
 }
 
@@ -504,7 +504,7 @@ void test_existential_restrictive_simple() {
                                 "2 : s(x2, y2)\n"
                                 "3 : q(x3), s(x3, y3)\n"
                                 "4 : \n";
-    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
+    std::string rule_string = "p(X, z)  := q(X)\n"
                               "p (X, Y) := s(X, Y) \n";
     run(name, stream_string, rule_string);
 }
@@ -516,7 +516,7 @@ void test_existential_restrictive_conjunction_body() {
                                 "2 : s(x2, y2)\n"
                                 "3 : q(x3), s(x3, y3)\n"
                                 "4 : q(x4), s(x4, y4), t(x4, y4, z4)\n";
-    std::string rule_string = "E(z) r(X, Y, z)  := p(X, Y) && q(X)\n"
+    std::string rule_string = "r(X, Y, z)  := p(X, Y) && q(X)\n"
                               "p (X, Y) := s(X, Y) \n"
                               "r(X, Y, Z) := t(X, Y, Z)";
     run(name, stream_string, rule_string);
@@ -541,8 +541,8 @@ void test_existential_restrictive_conjunction_head_paper() {
                                 "2 : \n";
 
     std::string rule_string =
-        "E(v) hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
-        "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+        "hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
+        "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
         "partOf(X, Y) := properPartOf(X, Y)\n"
         "partOf(Y, X) := hasPart(X, Y)\n"
         "hasPart(Y, X) := partOf(X, Y)\n";
@@ -558,8 +558,8 @@ void test_existential_restrictive_conjunction_head_swap() {
                                 "2 : \n";
 
     std::string rule_string =
-        "E(v) Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
-        "E(w) properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+        "Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
+        "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
         "partOf(X, Y) := properPartOf(X, Y)\n"
         "partOf(Y, X) := hasPart(X, Y)\n"
         "hasPart(Y, X) := partOf(X, Y)\n";
@@ -573,7 +573,7 @@ void test_existential_restrictive_window() {
                                 "2 : q(x2)\n"
                                 "3 : q(x1)\n"
                                 "4 : q(x4)\n";
-    std::string rule_string = "E(z) p(X, z)  := q(X)\n"
+    std::string rule_string = "p(X, z)  := q(X)\n"
                               "p (X, Y) := [$, 2] [D] s(X, Y) \n";
     run(name, stream_string, rule_string);
 }
@@ -622,13 +622,13 @@ int main() {
     // test_conjunction_sne();
     //test_recursive_simple();
     // test_recursive_complex();
-     test_time_reference_body();
+     //test_time_reference_body();
     // test_time_reference_handb();
     // test_time_reference_head();
     // test_time_reference_recursive();
     // test_tuple_window();
     // test_tuple_window_diamond();
-    // test_existential_simple();
+     test_existential_simple();
     // // // // test_existential_loop();
     // test_existential_time_reference_head();
     // test_existential_time_reference_body1();

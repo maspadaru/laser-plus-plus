@@ -1,8 +1,8 @@
-#include "rule/share.h"
+#include "rule/shared.h"
 
 namespace laser {
 namespace rule {
-namespace share {
+namespace shared {
 
 bool is_valid_sne(uint64_t now,
                   std::shared_ptr<util::Grounding> const &grounding) {

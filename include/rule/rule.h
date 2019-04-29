@@ -6,7 +6,7 @@
 #include <utility>
 #include <set>
 
-#include "rule/share.h"
+#include "rule/shared.h"
 #include "rule/chase_filter.h"
 #include "rule/filter/oblivious_filter.h"
 #include "rule/filter/skolem_filter.h"

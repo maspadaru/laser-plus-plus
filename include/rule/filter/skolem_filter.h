@@ -6,7 +6,7 @@
 
 #include "formula/formula.h"
 #include "rule/chase_filter.h"
-#include "rule/share.h"
+#include "rule/shared.h"
 #include "util/database.h"
 #include "util/grounding.h"
 #include "util/timeline.h"
@@ -20,8 +20,8 @@ namespace rule {
 class SkolemFilter : public ChaseFilter {
   private:
     std::vector<std::string> head_variables;
-    std::vector<std::string> bound_variables;
     std::vector<std::string> free_variables;
+    std::vector<std::string> bound_variables;
     std::unordered_map<std::string, int> free_variable_index;
     std::unordered_map<std::string, int> bound_variable_index;
     std::unordered_map<size_t, std::vector<std::string>> skolem_map;
@@ -40,7 +40,10 @@ class SkolemFilter : public ChaseFilter {
     ChaseFilter *clone() const override;
     ChaseFilter *move() override;
 
-    void init(std::vector<formula::Formula *> const &head_atoms) override;
+    void init(std::vector<formula::Formula *> const &head_atoms,
+              std::vector<std::string> const &head_variables,
+              std::vector<std::string> const &free_variables,
+              std::vector<std::string> const &bound_variables) override;
 
     void update(util::Timeline const &timeline,
                 util::Database const &database) override;

@@ -18,7 +18,10 @@ ChaseFilter *ObliviousFilter::move() {
     return result;
 }
 
-void ObliviousFilter::init(std::vector<formula::Formula *> const &head_atoms) {
+void ObliviousFilter::init(std::vector<formula::Formula *> const &head_atoms,
+                        std::vector<std::string> const &head_variables,
+                        std::vector<std::string> const &free_variables,
+                        std::vector<std::string> const &bound_variables) {
     return;
 }
 
@@ -34,7 +37,7 @@ ObliviousFilter::build_chase_facts(
     std::vector<std::shared_ptr<util::Grounding>> result;
     auto current_time = timeline.get_time();
     for (auto const &input_fact : input_facts) {
-        if (rule::share::is_valid_sne(current_time, input_fact)) {
+        if (rule::shared::is_valid_sne(current_time, input_fact)) {
             result.push_back(input_fact);
         }
     }
