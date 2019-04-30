@@ -22,7 +22,7 @@ Rule::Rule(Rule const &other) : body(other.body.clone()) {
     head_atoms = other.head_atoms;
     chase_filter = other.chase_filter->clone();
     head_variable_index = other.head_variable_index;
-    is_existential_m = other.is_existential_m; 
+    is_existential_m = other.is_existential_m;
     previous_step = other.previous_step;
 }
 
@@ -30,7 +30,7 @@ Rule::Rule(Rule &&other) noexcept : body(other.body.move()) {
     head_atoms = std::move(other.head_atoms);
     chase_filter = other.chase_filter->move();
     head_variable_index = std::move(other.head_variable_index);
-    is_existential_m = other.is_existential_m; 
+    is_existential_m = other.is_existential_m;
     previous_step = other.previous_step;
 }
 
@@ -39,7 +39,7 @@ Rule &Rule::operator=(Rule const &other) {
     this->head_atoms = other.head_atoms;
     this->chase_filter = other.chase_filter->clone();
     this->head_variable_index = other.head_variable_index;
-    this->is_existential_m = other.is_existential_m; 
+    this->is_existential_m = other.is_existential_m;
     this->previous_step = other.previous_step;
     return *this;
 }
@@ -49,7 +49,7 @@ Rule &Rule::operator=(Rule &&other) noexcept {
     this->head_atoms = std::move(other.head_atoms);
     this->chase_filter = other.chase_filter->move();
     this->head_variable_index = std::move(other.head_variable_index);
-    this->is_existential_m = other.is_existential_m; 
+    this->is_existential_m = other.is_existential_m;
     this->previous_step = other.previous_step;
     return *this;
 }
@@ -125,8 +125,19 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
                   std::back_inserter(bound_variables));
         head_variables.insert(head_variables.end(), bound_variables.begin(),
                               bound_variables.end());
-        chase_filter = new RestrictedFilter();
-        //chase_filter = new SkolemFilter();
+        auto chase_algorithm =
+            util::Settings::get_instance().get_chase_algorithm();
+        switch (chase_algorithm) {
+        case util::ChaseAlgorithm::RESTRICTED:
+            chase_filter = new RestrictedFilter();
+            break;
+        case util::ChaseAlgorithm::SKOLEM:
+            chase_filter = new SkolemFilter();
+            break;
+        default:
+            chase_filter = new ObliviousFilter();
+            break;
+        }
         chase_filter->init(head_atoms, head_variables, free_variables,
                            bound_variables);
     }

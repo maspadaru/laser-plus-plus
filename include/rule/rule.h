@@ -16,6 +16,7 @@
 #include "util/database.h"
 #include "util/grounding.h"
 #include "util/timeline.h"
+#include "util/settings.h"
 
 namespace laser {
 namespace rule {
