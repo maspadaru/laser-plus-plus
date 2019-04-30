@@ -3,8 +3,9 @@
 #include <vector>
 
 #include "test_framework.h"
+#include "util/settings.h"
 
-TEST(RestrictiveChaseTest, Simple) {
+TEST(RestrictedChaseTest, Simple) {
 
     std::string stream_string = "1 4 "
                                 "1 : q(x1, y1, z1)\n"
@@ -21,10 +22,12 @@ TEST(RestrictiveChaseTest, Simple) {
     expected[3] = "3 -> p(a4, z3, b5, x3, z3)";
     expected[4] = "4 -> ";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(RestrictiveChaseTest, Loop) {
+TEST(RestrictedChaseTest, Loop) {
 
     std::string stream_string = "1 4 "
                                 "1 : Bicycle(x1)\n"
@@ -42,26 +45,33 @@ TEST(RestrictiveChaseTest, Loop) {
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> Bicycle(w0) Wheel(v0) hasPart(w0, v0) hasPart(x1, v0) partOf(v0, w0) partOf(v0, x1) properPartOf(v0, w0)";
-    expected[2] = "2 -> Bicycle(w1) Bicycle(w2) Wheel(v1) Wheel(v2) hasPart(w1, v1) hasPart(w2, v2) hasPart(x2, v1) hasPart(x3, v2) partOf(v1, w1) partOf(v1, x2) partOf(v2, w2) partOf(v2, x3) properPartOf(v1, w1) properPartOf(v2, w2)";
+    expected[1] = "1 -> Bicycle(w0) Wheel(v0) hasPart(w0, v0) hasPart(x1, v0) "
+                  "partOf(v0, w0) partOf(v0, x1) properPartOf(v0, w0)";
+    expected[2] = "2 -> Bicycle(w1) Bicycle(w2) Wheel(v1) Wheel(v2) "
+                  "hasPart(w1, v1) hasPart(w2, v2) hasPart(x2, v1) hasPart(x3, "
+                  "v2) partOf(v1, w1) partOf(v1, x2) partOf(v2, w2) partOf(v2, "
+                  "x3) properPartOf(v1, w1) properPartOf(v2, w2)";
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(RestrictiveChaseTest, TimeRefHead) {
+TEST(RestrictedChaseTest, TimeRefHead) {
 
-    std::string stream_string = "1 4 "
-                                "1 : problem(sg1) \n"
-                                "2 : willOverheat(sg1, 2), problem(sg2)\n"
-                                "3 : problem(sg3), problem(sg4)\n"
-                                "3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
-                                "4 : \n";
+    std::string stream_string =
+        "1 4 "
+        "1 : problem(sg1) \n"
+        "2 : willOverheat(sg1, 2), problem(sg2)\n"
+        "3 : problem(sg3), problem(sg4)\n"
+        "3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
+        "4 : \n";
 
-    std::string rule_string = 
+    std::string rule_string =
         "[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
-                    "&& [$, 100] [D] problem(SG) \n";
+        "&& [$, 100] [D] problem(SG) \n";
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -70,10 +80,12 @@ TEST(RestrictiveChaseTest, TimeRefHead) {
     expected[3] = "3 -> shutdown(sg3, alert2)";
     expected[4] = "4 -> shutdown(sg3, alert1)";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(RestrictiveChaseTest, TimeRefBody1) {
+TEST(RestrictedChaseTest, TimeRefBody1) {
 
     std::string stream_string = "1 4 "
                                 "1 : Wheel(w1) \n"
@@ -82,7 +94,7 @@ TEST(RestrictiveChaseTest, TimeRefBody1) {
                                 "3 : Bicycle(b1)\n"
                                 "4 : \n";
 
-    std::string rule_string = 
+    std::string rule_string =
         "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
         "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
         "hasFlat(b, W, T) := exploded(W) && [$, 100] [D] [@, T] Wheel(W) \n";
@@ -94,10 +106,12 @@ TEST(RestrictiveChaseTest, TimeRefBody1) {
     expected[3] = "3 -> hasFlat(b1, w3, 3)";
     expected[4] = "4 -> ";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(RestrictiveChaseTest, TimeRefBody2) {
+TEST(RestrictedChaseTest, TimeRefBody2) {
 
     std::string stream_string = "1 4 "
                                 "1 : Wheel(w1) \n"
@@ -106,7 +120,7 @@ TEST(RestrictiveChaseTest, TimeRefBody2) {
                                 "3 : Bicycle(b1)\n"
                                 "4 : \n";
 
-    std::string rule_string = 
+    std::string rule_string =
         "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
         "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
         "hasFlat(b, W, T) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
@@ -118,10 +132,12 @@ TEST(RestrictiveChaseTest, TimeRefBody2) {
     expected[3] = "3 -> hasFlat(b1, w3, 3)";
     expected[4] = "4 -> ";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(RestrictiveChaseTest, TimeRefHandB) {
+TEST(RestrictedChaseTest, TimeRefHandB) {
 
     std::string stream_string = "1 4 "
                                 "1 : Wheel(w1) \n"
@@ -130,10 +146,10 @@ TEST(RestrictiveChaseTest, TimeRefHandB) {
                                 "3 : Bicycle(b1)\n"
                                 "4 : \n";
 
-    std::string rule_string = 
-        "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
-        "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-        "[@, T] hasFlat(b, W) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
+    std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+                              "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+                              "[@, T] hasFlat(b, W) := [@, T] exploded(W) && "
+                              "[$, 100] [D] Wheel(W) \n";
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -142,10 +158,12 @@ TEST(RestrictiveChaseTest, TimeRefHandB) {
     expected[3] = "3 -> Bicycle(b1) Wheel(w3) hasFlat(b1, w3)";
     expected[4] = "4 -> ";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(RestrictiveChaseTest, ConjunctionTwo) {
+TEST(RestrictedChaseTest, ConjunctionTwo) {
 
     std::string stream_string = "1 4 "
                                 "1 : q(x1, y1, z1)\n"
@@ -161,10 +179,12 @@ TEST(RestrictiveChaseTest, ConjunctionTwo) {
     expected[3] = "3 -> p(a4, x3) r(b5, z3)";
     expected[4] = "4 -> ";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(RestrictiveChaseTest, ConjunctionThree) {
+TEST(RestrictedChaseTest, ConjunctionThree) {
 
     std::string stream_string = "1 4 "
                                 "1 : q(x1, y1, z1)\n"
@@ -180,10 +200,12 @@ TEST(RestrictiveChaseTest, ConjunctionThree) {
     expected[3] = "3 -> p(a4, x3) r(b5, z3) s(a4, b5)";
     expected[4] = "4 -> ";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(RestrictiveChaseTest, RestrictiveSimple) {
+TEST(RestrictedChaseTest, RestrictedSimple) {
     // At the same timepoint
     std::string stream_string = "1 4 "
                                 "1 : q(x1)\n"
@@ -200,10 +222,12 @@ TEST(RestrictiveChaseTest, RestrictiveSimple) {
     expected[3] = "3 -> p(x3, y3)";
     expected[4] = "4 -> ";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(RestrictiveChaseTest, RestrictiveConjunctionBody) {
+TEST(RestrictedChaseTest, RestrictedConjunctionBody) {
     // A conjunction is pressent is the body of the existential rule
     std::string stream_string = "1 4 "
                                 "1 : q(x1)\n"
@@ -221,66 +245,70 @@ TEST(RestrictiveChaseTest, RestrictiveConjunctionBody) {
     expected[3] = "3 -> p(x3, y3) r(x3, y3, z0)";
     expected[4] = "4 -> p(x4, y4) r(x4, y4, z4)";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(RestrictiveChaseTest, RestrictiveConjunctionHeadPaper) {
+TEST(RestrictedChaseTest, RestrictedConjunctionHeadPaper) {
     // Example from paper: "Efficient Model Construction for Horn Logic
     // with VLog - System Description" - J. Urbani, M. Krotzsch, I. Dragoste,
     // David Carral - 2018
     // In this example, the computation will terminate after evaluating each
     // rule once. When atemting to re-evaluate the first rule on conclusion:
-    // Bicycle(w0), the restrictive chase finds that:
+    // Bicycle(w0), the restricted chase finds that:
     // hasPart(w0, v0) && Wheel(v0)
-    // are in the database, so new null values such as 
+    // are in the database, so new null values such as
     // hasPart(w0, v1) && Wheel(v1)
-    // are not generated. Thus, the computation terminates due to restrictive 
-    // chase conditions. 
-    // See paper for details. 
+    // are not generated. Thus, the computation terminates due to restricted
+    // chase conditions.
+    // See paper for details.
     std::string stream_string = "1 2 "
                                 "1 : Bicycle(c) \n"
                                 "2 : \n";
 
-    std::string rule_string = 
-        "hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
-        "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
-        "partOf(X, Y) := properPartOf(X, Y)\n"
-        "partOf(Y, X) := hasPart(X, Y)\n"
-        "hasPart(Y, X) := partOf(X, Y)\n";
+    std::string rule_string = "hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
+                              "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+                              "partOf(X, Y) := properPartOf(X, Y)\n"
+                              "partOf(Y, X) := hasPart(X, Y)\n"
+                              "hasPart(Y, X) := partOf(X, Y)\n";
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> hasPart(c, v0) Wheel(v0) properPartOf(v0, w0) "
-        "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
+                  "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
     expected[2] = "2 -> ";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(RestrictiveChaseTest, RestrictiveConjunctionHeadSwap) {
-    // see ExistentialRestrictiveConjunctionHeadPaper
+TEST(RestrictedChaseTest, RestrictedConjunctionHeadSwap) {
+    // see ExistentialRestrictedConjunctionHeadPaper
     // same exaple, but atoms in head are swaped in the first rule
     std::string stream_string = "1 2 "
                                 "1 : Bicycle(c) \n"
                                 "2 : \n";
 
-    std::string rule_string = 
-        "Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
-        "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
-        "partOf(X, Y) := properPartOf(X, Y)\n"
-        "partOf(Y, X) := hasPart(X, Y)\n"
-        "hasPart(Y, X) := partOf(X, Y)\n";
+    std::string rule_string = "Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
+                              "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+                              "partOf(X, Y) := properPartOf(X, Y)\n"
+                              "partOf(Y, X) := hasPart(X, Y)\n"
+                              "hasPart(Y, X) := partOf(X, Y)\n";
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> hasPart(c, v0) Wheel(v0) properPartOf(v0, w0) "
-        "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
+                  "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
     expected[2] = "2 -> ";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
 
-TEST(RestrictiveChaseTest, RestrictiveWindow) {
+TEST(RestrictedChaseTest, RestrictedWindow) {
     // At diferent timepoints
     std::string stream_string = "1 4 "
                                 "1 : s(x1, y1),q(x1)\n"
@@ -297,5 +325,7 @@ TEST(RestrictiveChaseTest, RestrictiveWindow) {
     expected[3] = "3 -> p(x1, y1)";
     expected[4] = "4 -> p(x4, z1)";
 
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::RESTRICTED);
     test_framework::run_test(stream_string, rule_string, expected);
 }
