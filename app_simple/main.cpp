@@ -6,9 +6,9 @@
 #include "simple_io_manager.h"
 #include "simple_rule_reader.h"
 
-void run(std::string const &program_path, std::string const &stream_path,
-         std::string const &output_path,
-         laser::util::ChaseAlgorithm chase_algorithm) {
+void run(laser::util::ChaseAlgorithm chase_algorithm,
+         std::string const &program_path, std::string const &stream_path,
+         std::string const &output_path) {
     std::cout << " LASER++ " << std::endl;
     auto simple_io_manager = SimpleIOManager(stream_path, output_path);
     auto rule_reader = SimpleRuleReader(program_path);
@@ -21,15 +21,15 @@ void run(std::string const &program_path, std::string const &stream_path,
 
 int main(int argc, char **argv) {
     if (argc < 5) {
-        std::cerr << "Usage: simpleapp PROGRAM_PATH INPUT_PATH OUTPUT_PATH  "
-                     "CHASE_ALGORITHM(s, r)"
+        std::cerr << "Usage: simpleapp CHASE_ALGORITHM(s, r) PROGRAM_PATH "
+                     "INPUT_PATH OUTPUT_PATH  "
                   << std::endl;
         return 1;
     }
-    std::string program_path(argv[1]);
-    std::string stream_path(argv[2]);
-    std::string output_path(argv[3]);
-    std::string chase_algorithm_str(argv[4]);
+    std::string chase_algorithm_str(argv[1]);
+    std::string program_path(argv[2]);
+    std::string stream_path(argv[3]);
+    std::string output_path(argv[4]);
 
     auto chase_algorithm = laser::util::ChaseAlgorithm::OBLIVIOUS;
     if (chase_algorithm_str == "s") {
@@ -38,5 +38,5 @@ int main(int argc, char **argv) {
         chase_algorithm = laser::util::ChaseAlgorithm::RESTRICTED;
     }
 
-    run(program_path, stream_path, output_path, chase_algorithm);
+    run(chase_algorithm, program_path, stream_path, output_path);
 }

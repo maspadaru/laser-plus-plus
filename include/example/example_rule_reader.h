@@ -1,7 +1,3 @@
-//
-// Created by mike on 7/17/18.
-//
-
 #ifndef LASER_EXAMPLE_EXAMPLE_RULE_READER_H
 #define LASER_EXAMPLE_EXAMPLE_RULE_READER_H
 
@@ -19,14 +15,9 @@
 #include "rule/rule_reader.h"
 #include "util/format_exception.h"
 
-// Helper functions:
-
 namespace laser {
 namespace example {
 
-/**
- *
- */
 class ExampleRuleReader : public laser::rule::RuleReader {
   private:
     std::string rule_string;

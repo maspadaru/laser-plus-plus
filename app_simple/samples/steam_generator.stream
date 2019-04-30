@@ -1,0 +1,5 @@
+1 6 
+1 : problem(sg1)
+2 : willOverheat(sg1, 2), problem(sg2)
+3 : problem(sg3), problem(sg4)
+3 : willOverheat(sg3, 4), willOverheat(sg3, 3)
