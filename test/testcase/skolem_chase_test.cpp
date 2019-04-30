@@ -3,7 +3,8 @@
 #include <vector>
 
 #include "test_framework.h"
-#include "util/settings.h"
+
+#include <util/chase_algorithm.h>
 
 TEST(SkolemChaseTest, SkolemSimple) {
 
@@ -22,9 +23,8 @@ TEST(SkolemChaseTest, SkolemSimple) {
     expected[3] = "3 -> p(a4, z3, b5, x3, z3)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::SKOLEM);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::SKOLEM);
 }
 
 TEST(SkolemChaseTest, SkolemTimeRefHead) {
@@ -48,9 +48,8 @@ TEST(SkolemChaseTest, SkolemTimeRefHead) {
     expected[3] = "3 -> shutdown(sg3, alert2)";
     expected[4] = "4 -> shutdown(sg3, alert1)";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::SKOLEM);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::SKOLEM);
 }
 
 TEST(SkolemChaseTest, SkolemTimeRefBody1) {
@@ -74,9 +73,8 @@ TEST(SkolemChaseTest, SkolemTimeRefBody1) {
     expected[3] = "3 -> hasFlat(b1, w3, 3)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::SKOLEM);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::SKOLEM);
 }
 
 TEST(SkolemChaseTest, SkolemTimeRefBody2) {
@@ -100,9 +98,8 @@ TEST(SkolemChaseTest, SkolemTimeRefBody2) {
     expected[3] = "3 -> hasFlat(b1, w3, 3)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::SKOLEM);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::SKOLEM);
 }
 
 TEST(SkolemChaseTest, SkolemTimeRefHandB) {
@@ -126,9 +123,8 @@ TEST(SkolemChaseTest, SkolemTimeRefHandB) {
     expected[3] = "3 -> Bicycle(b1) Wheel(w3) hasFlat(b1, w3)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::SKOLEM);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::SKOLEM);
 }
 
 TEST(SkolemChaseTest, SkolemConjunctionTwo) {
@@ -147,9 +143,8 @@ TEST(SkolemChaseTest, SkolemConjunctionTwo) {
     expected[3] = "3 -> p(a4, x3) r(b5, z3)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::SKOLEM);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::SKOLEM);
 }
 
 TEST(SkolemChaseTest, SkolemConjunctionThree) {
@@ -168,7 +163,6 @@ TEST(SkolemChaseTest, SkolemConjunctionThree) {
     expected[3] = "3 -> p(a4, x3) r(b5, z3) s(a4, b5)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::SKOLEM);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::SKOLEM);
 }

@@ -4,6 +4,8 @@
 
 #include "test_framework.h"
 
+#include <util/chase_algorithm.h>
+
 TEST(AtomsTest, Atom) {
 
     std::string stream_string = "1 14 "
@@ -48,6 +50,7 @@ TEST(AtomsTest, Atom) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 
 }

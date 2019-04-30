@@ -3,6 +3,8 @@
 #include <vector>
 
 #include "test_framework.h"
+
+#include <util/chase_algorithm.h>
  
 
 TEST(DiamondTest, DiamondAtom) {
@@ -50,5 +52,6 @@ TEST(DiamondTest, DiamondAtom) {
     expected[14] = "14 -> q(x8, y8, z8) q(x10, y10, z10) q(x6, y6, z6) "
         "u(Z, Z) u(a11, a11) u(-9.099, -9.099)";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }

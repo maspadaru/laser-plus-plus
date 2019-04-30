@@ -6,13 +6,14 @@
 
 namespace test_framework {
 
-void run_test(std::string const &stream_string, std::string const &rule_string, 
-         std::vector<std::string> const &expected) {
+void run_test(std::string const &stream_string, std::string const &rule_string,
+              std::vector<std::string> const &expected,
+              laser::util::ChaseAlgorithm chase_algorithm) {
+
     auto example_io_manager = laser::example::ExampleIOManager(stream_string);
     auto rule_reader = laser::example::ExampleRuleReader(rule_string);
-    auto reasoner =
-        laser::core::Reasoner(&rule_reader, &example_io_manager);
-
+    auto reasoner = laser::core::Reasoner(&rule_reader, &example_io_manager,
+                                          chase_algorithm);
     reasoner.start();
     auto start_time = example_io_manager.read_stream_start_time();
     auto end_time = example_io_manager.read_stream_end_time();
@@ -43,4 +44,4 @@ void run_test(std::string const &stream_string, std::string const &rule_string,
     }
 }
 
-} // namespace test_framework 
+} // namespace test_framework

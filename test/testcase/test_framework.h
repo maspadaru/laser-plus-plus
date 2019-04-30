@@ -12,13 +12,15 @@
 #include <gtest/gtest.h>
 
 #include <core/reasoner.h>
+#include <util/chase_algorithm.h>
 #include <example/example_rule_reader.h>
 #include <example/example_io_manager.h>
 
 namespace test_framework {
 
 void run_test(std::string const &stream_string, std::string const &rule_string, 
-         std::vector<std::string> const &expected);
+         std::vector<std::string> const &expected,
+              laser::util::ChaseAlgorithm chase_algorithm);
 
 } // namespace test_framework
 

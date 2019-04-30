@@ -17,6 +17,7 @@
 #include "util/grounding.h"
 #include "util/timeline.h"
 #include "util/settings.h"
+#include "util/chase_algorithm.h"
 
 namespace laser {
 namespace rule {

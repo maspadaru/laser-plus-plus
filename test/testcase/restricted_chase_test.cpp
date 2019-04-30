@@ -3,7 +3,8 @@
 #include <vector>
 
 #include "test_framework.h"
-#include "util/settings.h"
+
+#include <util/chase_algorithm.h>
 
 TEST(RestrictedChaseTest, Simple) {
 
@@ -22,9 +23,8 @@ TEST(RestrictedChaseTest, Simple) {
     expected[3] = "3 -> p(a4, z3, b5, x3, z3)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 TEST(RestrictedChaseTest, Loop) {
@@ -54,9 +54,8 @@ TEST(RestrictedChaseTest, Loop) {
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 TEST(RestrictedChaseTest, TimeRefHead) {
@@ -80,9 +79,8 @@ TEST(RestrictedChaseTest, TimeRefHead) {
     expected[3] = "3 -> shutdown(sg3, alert2)";
     expected[4] = "4 -> shutdown(sg3, alert1)";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 TEST(RestrictedChaseTest, TimeRefBody1) {
@@ -106,9 +104,8 @@ TEST(RestrictedChaseTest, TimeRefBody1) {
     expected[3] = "3 -> hasFlat(b1, w3, 3)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 TEST(RestrictedChaseTest, TimeRefBody2) {
@@ -132,9 +129,8 @@ TEST(RestrictedChaseTest, TimeRefBody2) {
     expected[3] = "3 -> hasFlat(b1, w3, 3)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 TEST(RestrictedChaseTest, TimeRefHandB) {
@@ -158,9 +154,8 @@ TEST(RestrictedChaseTest, TimeRefHandB) {
     expected[3] = "3 -> Bicycle(b1) Wheel(w3) hasFlat(b1, w3)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 TEST(RestrictedChaseTest, ConjunctionTwo) {
@@ -179,9 +174,8 @@ TEST(RestrictedChaseTest, ConjunctionTwo) {
     expected[3] = "3 -> p(a4, x3) r(b5, z3)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 TEST(RestrictedChaseTest, ConjunctionThree) {
@@ -200,9 +194,8 @@ TEST(RestrictedChaseTest, ConjunctionThree) {
     expected[3] = "3 -> p(a4, x3) r(b5, z3) s(a4, b5)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 TEST(RestrictedChaseTest, RestrictedSimple) {
@@ -222,9 +215,8 @@ TEST(RestrictedChaseTest, RestrictedSimple) {
     expected[3] = "3 -> p(x3, y3)";
     expected[4] = "4 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 TEST(RestrictedChaseTest, RestrictedConjunctionBody) {
@@ -245,9 +237,8 @@ TEST(RestrictedChaseTest, RestrictedConjunctionBody) {
     expected[3] = "3 -> p(x3, y3) r(x3, y3, z0)";
     expected[4] = "4 -> p(x4, y4) r(x4, y4, z4)";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 TEST(RestrictedChaseTest, RestrictedConjunctionHeadPaper) {
@@ -279,9 +270,8 @@ TEST(RestrictedChaseTest, RestrictedConjunctionHeadPaper) {
                   "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
     expected[2] = "2 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 TEST(RestrictedChaseTest, RestrictedConjunctionHeadSwap) {
@@ -303,9 +293,8 @@ TEST(RestrictedChaseTest, RestrictedConjunctionHeadSwap) {
                   "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
     expected[2] = "2 -> ";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 TEST(RestrictedChaseTest, RestrictedWindow) {
@@ -325,7 +314,6 @@ TEST(RestrictedChaseTest, RestrictedWindow) {
     expected[3] = "3 -> p(x1, y1)";
     expected[4] = "4 -> p(x4, z1)";
 
-    laser::util::Settings::get_instance().set_chase_algorithm(
-        laser::util::ChaseAlgorithm::RESTRICTED);
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
 }

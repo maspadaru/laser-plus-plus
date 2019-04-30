@@ -4,14 +4,15 @@
 
 #include "test_framework.h"
 
+#include <util/chase_algorithm.h>
+
 TEST(RecursiveTest, RecursiveSimple) {
     std::string stream_string = "1 6 "
                                 "1 : p(1), q(1)\n"
                                 "2 : p(1)\n"
                                 "3 : p(1), q(1)\n"
                                 "4 : \n";
-    std::string rule_string = 
-                              "b(X) := [$, 3] [D] d(X)\n"
+    std::string rule_string = "b(X) := [$, 3] [D] d(X)\n"
                               "d(X) := q(X) && p(X)\n";
 
     std::vector<std::string> expected(15);
@@ -24,8 +25,8 @@ TEST(RecursiveTest, RecursiveSimple) {
     expected[6] = "6 -> b(1)";
     expected[7] = "7 -> ";
 
-
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(RecursiveTest, RecursiveComplex) {
@@ -59,5 +60,6 @@ TEST(RecursiveTest, RecursiveComplex) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }

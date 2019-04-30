@@ -1,14 +1,10 @@
 #ifndef LASER_UTIL_SETTINGS_H
 #define LASER_UTIL_SETTINGS_H
 
+#include "util/chase_algorithm.h"
+
 namespace laser {
 namespace util {
-
-enum class ChaseAlgorithm {
-    RESTRICTED,
-    SKOLEM,
-    OBLIVIOUS,
-};
 
 class Settings {
   private:

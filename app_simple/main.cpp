@@ -1,30 +1,42 @@
 #include <iostream>
 
 #include <core/reasoner.h>
+#include <util/chase_algorithm.h>
 
 #include "simple_io_manager.h"
 #include "simple_rule_reader.h"
 
 void run(std::string const &program_path, std::string const &stream_path,
-         std::string const &output_path) {
+         std::string const &output_path,
+         laser::util::ChaseAlgorithm chase_algorithm) {
     std::cout << " LASER++ " << std::endl;
     auto simple_io_manager = SimpleIOManager(stream_path, output_path);
     auto rule_reader = SimpleRuleReader(program_path);
     std::cout << " Reasoning... " << std::endl;
-    auto reasoner =
-        laser::core::Reasoner(&rule_reader, &simple_io_manager);
+    auto reasoner = laser::core::Reasoner(&rule_reader, &simple_io_manager,
+                                          chase_algorithm);
     reasoner.start();
     std::cout << " Done! " << std::endl;
 }
 
 int main(int argc, char **argv) {
-    if (argc < 4) {
-        std::cerr << "Usage: simpleapp PROGRAM_PATH INPUT_PATH OUTPUT_PATH"
+    if (argc < 5) {
+        std::cerr << "Usage: simpleapp PROGRAM_PATH INPUT_PATH OUTPUT_PATH  "
+                     "CHASE_ALGORITHM(s, r)"
                   << std::endl;
         return 1;
     }
     std::string program_path(argv[1]);
     std::string stream_path(argv[2]);
     std::string output_path(argv[3]);
-    run(program_path, stream_path, output_path);
+    std::string chase_algorithm_str(argv[4]);
+
+    auto chase_algorithm = laser::util::ChaseAlgorithm::OBLIVIOUS;
+    if (chase_algorithm_str == "s") {
+        chase_algorithm = laser::util::ChaseAlgorithm::SKOLEM;
+    } else if (chase_algorithm_str == "r") {
+        chase_algorithm = laser::util::ChaseAlgorithm::RESTRICTED;
+    }
+
+    run(program_path, stream_path, output_path, chase_algorithm);
 }

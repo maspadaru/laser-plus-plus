@@ -1,5 +1,3 @@
-// Created by mike on 03/07/18.
-
 #include "simple_rule_reader.h"
 
 SimpleRuleReader::SimpleRuleReader(std::string const &stream_path) {

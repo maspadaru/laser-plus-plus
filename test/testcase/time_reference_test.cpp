@@ -4,6 +4,8 @@
 
 #include "test_framework.h"
 
+#include <util/chase_algorithm.h>
+
 TEST(TimeReferenceTest, TimeReferenceBody) {
     std::string stream_string = "1 4 "
                                 "1 : b(1), b(2)\n"
@@ -20,7 +22,8 @@ TEST(TimeReferenceTest, TimeReferenceBody) {
     expected[3] = "3 -> a(3, 4) a(3, 5)";
     expected[4] = "4 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(TimeReferenceTest, TimeReferenceHead) {
@@ -50,7 +53,8 @@ TEST(TimeReferenceTest, TimeReferenceHead) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(TimeReferenceTest, TimeReferenceHeadAndBody) {
@@ -80,7 +84,8 @@ TEST(TimeReferenceTest, TimeReferenceHeadAndBody) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(TimeReferenceTest, TimeReferenceRecursive) {
@@ -114,5 +119,6 @@ TEST(TimeReferenceTest, TimeReferenceRecursive) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }

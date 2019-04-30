@@ -4,6 +4,8 @@
 
 #include "test_framework.h"
 
+#include <util/chase_algorithm.h>
+
 TEST(ConjunctionTest, SameVariables) {
     std::string stream_string = "1 14 "
                                 "1 : a(x)\n"
@@ -40,7 +42,8 @@ TEST(ConjunctionTest, SameVariables) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(ConjunctionTest, TwoVariables) {
@@ -80,7 +83,8 @@ TEST(ConjunctionTest, TwoVariables) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(ConjunctionTest, ConjunctionDiamond) {
@@ -120,7 +124,8 @@ TEST(ConjunctionTest, ConjunctionDiamond) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(ConjunctionTest, ConjunctionBox) {
@@ -159,7 +164,8 @@ TEST(ConjunctionTest, ConjunctionBox) {
     expected[13] = "13 -> q(x, y)";
     expected[14] = "14 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(ConjunctionTest, ConjunctionCrossVariables) {
@@ -194,7 +200,8 @@ TEST(ConjunctionTest, ConjunctionCrossVariables) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(ConjunctionTest, ConjunctionSNE) {
@@ -203,9 +210,9 @@ TEST(ConjunctionTest, ConjunctionSNE) {
                                 "2 : t(x1)\n"
                                 "3 : s(x1)\n"
                                 "4 : \n";
-    std::string rule_string = 
-                        "q(X) := t(X) && [$, 3] [D] p(X)\n" // old input fact
-                        "r(X) := s(X) && [$, 2] [D] q(X)\n"; // old conclusion
+    std::string rule_string =
+        "q(X) := t(X) && [$, 3] [D] p(X)\n"  // old input fact
+        "r(X) := s(X) && [$, 2] [D] q(X)\n"; // old conclusion
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -213,8 +220,9 @@ TEST(ConjunctionTest, ConjunctionSNE) {
     expected[2] = "2 -> q(x1)";
     expected[3] = "3 -> r(x1)";
     expected[4] = "4 -> ";
-    
-    test_framework::run_test(stream_string, rule_string, expected);
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(ConjunctionTest, ConjunctionHead) {
@@ -229,13 +237,15 @@ TEST(ConjunctionTest, ConjunctionHead) {
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> Bicycle(x1) Wheel(y1) Wheel(z1) hasWheel(x1, y1)"
+    expected[1] =
+        "1 -> Bicycle(x1) Wheel(y1) Wheel(z1) hasWheel(x1, y1)"
         " hasWheel(x1, z1) pairOf(y1, z1) pairOf(z1, y1) partOf(y1, x1) ";
     expected[2] = "2 -> ";
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(ConjunctionTest, ConjunctionHeadTimeReference) {
@@ -254,12 +264,13 @@ TEST(ConjunctionTest, ConjunctionHeadTimeReference) {
 
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> Bicycle(x1) Wheel(y1) Wheel(z1) hasWheel(x1, y1)"
+    expected[1] =
+        "1 -> Bicycle(x1) Wheel(y1) Wheel(z1) hasWheel(x1, y1)"
         " hasWheel(x1, z1) pairOf(y1, z1) pairOf(z1, y1) partOf(y1, x1) ";
     expected[2] = "2 -> hasFlat(x1)";
     expected[3] = "3 -> fixing(y1)";
     expected[4] = "4 -> ";
 
-
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }

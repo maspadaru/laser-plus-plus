@@ -4,6 +4,8 @@
 
 #include "test_framework.h"
 
+#include <util/chase_algorithm.h>
+
 TEST(TupleWindowTest, SimpleDiamond) {
     std::string stream_string = "0 14 "
                                 "1 : f(x1)\n"
@@ -39,13 +41,14 @@ TEST(TupleWindowTest, SimpleDiamond) {
     expected[13] = "13 -> u(z)";
     expected[14] = "14 -> u(z)";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(TupleWindowTest, SimpleBox) {
     std::string stream_string = "0 14 "
                                 "0 : \n"
-                                // 3 timepoints where f(x) occurs within the 
+                                // 3 timepoints where f(x) occurs within the
                                 // tuple window
                                 "1 : f(x)\n"
                                 "2 : f(x)\n"
@@ -55,13 +58,13 @@ TEST(TupleWindowTest, SimpleBox) {
                                 "4 : f(y)\n"
                                 "5 : f(x), f(y), f(a), a(x), a(y), a(z), a(t)\n"
                                 "6 : f(y)\n"
-                                // f(z) occurs more than 3 times within the 
-                                // tuple window but only for 2 consecutive 
+                                // f(z) occurs more than 3 times within the
+                                // tuple window but only for 2 consecutive
                                 // timepoints
                                 "7 : f(z), f(z), f(z)\n"
                                 "8 : f(z)\n"
                                 "9 : \n"
-                                // f(a) occurs at 3 timepoints within the 
+                                // f(a) occurs at 3 timepoints within the
                                 // tuple window, but the 3 timepoints are not
                                 // consecutive
                                 "10 : f(a)\n"
@@ -89,7 +92,8 @@ TEST(TupleWindowTest, SimpleBox) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(TupleWindowTest, MultipleRules) {
@@ -118,7 +122,6 @@ TEST(TupleWindowTest, MultipleRules) {
                               "s(X) := [#, 0] [D] e(X, X)\n"
                               "u(X, X) := [#, 1][D]f(X)\n";
 
-
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> ";
@@ -136,6 +139,6 @@ TEST(TupleWindowTest, MultipleRules) {
     expected[13] = "13 -> ";
     expected[14] = "14 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected);
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
-

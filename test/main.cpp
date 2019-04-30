@@ -3,15 +3,18 @@
 #include <core/reasoner.h>
 #include <example/example_io_manager.h>
 #include <example/example_rule_reader.h>
+#include <util/chase_algorithm.h>
 
 void run(std::string const &name, std::string const &stream_string,
-         std::string const &rule_string) {
+         std::string const &rule_string,
+         laser::util::ChaseAlgorithm chase_algorithm) {
     std::cout << std::endl;
     std::cout << " Test: " << name << std::endl;
     std::cout << " =================================== " << std::endl;
     auto example_io_manager = laser::example::ExampleIOManager(stream_string);
     auto rule_reader = laser::example::ExampleRuleReader(rule_string);
-    auto reasoner = laser::core::Reasoner(&rule_reader, &example_io_manager);
+    auto reasoner = laser::core::Reasoner(&rule_reader, &example_io_manager,
+                                          chase_algorithm);
 
     reasoner.start();
 
@@ -27,7 +30,8 @@ void test_simple() {
                                 "3 : a(x3, y3, z3)\n"
                                 "4 : \n";
     std::string rule_string = "p(X, Y, Z) := a(X, Y, Z)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_atoms() {
@@ -55,7 +59,8 @@ void test_atoms() {
                               "t(Y, X) := d(X, Y)\n"
                               "u(X, X) := f(X)\n"
                               "v(X, Y, X, Y) := e(X, Y)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_diamond() {
@@ -81,7 +86,8 @@ void test_diamond() {
                                 "14 : \n";
     std::string rule_string = "q(X, Y, Z) := [D] a(X, Y, Z)\n"
                               "u(X, X) := [D]f(X)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_time_window() {
@@ -109,7 +115,8 @@ void test_time_window() {
                               "r(Y) := [$, 100] c(X, Y)\n"
                               "s(X) := [$, 0] [D] e(X, X)\n"
                               "u(X, X) := [$, 1][D]f(X)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_box() {
@@ -132,7 +139,8 @@ void test_box() {
     std::string rule_string = ""
                               "q(X) := [B] f(X)\n"
                               "r(Y,X) := [$, 3][B]c(X, Y)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_conjunction_same_variables() {
@@ -153,7 +161,8 @@ void test_conjunction_same_variables() {
                                 "13 : a(x)\n"
                                 "14 : a(x)\n";
     std::string rule_string = "q(X) := a(X) &&  b(X)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_conjunction_two_variables() {
@@ -174,7 +183,8 @@ void test_conjunction_two_variables() {
                                 "13 : a(x)\n"
                                 "14 : a(x)\n";
     std::string rule_string = "q(X,Y) := a(X) &&  b(Y)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_conjunction_diamond() {
@@ -195,7 +205,8 @@ void test_conjunction_diamond() {
                                 "13 : a(x)\n"
                                 "14 : a(x)\n";
     std::string rule_string = "q(X,Y) := a(X) && [$, 2] [D] b(Y)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_conjunction_box() {
@@ -216,7 +227,8 @@ void test_conjunction_box() {
                                 "13 : a(x), b(y)\n"
                                 "14 : a(x)\n";
     std::string rule_string = "q(X,Y) := a(X) && [$, 2] [B] b(Y)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_conjunction_corss_variables() {
@@ -233,7 +245,8 @@ void test_conjunction_corss_variables() {
                                 "9 : b(x,y)\n"
                                 "10 : \n";
     std::string rule_string = "q(X,Y) := a(X,X) && b(Y,X)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_conjunction_sne() {
@@ -246,7 +259,8 @@ void test_conjunction_sne() {
     std::string rule_string =
         "q(X) := t(X) && [$, 3] [D] p(X)\n"  // old input fact
         "r(X) := s(X) && [$, 2] [D] q(X)\n"; // old conclusion
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_recursive_simple() {
@@ -256,10 +270,10 @@ void test_recursive_simple() {
                                 "2 : p(1)\n"
                                 "3 : p(1), q(1)\n"
                                 "4 : \n";
-    std::string rule_string = 
-                              "b(X) := [$, 3] [D] d(X)\n"
+    std::string rule_string = "b(X) := [$, 3] [D] d(X)\n"
                               "d(X) := q(X) && p(X)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_recursive_complex() {
@@ -274,7 +288,8 @@ void test_recursive_complex() {
                               "c(X) := [$, 3] [B] e(X)\n"
                               "e(X) := b(X) && p(X)\n"
                               "d(X) := q(X) && p(X)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_time_reference_body() {
@@ -285,7 +300,8 @@ void test_time_reference_body() {
                                 "3 : b(4), b(5)\n"
                                 "4 : \n";
     std::string rule_string = "a(T, X) := [@, T] b(X) \n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_time_reference_handb() {
@@ -296,7 +312,8 @@ void test_time_reference_handb() {
                                 "3 : b(4), b(5)\n"
                                 "4 : \n";
     std::string rule_string = "[@, T]a(X) := [@, T] b(X) \n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_time_reference_head() {
@@ -307,7 +324,8 @@ void test_time_reference_head() {
                                 "3 : b(6, x3), b(9, x3)\n"
                                 "4 : \n";
     std::string rule_string = "[@,T]a(X) := b(T, X) \n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_time_reference_recursive() {
@@ -322,7 +340,8 @@ void test_time_reference_recursive() {
         "7 : \n";
     std::string rule_string = "p(X, Y, T) := b(X) && [@,T]c(Y)\n"
                               "[@,T]b(X) := a(T, X)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_tuple_window_diamond() {
@@ -342,7 +361,8 @@ void test_tuple_window_diamond() {
                                 "13 : \n"
                                 "14 : \n";
     std::string rule_string = "u(X) := [#, 1][D]f(X)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_tuple_window() {
@@ -374,7 +394,8 @@ void test_tuple_window() {
                                 "13 : f(a)\n"
                                 "14 : \n";
     std::string rule_string = "u(X) := [#, 3][B]f(X)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_existential_simple() {
@@ -385,7 +406,8 @@ void test_existential_simple() {
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
     std::string rule_string = "p(a, Z, b, X, Z) := q(X, Y, Z)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 // void test_existential_loop() {
@@ -419,7 +441,8 @@ void test_existential_time_reference_handb() {
                               "[@, T] hasFlat(b, W) := [@, T] exploded(W) "
                               "&& [$, 100] [D] Wheel(W) \n";
 
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_existential_time_reference_head() {
@@ -435,7 +458,8 @@ void test_existential_time_reference_head() {
         "[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
         "&& [$, 100] [D] problem(SG) \n";
 
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_existential_time_reference_body2() {
@@ -451,7 +475,8 @@ void test_existential_time_reference_body2() {
                               "hasFlat(b, W, T) := [@, T] exploded(W) && "
                               "[$, 100] [D] Wheel(W) \n";
 
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_existential_time_reference_body1() {
@@ -467,7 +492,8 @@ void test_existential_time_reference_body1() {
                               "hasFlat(b, W, T) := exploded(W) && [$, "
                               "100] [D] [@, T] Wheel(W) \n";
 
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_existential_conjunction_two() {
@@ -482,7 +508,8 @@ void test_existential_conjunction_two() {
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
     std::string rule_string = "p(a, X) && r(b, Z) := q(X, Y, Z)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_existential_conjunction_three() {
@@ -492,9 +519,9 @@ void test_existential_conjunction_three() {
                                 "2 : q(x2, y2, z2)\n"
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
-    std::string rule_string =
-        "p(a, X) && r(b, Z) && s(a, b) := q(X, Y, Z)\n";
-    run(name, stream_string, rule_string);
+    std::string rule_string = "p(a, X) && r(b, Z) && s(a, b) := q(X, Y, Z)\n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_existential_restrictive_simple() {
@@ -506,7 +533,8 @@ void test_existential_restrictive_simple() {
                                 "4 : \n";
     std::string rule_string = "p(X, z)  := q(X)\n"
                               "p (X, Y) := s(X, Y) \n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_existential_restrictive_conjunction_body() {
@@ -519,7 +547,8 @@ void test_existential_restrictive_conjunction_body() {
     std::string rule_string = "r(X, Y, z)  := p(X, Y) && q(X)\n"
                               "p (X, Y) := s(X, Y) \n"
                               "r(X, Y, Z) := t(X, Y, Z)";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_existential_restrictive_conjunction_head_paper() {
@@ -540,13 +569,13 @@ void test_existential_restrictive_conjunction_head_paper() {
                                 "1 : Bicycle(c) \n"
                                 "2 : \n";
 
-    std::string rule_string =
-        "hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
-        "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
-        "partOf(X, Y) := properPartOf(X, Y)\n"
-        "partOf(Y, X) := hasPart(X, Y)\n"
-        "hasPart(Y, X) := partOf(X, Y)\n";
-    run(name, stream_string, rule_string);
+    std::string rule_string = "hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
+                              "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+                              "partOf(X, Y) := properPartOf(X, Y)\n"
+                              "partOf(Y, X) := hasPart(X, Y)\n"
+                              "hasPart(Y, X) := partOf(X, Y)\n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_existential_restrictive_conjunction_head_swap() {
@@ -557,13 +586,13 @@ void test_existential_restrictive_conjunction_head_swap() {
                                 "1 : Bicycle(c) \n"
                                 "2 : \n";
 
-    std::string rule_string =
-        "Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
-        "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
-        "partOf(X, Y) := properPartOf(X, Y)\n"
-        "partOf(Y, X) := hasPart(X, Y)\n"
-        "hasPart(Y, X) := partOf(X, Y)\n";
-    run(name, stream_string, rule_string);
+    std::string rule_string = "Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
+                              "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+                              "partOf(X, Y) := properPartOf(X, Y)\n"
+                              "partOf(Y, X) := hasPart(X, Y)\n"
+                              "hasPart(Y, X) := partOf(X, Y)\n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_existential_restrictive_window() {
@@ -575,7 +604,8 @@ void test_existential_restrictive_window() {
                                 "4 : q(x4)\n";
     std::string rule_string = "p(X, z)  := q(X)\n"
                               "p (X, Y) := [$, 2] [D] s(X, Y) \n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_conjunction_head() {
@@ -588,7 +618,8 @@ void test_conjunction_head() {
         "Bicycle(X) && Wheel(Y) && Wheel(Z) && hasWheel(X,Y) && "
         "hasWheel(X,Z) && partOf(Y,X) && pairOf(Z, Y) && pairOf(Y, Z):= "
         "hasPart(X, Y, Z)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 void test_conjunction_head_timeref() {
@@ -605,7 +636,8 @@ void test_conjunction_head_timeref() {
         "hasPart(X, Y, Z)\n"
         "hasFlat(X) && [@, T] fixing(Y) := scheduleRepair(Y, T) && "
         "[$, 3] [D]partOf(Y, X)\n";
-    run(name, stream_string, rule_string);
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 int main() {
@@ -633,7 +665,7 @@ int main() {
     // test_existential_time_reference_head();
     // test_existential_time_reference_body1();
     // test_existential_time_reference_body2();
-     test_existential_time_reference_handb();
+    test_existential_time_reference_handb();
     // test_existential_conjunction_two();
     // test_existential_conjunction_three();
     // test_existential_restrictive_simple();
