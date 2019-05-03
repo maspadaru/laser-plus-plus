@@ -57,6 +57,30 @@ std::string get_rules(std::string const &program_id, int win_size) {
         rules = "r(A, B, C, D, E, F, G, H) := p(A, B, C, D, E, F, G, H)\n";
     } else if (program_id == "p15") {
         rules = "r(X) := p(X)\n";
+    } else if (program_id == "p16") {
+        rules = "q(X, a) && r(a, b, Y) := p(X, Y)\n";
+    } else if (program_id == "p17") {
+        rules = ""
+                "a(X, a) := p(X)\n"
+                "b(X, b) := q(X)\n";
+    } else if (program_id == "p18") {
+        rules = ""
+                "a(X, a) := p(X)\n"
+                "b(X, b) := q(X)\n"
+                "c(X, c) := r(X)\n"
+                "d(X, d) := s(X)\n";
+    } else if (program_id == "p19") {
+        rules = ""
+                "a(X, a) := p(X)\n"
+                "b(X, b) := q(X)\n"
+                "c(X, c) := r(X)\n"
+                "d(X, d) := s(X)\n"
+                "e(X, e) := t(X)\n"
+                "f(X, f) := u(X)\n"
+                "g(X, g) := v(X)\n"
+                "h(X, h) := w(X)\n";
+    } else if (program_id == "p20") {
+        rules = "p(X, Z) := p(X, Y) && p(Y, Z)\n";
     }
     return rules;
 }
@@ -90,7 +114,7 @@ int main(int argc, char **argv) {
         std::cerr
             << "Usage: benchapp TEST_NAME END_TIME "
                "FACTS_PER_TIMEPOINT "
-               "WINDOW_SIZE CHASE_ALGORITHM(s, r) INPUT_PATH [OUTPUT_PATH]"
+               "WINDOW_SIZE CHASE_ALGORITHM=(O / S / R) INPUT_PATH [OUTPUT_PATH]"
             << std::endl;
         return 1;
     }
@@ -112,15 +136,16 @@ int main(int argc, char **argv) {
     int win_size = std::stoi(win_size_str);
 
     auto chase_algorithm = laser::util::ChaseAlgorithm::OBLIVIOUS;
-    if (chase_algorithm_str == "s") {
+    if (chase_algorithm_str == "S") {
         chase_algorithm = laser::util::ChaseAlgorithm::SKOLEM;
-    } else if (chase_algorithm_str == "r") {
+    } else if (chase_algorithm_str == "R") {
         chase_algorithm = laser::util::ChaseAlgorithm::RESTRICTED;
     }
 
     std::string rules = get_rules(program_id, win_size);
 
-    std::cout << "Run: " << program_id << std::endl
+    std::cout << "Run: " << program_id << " - chase: " << chase_algorithm_str 
+                << std::endl
               << "timepoints: " << end_time << ",  fact_count: " << fact_count
               << ",  win_size: " << win_size << std::endl;
 

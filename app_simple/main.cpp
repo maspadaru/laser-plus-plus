@@ -21,7 +21,7 @@ void run(laser::util::ChaseAlgorithm chase_algorithm,
 
 int main(int argc, char **argv) {
     if (argc < 5) {
-        std::cerr << "Usage: simpleapp CHASE_ALGORITHM(s, r) PROGRAM_PATH "
+        std::cerr << "Usage: simpleapp CHASE_ALGORITHM=(O / S / R) PROGRAM_PATH "
                      "INPUT_PATH OUTPUT_PATH  "
                   << std::endl;
         return 1;
@@ -32,9 +32,9 @@ int main(int argc, char **argv) {
     std::string output_path(argv[4]);
 
     auto chase_algorithm = laser::util::ChaseAlgorithm::OBLIVIOUS;
-    if (chase_algorithm_str == "s") {
+    if (chase_algorithm_str == "S") {
         chase_algorithm = laser::util::ChaseAlgorithm::SKOLEM;
-    } else if (chase_algorithm_str == "r") {
+    } else if (chase_algorithm_str == "R") {
         chase_algorithm = laser::util::ChaseAlgorithm::RESTRICTED;
     }
 

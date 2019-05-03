@@ -225,6 +225,27 @@ TEST(ConjunctionTest, ConjunctionSNE) {
                              laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
+TEST(ConjunctionTest, ConjunctionTransitive) {
+    std::string stream_string =
+        "1 4 "
+        "1 : p(a1, a2), p(a2, a3)\n"
+        "2 : p(b1,b2), p(b2, b3), p(b3, b4)\n"
+        "3 : p(c1,c2), p(c2, c3), p(c3, c4), p(c4, c5), p(c5, c6)\n"
+        "4 : \n";
+    std::string rule_string = "p(X, Z) := p(X, Y) && p(Y, Z)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(a1, a3)";
+    expected[2] = "2 -> p(b1, b3) p(b1, b4) p(b2, b4)";
+    expected[3] = "3 -> p(c1, c3) p(c1, c4) p(c1, c5) p(c1, c6) p(c2, c4) "
+                  "p(c2, c5) p(c2, c6) p(c3, c5) p(c3, c6) p(c4, c6)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
+}
+
 TEST(ConjunctionTest, ConjunctionHead) {
     std::string stream_string = "1 2 "
                                 "1 : hasPart(x1, y1, z1)\n"

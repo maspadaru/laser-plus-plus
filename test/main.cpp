@@ -263,6 +263,18 @@ void test_conjunction_sne() {
         laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
+void test_conjunction_transitive() {
+    const std::string name = "Conjunction Transitive";
+    std::string stream_string = "1 4 "
+                                "1 : p(a1, a2), p(a2, a3)\n"
+                                "2 : p(b1,b2), p(b2, b3), p(b3, b4)\n"
+                                "3 : p(c1,c2), p(c2, c3), p(c3, c4), p(c4, c5), p(c5, c6)\n"
+                                "4 : \n";
+    std::string rule_string = "p(X, Z) := p(X, Y) && p(Y, Z)\n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
+}
+
 void test_recursive_simple() {
     const std::string name = "Recursive Simple";
     std::string stream_string = "1 6 "
@@ -442,7 +454,7 @@ void test_existential_time_reference_handb() {
                               "&& [$, 100] [D] Wheel(W) \n";
 
     run(name, stream_string, rule_string,
-        laser::util::ChaseAlgorithm::OBLIVIOUS);
+        laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
 void test_existential_time_reference_head() {
@@ -651,7 +663,8 @@ int main() {
     // test_conjunction_diamond();
     // test_conjunction_box();
     // test_conjunction_corss_variables();
-    // test_conjunction_sne();
+    //test_conjunction_sne();
+     test_conjunction_transitive();
     // test_recursive_simple();
     // test_recursive_complex();
     // test_time_reference_body();
@@ -665,7 +678,7 @@ int main() {
     // test_existential_time_reference_head();
     // test_existential_time_reference_body1();
     // test_existential_time_reference_body2();
-    test_existential_time_reference_handb();
+    //test_existential_time_reference_handb();
     // test_existential_conjunction_two();
     // test_existential_conjunction_three();
     // test_existential_restrictive_simple();

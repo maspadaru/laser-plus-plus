@@ -40,7 +40,7 @@ run_profile () {
 }
 
 run_benchapp () {
-    cmake-build-release/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 $5 $6
+    cmake-build-release/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 $5 $6 $7
 }
 
 run_project () {
@@ -56,7 +56,7 @@ debug_project () {
 }
 
 debug_benchapp () {
-    gdb --tui --args cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 $5 $6 
+    gdb --tui --args cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 $5 $6 $7
 }
 
 print_help () {
@@ -80,7 +80,7 @@ if [ $# -eq 0 ]; then
 elif [ $1 = "b" ]; then
     build
 elif [ $1 = "bench" ]; then
-    run_benchapp "$2" "$3" "$4" "$5" "$6" "$7"
+    run_benchapp "$2" "$3" "$4" "$5" "$6" "$7" "$8"
 elif [ $1 = "p" ]; then
     run_profile "$2" "$3" "$4" "$5" "$6" "$7"
 elif [ $1 = "c" ]; then
@@ -90,7 +90,7 @@ elif [ $1 = "r" ]; then
 elif [ $1 = "d" ]; then
     debug_project
 elif [ $1 = "dbench" ]; then
-    debug_benchapp "$2" "$3" "$4" "$5" "$6" "$7"
+    debug_benchapp "$2" "$3" "$4" "$5" "$6" "$7" "$8"
 elif [ $1 = "t" ]; then
     test_project
 elif [ $1 = "h" ]; then
