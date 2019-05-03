@@ -10,7 +10,8 @@ Conjunction::~Conjunction() {
     delete right_child;
 }
 
-Conjunction::Conjunction(Formula *left_child, Formula *right_child, bool is_head) {
+Conjunction::Conjunction(Formula *left_child, Formula *right_child,
+                         bool is_head) {
     this->left_child = &left_child->move();
     this->right_child = &right_child->move();
     is_head_m = is_head;
@@ -40,12 +41,12 @@ Formula &Conjunction::move() {
     return *result;
 }
 
-void Conjunction::set_head(bool is_head) { 
-    // Conjunctino in head is used for Existentialy quantified rules using 
-    // restricted chase algorithm. 
+void Conjunction::set_head(bool is_head) {
+    // Conjunctino in head is used for Existentialy quantified rules using
+    // restricted chase algorithm.
     // Intentionaly not setting is_head in children. We want ExactTime atoms
     // to evaluate as if they were in the body.
-    is_head_m = is_head; 
+    is_head_m = is_head;
 }
 
 bool Conjunction::is_head() const { return is_head_m; }
@@ -183,16 +184,22 @@ Conjunction::merge_groundings(util::Timeline const &timeline,
     }
     auto result = std::make_shared<util::Grounding>(
         util::Grounding("", ct, ht, cc, hc, substitution_vector));
+    auto max_step = left.get_step();
+    if (max_step < right.get_step()) {
+        max_step = right.get_step();
+    }
+    result->set_step(max_step);
     return result;
 }
 
 void Conjunction::populate_grounding_vector(
-    util::Timeline const &timeline,
+    util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
     std::vector<std::shared_ptr<util::Grounding>> const &right_groundings) {
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<util::Grounding>>>
         hashmap;
+    auto current_time = timeline.get_time();
     for (auto const &gr : right_groundings) {
         // TODO no more hash here!
         auto key = hash_common_variables(*right_child, *gr);
@@ -202,13 +209,13 @@ void Conjunction::populate_grounding_vector(
         map_vector.push_back(gr);
     }
     for (auto const &gl : left_groundings) {
+        auto gl_fresh = gl->is_fresh_sne(current_time, previous_step);
         auto key = hash_common_variables(*left_child, *gl);
         if (hashmap.count(key) > 0) {
             auto hashmap_values = hashmap.at(key);
             for (auto const &gr : hashmap_values) {
-                auto current_time = timeline.get_time();
-                if (gl->get_consideration_time() == current_time ||
-                    gr->get_consideration_time() == current_time) {
+                auto gr_fresh = gr->is_fresh_sne(current_time, previous_step);
+                if (gl_fresh || gr_fresh) {
                     auto new_grounding = merge_groundings(timeline, *gl, *gr);
                     grounding_vector.push_back(std::move(new_grounding));
                 }
@@ -218,12 +225,13 @@ void Conjunction::populate_grounding_vector(
 }
 
 bool Conjunction::evaluate(
-    util::Timeline const &timeline, util::Database const &database,
+    util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     // TODO Here I can split facts in sub-maps, based on predicates of children
-    left_child->evaluate(timeline, database, facts);
-    right_child->evaluate(timeline, database, facts);
-    populate_grounding_vector(timeline, left_child->get_groundings(timeline),
+    left_child->evaluate(timeline, previous_step, facts);
+    right_child->evaluate(timeline, previous_step, facts);
+    populate_grounding_vector(timeline, previous_step,
+                              left_child->get_groundings(timeline),
                               right_child->get_groundings(timeline));
     return !grounding_vector.empty();
 }

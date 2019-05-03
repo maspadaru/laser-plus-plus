@@ -50,9 +50,10 @@ void RestrictedFilter::init(std::vector<formula::Formula *> const &head_atoms,
 }
 
 void RestrictedFilter::update(util::Timeline const &timeline,
+                              size_t previous_step,
                               util::Database const &database) {
     auto const &facts = database.get_data_full();
-    head_formula->evaluate(timeline, database, facts);
+    head_formula->evaluate(timeline, previous_step, facts);
     // TODO we might want to store results in a grounding table, since we don't
     // want some conclusions to be skipped due to SNE. Alternative, disable
     // SNE in conjunction if (is_head_m == true) {}
@@ -62,13 +63,13 @@ void RestrictedFilter::update(util::Timeline const &timeline,
 
 std::vector<std::shared_ptr<util::Grounding>>
 RestrictedFilter::build_chase_facts(
-    util::Timeline const &timeline,
+    util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &input_facts) {
     std::vector<std::shared_ptr<util::Grounding>> result;
     auto database_facts = head_formula->get_conclusions_timepoint(timeline);
     auto current_time = timeline.get_time();
     for (auto const &input_fact : input_facts) {
-        if (rule::shared::is_valid_sne(current_time, input_fact) &&
+        if (input_fact->is_fresh_sne(current_time, previous_step) &&
             !has_database_match(database_facts, input_fact)) {
             auto chase_fact = generate_chase_fact(input_fact);
             result.push_back(chase_fact);
@@ -179,7 +180,7 @@ void RestrictedFilter::init_free_head_variables(
 }
 
 void RestrictedFilter::expire_outdated_groundings(
-        util::Timeline const &timeline) {
+    util::Timeline const &timeline) {
     head_formula->expire_outdated_groundings(timeline);
 }
 

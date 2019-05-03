@@ -51,6 +51,7 @@ class TimeReference : public Formula {
      * Removes the Time Variable from all the groundings in groundings vector
      */
     std::vector<std::shared_ptr<util::Grounding>> revert_groundings(
+        uint64_t now,
         std::vector<std::shared_ptr<util::Grounding>> groundings) const;
 
     std::shared_ptr<util::Grounding>
@@ -65,12 +66,11 @@ class TimeReference : public Formula {
     size_t get_time_variable_index() const;
 
     void
-    evaluate_head(util::Timeline const &timeline,
+    evaluate_head(util::Timeline const &timeline, size_t previous_step,
                   std::vector<std::shared_ptr<util::Grounding>> const &facts);
 
     void
-    evaluate_body(util::Timeline const &timeline,
-                  util::Database const &database,
+    evaluate_body(util::Timeline const &timeline, size_t previous_step,
                   std::vector<std::shared_ptr<util::Grounding>> const &facts);
 
   public:
@@ -112,7 +112,7 @@ class TimeReference : public Formula {
     get_conclusions_timepoint(util::Timeline const &timeline) override;
 
     bool evaluate(
-        util::Timeline const &timeline, util::Database const &database,
+        util::Timeline const &timeline, size_t previous_step,
         std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;

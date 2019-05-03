@@ -1,7 +1,3 @@
-//
-// Created by mike on 6/17/18.
-//
-
 #ifndef LASER_UTIL_GROUNDING_H
 #define LASER_UTIL_GROUNDING_H
 
@@ -31,6 +27,7 @@ class Grounding {
     uint64_t horizon_time = ULLONG_MAX;
     uint64_t consideration_count = 0;
     uint64_t horizon_count = ULLONG_MAX;
+    size_t step = 0;
     bool is_background_fact_m = false;
     bool is_fact_m = false;
     std::vector<std::string> constant_vector;
@@ -43,8 +40,6 @@ class Grounding {
     bool annotation_less_than(Grounding const &other) const;
 
   public:
-    // constructors & destructors
-
     Grounding(std::string predicate, uint64_t consideration_time,
               uint64_t horizon_time, uint64_t consideration_count,
               uint64_t horizon_count, std::vector<std::string> constant_vector);
@@ -58,7 +53,7 @@ class Grounding {
 
     std::shared_ptr<Grounding> clone() const;
 
-    // getters
+    bool is_fresh_sne(uint64_t now, size_t previous_step) const;
 
     std::string const &get_predicate() const;
 
@@ -68,15 +63,19 @@ class Grounding {
 
     uint64_t get_consideration_count() const;
 
+    void set_consideration_time(uint64_t consideration_time);
+
     uint64_t get_horizon_count() const;
+
+    size_t get_step() const;
+
+    void set_step(size_t step);
 
     bool is_background_fact() const;
 
     bool is_fact() const;
 
     size_t get_hash();
-
-    // methods
 
     std::string const &get_constant(size_t variable_index) const;
 

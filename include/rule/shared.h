@@ -12,9 +12,6 @@ namespace laser {
 namespace rule {
 namespace shared {
 
-bool is_valid_sne(uint64_t now,
-                  std::shared_ptr<util::Grounding> const &grounding);
-
 std::unordered_map<std::string, int>
 make_index(std::vector<std::string> const &vector);
 

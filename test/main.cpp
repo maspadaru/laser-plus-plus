@@ -664,13 +664,13 @@ int main() {
     // test_conjunction_box();
     // test_conjunction_corss_variables();
     //test_conjunction_sne();
-     test_conjunction_transitive();
+     //test_conjunction_transitive();
     // test_recursive_simple();
     // test_recursive_complex();
     // test_time_reference_body();
     // test_time_reference_handb();
     // test_time_reference_head();
-    // test_time_reference_recursive();
+     test_time_reference_recursive();
     // test_tuple_window();
     // test_tuple_window_diamond();
     // test_existential_simple();

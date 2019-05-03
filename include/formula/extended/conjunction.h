@@ -42,7 +42,7 @@ class Conjunction : public Formula {
 
     void populate_variable_collections();
     void populate_grounding_vector(
-        util::Timeline const &timeline,
+        util::Timeline const &timeline, size_t previous_step,
         std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
         std::vector<std::shared_ptr<util::Grounding>> const &right_groundings);
 
@@ -57,7 +57,8 @@ class Conjunction : public Formula {
   public:
     Conjunction() = default;
     explicit Conjunction(Formula *left_child, Formula *right_child);
-    explicit Conjunction(Formula *left_child, Formula *right_child, bool is_head);
+    explicit Conjunction(Formula *left_child, Formula *right_child,
+                         bool is_head);
     ~Conjunction() override;
 
     Formula &create() const override;
@@ -85,7 +86,7 @@ class Conjunction : public Formula {
     get_conclusions_timepoint(util::Timeline const &timeline) override;
 
     bool evaluate(
-        util::Timeline const &timeline, util::Database const &database,
+        util::Timeline const &timeline, size_t previous_step,
         std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;

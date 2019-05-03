@@ -109,10 +109,12 @@ TimeReference::convert_groundings_body(
 }
 
 std::vector<std::shared_ptr<util::Grounding>> TimeReference::revert_groundings(
+    uint64_t now,
     std::vector<std::shared_ptr<util::Grounding>> groundings) const {
     std::vector<std::shared_ptr<util::Grounding>> result_vector;
     for (auto const &grounding : groundings) {
         auto new_grounding = remove_time_variable(*grounding);
+        new_grounding->set_consideration_time(now);
         result_vector.push_back(std::move(new_grounding));
     }
     return result_vector;
@@ -143,13 +145,14 @@ std::vector<std::shared_ptr<util::Grounding>>
 TimeReference::get_conclusions_step(util::Timeline const &timeline) {
     // 1. Get recent groundings and add them to conclusions_vector or
     // furure_conclusion_map
+    auto now = timeline.get_time();
     std::vector<std::shared_ptr<util::Grounding>> conclusions_vector;
     auto grounding_vector = grounding_table.get_recent_groundings();
     for (auto &grounding : grounding_vector) {
         std::string const &timevar_string =
             grounding->get_constant(get_time_variable_index());
         uint64_t timevar_value = std::stoull(timevar_string);
-        if (timevar_value == timeline.get_time()) {
+        if (timevar_value == now) {
             conclusions_vector.push_back(std::move(grounding));
         } else {
             future_conclusion_map.try_emplace(timevar_value);
@@ -161,12 +164,12 @@ TimeReference::get_conclusions_step(util::Timeline const &timeline) {
     }
     // 2. Add all groundings from future_conclusion_map to conclusions_vector
     std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
-        &grounding_set = future_conclusion_map[timeline.get_time()];
+        &grounding_set = future_conclusion_map[now];
     std::move(grounding_set.begin(), grounding_set.end(),
               std::back_inserter(conclusions_vector));
-    future_conclusion_map.erase(timeline.get_time());
+    future_conclusion_map.erase(now);
     // 3. Conclusions should not contain the time variable
-    auto result = revert_groundings(std::move(conclusions_vector));
+    auto result = revert_groundings(now, std::move(conclusions_vector));
     // 4. Copy result into timepoint_conclusions before returning
     std::copy(result.begin(), result.end(),
               std::back_inserter(timepoint_conclusions));
@@ -174,7 +177,7 @@ TimeReference::get_conclusions_step(util::Timeline const &timeline) {
 }
 
 void TimeReference::evaluate_head(
-    util::Timeline const &timeline,
+    util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     std::string predicate = get_predicate_vector().at(0);
     auto exact_time_groundings = convert_groundings_head(facts);
@@ -182,9 +185,9 @@ void TimeReference::evaluate_head(
 }
 
 void TimeReference::evaluate_body(
-    util::Timeline const &timeline, util::Database const &database,
+    util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
-    child->evaluate(timeline, database, facts);
+    child->evaluate(timeline, previous_step, facts);
     auto child_conclusions = child->get_groundings(timeline);
     auto exact_time_groundings =
         convert_groundings_body(timeline, child_conclusions);
@@ -192,14 +195,14 @@ void TimeReference::evaluate_body(
 }
 
 bool TimeReference::evaluate(
-    util::Timeline const &timeline, util::Database const &database,
+    util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     // If the formula is in the head of the rule, we know the child can only
     // be an Atom. So we can ignore the child.
     if (is_head()) {
-        evaluate_head(timeline, facts);
+        evaluate_head(timeline, previous_step, facts);
     } else {
-        evaluate_body(timeline, database, facts);
+        evaluate_body(timeline, previous_step, facts);
     }
     return grounding_table.has_recent_groundings();
 }
@@ -207,7 +210,7 @@ bool TimeReference::evaluate(
 void TimeReference::expire_outdated_groundings(util::Timeline const &timeline) {
     timepoint_conclusions.clear();
     child->expire_outdated_groundings(timeline);
-    auto time = timeline.get_min_time();
+    auto time = timeline.get_time();
     auto tuple_count = timeline.get_tuple_count_at(timeline.get_time());
     grounding_table.expire_outdated_groundings(time, tuple_count);
 }

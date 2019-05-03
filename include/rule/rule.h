@@ -3,21 +3,21 @@
 
 #include <iostream>
 #include <memory>
-#include <utility>
 #include <set>
+#include <utility>
 
-#include "rule/shared.h"
-#include "rule/chase_filter.h"
-#include "rule/filter/oblivious_filter.h"
-#include "rule/filter/skolem_filter.h"
-#include "rule/filter/restricted_filter.h"
 #include "formula/formula.h"
 #include "formula/formula_type.h"
+#include "rule/chase_filter.h"
+#include "rule/filter/oblivious_filter.h"
+#include "rule/filter/restricted_filter.h"
+#include "rule/filter/skolem_filter.h"
+#include "rule/shared.h"
+#include "util/chase_algorithm.h"
 #include "util/database.h"
 #include "util/grounding.h"
-#include "util/timeline.h"
 #include "util/settings.h"
-#include "util/chase_algorithm.h"
+#include "util/timeline.h"
 
 namespace laser {
 namespace rule {
@@ -27,15 +27,16 @@ class Rule {
     bool is_existential_m = false;
     formula::Formula &body;
     std::vector<formula::Formula *> head_atoms;
-    ChaseFilter* chase_filter;
+    ChaseFilter *chase_filter;
     std::unordered_map<std::string, int> head_variable_index;
     size_t previous_step = 0;
+    size_t current_step = 0;
 
     std::shared_ptr<util::Grounding>
     convert_to_head_grounding(std::string const &head_predicate,
                               util::Grounding const &grounding) const;
-        
-    void init_chase(std::vector<formula::Formula *> const &head_atoms); 
+
+    void init_chase(std::vector<formula::Formula *> const &head_atoms);
 
     void init(std::vector<formula::Formula *> head_atoms);
 
@@ -46,7 +47,7 @@ class Rule {
         std::vector<std::shared_ptr<util::Grounding>> const &body_facts);
 
     void evaluate_head_atoms(
-        util::Timeline const &timeline, util::Database const &database,
+        util::Timeline const &timeline,
         std::vector<std::shared_ptr<util::Grounding>> const &body_facts);
 
     std::shared_ptr<util::Grounding>
@@ -93,6 +94,7 @@ class Rule {
     void reset_previous_step();
 
     void set_previous_step(size_t step);
+    void set_current_step(size_t step);
 };
 
 } // namespace rule

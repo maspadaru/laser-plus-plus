@@ -24,6 +24,7 @@ Rule::Rule(Rule const &other) : body(other.body.clone()) {
     head_variable_index = other.head_variable_index;
     is_existential_m = other.is_existential_m;
     previous_step = other.previous_step;
+    current_step = other.current_step;
 }
 
 Rule::Rule(Rule &&other) noexcept : body(other.body.move()) {
@@ -32,6 +33,7 @@ Rule::Rule(Rule &&other) noexcept : body(other.body.move()) {
     head_variable_index = std::move(other.head_variable_index);
     is_existential_m = other.is_existential_m;
     previous_step = other.previous_step;
+    current_step = other.current_step;
 }
 
 Rule &Rule::operator=(Rule const &other) {
@@ -41,6 +43,7 @@ Rule &Rule::operator=(Rule const &other) {
     this->head_variable_index = other.head_variable_index;
     this->is_existential_m = other.is_existential_m;
     this->previous_step = other.previous_step;
+    this->current_step = other.current_step;
     return *this;
 }
 
@@ -51,14 +54,20 @@ Rule &Rule::operator=(Rule &&other) noexcept {
     this->head_variable_index = std::move(other.head_variable_index);
     this->is_existential_m = other.is_existential_m;
     this->previous_step = other.previous_step;
+    this->current_step = other.current_step;
     return *this;
 }
 
 bool Rule::is_existential() const { return is_existential_m; }
 
-void Rule::reset_previous_step() { previous_step = 0; }
+void Rule::reset_previous_step() {
+    previous_step = 0;
+    current_step = 0;
+}
 
 void Rule::set_previous_step(size_t step) { previous_step = step; }
+
+void Rule::set_current_step(size_t step) { current_step = step; }
 
 std::vector<std::shared_ptr<util::Grounding>>
 Rule::get_conclusions_step(util::Timeline const &timeline) {
@@ -97,7 +106,7 @@ void Rule::expire_head_groundings(util::Timeline const &timeline) {
 void Rule::evaluate(util::Timeline const &timeline,
                     util::Database const &database) {
     auto facts = database.get_data_since(previous_step);
-    body.evaluate(timeline, database, facts);
+    body.evaluate(timeline, previous_step, facts);
 }
 
 void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
@@ -164,13 +173,14 @@ bool Rule::derive_conclusions(util::Timeline const &timeline,
 void Rule::evaluate_head(
     util::Timeline const &timeline, util::Database const &database,
     std::vector<std::shared_ptr<util::Grounding>> const &body_facts) {
-    chase_filter->update(timeline, database);
-    auto head_facts = chase_filter->build_chase_facts(timeline, body_facts);
-    evaluate_head_atoms(timeline, database, head_facts);
+    chase_filter->update(timeline, previous_step, database);
+    auto head_facts =
+        chase_filter->build_chase_facts(timeline, previous_step, body_facts);
+    evaluate_head_atoms(timeline, head_facts);
 }
 
 void Rule::evaluate_head_atoms(
-    util::Timeline const &timeline, util::Database const &database,
+    util::Timeline const &timeline,
     std::vector<std::shared_ptr<util::Grounding>> const &body_facts) {
     for (auto head_atom : head_atoms) {
         std::vector<std::shared_ptr<util::Grounding>> head_facts;
@@ -179,7 +189,7 @@ void Rule::evaluate_head_atoms(
             head_facts.push_back(head_fact);
         }
         if (!head_facts.empty()) {
-            head_atom->evaluate(timeline, database, head_facts);
+            head_atom->evaluate(timeline, previous_step, head_facts);
         }
     }
 }
@@ -196,7 +206,9 @@ Rule::make_atom_fact(std::shared_ptr<util::Grounding> const &body_fact,
         auto const &value = body_fact->get_constant(position);
         atom_values.push_back(value);
     }
-    return body_fact->new_pred_constvec(predicate, atom_values);
+    auto result = body_fact->new_pred_constvec(predicate, atom_values);
+    result->set_step(current_step);
+    return result;
 }
 
 } // namespace rule

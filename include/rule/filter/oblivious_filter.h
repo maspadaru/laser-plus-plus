@@ -31,11 +31,11 @@ class ObliviousFilter : public ChaseFilter {
               std::vector<std::string> const &free_variables,
               std::vector<std::string> const &bound_variables) override;
 
-    void update(util::Timeline const &timeline,
+    void update(util::Timeline const &timeline, size_t previous_step,
                 util::Database const &database) override;
 
     std::vector<std::shared_ptr<util::Grounding>>
-    build_chase_facts(util::Timeline const &timeline,
+    build_chase_facts(util::Timeline const &timeline, size_t previous_step,
                       std::vector<std::shared_ptr<util::Grounding>> const
                           &input_facts) override;
 

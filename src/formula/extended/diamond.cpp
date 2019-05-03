@@ -73,9 +73,9 @@ Diamond::get_conclusions_step(util::Timeline const &timeline) {
 }
 
 bool Diamond::evaluate(
-    util::Timeline const &timeline, util::Database const &database,
+    util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
-    bool result = child->evaluate(timeline, database, facts);
+    bool result = child->evaluate(timeline, previous_step, facts);
     auto child_facts = child->get_groundings(timeline);
     //TODO SNE: I think you should only pick the new child facts
     grounding_table.add_grounding_vector(child_facts);

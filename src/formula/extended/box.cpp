@@ -91,9 +91,9 @@ Box::get_conclusions_step(util::Timeline const &timeline) {
 }
 
 bool Box::evaluate(util::Timeline const &timeline,
-                   util::Database const &database,
+                   size_t previous_step,
                    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
-    bool result = child->evaluate(timeline, database, facts);
+    bool result = child->evaluate(timeline, previous_step, facts);
     if (result) {
         auto child_facts = child->get_groundings(timeline);
         update_box_map(child_facts, timeline);

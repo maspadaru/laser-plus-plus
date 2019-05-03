@@ -43,18 +43,18 @@ void SkolemFilter::init(std::vector<formula::Formula *> const &head_atoms,
     this->bound_variable_index = rule::shared::make_index(bound_variables);
 }
 
-void SkolemFilter::update(util::Timeline const &timeline,
+void SkolemFilter::update(util::Timeline const &timeline, size_t previous_step,
                           util::Database const &database) {
     return;
 }
 
 std::vector<std::shared_ptr<util::Grounding>> SkolemFilter::build_chase_facts(
-    util::Timeline const &timeline,
+    util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &input_facts) {
     std::vector<std::shared_ptr<util::Grounding>> result;
     auto current_time = timeline.get_time();
     for (auto const &input_fact : input_facts) {
-        if (rule::shared::is_valid_sne(current_time, input_fact)) {
+        if (input_fact->is_fresh_sne(current_time, previous_step)) {
             auto chase_fact = generate_chase_fact(input_fact);
             result.push_back(chase_fact);
         }
@@ -104,8 +104,7 @@ std::string SkolemFilter::generate_new_value(std::string const &var_name) {
     return result;
 }
 
-void SkolemFilter::expire_outdated_groundings(
-    util::Timeline const &timeline) {}
+void SkolemFilter::expire_outdated_groundings(util::Timeline const &timeline) {}
 
 } // namespace rule
 } // namespace laser

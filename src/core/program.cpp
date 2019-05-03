@@ -62,12 +62,13 @@ bool Program::evaluate_rule_vector(std::vector<rule::Rule> &rule_vector) {
 }
 
 bool Program::evaluate_rule(rule::Rule &rule) {
+    auto step = database.get_step() + 1;
+    rule.set_current_step(step);
     rule.evaluate(timeline, database);
     rule.derive_conclusions(timeline, database);
     auto conclusions = rule.get_conclusions_step(timeline);
     bool changed = !conclusions.empty();
     database.increment_step();
-    auto step = database.get_step();
     database.insert(step, std::move(conclusions));
     rule.set_previous_step(step);
     return changed;

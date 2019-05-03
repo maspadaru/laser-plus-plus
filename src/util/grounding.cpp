@@ -29,9 +29,27 @@ Grounding::Grounding(std::string predicate, uint64_t consideration_time,
       horizon_count(horizon_count),
       constant_vector(std::move(constant_vector)) {}
 
+size_t Grounding::get_step() const { return step; }
+
+bool Grounding::is_fresh_sne(uint64_t now, size_t previous_step) const {
+    // checking ct >= because facts can be derived at future timepoints from
+    // TimeReference formulas in head of rules
+    if (consideration_time > now) {
+        return true;
+    }
+    // SNE Tier 1 -> considering only facts form current timepoint
+    // SNE Tier 2 -> if the fact occurs at the curent timepoint, it should have
+    // been derived sooner than the previous executin of the rule
+    return consideration_time == now && step >= previous_step;
+}
+
+void Grounding::set_step(size_t step) { this->step = step; }
+
 uint64_t Grounding::get_consideration_time() const {
     return consideration_time;
 }
+
+void Grounding::set_consideration_time(uint64_t ct) { consideration_time = ct; }
 
 std::string const &Grounding::get_predicate() const { return predicate; }
 
@@ -62,6 +80,7 @@ Grounding::new_annotations(uint64_t consideration_time, uint64_t horizon_time,
     auto result = Grounding(predicate, consideration_time, horizon_time,
                             consideration_count, horizon_count, is_fact_m,
                             is_background_fact_m, constant_vector);
+    result.step = this->step;
     return std::make_shared<Grounding>(result);
 }
 
@@ -75,6 +94,7 @@ Grounding::new_horizon_time(uint64_t horizon_time) const {
     auto result = Grounding(predicate, consideration_time, horizon_time,
                             consideration_count, horizon_count, is_fact_m,
                             is_background_fact_m, constant_vector);
+    result.step = this->step;
     return std::make_shared<Grounding>(result);
 }
 
@@ -83,6 +103,7 @@ Grounding::new_horizon_count(uint64_t horizon_count) const {
     auto result = Grounding(predicate, consideration_time, horizon_time,
                             consideration_count, horizon_count, is_fact_m,
                             is_background_fact_m, constant_vector);
+    result.step = this->step;
     return std::make_shared<Grounding>(result);
 }
 
@@ -91,6 +112,7 @@ Grounding::new_constant_vector(std::vector<std::string> new_vector) const {
     Grounding result = Grounding(predicate, consideration_time, horizon_time,
                                  consideration_count, horizon_count, is_fact_m,
                                  is_background_fact_m, std::move(new_vector));
+    result.step = this->step;
     return std::make_shared<Grounding>(result);
 }
 
@@ -100,6 +122,7 @@ Grounding::new_pred_constvec(std::string const &predicate,
     Grounding result = Grounding(predicate, consideration_time, horizon_time,
                                  consideration_count, horizon_count, is_fact_m,
                                  is_background_fact_m, std::move(new_vector));
+    result.step = this->step;
     return std::make_shared<Grounding>(result);
 }
 
@@ -135,6 +158,7 @@ std::shared_ptr<Grounding> Grounding::new_constant(size_t index,
     Grounding result =
         Grounding(predicate, consideration_time, horizon_time,
                   consideration_count, horizon_count, std::move(new_vector));
+    result.step = this->step;
     return std::make_shared<Grounding>(result);
 }
 
@@ -144,6 +168,7 @@ std::shared_ptr<Grounding> Grounding::remove_constant(size_t index) const {
     Grounding result =
         Grounding(predicate, consideration_time, horizon_time,
                   consideration_count, horizon_count, std::move(new_vector));
+    result.step = this->step;
     return std::make_shared<Grounding>(result);
 }
 
@@ -151,12 +176,11 @@ size_t Grounding::get_size() const { return constant_vector.size(); }
 
 std::string Grounding::to_string() const {
     std::stringstream os;
-    os << predicate << "("; 
+    os << predicate << "(";
     for (auto const &value : constant_vector) {
         os << value << ", ";
     }
-    os << " ) [ "
-       << consideration_time << ", " << horizon_time << ", "
+    os << " ) [ " << consideration_time << ", " << horizon_time << ", "
        << consideration_count << ", " << horizon_count << "] ";
     return os.str();
 }
