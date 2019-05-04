@@ -13,9 +13,9 @@
 
 # I Benchmark diferent formulas
 ./laser.sh bench p1 1000 1000 0 O ~/stream_100M_1_2.txt  
-./laser.sh bench p2 1000 1000 0 O ~/stream_100M_1_1.txt 
-./laser.sh bench p3 1000 1000 0 O ~/stream_100M_1_2.txt  
-./laser.sh bench p4 1000 1000 0 O ~/stream_100M_1_2.txt  
+#./laser.sh bench p2 1000 1000 0 O ~/stream_100M_1_1.txt 
+#./laser.sh bench p3 1000 1000 0 O ~/stream_100M_1_2.txt  
+#./laser.sh bench p4 1000 1000 0 O ~/stream_100M_1_2.txt  
 ./laser.sh bench p5 1000 1000 0 O ~/stream_100M_2_2.txt  
 ./laser.sh bench p6 100 1000 0 O ~/stream_100M_2_2.txt  
 ./laser.sh bench p7 1000 1000 3 O ~/stream_100M_1_1.txt  
@@ -68,11 +68,11 @@
 ./laser.sh bench p16 1000 1000 0 R ~/stream_100M_1_2.txt  
 
 # IX Benchmark chase algorithms on diferent number of simple rules
-./laser.sh bench p17 1000 1000 0 S ~/stream_100M_2_1.txt  
+#./laser.sh bench p17 1000 1000 0 S ~/stream_100M_2_1.txt  
 #./laser.sh bench p18 1000 1000 0 S ~/stream_100M_4_1.txt  
 ./laser.sh bench p19 1000 1000 0 S ~/stream_100M_8_1.txt  
 
-./laser.sh bench p17 1000 1000 0 R ~/stream_100M_2_1.txt  
+#./laser.sh bench p17 1000 1000 0 R ~/stream_100M_2_1.txt  
 #./laser.sh bench p18 1000 1000 0 R ~/stream_100M_4_1.txt  
 ./laser.sh bench p19 1000 1000 0 R ~/stream_100M_8_1.txt  
 
