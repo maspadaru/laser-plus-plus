@@ -21,7 +21,7 @@ void run(laser::util::ChaseAlgorithm chase_algorithm,
 
 int main(int argc, char **argv) {
     if (argc < 5) {
-        std::cerr << "Usage: simpleapp CHASE_ALGORITHM=(O / S / R) PROGRAM_PATH "
+        std::cerr << "Usage: simpleapp CHASE_ALGORITHM=(S/R) PROGRAM_PATH "
                      "INPUT_PATH OUTPUT_PATH  "
                   << std::endl;
         return 1;

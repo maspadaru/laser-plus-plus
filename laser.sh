@@ -34,7 +34,7 @@ run_profile () {
     rm -f prof_flat.txt
     rm -f prof_graph.txt
     rm -f gmon.out
-    cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 $5 $6
+    cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 $5 $6 $7
     gprof -a -b -p cmake-build-debug/$BENCHAPP_EXECUTABLE > prof_flat.txt
     gprof -a -b -q cmake-build-debug/$BENCHAPP_EXECUTABLE > prof_graph.txt
 }
@@ -71,7 +71,7 @@ print_help () {
     echo "t: run all tests"
     echo " "
     echo " Options [bench p] require additional arguments:"
-    echo " test_name end_time_of_stream number_of_facts_per_timepoint window_size stream_file_path output_file_path"
+    echo " test_id end_time_of_stream number_of_facts_per_timepoint window_size chase_algorithm=(S/R) stream_file_path output_file_path"
 
 }
 
@@ -82,7 +82,7 @@ elif [ $1 = "b" ]; then
 elif [ $1 = "bench" ]; then
     run_benchapp "$2" "$3" "$4" "$5" "$6" "$7" "$8"
 elif [ $1 = "p" ]; then
-    run_profile "$2" "$3" "$4" "$5" "$6" "$7"
+    run_profile "$2" "$3" "$4" "$5" "$6" "$7" "$8"
 elif [ $1 = "c" ]; then
     clean_up
 elif [ $1 = "r" ]; then
