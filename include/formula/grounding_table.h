@@ -20,11 +20,10 @@ class GroundingTable {
   private:
     // grounding_map: key: horizon_time
     //        value: Set of all groundings sharing consideration_time
-    std::unordered_map<
-        uint64_t, std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>>
+    std::unordered_map<uint64_t, std::set<std::shared_ptr<util::Grounding>,
+                                          util::GroundingFullCompare>>
         grounding_map;
-    std::vector<std::shared_ptr<util::Grounding>>
-        recent_groundings_vector;
+    std::vector<std::shared_ptr<util::Grounding>> recent_groundings_vector;
     std::vector<std::string> variable_names;
     std::unordered_map<std::string, int> variable_index;
     size_t size = 0;

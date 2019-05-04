@@ -1,6 +1,7 @@
 #ifndef LASER_RULE_FILTER_SKOLEM_FILTER_H
 #define LASER_RULE_FILTER_SKOLEM_FILTER_H
 
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -24,7 +25,9 @@ class SkolemFilter : public ChaseFilter {
     std::vector<std::string> bound_variables;
     std::unordered_map<std::string, int> free_variable_index;
     std::unordered_map<std::string, int> bound_variable_index;
-    std::unordered_map<size_t, std::vector<std::string>> skolem_map;
+    std::map<std::shared_ptr<util::Grounding>, std::vector<std::string>,
+             util::GroundingSubstitutionCompare>
+        skolem_map;
     uint64_t null_value_count = 0;
 
     std::shared_ptr<util::Grounding>

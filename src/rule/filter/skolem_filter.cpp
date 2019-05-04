@@ -66,16 +66,14 @@ std::shared_ptr<util::Grounding> SkolemFilter::generate_chase_fact(
     std::shared_ptr<util::Grounding> const &input_fact) {
     std::vector<std::string> child_values;
     std::vector<std::string> bound_values;
-    // TODO this should not use hash
-    auto key = input_fact->get_hash();
-    if (skolem_map.count(key) > 0) {
-        bound_values = skolem_map.at(key);
+    if (skolem_map.count(input_fact) > 0) {
+        bound_values = skolem_map.at(input_fact);
     } else {
         for (auto const &var_name : bound_variables) {
             auto new_null = generate_new_value(var_name);
             bound_values.push_back(std::move(new_null));
         }
-        skolem_map.try_emplace(key, bound_values);
+        skolem_map.try_emplace(input_fact, bound_values);
     }
     for (auto const &var_name : head_variables) {
         if (bound_variable_index.count(var_name) > 0) {
