@@ -81,6 +81,14 @@ std::string get_rules(std::string const &program_id, int win_size) {
                 "h(X, h) := w(X)\n";
     } else if (program_id == "p20") {
         rules = "p(X, Z) := p(X, Y) && p(Y, Z)\n";
+    } else if (program_id == "p21") {
+        rules = "r(A, B) := [$, " + std::to_string(win_size) + "] [B]p(A, B)\n";
+    } else if (program_id == "p22") {
+        rules = "r(A, B, C, D) := [$, " + std::to_string(win_size) +
+                "] [B]p(A, B, C, D)\n";
+    } else if (program_id == "p23") {
+        rules = "r(A, B, C, D, E, F, G, H) := [$, " + std::to_string(win_size) +
+                "] [B]p(A, B, C, D, E, F, G, H)\n";
     }
     return rules;
 }
@@ -111,11 +119,11 @@ void run(uint64_t end_time, int facts_per_timepoint,
 
 int main(int argc, char **argv) {
     if (argc < 6) {
-        std::cerr
-            << "Usage: benchapp TEST_NAME END_TIME "
-               "FACTS_PER_TIMEPOINT "
-               "WINDOW_SIZE CHASE_ALGORITHM=(O / S / R) INPUT_PATH [OUTPUT_PATH]"
-            << std::endl;
+        std::cerr << "Usage: benchapp TEST_NAME END_TIME "
+                     "FACTS_PER_TIMEPOINT "
+                     "WINDOW_SIZE CHASE_ALGORITHM=(O / S / R) INPUT_PATH "
+                     "[OUTPUT_PATH]"
+                  << std::endl;
         return 1;
     }
     std::string program_id(argv[1]);
@@ -144,8 +152,8 @@ int main(int argc, char **argv) {
 
     std::string rules = get_rules(program_id, win_size);
 
-    std::cout << "Run: " << program_id << " - chase: " << chase_algorithm_str 
-                << std::endl
+    std::cout << "Run: " << program_id << " - chase: " << chase_algorithm_str
+              << std::endl
               << "timepoints: " << end_time << ",  fact_count: " << fact_count
               << ",  win_size: " << win_size << std::endl;
 

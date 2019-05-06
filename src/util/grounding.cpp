@@ -65,14 +65,6 @@ bool Grounding::is_background_fact() const { return is_background_fact_m; }
 
 bool Grounding::is_fact() const { return is_fact_m; }
 
-size_t Grounding::get_hash() {
-    if (!has_hash) {
-        compute_hash();
-        has_hash = true;
-    }
-    return hash;
-}
-
 std::shared_ptr<Grounding>
 Grounding::new_annotations(uint64_t consideration_time, uint64_t horizon_time,
                            uint64_t consideration_count,
@@ -126,14 +118,6 @@ Grounding::new_pred_constvec(std::string const &predicate,
     return std::make_shared<Grounding>(result);
 }
 
-void Grounding::compute_hash() {
-    // old substitution_hash
-    std::string hash_str = std::accumulate(
-        constant_vector.begin(), constant_vector.end(), std::string(";"));
-    std::hash<std::string> hasher;
-    hash = hasher(hash_str);
-}
-
 std::string const &Grounding::get_constant(size_t variable_index) const {
     return constant_vector.at(variable_index);
 }
@@ -175,11 +159,9 @@ std::shared_ptr<Grounding> Grounding::remove_constant(size_t index) const {
 size_t Grounding::get_size() const { return constant_vector.size(); }
 
 std::string Grounding::get_substitution_key() const {
-    std::stringstream os;
-    for (auto const &value : constant_vector) {
-        os << value << ";";
-    }
-    return os.str();
+    std::string hash_str = std::accumulate(
+        constant_vector.begin(), constant_vector.end(), std::string(";"));
+    return hash_str;
 }
 
 std::string Grounding::to_string() const {

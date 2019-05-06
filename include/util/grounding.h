@@ -2,7 +2,6 @@
 #define LASER_UTIL_GROUNDING_H
 
 #include <climits>
-#include <functional> // std::hash<std::string>
 #include <iostream>
 #include <memory>
 #include <numeric>
@@ -32,11 +31,6 @@ class Grounding {
     bool is_fact_m = false;
     std::vector<std::string> constant_vector;
     std::string predicate;
-
-    bool has_hash = false;
-    size_t hash = 0;
-
-    void compute_hash();
     bool annotation_less_than(Grounding const &other) const;
 
   public:
