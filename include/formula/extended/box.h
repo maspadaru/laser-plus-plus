@@ -1,10 +1,10 @@
 #ifndef LASER_FORMULA_EXTENDED_BOX_H
 #define LASER_FORMULA_EXTENDED_BOX_H
 
+#include <map>
 #include <memory>
 #include <set>
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -27,7 +27,7 @@ class Box : public Formula {
 
     GroundingTable grounding_table;
 
-    std::unordered_map<size_t, std::shared_ptr<util::Grounding>> box_map;
+    std::map<std::string, std::shared_ptr<util::Grounding>> box_map;
 
     // Methods
 

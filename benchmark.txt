@@ -55,6 +55,8 @@ Exception 2: TRAN - 10 timepoints, 100 facts at each timepoint
 
 I. Benchmark before / after implementing second tier SNE:
 
+The values in the tables represent total evaluation time in seconds. 
+
 -------------------------------------
 | Program | Tier 1 SNE | Tier 2 SNE |
 -------------------------------------
@@ -93,12 +95,12 @@ II. Skolem chase with and without hashes:
   uses an ordered map, where the values are compared rather than hashed. 
 
 
--------------------------------------
-| Program | Tier 2 SNE | Tier 2 SNE |
--------------------------------------
-| EX1S    |       2.57 |       3.59 |
-| EX8S    |       2.04 |       2.26 |
--------------------------------------
+--------------------------------------
+| Program | With hashes | No Hashes  |
+--------------------------------------
+| EX1S    |        2.57 |       3.59 |
+| EX8S    |        2.04 |       2.26 |
+--------------------------------------
 
 Conclusions:
 - Hashes are faster, but they introduce the possibility of collisions, and thus
@@ -106,3 +108,30 @@ Conclusions:
 - Slowdown are more evident in EX1 than in EX8, since the rule in EX1 has more
   values that need to be compared, while each rule in EX8 only needs to compare
   one value.
+
+  ===========================================================================
+
+  III. Box with and without hashes
+
+- The implementation of the box operator was using an unordered map to track
+  facts wich had the same constants. 
+- The key of this map was a hash of this constant vector.
+- In the current implementation I replaced the hash with a string that is a
+  concatentation of all constant values in each fact, separated by semicolon. 
+- A binary search tree-based ordered map is used instead of an unordered map.
+
+
+--------------------------------------
+| Program | With hashes | No Hashes  |
+--------------------------------------
+| BOX    |        0.83 |        2.31 |
+--------------------------------------
+
+Conclusions:
+- While this implementation eliminates the possibility of collisions, it 
+  introduces a significant performance overhead.
+- A better solution is needed.
+- A similar solution is used in Conjunction. Therefore, finding a more efficient
+  solution will benefit the implementation of both Box and Conjunction operators 
+
+

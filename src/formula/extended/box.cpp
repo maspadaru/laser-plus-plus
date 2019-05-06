@@ -90,8 +90,7 @@ Box::get_conclusions_step(util::Timeline const &timeline) {
     return result;
 }
 
-bool Box::evaluate(util::Timeline const &timeline,
-                   size_t previous_step,
+bool Box::evaluate(util::Timeline const &timeline, size_t previous_step,
                    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     bool result = child->evaluate(timeline, previous_step, facts);
     if (result) {
@@ -136,7 +135,7 @@ void Box::update_box_map(
         // from child p(a)[4,4], p(a)[2,3], in this order;
         keep_going = false;
         for (auto const &child_grounding : facts) {
-            size_t key = child_grounding->get_hash();
+            auto const key = child_grounding->get_substitution_key();
             box_map.try_emplace(key, child_grounding);
             std::shared_ptr<util::Grounding> &box_grounding = box_map[key];
             auto adjusted_result =

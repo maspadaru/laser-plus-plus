@@ -81,6 +81,8 @@ class Grounding {
 
     std::vector<std::string> const &get_constant_vector() const;
 
+    std::string get_substitution_key() const;
+
     bool has_expired(uint64_t time, uint64_t tuple_counter) const;
 
     size_t get_size() const;

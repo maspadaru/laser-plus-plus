@@ -174,6 +174,14 @@ std::shared_ptr<Grounding> Grounding::remove_constant(size_t index) const {
 
 size_t Grounding::get_size() const { return constant_vector.size(); }
 
+std::string Grounding::get_substitution_key() const {
+    std::stringstream os;
+    for (auto const &value : constant_vector) {
+        os << value << ";";
+    }
+    return os.str();
+}
+
 std::string Grounding::to_string() const {
     std::stringstream os;
     os << predicate << "(";
