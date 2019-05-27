@@ -68,15 +68,16 @@ void TimeReference::add_child(formula::Formula *child) {}
 std::shared_ptr<util::Grounding>
 TimeReference::add_time_variable(util::Timeline const &timeline,
                                  util::Grounding const &grounding) const {
-    auto result =
-        grounding.new_constant(get_time_variable_index(),
+    auto result = grounding.clone();
+    result->set_constant(get_time_variable_index(),
                                std::move(std::to_string(timeline.get_time())));
     return result;
 }
 
 std::shared_ptr<util::Grounding>
 TimeReference::remove_time_variable(util::Grounding const &grounding) const {
-    auto result = grounding.remove_constant(get_time_variable_index());
+    auto result = grounding.clone();
+    result->remove_constant(get_time_variable_index());
     return result;
 }
 
@@ -90,7 +91,8 @@ TimeReference::convert_groundings_head(
         std::string const &horizon_time_string =
             grounding->get_constant(timevar_index);
         uint64_t horizon_time = std::stoull(horizon_time_string);
-        auto new_grounding = grounding->new_horizon_time(horizon_time);
+        auto new_grounding = grounding->clone();
+        new_grounding->set_horizon_time(horizon_time);
         result_vector.push_back(std::move(new_grounding));
     }
     return result_vector;

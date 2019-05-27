@@ -55,8 +55,8 @@ Diamond::get_groundings(util::Timeline const &timeline) {
     auto const &grounding_vector = grounding_table.get_all_groundings();
     std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto const &grounding : grounding_vector) {
-        auto new_grounding =
-            grounding->new_horizon_time(util::Timeline::INFINITE_TIME);
+        auto new_grounding = grounding->clone();
+        new_grounding->set_horizon_time(util::Timeline::INFINITE_TIME);
         result.push_back(std::move(new_grounding));
     }
     return result;

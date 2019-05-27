@@ -1,7 +1,7 @@
 #!/bin/bash
 
-EXECUTABLE=testapp
-TEST_EXECUTABLE=run_test
+TESTAPP_EXECUTABLE=testapp
+DEBUG_EXECUTABLE=run_test
 BENCHAPP_EXECUTABLE=benchapp
 
 build_release() {
@@ -21,7 +21,7 @@ build_debug() {
 }
 
 build() {
-    build_release
+    #build_release
     build_debug
 }
 
@@ -44,15 +44,15 @@ run_benchapp () {
 }
 
 run_project () {
-    cmake-build-debug/$EXECUTABLE
+    cmake-build-debug/$TESTAPP_EXECUTABLE
 }
 
 test_project () {
-    cmake-build-debug/$TEST_EXECUTABLE
+    cmake-build-debug/$DEBUG_EXECUTABLE
 }
 
 debug_project () {
-    gdb cmake-build-debug/$EXECUTABLE --tui
+    gdb cmake-build-debug/$TESTAPP_EXECUTABLE --tui
 }
 
 debug_benchapp () {

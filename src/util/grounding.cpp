@@ -65,15 +65,22 @@ bool Grounding::is_background_fact() const { return is_background_fact_m; }
 
 bool Grounding::is_fact() const { return is_fact_m; }
 
-std::shared_ptr<Grounding>
-Grounding::new_annotations(uint64_t consideration_time, uint64_t horizon_time,
+void
+Grounding::set_annotations(uint64_t consideration_time, uint64_t horizon_time,
                            uint64_t consideration_count,
-                           uint64_t horizon_count) const {
-    auto result = Grounding(predicate, consideration_time, horizon_time,
-                            consideration_count, horizon_count, is_fact_m,
-                            is_background_fact_m, constant_vector);
-    result.step = this->step;
-    return std::make_shared<Grounding>(result);
+                           uint64_t horizon_count) {
+    this->consideration_time = consideration_time;
+    this->horizon_time = horizon_time;
+    this->consideration_count = consideration_count;
+    this->horizon_count = horizon_count;
+}
+
+void Grounding::set_horizon_time(uint64_t horizon_time) {
+    this->horizon_time = horizon_time;
+}
+
+void Grounding::set_horizon_count(uint64_t horizon_count) {
+    this->horizon_count = horizon_count;
 }
 
 std::shared_ptr<Grounding> Grounding::clone() const {
@@ -81,41 +88,12 @@ std::shared_ptr<Grounding> Grounding::clone() const {
     return std::make_shared<Grounding>(clone);
 }
 
-std::shared_ptr<Grounding>
-Grounding::new_horizon_time(uint64_t horizon_time) const {
-    auto result = Grounding(predicate, consideration_time, horizon_time,
-                            consideration_count, horizon_count, is_fact_m,
-                            is_background_fact_m, constant_vector);
-    result.step = this->step;
-    return std::make_shared<Grounding>(result);
+void Grounding::set_constant_vector(std::vector<std::string> vector) {
+    constant_vector = std::move(vector);
 }
 
-std::shared_ptr<Grounding>
-Grounding::new_horizon_count(uint64_t horizon_count) const {
-    auto result = Grounding(predicate, consideration_time, horizon_time,
-                            consideration_count, horizon_count, is_fact_m,
-                            is_background_fact_m, constant_vector);
-    result.step = this->step;
-    return std::make_shared<Grounding>(result);
-}
-
-std::shared_ptr<Grounding>
-Grounding::new_constant_vector(std::vector<std::string> new_vector) const {
-    Grounding result = Grounding(predicate, consideration_time, horizon_time,
-                                 consideration_count, horizon_count, is_fact_m,
-                                 is_background_fact_m, std::move(new_vector));
-    result.step = this->step;
-    return std::make_shared<Grounding>(result);
-}
-
-std::shared_ptr<Grounding>
-Grounding::new_pred_constvec(std::string const &predicate,
-                             std::vector<std::string> new_vector) const {
-    Grounding result = Grounding(predicate, consideration_time, horizon_time,
-                                 consideration_count, horizon_count, is_fact_m,
-                                 is_background_fact_m, std::move(new_vector));
-    result.step = this->step;
-    return std::make_shared<Grounding>(result);
+void Grounding::set_predicate(std::string const &predicate) {
+    this->predicate = predicate;
 }
 
 std::string const &Grounding::get_constant(size_t variable_index) const {
@@ -135,25 +113,13 @@ bool Grounding::has_expired(uint64_t time, uint64_t tuple_counter) const {
     return result;
 }
 
-std::shared_ptr<Grounding> Grounding::new_constant(size_t index,
-                                                   std::string constant) const {
-    std::vector<std::string> new_vector = constant_vector;
-    new_vector.insert(new_vector.begin() + index, std::move(constant));
-    Grounding result =
-        Grounding(predicate, consideration_time, horizon_time,
-                  consideration_count, horizon_count, std::move(new_vector));
-    result.step = this->step;
-    return std::make_shared<Grounding>(result);
+void Grounding::set_constant(size_t index, std::string constant) {
+    constant_vector.insert(constant_vector.begin() + index,
+                           std::move(constant));
 }
 
-std::shared_ptr<Grounding> Grounding::remove_constant(size_t index) const {
-    std::vector<std::string> new_vector = constant_vector;
-    new_vector.erase(new_vector.begin() + index);
-    Grounding result =
-        Grounding(predicate, consideration_time, horizon_time,
-                  consideration_count, horizon_count, std::move(new_vector));
-    result.step = this->step;
-    return std::make_shared<Grounding>(result);
+void Grounding::remove_constant(size_t index) {
+    constant_vector.erase(constant_vector.begin() + index);
 }
 
 size_t Grounding::get_size() const { return constant_vector.size(); }

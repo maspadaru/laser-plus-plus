@@ -31,6 +31,7 @@ class Grounding {
     bool is_fact_m = false;
     std::vector<std::string> constant_vector;
     std::string predicate;
+
     bool annotation_less_than(Grounding const &other) const;
 
   public:
@@ -63,7 +64,6 @@ class Grounding {
 
     size_t get_step() const;
 
-    void set_step(size_t step);
 
     bool is_background_fact() const;
 
@@ -81,49 +81,22 @@ class Grounding {
 
     size_t get_size() const;
 
-    /**
-     * Creates a new Grounding containing an extra constant at the specified
-     * index
-     */
-    std::shared_ptr<Grounding> new_constant(size_t index,
-                                            std::string constant) const;
+    void set_step(size_t step);
 
-    /**
-     * Creates a new Grounding containing the new constant vector
-     */
-    std::shared_ptr<Grounding>
-    new_constant_vector(std::vector<std::string> new_vector) const;
+    void set_constant(size_t index, std::string constant);
 
-    /**
-     * Creates a new Grounding containing the new predicate and constant vector
-     */
-    std::shared_ptr<Grounding>
-    new_pred_constvec(std::string const &predicate,
-                      std::vector<std::string> new_vector) const;
+    void set_constant_vector(std::vector<std::string> vector);
 
-    /**
-     * Creates a new Grounding containing the new annotations
-     */
-    std::shared_ptr<Grounding> new_annotations(uint64_t consideration_time,
-                                               uint64_t horizon_time,
-                                               uint64_t consideration_count,
-                                               uint64_t horizon_count) const;
+    void set_predicate(std::string const &predicate);
 
-    /**
-     * Creates a new Grounding containing the new horizon time
-     */
-    std::shared_ptr<Grounding> new_horizon_time(uint64_t horizon_time) const;
+    void set_annotations(uint64_t consideration_time, uint64_t horizon_time,
+                         uint64_t consideration_count, uint64_t horizon_count);
 
-    /**
-     * Creates a new Grounding containing the new horizon tuple count
-     */
-    std::shared_ptr<Grounding> new_horizon_count(uint64_t horizon_count) const;
+    void set_horizon_time(uint64_t horizon_time); 
 
-    /**
-     * Creates a new Grounding containing that contains all constants, except
-     * the one at the specified index
-     */
-    std::shared_ptr<Grounding> remove_constant(size_t index) const;
+    void set_horizon_count(uint64_t horizon_count);
+
+    void remove_constant(size_t index);
 
     std::string to_string() const;
 

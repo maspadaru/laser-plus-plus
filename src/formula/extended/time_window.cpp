@@ -94,7 +94,8 @@ TimeWindow::get_groundings(util::Timeline const &timeline) {
         uint64_t window_horizon_time = compute_horizon_time(
             grounding->get_consideration_time(), grounding->get_horizon_time(),
             timeline.get_time());
-        auto new_grounding = grounding->new_horizon_time(window_horizon_time);
+        auto new_grounding = grounding->clone();
+        new_grounding->set_horizon_time(window_horizon_time);
         result.push_back(std::move(new_grounding));
     }
     return result;

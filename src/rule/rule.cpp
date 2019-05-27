@@ -206,7 +206,9 @@ Rule::make_atom_fact(std::shared_ptr<util::Grounding> const &body_fact,
         auto const &value = body_fact->get_constant(position);
         atom_values.push_back(value);
     }
-    auto result = body_fact->new_pred_constvec(predicate, atom_values);
+    auto result = body_fact->clone();
+    result->set_constant_vector(atom_values);
+    result->set_predicate(predicate);
     result->set_step(current_step);
     return result;
 }
