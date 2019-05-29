@@ -12,14 +12,14 @@
 # pypy gen_transitive.py 100000009 > ~/stream_transitive.txt
 
 # I Benchmark diferent formulas
-./laser.sh bench p1 1000 1000 0 O ~/stream_100M_1_2.txt  
+#./laser.sh bench p1 1000 1000 0 O ~/stream_100M_1_2.txt  
 #./laser.sh bench p2 1000 1000 0 O ~/stream_100M_1_1.txt 
 #./laser.sh bench p3 1000 1000 0 O ~/stream_100M_1_2.txt  
 #./laser.sh bench p4 1000 1000 0 O ~/stream_100M_1_2.txt  
-./laser.sh bench p5 1000 1000 0 O ~/stream_100M_2_2.txt  
-./laser.sh bench p6 100 1000 0 O ~/stream_100M_2_2.txt  
-./laser.sh bench p7 1000 1000 3 O ~/stream_100M_1_1.txt  
-./laser.sh bench p8 1000 1000 3 O ~/stream_100M_1_1.txt  
+#./laser.sh bench p5 1000 1000 0 O ~/stream_100M_2_2.txt  
+#./laser.sh bench p6 100 1000 0 O ~/stream_100M_2_2.txt  
+#./laser.sh bench p7 1000 1000 3 O ~/stream_100M_1_1.txt  
+#./laser.sh bench p8 1000 1000 3 O ~/stream_100M_1_1.txt  
 
 # II Benchmark Diferent input shapes
 #./laser.sh bench p1 10 100000 0 O ~/stream_100M_1_2.txt  
@@ -64,8 +64,8 @@
 
 # VII Benchmark cahse algorithms on diferent on single complex rule
 ./laser.sh bench p16 1000 1000 0 S ~/stream_100M_1_2.txt  
-
 ./laser.sh bench p16 1000 1000 0 R ~/stream_100M_1_2.txt  
+./laser.sh bench p16 1000 1000 0 I ~/stream_100M_1_2.txt  
 
 # IX Benchmark chase algorithms on diferent number of simple rules
 #./laser.sh bench p17 1000 1000 0 S ~/stream_100M_2_1.txt  
@@ -76,6 +76,10 @@
 #./laser.sh bench p18 1000 1000 0 R ~/stream_100M_4_1.txt  
 ./laser.sh bench p19 1000 1000 0 R ~/stream_100M_8_1.txt  
 
+#./laser.sh bench p17 1000 1000 0 I ~/stream_100M_2_1.txt  
+#./laser.sh bench p18 1000 1000 0 I ~/stream_100M_4_1.txt  
+./laser.sh bench p19 1000 1000 0 I ~/stream_100M_8_1.txt  
+
 # X Benchmark chase algorithms on diferent window sizes
 # TODO
 
@@ -83,4 +87,4 @@
 #TODO
 
 # XII Benchmark transitive rule
-./laser.sh bench p20 10 100 0 O ~/stream_transitive.txt  
+#./laser.sh bench p20 10 100 0 O ~/stream_transitive.txt  

@@ -186,3 +186,18 @@ Conclusions:
   not satisfied by this solution
 - Solution S1 presents a good performance while ensuring a collision-free 
   implementation. 
+
+
+
+V. Chase algorithms compared 
+
+--------------------------------------------------
+| Program |     Skolem | Restricted |    Indexed |
+--------------------------------------------------
+| EX1     |       3.60 |       5.29 |       5.87 |
+| EX8     |       2.23 |       2.91 |       3.33 |
+--------------------------------------------------
+
+
+
+

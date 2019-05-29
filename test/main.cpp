@@ -456,7 +456,6 @@ void test_existential_time_reference_handb() {
     run(name, stream_string, rule_string,
         laser::util::ChaseAlgorithm::RESTRICTED);
 }
-
 void test_existential_time_reference_head() {
     const std::string name = "Existential Time Reference head";
     std::string stream_string =
@@ -620,6 +619,19 @@ void test_existential_restrictive_window() {
         laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
+void test_existential_indexed_window() {
+    const std::string name = "Existential Restrictive at diferent timpoints";
+    std::string stream_string = "1 4 "
+                                "1 : s(x1, y1),q(x1)\n"
+                                "2 : q(x2)\n"
+                                "3 : q(x1)\n"
+                                "4 : q(x4)\n";
+    std::string rule_string = "p(X, z)  := q(X)\n"
+                              "p (X, Y) := [$, 2] [D] s(X, Y) \n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::INDEXED);
+}
+
 void test_conjunction_head() {
     const std::string name = "Conjunction Head";
     std::string stream_string = "1 2 "
@@ -670,7 +682,7 @@ int main() {
     // test_time_reference_body();
     // test_time_reference_handb();
     // test_time_reference_head();
-     test_time_reference_recursive();
+     //test_time_reference_recursive();
     // test_tuple_window();
     // test_tuple_window_diamond();
     // test_existential_simple();
@@ -688,4 +700,5 @@ int main() {
     // test_existential_restrictive_window();
     // test_conjunction_head();
     // test_conjunction_head_timeref();
+    test_existential_indexed_window();
 }

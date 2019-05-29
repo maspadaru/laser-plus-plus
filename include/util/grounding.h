@@ -69,8 +69,6 @@ class Grounding {
 
     bool is_fact() const;
 
-    size_t get_hash();
-
     std::string const &get_constant(size_t variable_index) const;
 
     std::vector<std::string> const &get_constant_vector() const;

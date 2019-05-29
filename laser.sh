@@ -21,7 +21,7 @@ build_debug() {
 }
 
 build() {
-    #build_release
+    build_release
     build_debug
 }
 

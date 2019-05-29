@@ -140,6 +140,9 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
         case util::ChaseAlgorithm::RESTRICTED:
             chase_filter = new RestrictedFilter();
             break;
+        case util::ChaseAlgorithm::INDEXED:
+            chase_filter = new IndexedFilter();
+            break;
         case util::ChaseAlgorithm::SKOLEM:
             chase_filter = new SkolemFilter();
             break;

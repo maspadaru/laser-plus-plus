@@ -21,7 +21,7 @@ void run(laser::util::ChaseAlgorithm chase_algorithm,
 
 int main(int argc, char **argv) {
     if (argc < 5) {
-        std::cerr << "Usage: simpleapp CHASE_ALGORITHM=(S/R) PROGRAM_PATH "
+        std::cerr << "Usage: simpleapp CHASE_ALGORITHM=(S/R/I) PROGRAM_PATH "
                      "INPUT_PATH OUTPUT_PATH  "
                   << std::endl;
         return 1;
@@ -36,6 +36,8 @@ int main(int argc, char **argv) {
         chase_algorithm = laser::util::ChaseAlgorithm::SKOLEM;
     } else if (chase_algorithm_str == "R") {
         chase_algorithm = laser::util::ChaseAlgorithm::RESTRICTED;
+    } else if (chase_algorithm_str == "I") {
+        chase_algorithm = laser::util::ChaseAlgorithm::INDEXED;
     }
 
     run(chase_algorithm, program_path, stream_path, output_path);

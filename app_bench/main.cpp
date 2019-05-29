@@ -121,7 +121,7 @@ int main(int argc, char **argv) {
     if (argc < 6) {
         std::cerr << "Usage: benchapp TEST_NAME END_TIME "
                      "FACTS_PER_TIMEPOINT "
-                     "WINDOW_SIZE CHASE_ALGORITHM=(O / S / R) INPUT_PATH "
+                     "WINDOW_SIZE CHASE_ALGORITHM=(O / S / R / I) INPUT_PATH "
                      "[OUTPUT_PATH]"
                   << std::endl;
         return 1;
@@ -148,6 +148,8 @@ int main(int argc, char **argv) {
         chase_algorithm = laser::util::ChaseAlgorithm::SKOLEM;
     } else if (chase_algorithm_str == "R") {
         chase_algorithm = laser::util::ChaseAlgorithm::RESTRICTED;
+    } else if (chase_algorithm_str == "I") {
+        chase_algorithm = laser::util::ChaseAlgorithm::INDEXED;
     }
 
     std::string rules = get_rules(program_id, win_size);

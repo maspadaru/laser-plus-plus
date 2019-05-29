@@ -11,6 +11,7 @@
 #include "rule/chase_filter.h"
 #include "rule/filter/oblivious_filter.h"
 #include "rule/filter/restricted_filter.h"
+#include "rule/filter/indexed_filter.h"
 #include "rule/filter/skolem_filter.h"
 #include "rule/shared.h"
 #include "util/chase_algorithm.h"
