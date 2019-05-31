@@ -1,6 +1,7 @@
 #include "formula/extended/conjunction.h"
 
 #include <algorithm>
+#include <iostream>
 
 namespace laser {
 namespace formula {
@@ -130,12 +131,15 @@ void Conjunction::add_child(formula::Formula *child) {
 void Conjunction::expire_outdated_groundings(util::Timeline const &timeline) {
     left_child->expire_outdated_groundings(timeline);
     right_child->expire_outdated_groundings(timeline);
-    grounding_vector.clear();
+    grounding_set.clear();
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
 Conjunction::get_groundings(util::Timeline const &timeline) {
-    return grounding_vector;
+    std::vector<std::shared_ptr<util::Grounding>> result_vector;
+    std::copy(grounding_set.begin(), grounding_set.end(),
+              std::back_inserter(result_vector));
+    return result_vector;
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
@@ -192,7 +196,7 @@ Conjunction::merge_groundings(util::Timeline const &timeline,
     return result;
 }
 
-void Conjunction::populate_grounding_vector(
+void Conjunction::populate_grounding_set(
     util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
     std::vector<std::shared_ptr<util::Grounding>> const &right_groundings) {
@@ -217,7 +221,7 @@ void Conjunction::populate_grounding_vector(
                 auto gr_fresh = gr->is_fresh_sne(current_time, previous_step);
                 if (gl_fresh || gr_fresh) {
                     auto new_grounding = merge_groundings(timeline, *gl, *gr);
-                    grounding_vector.push_back(std::move(new_grounding));
+                    grounding_set.insert(std::move(new_grounding));
                 }
             }
         }
@@ -227,13 +231,16 @@ void Conjunction::populate_grounding_vector(
 bool Conjunction::evaluate(
     util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
-    // TODO Here I can split facts in sub-maps, based on predicates of children
+    // TODO Here I can split facts in sub-vectors, based on predicates of
+    // children
     left_child->evaluate(timeline, previous_step, facts);
     right_child->evaluate(timeline, previous_step, facts);
-    populate_grounding_vector(timeline, previous_step,
-                              left_child->get_groundings(timeline),
-                              right_child->get_groundings(timeline));
-    return !grounding_vector.empty();
+    populate_grounding_set(timeline, previous_step,
+                           left_child->get_groundings(timeline),
+                           right_child->get_groundings(timeline));
+    std::cerr << "Timepoint: " << timeline.get_time()
+              << "; size of grnd vect: " << grounding_set.size() << std::endl;
+    return !grounding_set.empty();
 }
 
 } // namespace formula

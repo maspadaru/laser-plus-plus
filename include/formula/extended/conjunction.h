@@ -30,7 +30,7 @@ class Conjunction : public Formula {
      */
     std::unordered_map<std::string, size_t> variable_map;
 
-    std::vector<std::shared_ptr<util::Grounding>> grounding_vector;
+    std::set<std::shared_ptr<util::Grounding>> grounding_set;
 
     void set_head(bool is_head) override;
 
@@ -41,7 +41,7 @@ class Conjunction : public Formula {
                                           std::vector<T, A> right) const;
 
     void populate_variable_collections();
-    void populate_grounding_vector(
+    void populate_grounding_set(
         util::Timeline const &timeline, size_t previous_step,
         std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
         std::vector<std::shared_ptr<util::Grounding>> const &right_groundings);

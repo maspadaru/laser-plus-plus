@@ -5,6 +5,8 @@
 
 FileWriter::FileWriter(std::string const &output_path) {
     out.open(output_path);
+    std::cerr << "Path" << output_path << std::endl << std::endl;
+    std::cerr << "open:" << out.is_open() << std::endl << std::endl;
 }
 
 FileWriter::~FileWriter() { out.close(); }
@@ -53,9 +55,13 @@ std::string FileWriter::format_output(
             result_stream << DELIMITER;
         }
     }
-    return result_stream.str();
+    auto result = result_stream.str();
+    //std::cerr << "Formating:" << result << std::endl << std::endl;
+    return result;
 }
 
 void FileWriter::write_output(std::string const &formatted_output_string) {
     out << formatted_output_string << std::endl;
+    //std::cerr << "Writing:" << formatted_output_string << std::endl << std::endl;
+    std::cerr << "Writing:" << out.is_open() << std::endl << std::endl;
 }
