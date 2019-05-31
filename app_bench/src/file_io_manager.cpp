@@ -42,7 +42,6 @@ void FileIOManager::write_output_data(
         latest_output = "";
         latest_output = file_writer.format_output(time, std::move(output_vector));
         file_writer.write_output(latest_output);
-        //std::cerr << "Should write output "<< latest_output << std::endl << std::endl;
     }
 }
 

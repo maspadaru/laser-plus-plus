@@ -42,6 +42,8 @@ Formula &Conjunction::move() {
     return *result;
 }
 
+bool Conjunction::is_head() const { return is_head_m; }
+
 void Conjunction::set_head(bool is_head) {
     // Conjunctino in head is used for Existentialy quantified rules using
     // restricted chase algorithm.
@@ -50,12 +52,16 @@ void Conjunction::set_head(bool is_head) {
     is_head_m = is_head;
 }
 
-bool Conjunction::is_head() const { return is_head_m; }
-
 void Conjunction::populate_variable_collections() {
     // Get all variables from children and insert into variable_names
     auto left = left_child->get_variable_names();
+    left.erase(unique(left.begin(), left.end()), left.end());
     auto right = right_child->get_variable_names();
+    right.erase(unique(right.begin(), right.end()), right.end());
+    for (auto const &left_var : left) {
+        for (auto const &right_var : right) {
+        }
+    }
     variable_names.insert(variable_names.end(),
                           std::make_move_iterator(left.begin()),
                           std::make_move_iterator(left.end()));
@@ -69,17 +75,15 @@ void Conjunction::populate_variable_collections() {
             common_child_variables.push_back(variable_names[i]);
         }
     }
-    // Remove all duplicates
+    // Remove all duplicates (variables found in both children)
     variable_names.erase(unique(variable_names.begin(), variable_names.end()),
                          variable_names.end());
-    common_child_variables.erase(
-        unique(common_child_variables.begin(), common_child_variables.end()),
-        common_child_variables.end());
     // populate variable_map
     for (int i = 0; i < variable_names.size(); i++) {
         variable_map.try_emplace(variable_names[i], i);
     }
 }
+
 // getters / setters
 
 FormulaType Conjunction::get_type() const { return FormulaType::CONJUNCTION; }
@@ -164,7 +168,9 @@ Conjunction::hash_common_variables(Formula const &child,
         auto const &constant = grounding.get_constant(variable_index);
         ss << constant << ";;";
     }
-    return ss.str();
+    auto result = ss.str();
+    //std::cerr << "hash: " << result << std::endl;
+    return result;
 }
 
 std::shared_ptr<util::Grounding>
@@ -205,7 +211,6 @@ void Conjunction::populate_grounding_set(
         hashmap;
     auto current_time = timeline.get_time();
     for (auto const &gr : right_groundings) {
-        // TODO no more hash here!
         auto key = hash_common_variables(*right_child, *gr);
         hashmap.try_emplace(key);
         std::vector<std::shared_ptr<util::Grounding>> &map_vector =
@@ -231,15 +236,18 @@ void Conjunction::populate_grounding_set(
 bool Conjunction::evaluate(
     util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
+    std::cerr << "Timepoint: " << timeline.get_time() << std::endl;
+    std::cerr << "Size of grnd vect: " << grounding_set.size() << std::endl;
     // TODO Here I can split facts in sub-vectors, based on predicates of
     // children
     left_child->evaluate(timeline, previous_step, facts);
     right_child->evaluate(timeline, previous_step, facts);
-    populate_grounding_set(timeline, previous_step,
-                           left_child->get_groundings(timeline),
-                           right_child->get_groundings(timeline));
-    std::cerr << "Timepoint: " << timeline.get_time()
-              << "; size of grnd vect: " << grounding_set.size() << std::endl;
+    auto left_groundings = left_child->get_groundings(timeline);
+    auto right_groundings = right_child->get_groundings(timeline);
+    std::cerr << "Left Gr Size " << left_groundings.size() << std::endl;
+    std::cerr << "Right Gr Size " << right_groundings.size() << std::endl;
+    populate_grounding_set(timeline, previous_step, left_groundings,
+                           right_groundings);
     return !grounding_set.empty();
 }
 

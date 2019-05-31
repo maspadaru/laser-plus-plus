@@ -5,8 +5,6 @@
 
 FileWriter::FileWriter(std::string const &output_path) {
     out.open(output_path);
-    std::cerr << "Path" << output_path << std::endl << std::endl;
-    std::cerr << "open:" << out.is_open() << std::endl << std::endl;
 }
 
 FileWriter::~FileWriter() { out.close(); }
@@ -30,6 +28,7 @@ FileWriter::remove_duplicates(
 std::string FileWriter::format_output(
     uint64_t time,
     std::vector<std::shared_ptr<laser::util::Grounding>> output_vector) const {
+    std::cerr << "Writing:" << output_vector.size() << std::endl << std::endl;
     std::stringstream result_stream;
     const std::string TIME_SEPARATOR = " -> ";
     const std::string ARGUMENTS_START = "(";
@@ -56,12 +55,9 @@ std::string FileWriter::format_output(
         }
     }
     auto result = result_stream.str();
-    //std::cerr << "Formating:" << result << std::endl << std::endl;
     return result;
 }
 
 void FileWriter::write_output(std::string const &formatted_output_string) {
     out << formatted_output_string << std::endl;
-    //std::cerr << "Writing:" << formatted_output_string << std::endl << std::endl;
-    std::cerr << "Writing:" << out.is_open() << std::endl << std::endl;
 }

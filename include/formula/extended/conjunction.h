@@ -30,7 +30,7 @@ class Conjunction : public Formula {
      */
     std::unordered_map<std::string, size_t> variable_map;
 
-    std::set<std::shared_ptr<util::Grounding>> grounding_set;
+    std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> grounding_set;
 
     void set_head(bool is_head) override;
 

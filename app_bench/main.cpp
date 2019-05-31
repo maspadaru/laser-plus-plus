@@ -112,7 +112,6 @@ void run(uint64_t end_time, int facts_per_timepoint,
          std::string const &stream_path, std::string const &output_path,
          bool is_output_enabled, std::string const &rules) {
     uint64_t start_time = 0;
-    std::cerr << "Main - Path" << output_path << std::endl << std::endl;
     auto file_io_manager =
         FileIOManager(stream_path, output_path, start_time, end_time,
                       facts_per_timepoint, is_output_enabled);
@@ -152,7 +151,6 @@ int main(int argc, char **argv) {
     if (argc == 8) {
         output_path = argv[7];
         is_output_enabled = true;
-        std::cerr << "Main1 - Path" << output_path << std::endl << std::endl;
     }
 
     uint64_t end_time = std::stoull(end_time_str);
