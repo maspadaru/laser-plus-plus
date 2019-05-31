@@ -26,9 +26,14 @@
 #./laser.sh bench p1 1000 1000 0 O ~/stream_100M_1_2.txt  
 #./laser.sh bench p1 100000 10 0 O ~/stream_100M_1_2.txt  
 
-#./laser.sh bench p5 10 100000 0 O ~/stream_100M_2_2.txt  
-#./laser.sh bench p5 1000 1000 0 O ~/stream_100M_2_2.txt  
-#./laser.sh bench p5 100000 10 0 O ~/stream_100M_2_2.txt  
+./laser.sh bench p5 10 100000 0 O ~/stream_100M_2_2.txt  
+./laser.sh bench p5 1000 1000 0 O ~/stream_100M_2_2.txt  
+./laser.sh bench p5 100000 10 0 O ~/stream_100M_2_2.txt  
+
+
+./laser.sh bench p6 10 100000 0 O ~/stream_100M_2_2.txt  
+./laser.sh bench p6 1000 1000 0 O ~/stream_100M_2_2.txt  
+./laser.sh bench p6 100000 10 0 O ~/stream_100M_2_2.txt  
 
 #./laser.sh bench p7 10 100000 3 O ~/stream_100M_1_1.txt  
 #./laser.sh bench p7 1000 1000 3 O ~/stream_100M_1_1.txt  
@@ -95,9 +100,9 @@
 # XI Benchmark restricted chase performance on large databases
 
 #./laser.sh bench p24 10 1000 2 R ~/stream_100M_4_1.txt  
-./laser.sh bench p24 10 100 0 R ~/stream_100M_4_1.txt  
+#./laser.sh bench p24 10 100 0 R ~/stream_100M_4_1.txt  
 #./laser.sh bench p24 1000 10 2 R ~/stream_100M_4_1.txt  
 
 #./laser.sh bench p24 10 1000 2 I ~/stream_100M_4_1.txt  
-./laser.sh bench p24 10 100 0 I ~/stream_100M_4_1.txt  
+#./laser.sh bench p24 10 100 0 I ~/stream_100M_4_1.txt  
 #./laser.sh bench p24 1000 10 2 I ~/stream_100M_4_1.txt  

@@ -1,7 +1,6 @@
 #include "formula/extended/conjunction.h"
 
 #include <algorithm>
-#include <iostream>
 
 namespace laser {
 namespace formula {
@@ -236,16 +235,12 @@ void Conjunction::populate_grounding_set(
 bool Conjunction::evaluate(
     util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
-    std::cerr << "Timepoint: " << timeline.get_time() << std::endl;
-    std::cerr << "Size of grnd vect: " << grounding_set.size() << std::endl;
     // TODO Here I can split facts in sub-vectors, based on predicates of
     // children
     left_child->evaluate(timeline, previous_step, facts);
     right_child->evaluate(timeline, previous_step, facts);
     auto left_groundings = left_child->get_groundings(timeline);
     auto right_groundings = right_child->get_groundings(timeline);
-    std::cerr << "Left Gr Size " << left_groundings.size() << std::endl;
-    std::cerr << "Right Gr Size " << right_groundings.size() << std::endl;
     populate_grounding_set(timeline, previous_step, left_groundings,
                            right_groundings);
     return !grounding_set.empty();

@@ -28,7 +28,6 @@ FileWriter::remove_duplicates(
 std::string FileWriter::format_output(
     uint64_t time,
     std::vector<std::shared_ptr<laser::util::Grounding>> output_vector) const {
-    std::cerr << "Writing:" << output_vector.size() << std::endl << std::endl;
     std::stringstream result_stream;
     const std::string TIME_SEPARATOR = " -> ";
     const std::string ARGUMENTS_START = "(";

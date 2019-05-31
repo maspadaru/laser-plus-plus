@@ -215,7 +215,27 @@ Conclusions:
 
 ===========================================================================
 
-VI. Will indexed restricted chase improve performance in certain scenarios?
+VI. Benchmark Conjunction of diferent input shapes: Fixing conjunction performance
+
+- Conjunction was generating and storing a lot of duplicate groudnings. 
+- Duplicates were using a lot of memory, leading to system OOM and process
+    getting killed.
+- Fix: elimitate the duplicates.
+- Shape: see experiment V. 
+
+---------------------------------------------------------------
+| Shape    |     Before | After |    Indexed | Unordered |
+---------------------------------------------------------------
+| SHRT     |        |        |        |      |
+| MED      |        |        |        |      |
+| LONG     |        |        |        |      |
+---------------------------------------------------------------
+
+- Problem: the fix introduced a bug, 3 tests are failing, I will check it out.
+
+===========================================================================
+
+VII. Will indexed restricted chase improve performance in certain scenarios?
 
 - Program:
     s(c) && t(A, B, c, D) && u(c, D)  := p(A) && q(B) && r(D)\n"
