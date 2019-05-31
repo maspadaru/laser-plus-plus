@@ -62,29 +62,42 @@
 #./laser.sh bench p15 1000 1000 0 O ~/stream_100M_4_1.txt  
 #./laser.sh bench p15 1000 1000 0 O ~/stream_100M_8_1.txt  
 
-# VII Benchmark cahse algorithms on diferent on single complex rule
-./laser.sh bench p16 1000 1000 0 S ~/stream_100M_1_2.txt  
-./laser.sh bench p16 1000 1000 0 R ~/stream_100M_1_2.txt  
-./laser.sh bench p16 1000 1000 0 I ~/stream_100M_1_2.txt  
+# VII Benchmark cahse algorithms on diferent input shape on single complex rule
+
+#./laser.sh bench p16 10 100000 0 S ~/stream_100M_1_2.txt  
+#./laser.sh bench p16 1000 1000 0 S ~/stream_100M_1_2.txt  
+#./laser.sh bench p16 100000 10 0 S ~/stream_100M_1_2.txt  
+
+#./laser.sh bench p16 10 100000 0 R ~/stream_100M_1_2.txt  
+#./laser.sh bench p16 1000 1000 0 R ~/stream_100M_1_2.txt  
+#./laser.sh bench p16 100000 10 0 R ~/stream_100M_1_2.txt  
+
+#./laser.sh bench p16 10 100000 0 I ~/stream_100M_1_2.txt  
+#./laser.sh bench p16 1000 1000 0 I ~/stream_100M_1_2.txt  
+#./laser.sh bench p16 100000 10 0 I ~/stream_100M_1_2.txt  
 
 # IX Benchmark chase algorithms on diferent number of simple rules
 #./laser.sh bench p17 1000 1000 0 S ~/stream_100M_2_1.txt  
 #./laser.sh bench p18 1000 1000 0 S ~/stream_100M_4_1.txt  
-./laser.sh bench p19 1000 1000 0 S ~/stream_100M_8_1.txt  
+#./laser.sh bench p19 1000 1000 0 S ~/stream_100M_8_1.txt  
 
 #./laser.sh bench p17 1000 1000 0 R ~/stream_100M_2_1.txt  
 #./laser.sh bench p18 1000 1000 0 R ~/stream_100M_4_1.txt  
-./laser.sh bench p19 1000 1000 0 R ~/stream_100M_8_1.txt  
+#./laser.sh bench p19 1000 1000 0 R ~/stream_100M_8_1.txt  
 
 #./laser.sh bench p17 1000 1000 0 I ~/stream_100M_2_1.txt  
 #./laser.sh bench p18 1000 1000 0 I ~/stream_100M_4_1.txt  
-./laser.sh bench p19 1000 1000 0 I ~/stream_100M_8_1.txt  
+#./laser.sh bench p19 1000 1000 0 I ~/stream_100M_8_1.txt  
 
-# X Benchmark chase algorithms on diferent window sizes
-# TODO
-
-# XI Benchmark chase algorithms on diferent number of generated values 
-#TODO
-
-# XII Benchmark transitive rule
+# X Benchmark transitive rule
 #./laser.sh bench p20 10 100 0 O ~/stream_transitive.txt  
+
+# XI Benchmark restricted chase performance on large databases
+
+#./laser.sh bench p24 10 1000 2 R ~/stream_100M_4_1.txt  
+./laser.sh bench p24 10 100 0 R ~/stream_100M_4_1.txt  
+#./laser.sh bench p24 1000 10 2 R ~/stream_100M_4_1.txt  
+
+#./laser.sh bench p24 10 1000 2 I ~/stream_100M_4_1.txt  
+./laser.sh bench p24 10 100 0 I ~/stream_100M_4_1.txt  
+#./laser.sh bench p24 1000 10 2 I ~/stream_100M_4_1.txt  

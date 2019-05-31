@@ -13,6 +13,7 @@ uint64_t NFACTS = 100;
 
 std::string get_rules(std::string const &program_id, int win_size) {
     std::string rules;
+    std::string wsize = std::to_string(win_size);
     if (program_id == "p1") {
         rules = "r(X, Y) := p(X, Y)\n";
     } else if (program_id == "p2") {
@@ -26,9 +27,9 @@ std::string get_rules(std::string const &program_id, int win_size) {
     } else if (program_id == "p6") {
         rules = "r(X, Y, Z) := p(X,Y) && q(Z)\n";
     } else if (program_id == "p7") {
-        rules = "r(X) := [$, " + std::to_string(win_size) + "] [D]p(X)\n";
+        rules = "r(X) := [$, " + wsize + "] [D]p(X)\n";
     } else if (program_id == "p8") {
-        rules = "r(X) := [$, " + std::to_string(win_size) + "] [B]p(X)\n";
+        rules = "r(X) := [$, " + wsize + "] [B]p(X)\n";
     } else if (program_id == "p9") {
         rules = ""
                 "a(X) := p(X)\n"
@@ -82,13 +83,26 @@ std::string get_rules(std::string const &program_id, int win_size) {
     } else if (program_id == "p20") {
         rules = "p(X, Z) := p(X, Y) && p(Y, Z)\n";
     } else if (program_id == "p21") {
-        rules = "r(A, B) := [$, " + std::to_string(win_size) + "] [B]p(A, B)\n";
+        rules = "r(A, B) := [$, " + wsize + "] [B]p(A, B)\n";
     } else if (program_id == "p22") {
-        rules = "r(A, B, C, D) := [$, " + std::to_string(win_size) +
+        rules = "r(A, B, C, D) := [$, " + wsize +
                 "] [B]p(A, B, C, D)\n";
     } else if (program_id == "p23") {
-        rules = "r(A, B, C, D, E, F, G, H) := [$, " + std::to_string(win_size) +
+        rules = "r(A, B, C, D, E, F, G, H) := [$, " + wsize +
                 "] [B]p(A, B, C, D, E, F, G, H)\n";
+    } else if (program_id == "p24") {
+        rules = "r(A, B, C, D, E, F, G, H) := [$, " + wsize +
+                "] [B]p(A, B, C, D, E, F, G, H)\n";
+        rules = 
+            "s(c) && t(A, B, c, D) && u(c, D)  := p(A) && q(B) && r(D)\n"
+            "t(A, B, C, D) := [$, " + wsize + "] [D] (p(A) && p(B) && p(C) && p(D)) \n"
+            "t(A, B, C, D) := [$, " + wsize + "] [D] (q(A) && q(B) && q(C) && q(D)) \n"
+            "t(A, B, C, D) := [$, " + wsize + "] [D] (r(A) && r(B) && r(C) && r(D)) \n"
+            "t(A, B, C, D) := [$, " + wsize + "] [D] (s(A) && s(B) && s(C) && s(D)) \n"
+            "u(A, B) := [$, " + wsize + "] [D] (p(A) && p(B)) \n"
+            "u(A, B) := [$, " + wsize + "] [D] (q(A) && q(B)) \n"
+            "u(A, B) := [$, " + wsize + "] [D] (r(A) && r(B)) \n"
+            "u(A, B) := [$, " + wsize + "] [D] (s(A) && s(B)) \n";
     }
     return rules;
 }

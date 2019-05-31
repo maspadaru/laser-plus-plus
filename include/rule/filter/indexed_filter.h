@@ -2,6 +2,7 @@
 #define LASER_RULE_FILTER_INDEXED_FILTER_H
 
 #include <map>
+#include <unordered_map>
 #include <memory>
 #include <set>
 #include <vector>
@@ -31,7 +32,7 @@ class IndexedFilter : public ChaseFilter {
     std::vector<std::string> bound_variables;
     std::unordered_map<std::string, int> free_variable_index;
     std::unordered_map<std::string, int> bound_variable_index;
-    std::map<std::string, std::shared_ptr<util::Grounding>> index_map;
+    std::unordered_map<std::string, std::shared_ptr<util::Grounding>> index_map;
 
     std::shared_ptr<util::Grounding>
     generate_chase_fact(std::shared_ptr<util::Grounding> const &input_fact);

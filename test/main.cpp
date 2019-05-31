@@ -620,7 +620,7 @@ void test_existential_restrictive_window() {
 }
 
 void test_existential_indexed_window() {
-    const std::string name = "Existential Restrictive at diferent timpoints";
+    const std::string name = "Existential Indexed Window";
     std::string stream_string = "1 4 "
                                 "1 : s(x1, y1),q(x1)\n"
                                 "2 : q(x2)\n"
@@ -628,6 +628,80 @@ void test_existential_indexed_window() {
                                 "4 : q(x4)\n";
     std::string rule_string = "p(X, z)  := q(X)\n"
                               "p (X, Y) := [$, 2] [D] s(X, Y) \n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::INDEXED);
+}
+
+void test_existential_skolem_complex() {
+    const std::string name = "Existential Skolem Complex";
+    std::string stream_string = "1 4 "
+                                "1 : p(a1), p(b1), p(c1), p(d1)\n"
+                                "1 : q(a1), q(b1), q(c1), q(d1)\n"
+                                "1 : r(a1), r(b1), r(c1), r(d1)\n"
+                                "1 : s(a1), s(b1), s(c1), s(d1)\n"
+                                "2 : q(a2)\n"
+                                "3 : q(a3)\n"
+                                "4 : q(a4)\n";
+    std::string rule_string = 
+        "s(c) && t(A, B, c, D) && u(c, D)  := p(A) && q(B) && r(D)\n"
+        "t(A, B, C, D) := [$, 2] [D] (p(A) && p(B) && p(C) && p(D)) \n"
+        "t(A, B, C, D) := [$, 2] [D] (q(A) && q(B) && q(C) && q(D)) \n"
+        "t(A, B, C, D) := [$, 2] [D] (r(A) && r(B) && r(C) && r(D)) \n"
+        "t(A, B, C, D) := [$, 2] [D] (s(A) && s(B) && s(C) && s(D)) \n"
+        "u(A, B) := [$, 2] [D] (p(A) && p(B)) \n"
+        "u(A, B) := [$, 2] [D] (q(A) && q(B)) \n"
+        "u(A, B) := [$, 2] [D] (r(A) && r(B)) \n"
+        "u(A, B) := [$, 2] [D] (s(A) && s(B)) \n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::SKOLEM);
+}
+
+
+void test_existential_restricted_complex() {
+    const std::string name = "Existential Restricted Complex";
+    std::string stream_string = "1 4 "
+                                "1 : p(a1), p(b1), p(c1), p(d1)\n"
+                                "1 : q(a1), q(b1), q(c1), q(d1)\n"
+                                "1 : r(a1), r(b1), r(c1), r(d1)\n"
+                                "1 : s(a1), s(b1), s(c1), s(d1)\n"
+                                "2 : q(a2)\n"
+                                "3 : q(a3)\n"
+                                "4 : q(a4)\n";
+    std::string rule_string = 
+        "s(c) && t(A, B, c, D) && u(c, D)  := p(A) && q(B) && r(D)\n"
+        "t(A, B, C, D) := [$, 2] [D] (p(A) && p(B) && p(C) && p(D)) \n"
+        "t(A, B, C, D) := [$, 2] [D] (q(A) && q(B) && q(C) && q(D)) \n"
+        "t(A, B, C, D) := [$, 2] [D] (r(A) && r(B) && r(C) && r(D)) \n"
+        "t(A, B, C, D) := [$, 2] [D] (s(A) && s(B) && s(C) && s(D)) \n"
+        "u(A, B) := [$, 2] [D] (p(A) && p(B)) \n"
+        "u(A, B) := [$, 2] [D] (q(A) && q(B)) \n"
+        "u(A, B) := [$, 2] [D] (r(A) && r(B)) \n"
+        "u(A, B) := [$, 2] [D] (s(A) && s(B)) \n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::RESTRICTED);
+}
+
+
+void test_existential_indexed_complex() {
+    const std::string name = "Existential Indexed Complex";
+    std::string stream_string = "1 4 "
+                                "1 : p(a1), p(b1), p(c1), p(d1)\n"
+                                "1 : q(a1), q(b1), q(c1), q(d1)\n"
+                                "1 : r(a1), r(b1), r(c1), r(d1)\n"
+                                "1 : s(a1), s(b1), s(c1), s(d1)\n"
+                                "2 : q(a2)\n"
+                                "3 : q(a3)\n"
+                                "4 : q(a4)\n";
+    std::string rule_string = 
+        "s(c) && t(A, B, c, D) && u(c, D)  := p(A) && q(B) && r(D)\n"
+        "t(A, B, C, D) := [$, 2] [D] (p(A) && p(B) && p(C) && p(D)) \n"
+        "t(A, B, C, D) := [$, 2] [D] (q(A) && q(B) && q(C) && q(D)) \n"
+        "t(A, B, C, D) := [$, 2] [D] (r(A) && r(B) && r(C) && r(D)) \n"
+        "t(A, B, C, D) := [$, 2] [D] (s(A) && s(B) && s(C) && s(D)) \n"
+        "u(A, B) := [$, 2] [D] (p(A) && p(B)) \n"
+        "u(A, B) := [$, 2] [D] (q(A) && q(B)) \n"
+        "u(A, B) := [$, 2] [D] (r(A) && r(B)) \n"
+        "u(A, B) := [$, 2] [D] (s(A) && s(B)) \n";
     run(name, stream_string, rule_string,
         laser::util::ChaseAlgorithm::INDEXED);
 }
@@ -675,14 +749,14 @@ int main() {
     // test_conjunction_diamond();
     // test_conjunction_box();
     // test_conjunction_corss_variables();
-    //test_conjunction_sne();
-     //test_conjunction_transitive();
+    // test_conjunction_sne();
+    // test_conjunction_transitive();
     // test_recursive_simple();
     // test_recursive_complex();
     // test_time_reference_body();
     // test_time_reference_handb();
     // test_time_reference_head();
-     //test_time_reference_recursive();
+    // test_time_reference_recursive();
     // test_tuple_window();
     // test_tuple_window_diamond();
     // test_existential_simple();
@@ -690,7 +764,7 @@ int main() {
     // test_existential_time_reference_head();
     // test_existential_time_reference_body1();
     // test_existential_time_reference_body2();
-    //test_existential_time_reference_handb();
+    // test_existential_time_reference_handb();
     // test_existential_conjunction_two();
     // test_existential_conjunction_three();
     // test_existential_restrictive_simple();
@@ -700,5 +774,8 @@ int main() {
     // test_existential_restrictive_window();
     // test_conjunction_head();
     // test_conjunction_head_timeref();
-    test_existential_indexed_window();
+    // test_existential_indexed_window();
+    //test_existential_skolem_complex();
+    //test_existential_restricted_complex();
+    test_existential_indexed_complex();
 }
