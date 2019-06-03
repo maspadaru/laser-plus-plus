@@ -470,7 +470,7 @@ void test_existential_time_reference_head() {
         "&& [$, 100] [D] problem(SG) \n";
 
     run(name, stream_string, rule_string,
-        laser::util::ChaseAlgorithm::OBLIVIOUS);
+        laser::util::ChaseAlgorithm::SKOLEM);
 }
 
 void test_existential_time_reference_body2() {
@@ -761,7 +761,7 @@ int main() {
     // test_tuple_window_diamond();
     // test_existential_simple();
     // // // // test_existential_loop();
-    // test_existential_time_reference_head();
+     test_existential_time_reference_head();
     // test_existential_time_reference_body1();
     // test_existential_time_reference_body2();
     // test_existential_time_reference_handb();
@@ -777,5 +777,5 @@ int main() {
     // test_existential_indexed_window();
     //test_existential_skolem_complex();
     //test_existential_restricted_complex();
-    test_existential_indexed_complex();
+    //test_existential_indexed_complex();
 }
