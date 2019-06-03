@@ -22,10 +22,27 @@ std::string get_rules(std::string const &program_id, int win_size) {
         rules = "r(X, Y) := p(Y,X)\n";
     } else if (program_id == "p4") {
         rules = "r(X) := p(X,Y)\n";
-    } else if (program_id == "p5") {
+    } else if (program_id == "CON1") {
         rules = "r(X, Y) := p(X,Y) && q(X)\n";
-    } else if (program_id == "p6") {
+    } else if (program_id == "CON2") {
         rules = "r(X, Y, Z) := p(X,Y) && q(Z)\n";
+    } else if (program_id == "TRAN") {
+        rules = "p(X, Z) := p(X, Y) && p(Y, Z)\n";
+    } else if (program_id == "EX1") {
+        rules = "q(X, a) && r(a, b, Y) := p(X, Y)\n";
+    } else if (program_id == "EX2") {
+        rules = "r(A, B, C, D, E, F, G, H) := [$, " + wsize +
+                "] [B]p(A, B, C, D, E, F, G, H)\n";
+        rules = 
+            "s(c) && t(A, B, c, D) && u(c, D)  := p(A) && q(B) && r(D)\n"
+            "t(A, B, C, D) := [$, " + wsize + "] [D] (p(A) && p(B) && p(C) && p(D)) \n"
+            "t(A, B, C, D) := [$, " + wsize + "] [D] (q(A) && q(B) && q(C) && q(D)) \n"
+            "t(A, B, C, D) := [$, " + wsize + "] [D] (r(A) && r(B) && r(C) && r(D)) \n"
+            "t(A, B, C, D) := [$, " + wsize + "] [D] (s(A) && s(B) && s(C) && s(D)) \n"
+            "u(A, B) := [$, " + wsize + "] [D] (p(A) && p(B)) \n"
+            "u(A, B) := [$, " + wsize + "] [D] (q(A) && q(B)) \n"
+            "u(A, B) := [$, " + wsize + "] [D] (r(A) && r(B)) \n"
+            "u(A, B) := [$, " + wsize + "] [D] (s(A) && s(B)) \n";
     } else if (program_id == "p7") {
         rules = "r(X) := [$, " + wsize + "] [D]p(X)\n";
     } else if (program_id == "p8") {
@@ -58,30 +75,6 @@ std::string get_rules(std::string const &program_id, int win_size) {
         rules = "r(A, B, C, D, E, F, G, H) := p(A, B, C, D, E, F, G, H)\n";
     } else if (program_id == "p15") {
         rules = "r(X) := p(X)\n";
-    } else if (program_id == "p16") {
-        rules = "q(X, a) && r(a, b, Y) := p(X, Y)\n";
-    } else if (program_id == "p17") {
-        rules = ""
-                "a(X, a) := p(X)\n"
-                "b(X, b) := q(X)\n";
-    } else if (program_id == "p18") {
-        rules = ""
-                "a(X, a) := p(X)\n"
-                "b(X, b) := q(X)\n"
-                "c(X, c) := r(X)\n"
-                "d(X, d) := s(X)\n";
-    } else if (program_id == "p19") {
-        rules = ""
-                "a(X, a) := p(X)\n"
-                "b(X, b) := q(X)\n"
-                "c(X, c) := r(X)\n"
-                "d(X, d) := s(X)\n"
-                "e(X, e) := t(X)\n"
-                "f(X, f) := u(X)\n"
-                "g(X, g) := v(X)\n"
-                "h(X, h) := w(X)\n";
-    } else if (program_id == "p20") {
-        rules = "p(X, Z) := p(X, Y) && p(Y, Z)\n";
     } else if (program_id == "p21") {
         rules = "r(A, B) := [$, " + wsize + "] [B]p(A, B)\n";
     } else if (program_id == "p22") {
@@ -90,19 +83,6 @@ std::string get_rules(std::string const &program_id, int win_size) {
     } else if (program_id == "p23") {
         rules = "r(A, B, C, D, E, F, G, H) := [$, " + wsize +
                 "] [B]p(A, B, C, D, E, F, G, H)\n";
-    } else if (program_id == "p24") {
-        rules = "r(A, B, C, D, E, F, G, H) := [$, " + wsize +
-                "] [B]p(A, B, C, D, E, F, G, H)\n";
-        rules = 
-            "s(c) && t(A, B, c, D) && u(c, D)  := p(A) && q(B) && r(D)\n"
-            "t(A, B, C, D) := [$, " + wsize + "] [D] (p(A) && p(B) && p(C) && p(D)) \n"
-            "t(A, B, C, D) := [$, " + wsize + "] [D] (q(A) && q(B) && q(C) && q(D)) \n"
-            "t(A, B, C, D) := [$, " + wsize + "] [D] (r(A) && r(B) && r(C) && r(D)) \n"
-            "t(A, B, C, D) := [$, " + wsize + "] [D] (s(A) && s(B) && s(C) && s(D)) \n"
-            "u(A, B) := [$, " + wsize + "] [D] (p(A) && p(B)) \n"
-            "u(A, B) := [$, " + wsize + "] [D] (q(A) && q(B)) \n"
-            "u(A, B) := [$, " + wsize + "] [D] (r(A) && r(B)) \n"
-            "u(A, B) := [$, " + wsize + "] [D] (s(A) && s(B)) \n";
     }
     return rules;
 }
