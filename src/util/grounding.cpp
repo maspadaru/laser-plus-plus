@@ -130,6 +130,15 @@ std::string Grounding::get_substitution_key() const {
     return hash_str;
 }
 
+std::string Grounding::get_annotation_key() const {
+    auto result = 
+        std::to_string(consideration_time) + 
+        std::to_string(horizon_time) + 
+        std::to_string(consideration_count) + 
+        std::to_string(horizon_count);
+    return result;
+}
+
 std::string Grounding::to_string() const {
     std::stringstream os;
     os << predicate << "(";
@@ -189,6 +198,19 @@ bool Grounding::substitution_less_than(Grounding const &other) const {
     // operator< for std::vector is said to have linear time complexity
     return constant_vector < other.constant_vector;
 }
+
+
+bool Grounding::operator==(Grounding const &other) const {
+    bool result;
+    result = 
+        this->constant_vector == other.constant_vector
+        && this->consideration_time == other.consideration_time
+        && this->horizon_time == other.horizon_time
+        && this->consideration_count == other.consideration_count
+        && this->horizon_count == other.horizon_count;
+    return result;
+}
+
 
 bool Grounding::operator<(Grounding const &other) const {
     if (annotation_less_than(other)) {

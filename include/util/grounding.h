@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <functional>
 
 namespace laser {
 namespace util {
@@ -75,6 +76,8 @@ class Grounding {
 
     std::string get_substitution_key() const;
 
+    std::string get_annotation_key() const;
+
     bool has_expired(uint64_t time, uint64_t tuple_counter) const;
 
     size_t get_size() const;
@@ -100,8 +103,40 @@ class Grounding {
 
     bool operator<(const Grounding &other) const;
 
+    bool operator==(const Grounding &other) const;
+
     bool substitution_less_than(Grounding const &other) const;
     bool predsubst_less_than(Grounding const &other) const;
+};
+
+struct GroundingFullHash {
+public:
+	size_t operator()(Grounding const &x) const {
+        auto substitution_key = x.get_substitution_key();
+        auto annotation_key = x.get_annotation_key();
+        auto key_str = substitution_key + annotation_key;
+        auto result = std::hash<std::string>{}(key_str);
+        return result;
+	}
+
+	size_t operator()(std::shared_ptr<Grounding> const &x) const {
+        auto substitution_key = x->get_substitution_key();
+        auto annotation_key = x->get_annotation_key();
+        auto key_str = substitution_key + annotation_key;
+        auto result = std::hash<std::string>{}(key_str);
+        return result;
+	}
+};
+
+struct GroundingEqual {
+    bool operator()(Grounding const &x, Grounding const &y) const {
+        return x == y;
+    }
+
+    bool operator()(std::shared_ptr<Grounding> const &x,
+                    std::shared_ptr<Grounding> const &y) const {
+        return *x == *y;
+    }
 };
 
 struct GroundingFullCompare {

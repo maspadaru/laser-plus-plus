@@ -3,6 +3,8 @@
 
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
+#include <set>
 #include <vector>
 
 #include "formula/formula.h"
@@ -30,6 +32,9 @@ class Conjunction : public Formula {
      */
     std::unordered_map<std::string, size_t> variable_map;
 
+    //std::unordered_set<std::shared_ptr<util::Grounding>,
+                       //util::GroundingFullHash, util::GroundingEqual>
+        //grounding_set;
     std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> grounding_set;
 
     void set_head(bool is_head) override;
