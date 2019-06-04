@@ -161,14 +161,14 @@ Conjunction::hash_common_variables(Formula const &child,
     if (common_child_variables.empty()) {
         return "0";
     }
-    std::stringstream ss;
+    std::vector<std::string> vector;
     for (auto &variable : common_child_variables) {
         size_t variable_index = child.get_variable_index(variable);
         auto const &constant = grounding.get_constant(variable_index);
-        ss << constant << ";;";
+        vector.push_back(constant);
     }
-    auto result = ss.str();
-    //std::cerr << "hash: " << result << std::endl;
+    std::string result =
+        std::accumulate(vector.begin(), vector.end(), std::string(";"));
     return result;
 }
 

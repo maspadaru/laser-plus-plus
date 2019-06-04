@@ -21,9 +21,9 @@
 
 # II. Benchmark Conjunction
 # ! p20 crashes (OOM) for 1000 facts 
-#./laser.sh bench CON1 10 10000 0 O ~/stream_100M_2_2.txt  
-#./laser.sh bench CON2 10 1000 0 O ~/stream_100M_2_2.txt  
-#./laser.sh bench TRAN 10 100 0 O ~/stream_transitive.txt  
+./laser.sh bench CON1 10 10000 0 O ~/stream_100M_2_2.txt  
+./laser.sh bench CON2 10 1000 0 O ~/stream_100M_2_2.txt  
+./laser.sh bench TRAN 10 100 0 O ~/stream_transitive.txt  
 
 # III. Benchmark Diamond on diferent input shapes
 #./laser.sh bench p7 10 100000 3 O ~/stream_100M_1_1.txt  
@@ -61,11 +61,11 @@
 #./laser.sh bench p15 1000 1000 0 O ~/stream_100M_8_1.txt  
 
 # IX. Benchmark cahse algorithms on single complex rule
-./laser.sh bench EX1 1000 1000 0 S ~/stream_100M_1_2.txt  
-./laser.sh bench EX1 1000 1000 0 R ~/stream_100M_1_2.txt  
-./laser.sh bench EX1 1000 1000 0 I ~/stream_100M_1_2.txt  
+#./laser.sh bench EX1 1000 1000 0 S ~/stream_100M_1_2.txt  
+#./laser.sh bench EX1 1000 1000 0 R ~/stream_100M_1_2.txt  
+#./laser.sh bench EX1 1000 1000 0 I ~/stream_100M_1_2.txt  
 
 # X Benchmark chase performance on large databases
 # ! Skolem chase will not terminate in this case
-./laser.sh bench EX2 10 10 2 R ~/stream_100M_4_1.txt  
-./laser.sh bench EX2 10 10 2 I ~/stream_100M_4_1.txt  
+#./laser.sh bench EX2 10 10 2 R ~/stream_100M_4_1.txt  
+#./laser.sh bench EX2 10 10 2 I ~/stream_100M_4_1.txt  
