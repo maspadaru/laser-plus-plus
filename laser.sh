@@ -1,28 +1,57 @@
 #!/bin/bash
 
 TESTAPP_EXECUTABLE=testapp
-DEBUG_EXECUTABLE=run_test
+GTEST_EXECUTABLE=run_test
 BENCHAPP_EXECUTABLE=benchapp
 
-build_release() {
+cmake_build_release() {
     mkdir -p cmake-build-release
     cd cmake-build-release
     cmake -DCMAKE_BUILD_TYPE=Release ..
+}
+
+cmake_build_debug() {
+    mkdir -p cmake-build-debug
+    cd cmake-build-debug
+    # !!!! LLVM does not support the -pg flag !!!
+    # cmake -DCMAKE_CXX_FLAGS=-pg -DCMAKE_EXE_LINKER_FLAGS=-pg -DCMAKE_SHARED_LINKER_FLAGS=-pg -DCMAKE_BUILD_TYPE=Debug ..
+    cmake -DCMAKE_BUILD_TYPE=Debug ..
+}
+
+
+make_release() {
+    cmake_build_release
     make
     cd ..
 }
 
-build_debug() {
-    mkdir -p cmake-build-debug
-    cd cmake-build-debug
-    cmake -DCMAKE_CXX_FLAGS=-pg -DCMAKE_EXE_LINKER_FLAGS=-pg -DCMAKE_SHARED_LINKER_FLAGS=-pg -DCMAKE_BUILD_TYPE=Debug ..
+make_debug() {
+    cmake_build_debug
     make
+    cd ..
+}
+
+make_run_test() {
+    cmake_build_debug
+    make run_test
+    cd ..
+}
+
+make_testapp() {
+    cmake_build_debug
+    make testapp
+    cd ..
+}
+
+make_benchapp() {
+    cmake_build_release
+    make benchapp
     cd ..
 }
 
 build() {
-    build_release
-    build_debug
+    make_release
+    make_debug
 }
 
 clean_up () {
@@ -31,6 +60,7 @@ clean_up () {
 }
 
 run_profile () {
+    make_benchapp
     rm -f prof_flat.txt
     rm -f prof_graph.txt
     rm -f gmon.out
@@ -44,29 +74,33 @@ run_benchapp () {
 }
 
 run_project () {
+    make_testapp
     cmake-build-debug/$TESTAPP_EXECUTABLE
 }
 
 test_project () {
-    cmake-build-debug/$DEBUG_EXECUTABLE
+    make_run_test
+    cmake-build-debug/$GTEST_EXECUTABLE
 }
 
 debug_project () {
+    make_testapp
     gdb cmake-build-debug/$TESTAPP_EXECUTABLE --tui
 }
 
-debug_benchapp () {
-    gdb --tui --args cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 $5 $6 $7
-}
+#debug_benchapp () {
+    #gdb --tui --args cmake-build-debug/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 $5 $6 $7
+#}
 
 print_help () {
     echo "Usage: laser [b bench c d p r h t]"
     echo "b: Build Laser"
-    echo "c: Clean project"
+    echo "bbm: Build Benchmark App"
     echo "bench: Run Benchmark App"
+    echo "c: Clean project"
     echo "d: Debug project using GDB"
-    echo "p: Profile application. Generates prof.txt"
     echo "h: Print help"
+    echo "p: Profile application. Generates prof.txt"
     echo "r: Run TestApp project"
     echo "t: run all tests"
     echo " "
@@ -79,6 +113,8 @@ if [ $# -eq 0 ]; then
 	print_help 
 elif [ $1 = "b" ]; then
     build
+elif [ $1 = "bbm" ]; then
+    make_benchapp
 elif [ $1 = "bench" ]; then
     run_benchapp "$2" "$3" "$4" "$5" "$6" "$7" "$8"
 elif [ $1 = "p" ]; then
