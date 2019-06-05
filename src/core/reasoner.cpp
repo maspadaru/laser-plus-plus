@@ -42,7 +42,7 @@ Reasoner::get_conclusions(uint64_t timepoint) {
     return result;
 }
 
-void Reasoner::start() {
+double Reasoner::start() {
     util::Timeline main_timeline;
     auto start_time = io_manager->read_stream_start_time();
     auto end_time = io_manager->read_stream_end_time();
@@ -55,7 +55,7 @@ void Reasoner::start() {
     read_thread.join();
     evaluate_thread.join();
     write_thread.join();
-    std::cout << "Eval seconds: " << clock_eval.count() / 1000 << std::endl;
+    return clock_eval.count();
 }
 
 void Reasoner::read(util::Timeline timeline) {

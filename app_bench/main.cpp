@@ -14,13 +14,13 @@ uint64_t NFACTS = 100;
 std::string get_rules(std::string const &program_id, int win_size) {
     std::string rules;
     std::string wsize = std::to_string(win_size);
-    if (program_id == "p1") {
+    if (program_id == "ATM1") {
         rules = "r(X, Y) := p(X, Y)\n";
-    } else if (program_id == "p2") {
+    } else if (program_id == "ATM2") {
         rules = "r(X, X) := p(X)\n";
-    } else if (program_id == "p3") {
+    } else if (program_id == "ATM3") {
         rules = "r(X, Y) := p(Y,X)\n";
-    } else if (program_id == "p4") {
+    } else if (program_id == "ATM4") {
         rules = "r(X) := p(X,Y)\n";
     } else if (program_id == "CON1") {
         rules = "r(X, Y) := p(X,Y) && q(X)\n";
@@ -100,10 +100,13 @@ void run(uint64_t end_time, int facts_per_timepoint,
         laser::core::Reasoner(&rule_reader, &file_io_manager, chase_algorithm);
 
     auto clock_start = std::chrono::high_resolution_clock::now();
-    reasoner.start();
+    auto eval_ms = reasoner.start();
     auto clock_end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> clock_elapsed =
         clock_end - clock_start;
+    double throughput = (facts_per_timepoint * end_time * 1.0) / (eval_ms / 1000);
+    std::cout << "Throughput = " << throughput << std::endl;
+    std::cout << "Eval seconds: " << eval_ms / 1000 << std::endl;
     std::cout << "Total seconds: " << clock_elapsed.count() / 1000 << std::endl;
     std::cout << "************************************************************"
               << std::endl;

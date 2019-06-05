@@ -56,7 +56,7 @@ class Reasoner {
     explicit Reasoner(rule::RuleReader *rule_reader, IOManager *io_manager,
                       util::ChaseAlgorithm chase_algorithm);
 
-    void start();
+    double start();
 };
 
 } // namespace core
