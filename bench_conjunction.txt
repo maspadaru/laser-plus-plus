@@ -1,0 +1,73 @@
+0. Description of experiments:
+
+Rules are of the form: 
+head := body
+
+Operators:
+&& - AND
+[D] - Diamond
+[B] - Box
+[$, n] - Time Window of size "n"
+
+- Runtime values in the tables represent total runtime of reasoner (including IO*) 
+in seconds 
+- Throughput is expressed as facts / second, and computed as the total nuber of 
+facts processed by the system divided by the total runtime of the reasoner 
+(including IO*)
+
+==============================================================================
+
+I. Benchmark Conjunction of diferent input shapes: Fixing conjunction performance
+
+Background: 
+- SNE1:
+    - Semi-Naive Evaluation: at least one term of the conjunction must have 
+        been derived at the curent timepoint
+- SNE2
+    - Second Tier Semi-Naive Evaluation: at least one term of the conjunction must have 
+        been derived at the curent timepoint and current step
+- DupFix
+    - Conjunction was generating and storing a lot of duplicate groudnings. 
+    - Duplicates were using a lot of memory, leading to system OOM and process
+        getting killed.
+    - Fix: elimitate the duplicates.
+
+Programs
+- CON1
+    r(X, Y) := p(X,Y) && q(X)
+- CON2
+    r(X, Y, Z) := p(X,Y) && q(Z)
+- TRAN
+    p(X, Z) := p(X, Y) && p(Y, Z)
+
+Experiments 
+./laser.sh bench CON1 10 10000 0 O ~/stream_100M_2_2.txt  
+./laser.sh bench CON2 10 1000 0 O ~/stream_100M_2_2.txt  
+./laser.sh bench TRAN 10 100 0 O ~/stream_transitive.txt  
+
+Laser version
+- PYPY: experiment run on Python version of Laser using pipi
+- SNE1: before second tier SNE implementation. 
+    git checkout b053f15e6d30920c1667910a1617da618effdffe
+- SNE2: after second ties SNE 
+    git checkout a4d1f34fc5242bcef71833c582b20d2f965d23bf
+- DupFix: 
+    git checkout d0544264102e6d4e7227a40a8e7f61d732a3ef08
+
+Ohter info
+- TRAN crashes my system (Out Of Memory 12GB) on 1000 input facts per timepoint
+
+---------------------------------------------------------------
+| Prog | PYPY |  SNE1 | SNE2 | DupFix |
+---------------------------------------------------------------
+| CON1 | 0.27 |  8.86 | 3.47 |   1.64 |
+| CON2 | 2.15 | 11.57 | 4.53 |   3.31 |
+| TRAN |  -   |  9.90 | 2.88 |   4.50 |
+---------------------------------------------------------------
+
+Conclusions:
+- TRAN becomes slower in DupFix because a set is used to store the results
+    instead of a vector. 
+
+===========================================================================
+

@@ -26,23 +26,26 @@ std::string get_rules(std::string const &program_id, int win_size) {
         rules = "r(X, Y) := p(X,Y) && q(X)\n";
     } else if (program_id == "CON2") {
         rules = "r(X, Y, Z) := p(X,Y) && q(Z)\n";
-    } else if (program_id == "TRAN") {
+    } else if (program_id == "CON3") {
         rules = "p(X, Z) := p(X, Y) && p(Y, Z)\n";
     } else if (program_id == "EX1") {
-        rules = "q(X, a) && r(a, b, Y) := p(X, Y)\n";
+        rules = "q(X, a, b, Y) := p(X, Y)\n";
     } else if (program_id == "EX2") {
-        rules = "r(A, B, C, D, E, F, G, H) := [$, " + wsize +
-                "] [B]p(A, B, C, D, E, F, G, H)\n";
+        rules = "q(X, a) && r(a, b, Y) := p(X, Y)\n";
+    } else if (program_id == "EX3") {
         rules = 
-            "s(c) && t(A, B, c, D) && u(c, D)  := p(A) && q(B) && r(D)\n"
-            "t(A, B, C, D) := [$, " + wsize + "] [D] (p(A) && p(B) && p(C) && p(D)) \n"
-            "t(A, B, C, D) := [$, " + wsize + "] [D] (q(A) && q(B) && q(C) && q(D)) \n"
-            "t(A, B, C, D) := [$, " + wsize + "] [D] (r(A) && r(B) && r(C) && r(D)) \n"
-            "t(A, B, C, D) := [$, " + wsize + "] [D] (s(A) && s(B) && s(C) && s(D)) \n"
-            "u(A, B) := [$, " + wsize + "] [D] (p(A) && p(B)) \n"
-            "u(A, B) := [$, " + wsize + "] [D] (q(A) && q(B)) \n"
-            "u(A, B) := [$, " + wsize + "] [D] (r(A) && r(B)) \n"
-            "u(A, B) := [$, " + wsize + "] [D] (s(A) && s(B)) \n";
+            "t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+            "t(A, B, B) := p(A, B) && q(B) \n"
+            "u(A, B) := p(A, B) && q(B) \n"
+            "t(A, B, A) := p(A, B) && q(A) \n"
+            "u(A, A) := p(A, B) && q(A) \n";
+    } else if (program_id == "EX4") {
+        rules = 
+            "s(z) && t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+            "t(A, B, B) := p(A, B) && q(B) \n"
+            "u(A, B) := p(A, B) && q(B) \n"
+            "t(A, B, A) := p(A, B) && q(A) \n"
+            "u(A, A) := p(A, B) && q(A) \n";
     } else if (program_id == "p7") {
         rules = "r(X) := [$, " + wsize + "] [D]p(X)\n";
     } else if (program_id == "p8") {
@@ -104,10 +107,11 @@ void run(uint64_t end_time, int facts_per_timepoint,
     auto clock_end = std::chrono::high_resolution_clock::now();
     std::chrono::duration<double, std::milli> clock_elapsed =
         clock_end - clock_start;
-    double throughput = (facts_per_timepoint * end_time * 1.0) / (eval_ms / 1000);
-    std::cout << "Throughput = " << throughput << std::endl;
+    double total_ms = clock_elapsed.count();
+    double throughput = (facts_per_timepoint * end_time * 1.0) / (total_ms / 1000);
     std::cout << "Eval seconds: " << eval_ms / 1000 << std::endl;
-    std::cout << "Total seconds: " << clock_elapsed.count() / 1000 << std::endl;
+    std::cout << "Total seconds: " << total_ms / 1000 << std::endl;
+    std::cout << "Throughput = " << throughput << " facts / second " << std::endl;
     std::cout << "************************************************************"
               << std::endl;
     std::cout << std::endl;

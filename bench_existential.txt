@@ -1,0 +1,188 @@
+0. Description of experiments:
+
+Rules are of the form: 
+head := body
+
+Operators:
+&& - AND
+[D] - Diamond
+[B] - Box
+[$, n] - Time Window of size "n"
+
+- Runtime values in the tables represent total runtime of reasoner (including 
+IO*) in seconds 
+- Throughput is expressed as facts / second, and computed as the total nuber of 
+facts processed by the system divided by the total runtime of the reasoner 
+(including IO*)
+
+===========================================================================
+
+1. Simple rule atomic head
+
+Description:
+- A single existential rule with one atom in the head 
+- Since none of the predicates in the input or in the heads of other rules are 
+found in the head of the existential rule, the database will always be empty. 
+Therefore Restricted Chase will always generate new labled-null values, just as
+Skolem chase. 
+
+Program:
+    q(X, a, b, Y) := p(X, Y)
+
+Experiments: 
+    ./laser.sh bench EX1 1000 1000 0 S ~/stream_100M_1_2.txt  
+    ./laser.sh bench EX1 1000 1000 0 R ~/stream_100M_1_2.txt  
+    ./laser.sh bench EX1 1000 1000 0 I ~/stream_100M_1_2.txt  
+
+Laser version:
+- git checkout
+
+Results:
+----------------------------------------------
+| EX1        | Skolem | Restricted | Indexed |
+----------------------------------------------
+| Runtime    |   5.31 |       4.63 |    5.48 |
+| Throughput |   188k |       215k |    182k |
+----------------------------------------------
+
+Conclusions:
+- The Skolem Chase implementation needs to maintain an index of substitutions.
+For this reason it is slower than Restricted Chase in this experiment. 
+- This formula is a best case scenario for Restricted Chase:
+    - Restricted chase needs to evaluate the head at each timepoint, but since 
+        the head is an atomic formula, this evaluation is trivial. 
+    - Since the database is mostly empty, Restricted Chase will not waste any 
+        time matching input substitutions to database substitutions.
+- I have no good explanation for why Indexed Chase is so slow. 
+
+===========================================================================
+
+2. Simple rule conjunction in head 
+
+Description:
+- A single existential rule with two atoms in the head 
+- Since none of the predicates in the input or in the heads of other rules are 
+found in the head of the existential rule, the database will always be empty. 
+Therefore Restricted Chase will always generate new labled-null values, just as
+Skolem chase. 
+
+Program:
+    q(X, a) && r(a, b, Y) := p(X, Y)
+
+Experiments: 
+    ./laser.sh bench EX2 1000 1000 0 S ~/stream_100M_1_2.txt  
+    ./laser.sh bench EX2 1000 1000 0 R ~/stream_100M_1_2.txt  
+    ./laser.sh bench EX2 1000 1000 0 I ~/stream_100M_1_2.txt  
+
+Laser version:
+- git checkout
+
+Results:
+----------------------------------------------
+| EX2        | Skolem | Restricted | Indexed |
+----------------------------------------------
+| Runtime    |   6.99 |       9.14 |   10.27 |
+| Throughput |   143k |       109k |     97k |
+----------------------------------------------
+
+Conclusions:
+- Skolem chase is the best performing algorithm. However, Restricted chase 
+algorithms are proven to terminate in more cases then Skolem chase.
+- Restricted Chase is slower than Skolem Chase because it needs to maintain a
+conjunction formula for the head of the existential rule. 
+- Since the database is mostly empty, the performance overhead in Restricted 
+Chase is due only to maintaining the conjunction formula, and not matching 
+body substituitons to existing substitution from the database.
+
+===========================================================================
+
+3. Large database 
+
+Description:
+- Multiple rules, one existential rule with multiple atoms in the head. 
+- In the case of Restricted Chase algorithms, all the conclusions of the 
+existential rule should already be found in the database. Therefore Restrictred
+Chase should never generate any new conclusions. 
+- The purpose of the last two rules is to generate extra tuples in the 
+database.
+
+Program:
+    t(A, B, z) && u(A, z) := p(A, B) && q(B)
+    t(A, B, B) := p(A, B) && q(B)
+    u(A, B) := p(A, B) && q(B)
+    t(A, B, A) := p(A, B) && q(A)
+    u(A, A) := p(A, B) && q(A)
+
+Experiments: 
+./laser.sh bench EX3 100 1000 0 S ~/data/stream_1M_2_2.txt  
+./laser.sh bench EX3 100 1000 0 R ~/data/stream_1M_2_2.txt  
+./laser.sh bench EX3 100 1000 0 I ~/data/stream_1M_2_2.txt  
+
+Laser version:
+- git checkout
+
+Results:
+----------------------------------------------
+| EX3        | Skolem | Restricted | Indexed |
+----------------------------------------------
+| Runtime    |   3.18 |       4.50 |    3.05 |
+| Throughput |    31k |        22k |     33k |
+----------------------------------------------
+
+Conclusions:
+- Since all the substitution of the body are maching a substition in the 
+database, restricted chase algorithms will not generate any null-values.
+- Indexed Chase performs best here, since it only computes the index once, and
+finds any maching substitutions in constant time.
+- Since the database is always full, this is a worst-case scenario for 
+Restricted Chase. This algorithm needs to go through the values in the database 
+in order to find a match.
+
+===========================================================================
+
+4. Large database with unique atom in head 
+
+Description:
+- Multiple rules, one existential rule with multiple atoms in the head. 
+- One of the predicates in the head is not found in any other rules or in the 
+input. This will cause the restricted chase algorithms to always generate new 
+labled-null values.
+- The purpose of the last two rules is to generate extra tuples in the 
+database.
+
+Program:
+    s(z) && t(A, B, z) && u(A, z) := p(A, B) && q(B)
+    t(A, B, B) := p(A, B) && q(B)
+    u(A, B) := p(A, B) && q(B)
+    t(A, B, A) := p(A, B) && q(A)
+    u(A, A) := p(A, B) && q(A)
+
+Experiments: 
+./laser.sh bench EX4 100 1000 0 S ~/data/stream_1M_2_2.txt  
+./laser.sh bench EX4 100 1000 0 R ~/data/stream_1M_2_2.txt  
+./laser.sh bench EX4 100 1000 0 I ~/data/stream_1M_2_2.txt  
+
+Laser version:
+- git checkout
+
+Results:
+----------------------------------------------
+| EX4        | Skolem | Restricted | Indexed |
+----------------------------------------------
+| Runtime    |   3.44 |       4.46 |    4.58 |
+| Throughput |    29k |        22k |     22k |
+----------------------------------------------
+
+Conclusions:
+- Since no input or conclusion from other rules contains atoms with predicate 
+"s", the database will always be empty. This means that the results of Skolem
+and Restricted chase will be identical. It also means that Restricted chase
+does not need to match body substitutions to substitutions from the database, 
+since the database is empty. However, Restricted chase still needs to maintain
+the conjuction formula in the head of the rule. And even thoug there will be 
+no substitutions in the database that satisfy this conjunction, all 
+substitutions need to be evaluated. 
+
+===========================================================================
+
+Conclusions:

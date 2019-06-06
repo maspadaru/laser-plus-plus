@@ -633,75 +633,119 @@ void test_existential_indexed_window() {
 }
 
 void test_existential_skolem_complex() {
-    const std::string name = "Existential Skolem Complex";
+    // Rule 1 has an unique atom in the head: s(z)
+    const std::string name = "Existential Skolem Complex - all nulls";
     std::string stream_string = "1 4 "
-                                "1 : p(a1), p(b1), p(c1), p(d1)\n"
-                                "1 : q(a1), q(b1), q(c1), q(d1)\n"
-                                "1 : r(a1), r(b1), r(c1), r(d1)\n"
-                                "1 : s(a1), s(b1), s(c1), s(d1)\n"
-                                "2 : q(a2)\n"
-                                "3 : q(a3)\n"
-                                "4 : q(a4)\n";
+                                "1 : p(a1, b1), p(a2, b2)\n"
+                                "1 : q(a1), q(b1)\n"
+                                "2 : \n"
+                                "3 : \n"
+                                "4 : \n";
     std::string rule_string = 
-        "s(c) && t(A, B, c, D) && u(c, D)  := p(A) && q(B) && r(D)\n"
-        "t(A, B, C, D) := [$, 2] [D] (p(A) && p(B) && p(C) && p(D)) \n"
-        "t(A, B, C, D) := [$, 2] [D] (q(A) && q(B) && q(C) && q(D)) \n"
-        "t(A, B, C, D) := [$, 2] [D] (r(A) && r(B) && r(C) && r(D)) \n"
-        "t(A, B, C, D) := [$, 2] [D] (s(A) && s(B) && s(C) && s(D)) \n"
-        "u(A, B) := [$, 2] [D] (p(A) && p(B)) \n"
-        "u(A, B) := [$, 2] [D] (q(A) && q(B)) \n"
-        "u(A, B) := [$, 2] [D] (r(A) && r(B)) \n"
-        "u(A, B) := [$, 2] [D] (s(A) && s(B)) \n";
+            "s(z) && t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+            "t(A, B, B) := p(A, B) && q(B) \n"
+            "u(A, B) := p(A, B) && q(B) \n"
+            "t(A, B, A) := p(A, B) && q(A) \n"
+            "u(A, A) := p(A, B) && q(A) \n";
     run(name, stream_string, rule_string,
         laser::util::ChaseAlgorithm::SKOLEM);
 }
 
+void test_existential_skolem_complex2() {
+    // Rule 1 has no unique atom in the head
+    const std::string name = "Existential Skolem Complex - no nulls";
+    std::string stream_string = "1 4 "
+                                "1 : p(a1, b1), p(a2, b2)\n"
+                                "1 : q(a1), q(b1)\n"
+                                "2 : \n"
+                                "3 : \n"
+                                "4 : \n";
+    std::string rule_string = 
+            "t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+            "t(A, B, B) := p(A, B) && q(B) \n"
+            "u(A, B) := p(A, B) && q(B) \n"
+            "t(A, B, A) := p(A, B) && q(A) \n"
+            "u(A, A) := p(A, B) && q(A) \n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::SKOLEM);
+}
 
 void test_existential_restricted_complex() {
-    const std::string name = "Existential Restricted Complex";
+    // Rule 1 has an unique atom in the head: s(z)
+    // Rule 1 always generates new null-value because s never occurs in input
+    const std::string name = "Existential Restricted Complex - all nulls";
     std::string stream_string = "1 4 "
-                                "1 : p(a1), p(b1), p(c1), p(d1)\n"
-                                "1 : q(a1), q(b1), q(c1), q(d1)\n"
-                                "1 : r(a1), r(b1), r(c1), r(d1)\n"
-                                "1 : s(a1), s(b1), s(c1), s(d1)\n"
-                                "2 : q(a2)\n"
-                                "3 : q(a3)\n"
-                                "4 : q(a4)\n";
+                                "1 : p(a1, b1), p(a2, b2)\n"
+                                "1 : q(a1), q(b1)\n"
+                                "2 : \n"
+                                "3 : \n"
+                                "4 : \n";
     std::string rule_string = 
-        "s(c) && t(A, B, c, D) && u(c, D)  := p(A) && q(B) && r(D)\n"
-        "t(A, B, C, D) := [$, 2] [D] (p(A) && p(B) && p(C) && p(D)) \n"
-        "t(A, B, C, D) := [$, 2] [D] (q(A) && q(B) && q(C) && q(D)) \n"
-        "t(A, B, C, D) := [$, 2] [D] (r(A) && r(B) && r(C) && r(D)) \n"
-        "t(A, B, C, D) := [$, 2] [D] (s(A) && s(B) && s(C) && s(D)) \n"
-        "u(A, B) := [$, 2] [D] (p(A) && p(B)) \n"
-        "u(A, B) := [$, 2] [D] (q(A) && q(B)) \n"
-        "u(A, B) := [$, 2] [D] (r(A) && r(B)) \n"
-        "u(A, B) := [$, 2] [D] (s(A) && s(B)) \n";
+            "s(z) && t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+            "t(A, B, B) := p(A, B) && q(B) \n"
+            "u(A, B) := p(A, B) && q(B) \n"
+            "t(A, B, A) := p(A, B) && q(A) \n"
+            "u(A, A) := p(A, B) && q(A) \n";
     run(name, stream_string, rule_string,
         laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
+void test_existential_restricted_complex2() {
+    // Rule 1 has no unique atom in the head
+    // Rule 1 never generates new null-value
+    const std::string name = "Existential Restricted Complex - no nulls";
+    std::string stream_string = "1 4 "
+                                "1 : p(a1, b1), p(a2, b2)\n"
+                                "1 : q(a1), q(b1)\n"
+                                "2 : \n"
+                                "3 : \n"
+                                "4 : \n";
+    std::string rule_string = 
+            "t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+            "t(A, B, B) := p(A, B) && q(B) \n"
+            "u(A, B) := p(A, B) && q(B) \n"
+            "t(A, B, A) := p(A, B) && q(A) \n"
+            "u(A, A) := p(A, B) && q(A) \n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::RESTRICTED);
+}
 
 void test_existential_indexed_complex() {
-    const std::string name = "Existential Indexed Complex";
+    // Rule 1 has an unique atom in the head: s(z)
+    // Rule 1 always generates new null-value because s never occurs in input
+    const std::string name = "Existential Indexed Complex - all nulls";
     std::string stream_string = "1 4 "
-                                "1 : p(a1), p(b1), p(c1), p(d1)\n"
-                                "1 : q(a1), q(b1), q(c1), q(d1)\n"
-                                "1 : r(a1), r(b1), r(c1), r(d1)\n"
-                                "1 : s(a1), s(b1), s(c1), s(d1)\n"
-                                "2 : q(a2)\n"
-                                "3 : q(a3)\n"
-                                "4 : q(a4)\n";
+                                "1 : p(a1, b1), p(a2, b2)\n"
+                                "1 : q(a1), q(b1)\n"
+                                "2 : \n"
+                                "3 : \n"
+                                "4 : \n";
     std::string rule_string = 
-        "s(c) && t(A, B, c, D) && u(c, D)  := p(A) && q(B) && r(D)\n"
-        "t(A, B, C, D) := [$, 2] [D] (p(A) && p(B) && p(C) && p(D)) \n"
-        "t(A, B, C, D) := [$, 2] [D] (q(A) && q(B) && q(C) && q(D)) \n"
-        "t(A, B, C, D) := [$, 2] [D] (r(A) && r(B) && r(C) && r(D)) \n"
-        "t(A, B, C, D) := [$, 2] [D] (s(A) && s(B) && s(C) && s(D)) \n"
-        "u(A, B) := [$, 2] [D] (p(A) && p(B)) \n"
-        "u(A, B) := [$, 2] [D] (q(A) && q(B)) \n"
-        "u(A, B) := [$, 2] [D] (r(A) && r(B)) \n"
-        "u(A, B) := [$, 2] [D] (s(A) && s(B)) \n";
+            "s(z) && t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+            "t(A, B, B) := p(A, B) && q(B) \n"
+            "u(A, B) := p(A, B) && q(B) \n"
+            "t(A, B, A) := p(A, B) && q(A) \n"
+            "u(A, A) := p(A, B) && q(A) \n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::INDEXED);
+}
+
+void test_existential_indexed_complex2() {
+    // Rule 1 has no unique atom in the head
+    // Rule 1 never generates new null-value
+    const std::string name = "Existential Indexed Complex - no nulls";
+    std::string stream_string = "1 4 "
+                                "1 : p(a1, b1), p(a2, b2)\n"
+                                "1 : q(a1), q(b1)\n"
+                                "2 : \n"
+                                "3 : \n"
+                                "4 : \n";
+    std::string rule_string = 
+            "t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+            "t(A, B, B) := p(A, B) && q(B) \n"
+            "u(A, B) := p(A, B) && q(B) \n"
+            "t(A, B, A) := p(A, B) && q(A) \n"
+            "u(A, A) := p(A, B) && q(A) \n";
     run(name, stream_string, rule_string,
         laser::util::ChaseAlgorithm::INDEXED);
 }
@@ -761,7 +805,7 @@ int main() {
     // test_tuple_window_diamond();
     // test_existential_simple();
     // // // // test_existential_loop();
-     test_existential_time_reference_head();
+     //test_existential_time_reference_head();
     // test_existential_time_reference_body1();
     // test_existential_time_reference_body2();
     // test_existential_time_reference_handb();
@@ -775,7 +819,10 @@ int main() {
     // test_conjunction_head();
     // test_conjunction_head_timeref();
     // test_existential_indexed_window();
-    //test_existential_skolem_complex();
-    //test_existential_restricted_complex();
-    //test_existential_indexed_complex();
+    test_existential_skolem_complex();
+    test_existential_skolem_complex2();
+    test_existential_restricted_complex();
+    test_existential_restricted_complex2();
+    test_existential_indexed_complex();
+    test_existential_indexed_complex2();
 }

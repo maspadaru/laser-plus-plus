@@ -16,16 +16,15 @@
 # ============================================================================
 
 # I Benchmark diferent atomic formulas
-./laser.sh bench ATM1 1000 1000 0 O ~/data/stream_1M_1_2.txt  
-./laser.sh bench ATM2 1000 1000 0 O ~/data/stream_1M_1_1.txt 
-./laser.sh bench ATM3 1000 1000 0 O ~/data/stream_1M_1_2.txt  
-./laser.sh bench ATM4 1000 1000 0 O ~/data/stream_1M_1_2.txt  
+#./laser.sh bench ATM1 1000 1000 0 O ~/data/stream_1M_1_2.txt  
+#./laser.sh bench ATM2 1000 1000 0 O ~/data/stream_1M_1_1.txt 
+#./laser.sh bench ATM3 1000 1000 0 O ~/data/stream_1M_1_2.txt  
+#./laser.sh bench ATM4 1000 1000 0 O ~/data/stream_1M_1_2.txt  
 
 # II. Benchmark Conjunction
-# ! p20 crashes (OOM) for 1000 facts 
-./laser.sh bench CON1 1000 1000 0 O ~/data/stream_1M_2_2.txt  
-./laser.sh bench CON2 10 1000 0 O ~/data/stream_1M_2_2.txt  
-./laser.sh bench TRAN 10 100 0 O ~/data/stream_transitive.txt  
+#./laser.sh bench CON1 1000 1000 0 O ~/data/stream_1M_2_2.txt  
+#./laser.sh bench CON2 10 1000 0 O ~/data/stream_1M_2_2.txt  
+#./laser.sh bench CON3 10 100 0 O ~/data/stream_transitive.txt  
 
 # III. Benchmark Diamond diferent window sizes
 #./laser.sh bench p7 1000 1000 3 O ~/data/stream_1M_1_1.txt  
@@ -52,12 +51,24 @@
 #./laser.sh bench p15 1000 1000 0 O ~/data/stream_1M_4_1.txt  
 #./laser.sh bench p15 1000 1000 0 O ~/data/stream_1M_8_1.txt  
 
-# VIII. Benchmark cahse algorithms on single complex rule
-#./laser.sh bench EX1 1000 1000 0 S ~/data/stream_1M_1_2.txt  
-#./laser.sh bench EX1 1000 1000 0 R ~/data/stream_1M_1_2.txt  
-#./laser.sh bench EX1 1000 1000 0 I ~/data/stream_1M_1_2.txt  
+# 8. Benchmarking Chase Algorithms 
+# 8.1. Atomic head
+./laser.sh bench EX1 1000 1000 0 S ~/data/stream_1M_1_2.txt  
+./laser.sh bench EX1 1000 1000 0 R ~/data/stream_1M_1_2.txt  
+./laser.sh bench EX1 1000 1000 0 I ~/data/stream_1M_1_2.txt  
 
-# IX Benchmark chase performance on large databases
-# ! Skolem chase will not terminate in this case
-#./laser.sh bench EX2 10 10 2 R ~/data/stream_1M_4_1.txt  
-#./laser.sh bench EX2 10 10 2 I ~/data/stream_1M_4_1.txt  
+# 8.1. Conjunctive head 
+./laser.sh bench EX2 1000 1000 0 S ~/data/stream_1M_1_2.txt  
+./laser.sh bench EX2 1000 1000 0 R ~/data/stream_1M_1_2.txt  
+./laser.sh bench EX3 1000 1000 0 I ~/data/stream_1M_1_2.txt  
+
+# 8.2. Large database - no unique predicate in head
+./laser.sh bench EX3 100 1000 0 S ~/data/stream_1M_2_2.txt  
+./laser.sh bench EX3 100 1000 0 R ~/data/stream_1M_2_2.txt  
+./laser.sh bench EX3 100 1000 0 I ~/data/stream_1M_2_2.txt  
+
+# 8.3. Large databases - unique predicate in head 
+./laser.sh bench EX4 100 1000 0 S ~/data/stream_1M_2_2.txt  
+./laser.sh bench EX4 100 1000 0 R ~/data/stream_1M_2_2.txt  
+./laser.sh bench EX4 100 1000 0 I ~/data/stream_1M_2_2.txt  
+

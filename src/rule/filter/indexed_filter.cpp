@@ -68,9 +68,7 @@ std::string IndexedFilter::get_index_key(
     return index_str;
 }
 
-void IndexedFilter::clear_index_map() {
-    index_map.clear();
-}
+void IndexedFilter::clear_index_map() { index_map.clear(); }
 
 void IndexedFilter::compute_index_map(
     std::vector<std::shared_ptr<util::Grounding>> database_facts) {
@@ -130,6 +128,9 @@ std::string IndexedFilter::generate_new_value(std::string const &var_name) {
 
 bool IndexedFilter::has_database_match(
     std::shared_ptr<util::Grounding> const &input_fact) const {
+    if (index_map.empty()) {
+        return false;
+    }
     auto key = get_index_key(input_fact);
     if (index_map.count(key) > 0) {
         auto const &db_fact = index_map.at(key);
