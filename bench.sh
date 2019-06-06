@@ -60,7 +60,7 @@
 # 8.1. Conjunctive head 
 ./laser.sh bench EX2 1000 1000 0 S ~/data/stream_1M_1_2.txt  
 ./laser.sh bench EX2 1000 1000 0 R ~/data/stream_1M_1_2.txt  
-./laser.sh bench EX3 1000 1000 0 I ~/data/stream_1M_1_2.txt  
+./laser.sh bench EX2 1000 1000 0 I ~/data/stream_1M_1_2.txt  
 
 # 8.2. Large database - no unique predicate in head
 ./laser.sh bench EX3 100 1000 0 S ~/data/stream_1M_2_2.txt  

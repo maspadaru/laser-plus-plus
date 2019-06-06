@@ -35,7 +35,7 @@ Experiments:
     ./laser.sh bench EX1 1000 1000 0 I ~/stream_100M_1_2.txt  
 
 Laser version:
-- git checkout
+- git checkout c2b1588ef14ccc2896f185515b1d58c69290983f
 
 Results:
 ----------------------------------------------
@@ -53,7 +53,18 @@ For this reason it is slower than Restricted Chase in this experiment.
         the head is an atomic formula, this evaluation is trivial. 
     - Since the database is mostly empty, Restricted Chase will not waste any 
         time matching input substitutions to database substitutions.
-- I have no good explanation for why Indexed Chase is so slow. 
+- Indexed Chase is slower than Restricted Chase. When the rule is evaluated 
+during the first step of a timepoint, the index is created, but the database is
+empty. So Restricted Chase doesn't do any searching for maches, but Indexed 
+Chase still builds the index. At subsequent timepoints the database may be full
+but since none of the input facts are fresh, Restricted Chase will not try to
+match them with substitutions from the database. But in the case of Indexed 
+Chase, the index needs to be re-constructed.
+- The performance of Indexed Chase can be optimised by first filtering the 
+fresh facts, and only building the index in the case when there are fresh facts.
+In this case the performance is close to Restricted Chase. But this fix may 
+negatively afftect the performance of Indexed Chase in those programs where 
+fresh facts are found in the input.
 
 ===========================================================================
 
@@ -75,7 +86,7 @@ Experiments:
     ./laser.sh bench EX2 1000 1000 0 I ~/stream_100M_1_2.txt  
 
 Laser version:
-- git checkout
+- git checkout c2b1588ef14ccc2896f185515b1d58c69290983f
 
 Results:
 ----------------------------------------------
@@ -119,7 +130,7 @@ Experiments:
 ./laser.sh bench EX3 100 1000 0 I ~/data/stream_1M_2_2.txt  
 
 Laser version:
-- git checkout
+- git checkout c2b1588ef14ccc2896f185515b1d58c69290983f
 
 Results:
 ----------------------------------------------
@@ -163,7 +174,7 @@ Experiments:
 ./laser.sh bench EX4 100 1000 0 I ~/data/stream_1M_2_2.txt  
 
 Laser version:
-- git checkout
+- git checkout c2b1588ef14ccc2896f185515b1d58c69290983f
 
 Results:
 ----------------------------------------------

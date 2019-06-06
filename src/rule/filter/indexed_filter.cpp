@@ -78,19 +78,48 @@ void IndexedFilter::compute_index_map(
     }
 }
 
+//std::vector<std::shared_ptr<util::Grounding>> IndexedFilter::build_chase_facts(
+    //util::Timeline const &timeline, size_t previous_step,
+    //std::vector<std::shared_ptr<util::Grounding>> const &input_facts) {
+    //std::vector<std::shared_ptr<util::Grounding>> result;
+    //std::vector<std::shared_ptr<util::Grounding>> fresh_facts;
+    //auto current_time = timeline.get_time();
+    //// filtering by SNE first, then we decide if we need to compute the 
+    //// index map or not.
+    //for (auto grounding : input_facts) {
+        //if (grounding->is_fresh_sne(current_time, previous_step)) {
+            //fresh_facts.push_back(std::move(grounding));
+        //}
+    //}
+    //if (!fresh_facts.empty()) {
+        //auto database_facts = head_formula->get_conclusions_timepoint(timeline);
+        //clear_index_map();
+        //compute_index_map(database_facts);
+        //for (auto const &input_fact : fresh_facts) {
+            //if (!has_database_match(input_fact)) {
+                //auto chase_fact = generate_chase_fact(input_fact);
+                //result.push_back(chase_fact);
+            //}
+        //}
+    //}
+    //return result;
+//}
+
 std::vector<std::shared_ptr<util::Grounding>> IndexedFilter::build_chase_facts(
     util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &input_facts) {
     std::vector<std::shared_ptr<util::Grounding>> result;
-    auto database_facts = head_formula->get_conclusions_timepoint(timeline);
-    clear_index_map();
-    compute_index_map(database_facts);
-    auto current_time = timeline.get_time();
-    for (auto const &input_fact : input_facts) {
-        if (input_fact->is_fresh_sne(current_time, previous_step) &&
-            !has_database_match(input_fact)) {
-            auto chase_fact = generate_chase_fact(input_fact);
-            result.push_back(chase_fact);
+    if (!input_facts.empty()) {
+        auto database_facts = head_formula->get_conclusions_timepoint(timeline);
+        clear_index_map();
+        compute_index_map(database_facts);
+        auto current_time = timeline.get_time();
+        for (auto const &input_fact : input_facts) {
+            if (input_fact->is_fresh_sne(current_time, previous_step) &&
+                !has_database_match(input_fact)) {
+                auto chase_fact = generate_chase_fact(input_fact);
+                result.push_back(chase_fact);
+            }
         }
     }
     return result;
