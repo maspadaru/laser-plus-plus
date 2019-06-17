@@ -15,13 +15,17 @@ std::string get_rules(std::string const &program_id, int win_size) {
     std::string rules;
     std::string wsize = std::to_string(win_size);
     if (program_id == "ATM1") {
-        rules = "r(X, Y) := p(X, Y)\n";
+        rules = "r(X) := p(X)\n";
     } else if (program_id == "ATM2") {
-        rules = "r(X, X) := p(X)\n";
+        rules = "r(X, Y) := p(X, Y)\n";
     } else if (program_id == "ATM3") {
-        rules = "r(X, Y) := p(Y,X)\n";
+        rules = "r(W, X, Y, Z) := p(W, X, Y, Z)\n";
     } else if (program_id == "ATM4") {
-        rules = "r(X) := p(X,Y)\n";
+        rules = "r(X, X, Y, Y) := p(X, Y)\n";
+    } else if (program_id == "ATM5") {
+        rules = "r(X) := p(X, Y)\n";
+    } else if (program_id == "ATM6") {
+        rules = "r(X, Y) := p(Y, X)\n";
     } else if (program_id == "CON1") {
         rules = "r(X, Y) := p(X,Y) && q(X)\n";
     } else if (program_id == "CON2") {

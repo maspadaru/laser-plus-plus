@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # input streams generated using:
+# pypy gen.py 100000009 1 1 > ~/data/stream_100M_1_1.txt
+# pypy gen.py 100000009 1 2 > ~/data/stream_100M_1_2.txt
+# pypy gen.py 100000009 1 4 > ~/data/stream_100M_1_4.txt
 # pypy gen.py 1000009 1 1 > ~/data/stream_1M_1_1.txt
 # pypy gen.py 1000009 1 2 > ~/data/stream_1M_1_2.txt
 # pypy gen.py 1000009 1 4 > ~/data/stream_1M_1_4.txt
@@ -15,11 +18,25 @@
 ./laser.sh bbm
 # ============================================================================
 
-# I Benchmark diferent atomic formulas
-#./laser.sh bench ATM1 1000 1000 0 O ~/data/stream_1M_1_2.txt  
-#./laser.sh bench ATM2 1000 1000 0 O ~/data/stream_1M_1_1.txt 
-#./laser.sh bench ATM3 1000 1000 0 O ~/data/stream_1M_1_2.txt  
-#./laser.sh bench ATM4 1000 1000 0 O ~/data/stream_1M_1_2.txt  
+# 1.1 Benchmark diferent atomic formulas
+#./laser.sh bench ATM1 1000 100000 0 O ~/data/stream_100M_1_1.txt  
+#./laser.sh bench ATM2 1000 100000 0 O ~/data/stream_100M_1_2.txt 
+#./laser.sh bench ATM3 1000 100000 0 O ~/data/stream_100M_1_4.txt  
+#./laser.sh bench ATM4 1000 100000 0 O ~/data/stream_100M_1_2.txt  
+#./laser.sh bench ATM5 1000 100000 0 O ~/data/stream_100M_1_2.txt  
+#./laser.sh bench ATM6 1000 100000 0 O ~/data/stream_100M_1_2.txt  
+
+# 1.2 Benchmark length of stream 
+./laser.sh bench ATM3 100 1000 0 O ~/data/stream_100M_1_4.txt  
+./laser.sh bench ATM3 1000 1000 0 O ~/data/stream_100M_1_4.txt  
+./laser.sh bench ATM3 10000 1000 0 O ~/data/stream_100M_1_4.txt  
+./laser.sh bench ATM3 100000 1000 0 O ~/data/stream_100M_1_4.txt  
+
+# 1.3 Benchmark flow
+#./laser.sh bench ATM3 1000 100 0 O ~/data/stream_100M_1_4.txt  
+#./laser.sh bench ATM3 1000 1000 0 O ~/data/stream_100M_1_4.txt  
+#./laser.sh bench ATM3 1000 10000 0 O ~/data/stream_100M_1_4.txt  
+#./laser.sh bench ATM3 1000 100000 0 O ~/data/stream_100M_1_4.txt  
 
 # II. Benchmark Conjunction
 #./laser.sh bench CON1 1000 1000 0 O ~/data/stream_1M_2_2.txt  
@@ -53,22 +70,22 @@
 
 # 8. Benchmarking Chase Algorithms 
 # 8.1. Atomic head
-./laser.sh bench EX1 1000 1000 0 S ~/data/stream_1M_1_2.txt  
-./laser.sh bench EX1 1000 1000 0 R ~/data/stream_1M_1_2.txt  
-./laser.sh bench EX1 1000 1000 0 I ~/data/stream_1M_1_2.txt  
+#./laser.sh bench EX1 1000 1000 0 S ~/data/stream_1M_1_2.txt  
+#./laser.sh bench EX1 1000 1000 0 R ~/data/stream_1M_1_2.txt  
+#./laser.sh bench EX1 1000 1000 0 I ~/data/stream_1M_1_2.txt  
 
 # 8.1. Conjunctive head 
-./laser.sh bench EX2 1000 1000 0 S ~/data/stream_1M_1_2.txt  
-./laser.sh bench EX2 1000 1000 0 R ~/data/stream_1M_1_2.txt  
-./laser.sh bench EX2 1000 1000 0 I ~/data/stream_1M_1_2.txt  
+#./laser.sh bench EX2 1000 1000 0 S ~/data/stream_1M_1_2.txt  
+#./laser.sh bench EX2 1000 1000 0 R ~/data/stream_1M_1_2.txt  
+#./laser.sh bench EX2 1000 1000 0 I ~/data/stream_1M_1_2.txt  
 
 # 8.2. Large database - no unique predicate in head
-./laser.sh bench EX3 100 1000 0 S ~/data/stream_1M_2_2.txt  
-./laser.sh bench EX3 100 1000 0 R ~/data/stream_1M_2_2.txt  
-./laser.sh bench EX3 100 1000 0 I ~/data/stream_1M_2_2.txt  
+#./laser.sh bench EX3 100 1000 0 S ~/data/stream_1M_2_2.txt  
+#./laser.sh bench EX3 100 1000 0 R ~/data/stream_1M_2_2.txt  
+#./laser.sh bench EX3 100 1000 0 I ~/data/stream_1M_2_2.txt  
 
 # 8.3. Large databases - unique predicate in head 
-./laser.sh bench EX4 100 1000 0 S ~/data/stream_1M_2_2.txt  
-./laser.sh bench EX4 100 1000 0 R ~/data/stream_1M_2_2.txt  
-./laser.sh bench EX4 100 1000 0 I ~/data/stream_1M_2_2.txt  
+#./laser.sh bench EX4 100 1000 0 S ~/data/stream_1M_2_2.txt  
+#./laser.sh bench EX4 100 1000 0 R ~/data/stream_1M_2_2.txt  
+#./laser.sh bench EX4 100 1000 0 I ~/data/stream_1M_2_2.txt  
 
