@@ -76,14 +76,17 @@ void Reasoner::evaluate(util::Timeline timeline) {
         if (has_new_input) {
             auto facts = get_facts(time);
             auto clock_start = std::chrono::high_resolution_clock::now();
-            auto conclusions = program.evaluate(timeline, std::move(facts));
+            auto conclusions = program.evaluate(timeline, facts);
             auto clock_end = std::chrono::high_resolution_clock::now();
             std::chrono::duration<double, std::milli> clock_elapsed =
                 clock_end - clock_start;
             clock_eval += clock_elapsed;
-            insert_conclusions(time, std::move(conclusions));
+            insert_conclusions(time, conclusions);
             timeline.increment_time();
             time = timeline.get_time();
+            //TODO listen in separate thread
+            service_manager.update(std::move(facts), std::move(conclusions));
+            listen(timeline);
         } else {
             std::this_thread::yield();
         }
@@ -103,6 +106,10 @@ void Reasoner::write(util::Timeline timeline) {
             std::this_thread::yield();
         }
     }
+}
+
+void Reasoner::listen(util::Timeline timeline) {
+    service_manager.serve_requests();
 }
 
 } // namespace core

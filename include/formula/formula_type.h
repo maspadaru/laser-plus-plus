@@ -1,11 +1,5 @@
-//
-// Created by mike on 06.07.2018.
-//
-
 #ifndef LASER_FORMULA_FORMULA_TYPE_H
 #define LASER_FORMULA_FORMULA_TYPE_H
-
-
 
 namespace laser {
 namespace formula {

@@ -1,7 +1,3 @@
-//
-// Created by mike on 7/17/18.
-//
-
 #ifndef LASER_CORE_IO_MANAGER_H
 #define LASER_CORE_IO_MANAGER_H
 
@@ -15,17 +11,10 @@ namespace laser {
 namespace core {
 
 class IOManager {
-  private:
-    // methods
-
   public:
-    // constructors & destructors
 
     virtual ~IOManager() = default;
 
-    // getters & setters
-
-    // methods
     virtual uint64_t read_stream_start_time() = 0;
 
     virtual uint64_t read_stream_end_time() = 0;

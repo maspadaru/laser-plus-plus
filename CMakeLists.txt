@@ -21,6 +21,7 @@ file(GLOB LASER_SOURCES
         "src/rule/filter/*.cpp"
         "src/core/*.cpp"
         "src/example/*.cpp"
+        "src/service/*.cpp"
         )
 
 find_package(Threads)

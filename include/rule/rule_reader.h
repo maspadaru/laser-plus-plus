@@ -1,7 +1,3 @@
-//
-// Created by mike on 7/17/18.
-//
-
 #ifndef LASER_RULE_RULE_READER_H
 #define LASER_RULE_RULE_READER_H
 

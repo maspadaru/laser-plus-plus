@@ -34,6 +34,20 @@ void test_simple() {
         laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
+void test_queries() {
+    const std::string name = "Queries";
+    std::string stream_string = "1 6 "
+                                "1 : a(x1, 1, z1)\n"
+                                "2 : a(x2, y2, z2)\n"
+                                "3 : a(x3, y3, z3), a(x3, 1, z3)\n"
+                                "4 : a(x41, y41, z41), a(x42, 1, z42)\n"
+                                "4 : a(x43, 1, z43), a(x44, y44, z44)\n"
+                                "5 : a(x5, y5, z5), p(a, 1, b, 1)\n";
+    std::string rule_string = "p(X, Y, Z, 1) := a(X, Y, Z)\n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
+}
+
 void test_atoms() {
     const std::string name = "Atoms";
     std::string stream_string = "1 14 "
@@ -265,11 +279,12 @@ void test_conjunction_sne() {
 
 void test_conjunction_transitive() {
     const std::string name = "Conjunction Transitive";
-    std::string stream_string = "1 4 "
-                                "1 : p(a1, a2), p(a2, a3)\n"
-                                "2 : p(b1,b2), p(b2, b3), p(b3, b4)\n"
-                                "3 : p(c1,c2), p(c2, c3), p(c3, c4), p(c4, c5), p(c5, c6)\n"
-                                "4 : \n";
+    std::string stream_string =
+        "1 4 "
+        "1 : p(a1, a2), p(a2, a3)\n"
+        "2 : p(b1,b2), p(b2, b3), p(b3, b4)\n"
+        "3 : p(c1,c2), p(c2, c3), p(c3, c4), p(c4, c5), p(c5, c6)\n"
+        "4 : \n";
     std::string rule_string = "p(X, Z) := p(X, Y) && p(Y, Z)\n";
     run(name, stream_string, rule_string,
         laser::util::ChaseAlgorithm::OBLIVIOUS);
@@ -469,8 +484,7 @@ void test_existential_time_reference_head() {
         "[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
         "&& [$, 100] [D] problem(SG) \n";
 
-    run(name, stream_string, rule_string,
-        laser::util::ChaseAlgorithm::SKOLEM);
+    run(name, stream_string, rule_string, laser::util::ChaseAlgorithm::SKOLEM);
 }
 
 void test_existential_time_reference_body2() {
@@ -628,8 +642,57 @@ void test_existential_indexed_window() {
                                 "4 : q(x4)\n";
     std::string rule_string = "p(X, z)  := q(X)\n"
                               "p (X, Y) := [$, 2] [D] s(X, Y) \n";
+    run(name, stream_string, rule_string, laser::util::ChaseAlgorithm::INDEXED);
+}
+
+void test_existential_restricted_paper_bmc_eg1() {
+    // Example 1 from paper:
+    // Benchmarking the Chase - Benedikt et. al.
+    const std::string name = "Restricted Chase - Example 1 from "
+        " Benchmarking Chase";
+    std::string stream_string = "1 4 "
+                                "1 : r(a, b), r(b, b)\n"
+                                "2 : \n"
+                                "3 : \n"
+                                "4 : \n";
+    std::string rule_string = "r(X1, y) && A(y) && A(X2) := r(X1, X2) \n";
     run(name, stream_string, rule_string,
-        laser::util::ChaseAlgorithm::INDEXED);
+        laser::util::ChaseAlgorithm::RESTRICTED);
+}
+
+void test_existential_skolem_paper_bmc_eg1() {
+    // Example 1 from paper:
+    // Benchmarking the Chase - Benedikt et. al.
+    // This program is not exepcted to terminate without Normalizaton of rules
+    const std::string name = "Skolem Chase - Example 1 from "
+        " Benchmarking Chase";
+    std::string stream_string = "1 4 "
+                                "1 : r(a, b), r(b, b)\n"
+                                "2 : \n"
+                                "3 : \n"
+                                "4 : \n";
+    std::string rule_string = "r(X1, y) && A(y) && A(X2) := r(X1, X2) \n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::SKOLEM);
+}
+
+void test_existential_skolem_paper_bmc_eg4() {
+    // Example 4 from paper:
+    // Benchmarking the Chase - Benedikt et. al.
+    // This should terminate once skolem chase is fixed such that the parameters
+    // of the skolem functions are only the variables occuring in both the 
+    // body and the head of the rule
+    const std::string name = "Skolem Chase - Example 4 from "
+        " Benchmarking Chase";
+    std::string stream_string = "1 4 "
+                                "1 : r(a, b), r(b, b)\n"
+                                "2 : \n"
+                                "3 : \n"
+                                "4 : \n";
+    std::string rule_string = "r(X1, y) && A(y) := r(X1, X2) \n"
+                        "A(X2) := r(X1, X2) \n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::SKOLEM);
 }
 
 void test_existential_skolem_complex() {
@@ -641,14 +704,13 @@ void test_existential_skolem_complex() {
                                 "2 : \n"
                                 "3 : \n"
                                 "4 : \n";
-    std::string rule_string = 
-            "s(z) && t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
-            "t(A, B, B) := p(A, B) && q(B) \n"
-            "u(A, B) := p(A, B) && q(B) \n"
-            "t(A, B, A) := p(A, B) && q(A) \n"
-            "u(A, A) := p(A, B) && q(A) \n";
-    run(name, stream_string, rule_string,
-        laser::util::ChaseAlgorithm::SKOLEM);
+    std::string rule_string =
+        "s(z) && t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+        "t(A, B, B) := p(A, B) && q(B) \n"
+        "u(A, B) := p(A, B) && q(B) \n"
+        "t(A, B, A) := p(A, B) && q(A) \n"
+        "u(A, A) := p(A, B) && q(A) \n";
+    run(name, stream_string, rule_string, laser::util::ChaseAlgorithm::SKOLEM);
 }
 
 void test_existential_skolem_complex2() {
@@ -660,14 +722,12 @@ void test_existential_skolem_complex2() {
                                 "2 : \n"
                                 "3 : \n"
                                 "4 : \n";
-    std::string rule_string = 
-            "t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
-            "t(A, B, B) := p(A, B) && q(B) \n"
-            "u(A, B) := p(A, B) && q(B) \n"
-            "t(A, B, A) := p(A, B) && q(A) \n"
-            "u(A, A) := p(A, B) && q(A) \n";
-    run(name, stream_string, rule_string,
-        laser::util::ChaseAlgorithm::SKOLEM);
+    std::string rule_string = "t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+                              "t(A, B, B) := p(A, B) && q(B) \n"
+                              "u(A, B) := p(A, B) && q(B) \n"
+                              "t(A, B, A) := p(A, B) && q(A) \n"
+                              "u(A, A) := p(A, B) && q(A) \n";
+    run(name, stream_string, rule_string, laser::util::ChaseAlgorithm::SKOLEM);
 }
 
 void test_existential_restricted_complex() {
@@ -680,12 +740,12 @@ void test_existential_restricted_complex() {
                                 "2 : \n"
                                 "3 : \n"
                                 "4 : \n";
-    std::string rule_string = 
-            "s(z) && t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
-            "t(A, B, B) := p(A, B) && q(B) \n"
-            "u(A, B) := p(A, B) && q(B) \n"
-            "t(A, B, A) := p(A, B) && q(A) \n"
-            "u(A, A) := p(A, B) && q(A) \n";
+    std::string rule_string =
+        "s(z) && t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+        "t(A, B, B) := p(A, B) && q(B) \n"
+        "u(A, B) := p(A, B) && q(B) \n"
+        "t(A, B, A) := p(A, B) && q(A) \n"
+        "u(A, A) := p(A, B) && q(A) \n";
     run(name, stream_string, rule_string,
         laser::util::ChaseAlgorithm::RESTRICTED);
 }
@@ -700,12 +760,11 @@ void test_existential_restricted_complex2() {
                                 "2 : \n"
                                 "3 : \n"
                                 "4 : \n";
-    std::string rule_string = 
-            "t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
-            "t(A, B, B) := p(A, B) && q(B) \n"
-            "u(A, B) := p(A, B) && q(B) \n"
-            "t(A, B, A) := p(A, B) && q(A) \n"
-            "u(A, A) := p(A, B) && q(A) \n";
+    std::string rule_string = "t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+                              "t(A, B, B) := p(A, B) && q(B) \n"
+                              "u(A, B) := p(A, B) && q(B) \n"
+                              "t(A, B, A) := p(A, B) && q(A) \n"
+                              "u(A, A) := p(A, B) && q(A) \n";
     run(name, stream_string, rule_string,
         laser::util::ChaseAlgorithm::RESTRICTED);
 }
@@ -720,14 +779,13 @@ void test_existential_indexed_complex() {
                                 "2 : \n"
                                 "3 : \n"
                                 "4 : \n";
-    std::string rule_string = 
-            "s(z) && t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
-            "t(A, B, B) := p(A, B) && q(B) \n"
-            "u(A, B) := p(A, B) && q(B) \n"
-            "t(A, B, A) := p(A, B) && q(A) \n"
-            "u(A, A) := p(A, B) && q(A) \n";
-    run(name, stream_string, rule_string,
-        laser::util::ChaseAlgorithm::INDEXED);
+    std::string rule_string =
+        "s(z) && t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+        "t(A, B, B) := p(A, B) && q(B) \n"
+        "u(A, B) := p(A, B) && q(B) \n"
+        "t(A, B, A) := p(A, B) && q(A) \n"
+        "u(A, A) := p(A, B) && q(A) \n";
+    run(name, stream_string, rule_string, laser::util::ChaseAlgorithm::INDEXED);
 }
 
 void test_existential_indexed_complex2() {
@@ -740,14 +798,12 @@ void test_existential_indexed_complex2() {
                                 "2 : \n"
                                 "3 : \n"
                                 "4 : \n";
-    std::string rule_string = 
-            "t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
-            "t(A, B, B) := p(A, B) && q(B) \n"
-            "u(A, B) := p(A, B) && q(B) \n"
-            "t(A, B, A) := p(A, B) && q(A) \n"
-            "u(A, A) := p(A, B) && q(A) \n";
-    run(name, stream_string, rule_string,
-        laser::util::ChaseAlgorithm::INDEXED);
+    std::string rule_string = "t(A, B, z) && u(A, z) := p(A, B) && q(B)\n"
+                              "t(A, B, B) := p(A, B) && q(B) \n"
+                              "u(A, B) := p(A, B) && q(B) \n"
+                              "t(A, B, A) := p(A, B) && q(A) \n"
+                              "u(A, A) := p(A, B) && q(A) \n";
+    run(name, stream_string, rule_string, laser::util::ChaseAlgorithm::INDEXED);
 }
 
 void test_conjunction_head() {
@@ -784,7 +840,7 @@ void test_conjunction_head_timeref() {
 
 int main() {
     // test_simple();
-    // test_atoms();
+    //test_atoms();
     // test_diamond();
     // test_time_window();
     // test_box();
@@ -805,7 +861,7 @@ int main() {
     // test_tuple_window_diamond();
     // test_existential_simple();
     // // // // test_existential_loop();
-     //test_existential_time_reference_head();
+    // test_existential_time_reference_head();
     // test_existential_time_reference_body1();
     // test_existential_time_reference_body2();
     // test_existential_time_reference_handb();
@@ -819,10 +875,14 @@ int main() {
     // test_conjunction_head();
     // test_conjunction_head_timeref();
     // test_existential_indexed_window();
-    test_existential_skolem_complex();
-    test_existential_skolem_complex2();
-    test_existential_restricted_complex();
-    test_existential_restricted_complex2();
-    test_existential_indexed_complex();
-    test_existential_indexed_complex2();
+    // test_existential_skolem_complex();
+    // test_existential_skolem_complex2();
+    // test_existential_restricted_complex();
+    // test_existential_restricted_complex2();
+    // test_existential_indexed_complex();
+    // test_existential_indexed_complex2();
+    //test_existential_restricted_paper_bmc_eg1();
+    //test_existential_skolem_paper_bmc_eg4(); 
+    //test_existential_skolem_paper_bmc_eg1();
+    test_queries();
 }

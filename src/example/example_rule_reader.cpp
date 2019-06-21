@@ -15,7 +15,7 @@ ExampleRuleReader::syntax_error(std::string const &error_message) const {
 }
 
 void ExampleRuleReader::skip_spaces() {
-    input >> std::ws; // eats-up any leadin whitespaces.
+    input >> std::ws; // eats-up any leading whitespaces.
 }
 
 void ExampleRuleReader::skip_next_char() { input.get(); }

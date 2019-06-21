@@ -18,6 +18,7 @@
 #include "util/settings.h"
 #include "util/timeline.h"
 #include "util/chase_algorithm.h"
+#include "service/service_manager.h"
 
 namespace laser {
 namespace core {
@@ -28,6 +29,7 @@ class Reasoner {
     std::mutex conclusion_map_mutex;
     IOManager *io_manager;
     rule::RuleReader *rule_reader;
+    service::ServiceManager service_manager;
     std::chrono::duration<double, std::milli> clock_eval;
 
     std::unordered_map<uint64_t, std::vector<std::shared_ptr<util::Grounding>>>
@@ -39,6 +41,7 @@ class Reasoner {
     void read(util::Timeline timeline);
     void evaluate(util::Timeline timeline);
     void write(util::Timeline timeline);
+    void listen(util::Timeline timeline);
 
     void insert_facts(uint64_t timepoint,
                       std::vector<std::shared_ptr<util::Grounding>> facts);

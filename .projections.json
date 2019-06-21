@@ -19,6 +19,10 @@
         "type": "laser-example-header",
         "alternate": "src/example/{}.cpp"
     },
+    "include/service/*.h": {
+        "type": "laser-service-header",
+        "alternate": "src/service/{}.cpp"
+    },
     "include/rule/*.h": {
         "type": "laser-rule-header",
         "alternate": "src/rule/{}.cpp"
@@ -45,6 +49,10 @@
     "src/example/*.cpp": {
         "type": "laser-example-source",
         "alternate": "include/example/{}.h"
+    },
+    "src/service/*.cpp": {
+        "type": "laser-service-source",
+        "alternate": "include/service/{}.h"
     },
     "src/rule/*.cpp": {
         "type": "laser-rule-source",

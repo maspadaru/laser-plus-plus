@@ -1,7 +1,3 @@
-//
-// Created by mike on 04/04/19.
-//
-
 #ifndef LASER_UTIL_DATABASE_H
 #define LASER_UTIL_DATABASE_H
 

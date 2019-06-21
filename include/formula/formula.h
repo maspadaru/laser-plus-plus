@@ -1,7 +1,3 @@
-//
-// Created by mike on 6/16/18.
-//
-
 #ifndef LASER_FORMULA_FORMULA_H
 #define LASER_FORMULA_FORMULA_H
 
