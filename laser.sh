@@ -1,58 +1,35 @@
 #!/bin/bash
 
-TESTAPP_EXECUTABLE=testapp
-GTEST_EXECUTABLE=run_test
-BENCHAPP_EXECUTABLE=benchapp
+TESTAPP_EXECUTABLE=testapp-build/testapp
+GTEST_EXECUTABLE=test-build/run_test
+BENCHAPP_EXECUTABLE=benchapp-build/benchapp
 
-cmake_build_release() {
-    mkdir -p cmake-build-release
-    cd cmake-build-release
-    cmake -DCMAKE_BUILD_TYPE=Release ..
-}
-
-cmake_build_debug() {
-    mkdir -p cmake-build-debug
-    cd cmake-build-debug
-    # !!!! LLVM does not support the -pg flag !!!
-    # cmake -DCMAKE_CXX_FLAGS=-pg -DCMAKE_EXE_LINKER_FLAGS=-pg -DCMAKE_SHARED_LINKER_FLAGS=-pg -DCMAKE_BUILD_TYPE=Debug ..
-    cmake -DCMAKE_BUILD_TYPE=Debug ..
-}
-
-
-make_release() {
-    cmake_build_release
-    make
-    cd ..
-}
-
-make_debug() {
-    cmake_build_debug
-    make
-    cd ..
-}
-
-make_run_test() {
-    cmake_build_debug
-    make run_test
-    cd ..
+make_benchapp() {
+    mkdir -p cmake-build-release/benchapp-build
+    cd cmake-build-release/benchapp-build
+    cmake -DCMAKE_BUILD_TYPE=Release ../../app_bench/
+    make benchapp
+    cd ../..
 }
 
 make_testapp() {
-    cmake_build_debug
+    mkdir -p cmake-build-debug/testapp-build
+    cd cmake-build-debug/testapp-build
+    # !! LLVM does not support the -pg flag  
+    # !! So remove those fags if compiling from MacOS with LLVM
+    cmake -DCMAKE_CXX_FLAGS=-pg -DCMAKE_EXE_LINKER_FLAGS=-pg -DCMAKE_SHARED_LINKER_FLAGS=-pg -DCMAKE_BUILD_TYPE=Debug ../../app_test
     make testapp
-    cd ..
+    cd ../..
 }
 
-make_benchapp() {
-    cmake_build_release
-    make benchapp
-    cd ..
+make_test() {
+    mkdir -p cmake-build-debug/test-build
+    cd cmake-build-debug/test-build
+    cmake -DCMAKE_BUILD_TYPE=Debug ../../test
+    make run_test
+    cd ../..
 }
 
-build() {
-    make_release
-    make_debug
-}
 
 clean_up () {
     rm -rf cmake-build-debug
@@ -73,19 +50,19 @@ run_benchapp () {
     cmake-build-release/$BENCHAPP_EXECUTABLE $1 $2 $3 $4 $5 $6 $7
 }
 
-run_project () {
+run_testapp () {
     make_testapp
     cmake-build-debug/$TESTAPP_EXECUTABLE
 }
 
-test_project () {
-    make_run_test
-    cmake-build-debug/$GTEST_EXECUTABLE
-}
-
-debug_project () {
+debug_testapp () {
     make_testapp
     gdb cmake-build-debug/$TESTAPP_EXECUTABLE --tui
+}
+
+run_test () {
+    make_test
+    cmake-build-debug/$GTEST_EXECUTABLE
 }
 
 #debug_benchapp () {
@@ -94,17 +71,17 @@ debug_project () {
 
 print_help () {
     echo "Usage: laser [b bench c d p r h t]"
-    echo "b: Build Laser"
+    echo "b: Build Test App"
     echo "bbm: Build Benchmark App"
     echo "bench: Run Benchmark App"
     echo "c: Clean project"
-    echo "d: Debug project using GDB"
+    echo "d: Debug Test App using GDB"
     echo "h: Print help"
-    echo "p: Profile application. Generates prof.txt"
-    echo "r: Run TestApp project"
-    echo "t: run all tests"
+    echo "p: Profile Benchmark Application. Generates prof.txt"
+    echo "r: Run Test App"
+    echo "t: run all testcases"
     echo " "
-    echo " Options [bench p] require additional arguments:"
+    echo " Options [bench] and [p] require additional arguments:"
     echo " test_id end_time_of_stream number_of_facts_per_timepoint window_size chase_algorithm=(S/R) stream_file_path output_file_path"
 
 }
@@ -112,7 +89,7 @@ print_help () {
 if [ $# -eq 0 ]; then 
 	print_help 
 elif [ $1 = "b" ]; then
-    build
+    make_testapp
 elif [ $1 = "bbm" ]; then
     make_benchapp
 elif [ $1 = "bench" ]; then
@@ -122,16 +99,16 @@ elif [ $1 = "p" ]; then
 elif [ $1 = "c" ]; then
     clean_up
 elif [ $1 = "r" ]; then
-    run_project
+    run_testapp
 elif [ $1 = "d" ]; then
-    debug_project
-elif [ $1 = "dbench" ]; then
-    debug_benchapp "$2" "$3" "$4" "$5" "$6" "$7" "$8"
+    debug_testapp
 elif [ $1 = "t" ]; then
-    test_project
+    run_test
 elif [ $1 = "h" ]; then
     print_help
 else
 	print_help
 fi
 
+#elif [ $1 = "dbench" ]; then
+    #debug_benchapp "$2" "$3" "$4" "$5" "$6" "$7" "$8"

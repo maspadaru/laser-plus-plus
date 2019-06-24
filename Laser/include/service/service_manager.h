@@ -4,6 +4,7 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <fstream>
 
 #include "service/query.h"
 #include "service/request.h"
@@ -15,12 +16,18 @@ namespace service {
 
 class ServiceManager {
   private:
+    std::vector<std::shared_ptr<util::Grounding>> database_facts;
     std::string request_string;
+    std::istream &in;
+    std::ostream &out;
 
     bool read_request();
-    std::vector<std::shared_ptr<util::Grounding>> database_facts;
+
+    bool read_line(std::string &line);
 
   public:
+    explicit ServiceManager();
+    explicit ServiceManager(std::istream &input, std::ostream &output);
     virtual ~ServiceManager() = default;
 
     void update(std::vector<std::shared_ptr<util::Grounding>> facts,

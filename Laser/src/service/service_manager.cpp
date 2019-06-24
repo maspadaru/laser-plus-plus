@@ -3,20 +3,29 @@
 namespace laser {
 namespace service {
 
+ServiceManager::ServiceManager() : in(std::cin), out(std::cout) {}
+
+ServiceManager::ServiceManager(std::istream &input, std::ostream &output)
+    : in(input), out(output) {}
+
+bool ServiceManager::read_line(std::string &line) {
+    std::getline(in, line);
+    return in.good();
+}
+
 bool ServiceManager::read_request() {
-    request_string = "Q: A, C ? p(A, 1, C, 1)";
-    return true;
+    auto result = read_line(request_string);
+    return result;
 }
 
 void ServiceManager::serve_requests() {
     RequestParser request_parser(database_facts);
-    bool has_request = true;
+    auto has_request = read_request();
     while (has_request) {
-        has_request = read_request();
         auto request = request_parser.parse_request(request_string);
         auto result = request->evaluate();
-        std::cout << " Request Answer: "<< result << std::endl;
-        // TODO
+        out << " Request Answer: " << result << std::endl;
+        // TODOhas_request = read_request();
         has_request = false;
     }
 }
