@@ -37,13 +37,13 @@ void test_simple() {
 void test_queries() {
     const std::string name = "Queries";
     std::string stream_string = "1 6 "
-                                "1 : a(x1, 1, z1)\n"
-                                "2 : a(x2, y2, z2)\n"
-                                "3 : a(x3, y3, z3), a(x3, 1, z3)\n"
-                                "4 : a(x41, y41, z41), a(x42, 1, z42)\n"
-                                "4 : a(x43, 1, z43), a(x44, y44, z44)\n"
-                                "5 : a(x5, y5, z5), p(a, 1, b, 1)\n";
-    std::string rule_string = "p(X, Y, Z, 1) := a(X, Y, Z)\n";
+                                "1 : a(x1, 1, z1, 1)\n"
+                                "2 : a(x2, y2, z2, 1)\n"
+                                "3 : a(x3, 3, z3, 1), a(x3, 1, z3, 1)\n"
+                                "4 : a(x41, y41, z41, y41), a(x42, 1, z42, 1)\n"
+                                "4 : a(x43, 1, z43, 2), a(x44, y44, z44, 2)\n"
+                                "5 : a(x5, y5, z5, 1), p(a, 1, b, 1)\n";
+    std::string rule_string = "p(A, B, C, D) := a(A, B, C, D)\n";
     run(name, stream_string, rule_string,
         laser::util::ChaseAlgorithm::OBLIVIOUS);
 }

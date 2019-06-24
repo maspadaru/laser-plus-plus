@@ -3,7 +3,14 @@
 namespace laser {
 namespace service {
 
-std::string Query::evaluate() { return "Answer"; }
+std::string Query::evaluate() { 
+    auto result_vector = build_result_vector();
+    std::stringstream os;
+    for (auto const &fact : result_vector) {
+        os << fact->to_atom_string() << ", ";
+    }
+    return os.str();
+}
 
 Query::Query(formula::Formula *q_formula, util::Grounding trigger,
              std::vector<size_t> known_var_index,

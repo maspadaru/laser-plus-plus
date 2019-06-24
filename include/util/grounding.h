@@ -101,6 +101,8 @@ class Grounding {
 
     std::string to_string() const;
 
+    std::string to_atom_string() const;
+
     bool operator<(const Grounding &other) const;
 
     bool operator==(const Grounding &other) const;

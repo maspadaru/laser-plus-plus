@@ -15,7 +15,7 @@ void ServiceManager::serve_requests() {
         has_request = read_request();
         auto request = request_parser.parse_request(request_string);
         auto result = request->evaluate();
-        std::cout << result << std::endl;
+        std::cout << " Request Answer: "<< result << std::endl;
         // TODO
         has_request = false;
     }

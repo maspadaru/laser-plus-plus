@@ -139,6 +139,16 @@ std::string Grounding::get_annotation_key() const {
     return result;
 }
 
+std::string Grounding::to_atom_string() const {
+    std::stringstream os;
+    os << predicate << "(";
+    for (auto const &value : constant_vector) {
+        os << value << ", ";
+    }
+    os << "); ";
+    return os.str();
+}
+
 std::string Grounding::to_string() const {
     std::stringstream os;
     os << predicate << "(";

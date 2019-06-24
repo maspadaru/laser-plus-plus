@@ -258,9 +258,9 @@ std::vector<size_t> RequestParser::compute_known_index_vector(
     std::set<std::string> const &unknown_variables) const {
     std::vector<size_t> known_index_vector;
     auto all_variables = query_formula->get_variable_names();
-    for (auto const &var_name : all_variables) {
+    for (size_t index = 0; index < all_variables.size(); index++) {
+        auto const & var_name = all_variables.at(index);
         if (unknown_variables.count(var_name) == 0) {
-            auto index = query_formula->get_variable_index(var_name);
             known_index_vector.push_back(index);
         }
     }
