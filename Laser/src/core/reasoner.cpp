@@ -11,6 +11,16 @@ Reasoner::Reasoner(rule::RuleReader *rule_reader, IOManager *io_manager,
                    util::ChaseAlgorithm chase_algorithm)
     : rule_reader(rule_reader), io_manager(io_manager), clock_eval(0) {
     laser::util::Settings::get_instance().set_chase_algorithm(chase_algorithm);
+    is_listen_on = false;
+}
+
+Reasoner::Reasoner(rule::RuleReader *rule_reader, IOManager *io_manager,
+                   util::ChaseAlgorithm chase_algorithm,
+                   service::ServiceManager *service_manager)
+    : rule_reader(rule_reader), io_manager(io_manager), clock_eval(0),
+      service_manager(service_manager) {
+    laser::util::Settings::get_instance().set_chase_algorithm(chase_algorithm);
+    is_listen_on = true;
 }
 
 void Reasoner::insert_facts(
@@ -82,11 +92,18 @@ void Reasoner::evaluate(util::Timeline timeline) {
                 clock_end - clock_start;
             clock_eval += clock_elapsed;
             insert_conclusions(time, conclusions);
+
+            // TODO listen in separate thread,
+            // TODO but only start new thread if is_listen_on == true
+            if (is_listen_on) {
+                service_manager->update(time, std::move(facts),
+                                       std::move(conclusions));
+                listen(timeline);
+            }
+            // TODO
+
             timeline.increment_time();
             time = timeline.get_time();
-            //TODO listen in separate thread
-            service_manager.update(std::move(facts), std::move(conclusions));
-            listen(timeline);
         } else {
             std::this_thread::yield();
         }
@@ -109,7 +126,7 @@ void Reasoner::write(util::Timeline timeline) {
 }
 
 void Reasoner::listen(util::Timeline timeline) {
-    service_manager.serve_requests();
+    service_manager->serve_requests();
 }
 
 } // namespace core

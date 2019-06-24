@@ -3,11 +3,11 @@
 namespace laser {
 namespace service {
 
-std::string Query::evaluate() { 
-    auto result_vector = build_result_vector();
+std::string Query::evaluate() {
+    auto result_set = compute_answer();
     std::stringstream os;
-    for (auto const &fact : result_vector) {
-        os << fact->to_atom_string() << ", ";
+    for (auto const &fact : result_set) {
+        os << fact->to_atom_string() << "; ";
     }
     return os.str();
 }
@@ -18,6 +18,7 @@ Query::Query(formula::Formula *q_formula, util::Grounding trigger,
     : query_formula(&q_formula->move()), trigger(std::move(trigger)),
       known_index_vector(std::move(known_var_index)), database_facts(db_facts) {
     this->query_predicate = this->query_formula->get_predicate_vector().at(0);
+    formula_arity = this->query_formula->get_number_of_variables();
 }
 
 Query::Query(Query const &other) : database_facts(other.database_facts) {
@@ -50,23 +51,30 @@ Query::Query(Query &&other) noexcept : database_facts(other.database_facts) {
 bool Query::is_known_variable_match(
     std::shared_ptr<util::Grounding> const &db_fact) const {
     if (query_predicate == db_fact->get_predicate()) {
-        for (auto index : known_index_vector) {
-            auto const &trigger_value = trigger.get_constant(index);
-            auto const &db_value = db_fact->get_constant(index);
-            if (db_value != trigger_value) {
-                return false;
+        auto db_fact_arity = db_fact->get_size();
+        if(formula_arity == db_fact_arity) {
+            for (auto index : known_index_vector) {
+                auto const &trigger_value = trigger.get_constant(index);
+                auto const &db_value = db_fact->get_constant(index);
+                if (db_value != trigger_value) {
+                    return false;
+                }
             }
+            return true;
         }
-        return true;
     }
     return false;
 }
 
-std::vector<std::shared_ptr<util::Grounding>> Query::build_result_vector() {
-    std::vector<std::shared_ptr<util::Grounding>> result;
+std::set<std::shared_ptr<util::Grounding>,
+         util::GroundingPredicateSubstitutionCompare>
+Query::compute_answer() {
+    std::set<std::shared_ptr<util::Grounding>,
+             util::GroundingPredicateSubstitutionCompare>
+        result;
     for (auto const &db_fact : database_facts) {
         if (is_known_variable_match(db_fact)) {
-            result.push_back(db_fact);
+            result.insert(db_fact);
         }
     }
     return result;

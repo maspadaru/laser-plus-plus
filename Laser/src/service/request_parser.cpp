@@ -5,7 +5,7 @@ namespace service {
 
 inline void
 RequestParser::syntax_error(std::string const &error_message) const {
-    std::string message = "Syntax Error: " + error_message;
+    std::string message = "Syntax Error: RequestParser - " + error_message;
     const char *exception_message = message.c_str();
     throw util::FormatException(exception_message);
 }

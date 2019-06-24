@@ -3,14 +3,10 @@
 namespace laser {
 namespace service {
 
-ServiceManager::ServiceManager() : in(std::cin), out(std::cout) {
-    listen_on = false;
-}
+ServiceManager::ServiceManager() : in(std::cin), out(std::cout) {}
 
 ServiceManager::ServiceManager(std::istream &input, std::ostream &output)
-    : in(input), out(output) {
-    listen_on = true;
-}
+    : in(input), out(output) {}
 
 bool ServiceManager::read_line(std::string &line) {
     std::getline(in, line);
@@ -23,22 +19,23 @@ bool ServiceManager::read_request() {
 }
 
 void ServiceManager::serve_requests() {
-    if (listen_on) {
+    out << " *** Timepoint: " << time << " *** " << std::endl;
+    auto has_request = read_request();
+    while (has_request) {
         RequestParser request_parser(database_facts);
-        auto has_request = read_request();
-        while (has_request) {
-            auto request = request_parser.parse_request(request_string);
-            auto result = request->evaluate();
-            out << " Request Answer: " << result << std::endl;
-            // TODOhas_request = read_request();
-            has_request = false;
-        }
+        auto request = request_parser.parse_request(request_string);
+        auto result = request->evaluate();
+        out << "Query: " << request_string << " -> Answer: ";
+        out << result;
+        out << std::endl;
+        has_request = read_request();
     }
 }
 
 void ServiceManager::update(
-    std::vector<std::shared_ptr<util::Grounding>> facts,
+    uint64_t time, std::vector<std::shared_ptr<util::Grounding>> facts,
     std::vector<std::shared_ptr<util::Grounding>> conclusions) {
+    this->time = time;
     database_facts.clear();
     database_facts.insert(database_facts.end(),
                           std::make_move_iterator(facts.begin()),

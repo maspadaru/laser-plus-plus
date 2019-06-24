@@ -145,7 +145,7 @@ std::string Grounding::to_atom_string() const {
     for (auto const &value : constant_vector) {
         os << value << ", ";
     }
-    os << "); ";
+    os << ")";
     return os.str();
 }
 

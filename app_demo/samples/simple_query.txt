@@ -1,0 +1,6 @@
+Q: Y, Z ? p(99, Y, Z)
+Q: X, Y, Z ? a(X, Y, Z)
+Q: X, Y, Z ? p(X, Y, Z)
+Q: X, Y ? q(X, Y)
+Q: X ? q(X)
+Q: X, Y, Z ? q(X, Y, Z)

@@ -14,11 +14,11 @@
 #include "core/io_manager.h"
 #include "core/program.h"
 #include "rule/rule_reader.h"
+#include "service/service_manager.h"
+#include "util/chase_algorithm.h"
 #include "util/grounding.h"
 #include "util/settings.h"
 #include "util/timeline.h"
-#include "util/chase_algorithm.h"
-#include "service/service_manager.h"
 
 namespace laser {
 namespace core {
@@ -29,7 +29,8 @@ class Reasoner {
     std::mutex conclusion_map_mutex;
     IOManager *io_manager;
     rule::RuleReader *rule_reader;
-    service::ServiceManager service_manager;
+    service::ServiceManager *service_manager;
+    bool is_listen_on = false;
     std::chrono::duration<double, std::milli> clock_eval;
 
     std::unordered_map<uint64_t, std::vector<std::shared_ptr<util::Grounding>>>
@@ -58,6 +59,10 @@ class Reasoner {
   public:
     explicit Reasoner(rule::RuleReader *rule_reader, IOManager *io_manager,
                       util::ChaseAlgorithm chase_algorithm);
+
+    explicit Reasoner(rule::RuleReader *rule_reader, IOManager *io_manager,
+                      util::ChaseAlgorithm chase_algorithm,
+                      service::ServiceManager *service_manager);
 
     double start();
 };

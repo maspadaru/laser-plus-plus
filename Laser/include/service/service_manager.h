@@ -1,10 +1,10 @@
 #ifndef LASER_SERVICE_SERVICE_MANAGER_H
 #define LASER_SERVICE_SERVICE_MANAGER_H
 
+#include <fstream>
 #include <iostream>
 #include <memory>
 #include <vector>
-#include <fstream>
 
 #include "service/query.h"
 #include "service/request.h"
@@ -16,8 +16,8 @@ namespace service {
 
 class ServiceManager {
   private:
-    bool listen_on = false;
     std::vector<std::shared_ptr<util::Grounding>> database_facts;
+    uint64_t time = 0;
     std::string request_string;
     std::istream &in;
     std::ostream &out;
@@ -29,9 +29,11 @@ class ServiceManager {
   public:
     explicit ServiceManager();
     explicit ServiceManager(std::istream &input, std::ostream &output);
+
     virtual ~ServiceManager() = default;
 
-    void update(std::vector<std::shared_ptr<util::Grounding>> facts,
+    void update(uint64_t time,
+                std::vector<std::shared_ptr<util::Grounding>> facts,
                 std::vector<std::shared_ptr<util::Grounding>> conclusions);
 
     void serve_requests();

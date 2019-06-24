@@ -79,4 +79,13 @@
         "alternate": "app_simple/include/{}.h"
     },
 
+    "app_demo/include/*.h": {
+        "type": "demoapp-header",
+        "alternate": "app_demo/src/{}.cpp"
+    },
+    "app_demo/src/*.cpp": {
+        "type": "demoapp-source",
+        "alternate": "app_demo/include/{}.h"
+    },
+
 }
