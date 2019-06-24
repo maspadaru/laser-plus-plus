@@ -1,62 +1,62 @@
 {
-    "include/util/*.h": {
+    "Laser/include/util/*.h": {
         "type": "laser-util-header",
-        "alternate": "src/util/{}.cpp"
+        "alternate": "Laser/src/util/{}.cpp"
     },
-    "include/core/*.h": {
+    "Laser/include/core/*.h": {
         "type": "laser-core-header",
-        "alternate": "src/core/{}.cpp"
+        "alternate": "Laser/src/core/{}.cpp"
     },
-    "include/formula/*.h": {
+    "Laser/include/formula/*.h": {
         "type": "laser-formula-header",
-        "alternate": "src/formula/{}.cpp"
+        "alternate": "Laser/src/formula/{}.cpp"
     },
-    "include/formula/extended/*.h": {
+    "Laser/include/formula/extended/*.h": {
         "type": "laser-formula-extended-header",
-        "alternate": "src/formula/extended/{}.cpp"
+        "alternate": "Laser/src/formula/extended/{}.cpp"
     },
-    "include/example/*.h": {
+    "Laser/include/example/*.h": {
         "type": "laser-example-header",
-        "alternate": "src/example/{}.cpp"
+        "alternate": "Laser/src/example/{}.cpp"
     },
-    "include/service/*.h": {
+    "Laser/include/service/*.h": {
         "type": "laser-service-header",
-        "alternate": "src/service/{}.cpp"
+        "alternate": "Laser/src/service/{}.cpp"
     },
-    "include/rule/*.h": {
+    "Laser/include/rule/*.h": {
         "type": "laser-rule-header",
-        "alternate": "src/rule/{}.cpp"
+        "alternate": "Laser/src/rule/{}.cpp"
     },
 
 
 
-    "src/util/*.cpp": {
+    "Laser/src/util/*.cpp": {
         "type": "laser-util-source",
-        "alternate": "include/util/{}.h"
+        "alternate": "Laser/include/util/{}.h"
     },
-    "src/core/*.cpp": {
+    "Laser/src/core/*.cpp": {
         "type": "laser-core-source",
-        "alternate": "include/core/{}.h"
+        "alternate": "Laser/include/core/{}.h"
     },
-    "src/formula/*.cpp": {
+    "Laser/src/formula/*.cpp": {
         "type": "laser-formula-source",
-        "alternate": "include/formula/{}.h"
+        "alternate": "Laser/include/formula/{}.h"
     },
-    "src/formula/extended/*.cpp": {
+    "Laser/src/formula/extended/*.cpp": {
         "type": "laser-formula-extended-source",
-        "alternate": "include/formula/extended/{}.h"
+        "alternate": "Laser/include/formula/extended/{}.h"
     },
-    "src/example/*.cpp": {
+    "Laser/src/example/*.cpp": {
         "type": "laser-example-source",
-        "alternate": "include/example/{}.h"
+        "alternate": "Laser/include/example/{}.h"
     },
-    "src/service/*.cpp": {
+    "Laser/src/service/*.cpp": {
         "type": "laser-service-source",
-        "alternate": "include/service/{}.h"
+        "alternate": "Laser/include/service/{}.h"
     },
-    "src/rule/*.cpp": {
+    "Laser/src/rule/*.cpp": {
         "type": "laser-rule-source",
-        "alternate": "include/rule/{}.h"
+        "alternate": "Laser/include/rule/{}.h"
     },
 
 

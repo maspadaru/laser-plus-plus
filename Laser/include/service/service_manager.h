@@ -16,6 +16,7 @@ namespace service {
 
 class ServiceManager {
   private:
+    bool listen_on = false;
     std::vector<std::shared_ptr<util::Grounding>> database_facts;
     std::string request_string;
     std::istream &in;
