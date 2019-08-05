@@ -37,7 +37,6 @@ class Rule {
     std::unordered_map<std::string, int> head_variable_index;
     size_t previous_step = 0;
     size_t current_step = 0;
-    std::vector<std::string> atom_values;
 
     std::shared_ptr<util::Grounding>
     convert_to_head_grounding(std::string const &head_predicate,

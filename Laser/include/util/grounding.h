@@ -45,9 +45,17 @@ class Grounding {
               uint64_t horizon_count, bool is_fact, bool is_background_fact,
               std::vector<std::string> constant_vector);
 
+    Grounding(std::string predicate, uint64_t consideration_time,
+                     uint64_t horizon_time, uint64_t consideration_count,
+                     uint64_t horizon_count, bool is_fact,
+                     bool is_background_fact, size_t vector_size);
+
     Grounding() = default;
 
     std::shared_ptr<Grounding> clone() const;
+
+    /** creates a new grounding that shares the same annotations */
+    std::shared_ptr<Grounding> empty_clone(std::string predicate, size_t vector_size) const;
 
     bool is_fresh_sne(uint64_t now, size_t previous_step) const;
 

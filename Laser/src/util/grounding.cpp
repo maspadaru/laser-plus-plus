@@ -22,6 +22,17 @@ Grounding::Grounding(std::string predicate, uint64_t consideration_time,
 
 Grounding::Grounding(std::string predicate, uint64_t consideration_time,
                      uint64_t horizon_time, uint64_t consideration_count,
+                     uint64_t horizon_count, bool is_fact,
+                     bool is_background_fact, size_t vector_size)
+    : predicate(std::move(predicate)), consideration_time(consideration_time),
+      horizon_time(horizon_time), consideration_count(consideration_count),
+      horizon_count(horizon_count), is_fact_m(is_fact),
+      is_background_fact_m(is_background_fact) {
+          constant_vector.reserve(vector_size);
+      }
+
+Grounding::Grounding(std::string predicate, uint64_t consideration_time,
+                     uint64_t horizon_time, uint64_t consideration_count,
                      uint64_t horizon_count,
                      std::vector<std::string> constant_vector)
     : predicate(std::move(predicate)), consideration_time(consideration_time),
@@ -88,11 +99,15 @@ std::shared_ptr<Grounding> Grounding::clone() const {
     return std::make_shared<Grounding>(clone);
 }
 
+std::shared_ptr<Grounding> Grounding::empty_clone(std::string predicate, size_t vector_size) const {
+    return std::make_shared<Grounding>(predicate, this->consideration_time,
+                     this->horizon_time, this->consideration_count,
+                     this->horizon_count, this->is_fact_m,
+                     this->is_background_fact_m, vector_size);
+}
+
 void Grounding::set_constant_vector(std::vector<std::string> &vector) {
-    constant_vector.clear();
-    for (auto &constant : vector) {
-        constant_vector.push_back(std::move(constant));
-    }
+    constant_vector = std::move(vector);
 }
 
 void Grounding::clear_constant_vector() {
