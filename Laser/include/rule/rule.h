@@ -5,6 +5,7 @@
 #include <memory>
 #include <set>
 #include <utility>
+#include <unordered_map>
 
 #include "formula/formula.h"
 #include "formula/formula_type.h"
@@ -28,10 +29,15 @@ class Rule {
     bool is_existential_m = false;
     formula::Formula &body;
     std::vector<formula::Formula *> head_atoms;
+    // for each atom in head_atoms, there is a vector containing the postions
+    // in the body grounding where the value of each head variables is found
+    std::vector<std::vector<size_t>> head_atoms_var_positions;
     ChaseFilter *chase_filter;
+    // maps head variables names to postion of variables in the body grounding
     std::unordered_map<std::string, int> head_variable_index;
     size_t previous_step = 0;
     size_t current_step = 0;
+    std::vector<std::string> atom_values;
 
     std::shared_ptr<util::Grounding>
     convert_to_head_grounding(std::string const &head_predicate,
@@ -53,7 +59,7 @@ class Rule {
 
     std::shared_ptr<util::Grounding>
     make_atom_fact(std::shared_ptr<util::Grounding> const &body_fact,
-                   formula::Formula *atom) const;
+                   size_t head_atom_index, size_t atom_arity);
 
   public:
     explicit Rule(formula::Formula *body_formula,

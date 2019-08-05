@@ -22,6 +22,18 @@ void run(std::string const &name, std::string const &stream_string,
     std::cout << std::endl << std::endl;
 }
 
+void test_simple_mix() {
+    const std::string name = "Simple Mix";
+    std::string stream_string = "1 4 "
+                                "1 : a(x1, y1, z1)\n"
+                                "2 : a(x2, y2, z2)\n"
+                                "3 : a(x3, y3, z3)\n"
+                                "4 : \n";
+    std::string rule_string = "p(Z, X, Y) := a(X, Y, Z)\n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
+}
+
 void test_simple() {
     const std::string name = "Simple";
     std::string stream_string = "1 4 "
@@ -839,7 +851,8 @@ void test_conjunction_head_timeref() {
 }
 
 int main() {
-    // test_simple();
+    test_simple();
+    test_simple_mix();
     //test_atoms();
     // test_diamond();
     // test_time_window();
@@ -884,5 +897,5 @@ int main() {
     //test_existential_restricted_paper_bmc_eg1();
     //test_existential_skolem_paper_bmc_eg4(); 
     //test_existential_skolem_paper_bmc_eg1();
-    test_queries();
+    //test_queries();
 }

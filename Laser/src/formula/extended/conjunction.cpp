@@ -16,12 +16,14 @@ Conjunction::Conjunction(Formula *left_child, Formula *right_child,
     this->right_child = &right_child->move();
     is_head_m = is_head;
     populate_variable_collections();
+    compute_predicate_vector();
 }
 
 Conjunction::Conjunction(Formula *left_child, Formula *right_child) {
     this->left_child = &left_child->move();
     this->right_child = &right_child->move();
     populate_variable_collections();
+    compute_predicate_vector();
 }
 
 Formula &Conjunction::create() const {
@@ -69,7 +71,7 @@ void Conjunction::populate_variable_collections() {
                           std::make_move_iterator(right.end()));
     sort(variable_names.begin(), variable_names.end());
     // Get all duplicates, and insert into common_child variables
-    for (int i = 0; i < variable_names.size() - 1; i++) {
+    for (size_t i = 0; i < variable_names.size() - 1; i++) {
         if (variable_names[i] == variable_names[i + 1]) {
             common_child_variables.push_back(variable_names[i]);
         }
@@ -78,32 +80,31 @@ void Conjunction::populate_variable_collections() {
     variable_names.erase(unique(variable_names.begin(), variable_names.end()),
                          variable_names.end());
     // populate variable_map
-    for (int i = 0; i < variable_names.size(); i++) {
+    for (size_t i = 0; i < variable_names.size(); i++) {
         variable_map.try_emplace(variable_names[i], i);
     }
 }
 
-// getters / setters
-
 FormulaType Conjunction::get_type() const { return FormulaType::CONJUNCTION; }
 
-std::vector<std::string> Conjunction::get_predicate_vector() const {
-    auto left = left_child->get_predicate_vector();
-    auto right = right_child->get_predicate_vector();
-    return concatenate_vectors(std::move(left), std::move(right));
+std::vector<std::string> const &Conjunction::get_predicate_vector() const {
+    return predicate_vector;
 }
 
-// methods
+void Conjunction::compute_predicate_vector() {
+    auto left = left_child->get_predicate_vector();
+    auto right = right_child->get_predicate_vector();
+    concatenate_vectors(left, right);
+}
 
-template <typename T, typename A>
-std::vector<T, A>
-Conjunction::concatenate_vectors(std::vector<T, A> left,
-                                 std::vector<T, A> right) const {
-    left.insert(left.end(), std::make_move_iterator(right.begin()),
-                std::make_move_iterator(right.end()));
-    sort(left.begin(), left.end());
-    left.erase(unique(left.begin(), left.end()), left.end());
-    return left;
+void Conjunction::concatenate_vectors(std::vector<std::string> const &left,
+                                      std::vector<std::string> const &right) {
+    predicate_vector = left;
+    predicate_vector.insert(predicate_vector.end(), right.begin(), right.end());
+    sort(predicate_vector.begin(), predicate_vector.end());
+    predicate_vector.erase(
+        unique(predicate_vector.begin(), predicate_vector.end()),
+        predicate_vector.end());
 }
 
 std::vector<std::string> const &Conjunction::get_variable_names() const {
@@ -128,6 +129,7 @@ void Conjunction::add_child(formula::Formula *child) {
     } else if (!right_child) {
         right_child = &child->move();
         populate_variable_collections();
+        compute_predicate_vector();
     }
 }
 

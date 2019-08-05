@@ -23,6 +23,8 @@ class Conjunction : public Formula {
     Formula *left_child;
     Formula *right_child;
 
+    std::vector<std::string> predicate_vector;
+
     std::vector<std::string> common_child_variables;
 
     std::vector<std::string> variable_names;
@@ -37,13 +39,15 @@ class Conjunction : public Formula {
         //grounding_set;
     std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> grounding_set;
 
+    
+    void compute_predicate_vector();
+
     void set_head(bool is_head) override;
 
     bool is_head() const override;
 
-    template <typename T, typename A>
-    std::vector<T, A> concatenate_vectors(std::vector<T, A> left,
-                                          std::vector<T, A> right) const;
+    void concatenate_vectors(std::vector<std::string> const &left,
+                                      std::vector<std::string> const &right);
 
     void populate_variable_collections();
     void populate_grounding_set(
@@ -73,7 +77,7 @@ class Conjunction : public Formula {
 
     FormulaType get_type() const override;
 
-    std::vector<std::string> get_predicate_vector() const override;
+    std::vector<std::string> const &get_predicate_vector() const override;
 
     std::vector<std::string> const &get_variable_names() const override;
 

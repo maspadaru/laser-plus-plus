@@ -45,7 +45,7 @@ Formula &TimeReference::move() {
 
 FormulaType TimeReference::get_type() const { return formula_type; }
 
-std::vector<std::string> TimeReference::get_predicate_vector() const {
+std::vector<std::string> const &TimeReference::get_predicate_vector() const {
     return child->get_predicate_vector();
 }
 

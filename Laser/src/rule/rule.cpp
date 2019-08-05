@@ -20,6 +20,7 @@ Rule::~Rule() {
 
 Rule::Rule(Rule const &other) : body(other.body.clone()) {
     head_atoms = other.head_atoms;
+    head_atoms_var_positions = other.head_atoms_var_positions;
     chase_filter = other.chase_filter->clone();
     head_variable_index = other.head_variable_index;
     is_existential_m = other.is_existential_m;
@@ -29,6 +30,7 @@ Rule::Rule(Rule const &other) : body(other.body.clone()) {
 
 Rule::Rule(Rule &&other) noexcept : body(other.body.move()) {
     head_atoms = std::move(other.head_atoms);
+    head_atoms_var_positions = std::move(other.head_atoms_var_positions);
     chase_filter = other.chase_filter->move();
     head_variable_index = std::move(other.head_variable_index);
     is_existential_m = other.is_existential_m;
@@ -39,6 +41,7 @@ Rule::Rule(Rule &&other) noexcept : body(other.body.move()) {
 Rule &Rule::operator=(Rule const &other) {
     this->body = other.body.clone();
     this->head_atoms = other.head_atoms;
+    this->head_atoms_var_positions = other.head_atoms_var_positions;
     this->chase_filter = other.chase_filter->clone();
     this->head_variable_index = other.head_variable_index;
     this->is_existential_m = other.is_existential_m;
@@ -50,6 +53,7 @@ Rule &Rule::operator=(Rule const &other) {
 Rule &Rule::operator=(Rule &&other) noexcept {
     this->body = other.body.move();
     this->head_atoms = std::move(other.head_atoms);
+    this->head_atoms_var_positions = std::move(other.head_atoms_var_positions);
     this->chase_filter = other.chase_filter->move();
     this->head_variable_index = std::move(other.head_variable_index);
     this->is_existential_m = other.is_existential_m;
@@ -154,6 +158,15 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
                            bound_variables);
     }
     head_variable_index = rule::shared::make_index(head_variables);
+    for (auto head_atom : head_atoms) {
+        std::vector<size_t> var_pos_vector;
+        auto const &atom_variables = head_atom->get_variable_names();
+        for (auto const &var : atom_variables) {
+            auto position = head_variable_index.at(var);
+            var_pos_vector.push_back(position);
+        }
+        head_atoms_var_positions.push_back(var_pos_vector);
+    }
 }
 
 void Rule::init(std::vector<formula::Formula *> head_atoms) {
@@ -185,10 +198,12 @@ void Rule::evaluate_head(
 void Rule::evaluate_head_atoms(
     util::Timeline const &timeline,
     std::vector<std::shared_ptr<util::Grounding>> const &body_facts) {
-    for (auto head_atom : head_atoms) {
+    for (size_t head_atom_index = 0; head_atom_index < head_atoms.size(); head_atom_index++) {
+        auto &head_atom = head_atoms.at(head_atom_index);
+        size_t atom_arity = head_atom->get_variable_names().size();
         std::vector<std::shared_ptr<util::Grounding>> head_facts;
         for (auto const &grounding : body_facts) {
-            auto head_fact = make_atom_fact(grounding, head_atom);
+            auto head_fact = make_atom_fact(grounding, head_atom_index, atom_arity);
             head_facts.push_back(head_fact);
         }
         if (!head_facts.empty()) {
@@ -199,20 +214,21 @@ void Rule::evaluate_head_atoms(
 
 std::shared_ptr<util::Grounding>
 Rule::make_atom_fact(std::shared_ptr<util::Grounding> const &body_fact,
-                     formula::Formula *atom) const {
-    auto atom_variables = atom->get_variable_names();
-    auto predicate = atom->get_predicate_vector().at(0);
-    std::vector<std::string> atom_values;
-    for (auto const &var : atom_variables) {
-        auto position = head_variable_index.at(var);
-        // auto position = body.get_variable_index(var);
-        auto const &value = body_fact->get_constant(position);
+                     size_t head_atom_index, size_t atom_arity) {
+    auto const &atom = head_atoms.at(head_atom_index);
+    auto const &atom_variables = atom->get_variable_names();
+    auto const &predicate = atom->get_predicate_vector().at(0);
+    auto const &var_pos_vector = head_atoms_var_positions.at(head_atom_index);
+    for (size_t position = 0; position < atom_arity; position++ ) {
+        auto body_position = var_pos_vector.at(position);  
+        auto const &value = body_fact->get_constant(body_position);
         atom_values.push_back(value);
     }
     auto result = body_fact->clone();
     result->set_constant_vector(atom_values);
     result->set_predicate(predicate);
     result->set_step(current_step);
+    atom_values.clear(); // global vector for performance reasons
     return result;
 }
 

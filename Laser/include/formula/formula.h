@@ -37,7 +37,7 @@ class Formula {
 
     virtual FormulaType get_type() const = 0;
 
-    virtual std::vector<std::string> get_predicate_vector() const = 0;
+    virtual std::vector<std::string> const &get_predicate_vector() const = 0;
 
     virtual void add_child(formula::Formula *child) = 0;
 

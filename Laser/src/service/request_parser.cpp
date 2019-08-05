@@ -269,8 +269,8 @@ std::vector<size_t> RequestParser::compute_known_index_vector(
 
 util::Grounding
 RequestParser::compute_trigger(formula::Formula *query_formula) const {
-    auto predicate = query_formula->get_predicate_vector().at(0);
-    auto constant_vector = query_formula->get_variable_names();
+    auto const &predicate = query_formula->get_predicate_vector().at(0);
+    auto const &constant_vector = query_formula->get_variable_names();
     auto result = util::Grounding(predicate, 1, 1, 1, 1, constant_vector);
     return result;
 }

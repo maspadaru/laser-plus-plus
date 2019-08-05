@@ -3,10 +3,10 @@
 namespace laser {
 namespace formula {
 
-Atom::Atom(std::string predicate) { this->predicate = std::move(predicate); }
+Atom::Atom(std::string predicate) { this->predicate_vector.push_back(std::move(predicate)); }
 
 Atom::Atom(std::string predicate, std::vector<std::string> variable_names) {
-    this->predicate = std::move(predicate);
+    this->predicate_vector.push_back(std::move(predicate));
     set_variable_names(variable_names);
 }
 
@@ -53,7 +53,7 @@ Formula &Atom::create() const {
 }
 
 Formula &Atom::clone() const {
-    Atom *result = new Atom(this->predicate);
+    Atom *result = new Atom(this->predicate_vector.at(0));
     result->is_head_m = this->is_head_m;
     result->type = this->type;
     result->has_duplicate_variables = this->has_duplicate_variables;
@@ -64,7 +64,7 @@ Formula &Atom::clone() const {
 }
 
 Formula &Atom::move() {
-    Atom *result = new Atom(std::move(this->predicate));
+    Atom *result = new Atom(std::move(this->predicate_vector.at(0)));
     result->is_head_m = this->is_head_m;
     result->type = this->type;
     result->has_duplicate_variables = this->has_duplicate_variables;
@@ -76,10 +76,8 @@ Formula &Atom::move() {
 
 FormulaType Atom::get_type() const { return this->type; }
 
-std::vector<std::string> Atom::get_predicate_vector() const {
-    std::vector<std::string> result;
-    result.push_back(this->predicate);
-    return result;
+std::vector<std::string> const &Atom::get_predicate_vector() const {
+    return predicate_vector;
 }
 
 std::vector<std::string> const &Atom::get_variable_names() const {
@@ -122,6 +120,7 @@ Atom::get_conclusions_step(util::Timeline const &timeline) {
 bool Atom::evaluate(
     util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
+    auto const &predicate = this->predicate_vector.at(0);
     for (auto const &grounding : facts) {
         std::string const &other_predicate = grounding->get_predicate();
         if (other_predicate == predicate) {

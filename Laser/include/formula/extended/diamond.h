@@ -40,7 +40,7 @@ class Diamond : public Formula {
 
     FormulaType get_type() const override;
 
-    std::vector<std::string> get_predicate_vector() const override;
+    std::vector<std::string> const &get_predicate_vector() const override;
 
     // methods
 

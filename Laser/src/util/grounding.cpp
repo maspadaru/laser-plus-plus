@@ -88,8 +88,11 @@ std::shared_ptr<Grounding> Grounding::clone() const {
     return std::make_shared<Grounding>(clone);
 }
 
-void Grounding::set_constant_vector(std::vector<std::string> vector) {
-    constant_vector = std::move(vector);
+void Grounding::set_constant_vector(std::vector<std::string> &vector) {
+    constant_vector.clear();
+    for (auto &constant : vector) {
+        constant_vector.push_back(std::move(constant));
+    }
 }
 
 void Grounding::set_predicate(std::string const &predicate) {

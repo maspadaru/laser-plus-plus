@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <memory>
+#include <map>
+#include <unordered_map>
 
 #include "util/database.h"
 #include "util/grounding.h"
@@ -14,6 +16,9 @@ namespace shared {
 
 std::unordered_map<std::string, int>
 make_index(std::vector<std::string> const &vector);
+
+std::map<std::string, int>
+make_ordered_index(std::vector<std::string> const &vector);
 
 } // namespace shared
 } // namespace rule

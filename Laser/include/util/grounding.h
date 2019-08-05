@@ -86,7 +86,7 @@ class Grounding {
 
     void set_constant(size_t index, std::string constant);
 
-    void set_constant_vector(std::vector<std::string> vector);
+    void set_constant_vector(std::vector<std::string> &vector); 
 
     void set_predicate(std::string const &predicate);
 

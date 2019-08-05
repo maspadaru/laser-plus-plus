@@ -41,7 +41,7 @@ class TimeWindow : public Formula {
 
     FormulaType get_type() const override;
 
-    std::vector<std::string> get_predicate_vector() const override;
+    std::vector<std::string> const &get_predicate_vector() const override;
 
     std::vector<std::string> const &get_variable_names() const override;
 

@@ -25,10 +25,10 @@ namespace formula {
 class Atom : public Formula {
   private:
     FormulaType type = FormulaType::ATOM;
-    std::string predicate = "Atom";
     GroundingTable grounding_table;
     bool is_head_m = false;
     bool has_duplicate_variables;
+    std::vector<std::string> predicate_vector;
 
     /**
      * The names of all variables of the atom without any duplicates
@@ -78,7 +78,7 @@ class Atom : public Formula {
 
     FormulaType get_type() const override;
 
-    std::vector<std::string> get_predicate_vector() const override;
+    std::vector<std::string> const &get_predicate_vector() const override;
 
     void set_head(bool is_head) override;
 

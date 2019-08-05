@@ -30,7 +30,7 @@ bool TimeWindow::is_head() const { return child->is_head(); }
 
 FormulaType TimeWindow::get_type() const { return FormulaType::TIME_WINDOW; }
 
-std::vector<std::string> TimeWindow::get_predicate_vector() const {
+std::vector<std::string> const &TimeWindow::get_predicate_vector() const {
     return child->get_predicate_vector();
 }
 

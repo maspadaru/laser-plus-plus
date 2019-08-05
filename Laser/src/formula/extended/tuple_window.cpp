@@ -29,7 +29,7 @@ bool TupleWindow::is_head() const { return child->is_head(); }
 
 FormulaType TupleWindow::get_type() const { return FormulaType::TUPLE_WINDOW; }
 
-std::vector<std::string> TupleWindow::get_predicate_vector() const {
+std::vector<std::string> const &TupleWindow::get_predicate_vector() const {
     return child->get_predicate_vector();
 }
 
