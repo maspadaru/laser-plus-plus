@@ -219,16 +219,18 @@ Rule::make_atom_fact(std::shared_ptr<util::Grounding> const &body_fact,
     auto const &atom_variables = atom->get_variable_names();
     auto const &predicate = atom->get_predicate_vector().at(0);
     auto const &var_pos_vector = head_atoms_var_positions.at(head_atom_index);
+    auto result = body_fact->clone();
+    result->clear_constant_vector();
     for (size_t position = 0; position < atom_arity; position++ ) {
         auto body_position = var_pos_vector.at(position);  
         auto const &value = body_fact->get_constant(body_position);
-        atom_values.push_back(value);
+        result->push_constant(value);
     }
-    auto result = body_fact->clone();
+    //auto result = body_fact->clone();
     result->set_constant_vector(atom_values);
     result->set_predicate(predicate);
     result->set_step(current_step);
-    atom_values.clear(); // global vector for performance reasons
+    //atom_values.clear(); // global vector for performance reasons
     return result;
 }
 

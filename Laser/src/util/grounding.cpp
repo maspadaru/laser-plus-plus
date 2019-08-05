@@ -95,6 +95,14 @@ void Grounding::set_constant_vector(std::vector<std::string> &vector) {
     }
 }
 
+void Grounding::clear_constant_vector() {
+    constant_vector.clear();
+}
+
+void Grounding::push_constant(std::string const &constant) {
+        constant_vector.push_back(constant);
+}
+
 void Grounding::set_predicate(std::string const &predicate) {
     this->predicate = predicate;
 }

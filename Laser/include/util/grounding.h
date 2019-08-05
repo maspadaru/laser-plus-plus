@@ -88,6 +88,10 @@ class Grounding {
 
     void set_constant_vector(std::vector<std::string> &vector); 
 
+    void clear_constant_vector(); 
+
+    void push_constant(std::string const &constant); 
+
     void set_predicate(std::string const &predicate);
 
     void set_annotations(uint64_t consideration_time, uint64_t horizon_time,
