@@ -1,22 +1,30 @@
 #!/bin/bash
 
-TESTAPP_EXECUTABLE=laser/testapp
-GTEST_EXECUTABLE=laser/run_gtest
+TESTAPP_EXECUTABLE=testapp
+GTEST_EXECUTABLE=run_gtest
+
+build_release() {
+    mkdir -p cmake-build-release
+    cd cmake-build-release
+    cmake -DCMAKE_BUILD_TYPE=Release ..
+    make # placeholder, should build L++ library
+    cd ..
+}
 
 build_testapp() {
-    mkdir -p cmake-build-debug/laser
-    cd cmake-build-debug/laser
-    cmake -DCMAKE_BUILD_TYPE=Debug ../..
+    mkdir -p cmake-build-debug
+    cd cmake-build-debug
+    cmake -DCMAKE_BUILD_TYPE=Debug ..
     make testapp
-    cd ../..
+    cd ..
 }
 
 build_gtest() {
-    mkdir -p cmake-build-debug/laser
-    cd cmake-build-debug/laser
-    cmake -DCMAKE_BUILD_TYPE=Debug ../..
+    mkdir -p cmake-build-debug
+    cd cmake-build-debug
+    cmake -DCMAKE_BUILD_TYPE=Debug ..
     make run_gtest
-    cd ../..
+    cd ..
 }
 
 clean_up () {
@@ -40,7 +48,8 @@ run_gtest () {
 }
 
 print_help () {
-    echo "Usage: laser [b c d h r t]"
+    echo "Usage: laser.sh [b c d h r t]"
+    echo "b: build Laser++"
     echo "c: Clean project"
     echo "d: Debug Test App using GDB"
     echo "h: Print help"
@@ -51,6 +60,8 @@ print_help () {
 
 if [ $# -eq 0 ]; then 
 	print_help 
+elif [ $1 = "b" ]; then
+    build_release
 elif [ $1 = "br" ]; then
     build_testapp
 elif [ $1 = "bt" ]; then
@@ -68,3 +79,5 @@ elif [ $1 = "t" ]; then
 else
 	print_help
 fi
+
+#ln -s cmake-build-debug/compile_commands.json

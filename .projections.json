@@ -1,91 +1,70 @@
 {
-    "Laser/include/util/*.h": {
+    "include/util/*.h": {
         "type": "laser-util-header",
-        "alternate": "Laser/src/util/{}.cpp"
+        "alternate": "src/util/{}.cpp"
     },
-    "Laser/include/core/*.h": {
+    "include/core/*.h": {
         "type": "laser-core-header",
-        "alternate": "Laser/src/core/{}.cpp"
+        "alternate": "src/core/{}.cpp"
     },
-    "Laser/include/formula/*.h": {
+    "include/formula/*.h": {
         "type": "laser-formula-header",
-        "alternate": "Laser/src/formula/{}.cpp"
+        "alternate": "src/formula/{}.cpp"
     },
-    "Laser/include/formula/extended/*.h": {
+    "include/formula/extended/*.h": {
         "type": "laser-formula-extended-header",
-        "alternate": "Laser/src/formula/extended/{}.cpp"
+        "alternate": "src/formula/extended/{}.cpp"
     },
-    "Laser/include/example/*.h": {
+    "include/example/*.h": {
         "type": "laser-example-header",
-        "alternate": "Laser/src/example/{}.cpp"
+        "alternate": "src/example/{}.cpp"
     },
-    "Laser/include/service/*.h": {
+    "include/service/*.h": {
         "type": "laser-service-header",
-        "alternate": "Laser/src/service/{}.cpp"
+        "alternate": "src/service/{}.cpp"
     },
-    "Laser/include/rule/*.h": {
+    "include/rule/*.h": {
         "type": "laser-rule-header",
-        "alternate": "Laser/src/rule/{}.cpp"
+        "alternate": "src/rule/{}.cpp"
+    },
+    "include/acyclicity/*.h": {
+        "type": "laser-acyclicity-header",
+        "alternate": "src/acyclicity/{}.cpp"
     },
 
 
 
-    "Laser/src/util/*.cpp": {
+    "src/util/*.cpp": {
         "type": "laser-util-source",
-        "alternate": "Laser/include/util/{}.h"
+        "alternate": "include/util/{}.h"
     },
-    "Laser/src/core/*.cpp": {
+    "src/core/*.cpp": {
         "type": "laser-core-source",
-        "alternate": "Laser/include/core/{}.h"
+        "alternate": "include/core/{}.h"
     },
-    "Laser/src/formula/*.cpp": {
+    "src/formula/*.cpp": {
         "type": "laser-formula-source",
-        "alternate": "Laser/include/formula/{}.h"
+        "alternate": "include/formula/{}.h"
     },
-    "Laser/src/formula/extended/*.cpp": {
+    "src/formula/extended/*.cpp": {
         "type": "laser-formula-extended-source",
-        "alternate": "Laser/include/formula/extended/{}.h"
+        "alternate": "include/formula/extended/{}.h"
     },
-    "Laser/src/example/*.cpp": {
+    "src/example/*.cpp": {
         "type": "laser-example-source",
-        "alternate": "Laser/include/example/{}.h"
+        "alternate": "include/example/{}.h"
     },
-    "Laser/src/service/*.cpp": {
+    "src/service/*.cpp": {
         "type": "laser-service-source",
-        "alternate": "Laser/include/service/{}.h"
+        "alternate": "include/service/{}.h"
     },
-    "Laser/src/rule/*.cpp": {
+    "src/rule/*.cpp": {
         "type": "laser-rule-source",
-        "alternate": "Laser/include/rule/{}.h"
+        "alternate": "include/rule/{}.h"
     },
-
-
-
-    "app_bench/include/*.h": {
-        "type": "benchapp-header",
-        "alternate": "app_bench/src/{}.cpp"
-    },
-    "app_bench/src/*.cpp": {
-        "type": "benchapp-source",
-        "alternate": "app_bench/include/{}.h"
-    },
-
-    "app_simple/include/*.h": {
-        "type": "simpleapp-header",
-        "alternate": "app_simple/src/{}.cpp"
-    },
-    "app_simple/src/*.cpp": {
-        "type": "simpleapp-source",
-        "alternate": "app_simple/include/{}.h"
-    },
-
-    "app_demo/include/*.h": {
-        "type": "demoapp-header",
-        "alternate": "app_demo/src/{}.cpp"
-    },
-    "app_demo/src/*.cpp": {
-        "type": "demoapp-source",
-        "alternate": "app_demo/include/{}.h"
+    "src/acyclicity/*.cpp": {
+        "type": "laser-acyclicity-source",
+        "alternate": "include/acyclicity/{}.h"
     },
 
 }

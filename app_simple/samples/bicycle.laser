@@ -1,5 +1,0 @@
-hasPart(X, v) && Wheel(v) := Bicycle(X)
-properPartOf(X, w) && Bicycle(w) := Wheel(X)
-partOf(X, Y) := properPartOf(X, Y)
-partOf(Y, X) := hasPart(X, Y)
-hasPart(Y, X) := partOf(X, Y)
