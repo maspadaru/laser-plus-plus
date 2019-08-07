@@ -19,7 +19,9 @@ Rule::~Rule() {
 }
 
 Rule::Rule(Rule const &other) : body(other.body.clone()) {
-    head_atoms = other.head_atoms;
+    for (auto head_atom : other.head_atoms) {
+        head_atoms.push_back(&head_atom->clone());
+    }
     head_atoms_var_positions = other.head_atoms_var_positions;
     chase_filter = other.chase_filter->clone();
     head_variable_index = other.head_variable_index;
@@ -39,8 +41,10 @@ Rule::Rule(Rule &&other) noexcept : body(other.body.move()) {
 }
 
 Rule &Rule::operator=(Rule const &other) {
+    for (auto head_atom : other.head_atoms) {
+        this->head_atoms.push_back(&head_atom->clone());
+    }
     this->body = other.body.clone();
-    this->head_atoms = other.head_atoms;
     this->head_atoms_var_positions = other.head_atoms_var_positions;
     this->chase_filter = other.chase_filter->clone();
     this->head_variable_index = other.head_variable_index;
