@@ -4,15 +4,15 @@
 #include <iostream>
 #include <memory>
 #include <set>
-#include <utility>
 #include <unordered_map>
+#include <utility>
 
 #include "formula/formula.h"
 #include "formula/formula_type.h"
 #include "rule/chase_filter.h"
+#include "rule/filter/indexed_filter.h"
 #include "rule/filter/oblivious_filter.h"
 #include "rule/filter/restricted_filter.h"
-#include "rule/filter/indexed_filter.h"
 #include "rule/filter/skolem_filter.h"
 #include "rule/shared.h"
 #include "util/chase_algorithm.h"
@@ -73,6 +73,12 @@ class Rule {
     Rule &operator=(Rule &&other) noexcept; // move assignment
 
     formula::Formula &get_head() const;
+
+    std::set<std::string> get_body_predicates() const;
+
+    std::set<std::string> get_head_predicates() const;
+
+    std::map<std::string, size_t> get_arity_map() const;
 
     bool is_existential() const;
 

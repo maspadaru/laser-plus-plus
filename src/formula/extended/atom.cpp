@@ -1,11 +1,15 @@
 #include "formula/extended/atom.h"
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
-Atom::Atom(std::string predicate) { this->predicate_vector.push_back(std::move(predicate)); }
+Atom::Atom(std::string predicate) { 
+    this->arity_map.try_emplace(predicate, 0);
+    this->predicate_vector.push_back(std::move(predicate)); 
+
+}
 
 Atom::Atom(std::string predicate, std::vector<std::string> variable_names) {
+    this->arity_map.try_emplace(predicate, variable_names.size());
     this->predicate_vector.push_back(std::move(predicate));
     set_variable_names(variable_names);
 }
@@ -60,17 +64,21 @@ Formula &Atom::clone() const {
     result->unique_variable_names = this->unique_variable_names;
     result->binding_map = this->binding_map;
     result->grounding_table = this->grounding_table;
+    result->predicate_vector = this->predicate_vector;
+    result->arity_map = this->arity_map;
     return *result;
 }
 
 Formula &Atom::move() {
-    Atom *result = new Atom(std::move(this->predicate_vector.at(0)));
+    Atom *result = new Atom(this->predicate_vector.at(0));
     result->is_head_m = this->is_head_m;
     result->type = this->type;
     result->has_duplicate_variables = this->has_duplicate_variables;
     result->unique_variable_names = std::move(this->unique_variable_names);
     result->binding_map = std::move(this->binding_map);
     result->grounding_table = std::move(this->grounding_table);
+    result->predicate_vector = std::move(this->predicate_vector);
+    result->arity_map = std::move(this->arity_map);
     return *result;
 }
 
@@ -78,6 +86,10 @@ FormulaType Atom::get_type() const { return this->type; }
 
 std::vector<std::string> const &Atom::get_predicate_vector() const {
     return predicate_vector;
+}
+
+std::map<std::string, size_t> const &Atom::get_arity_map() const {
+    return arity_map;
 }
 
 std::vector<std::string> const &Atom::get_variable_names() const {
@@ -165,5 +177,4 @@ int Atom::get_variable_index(std::string const &variable_name) const {
 
 void Atom::add_child(formula::Formula *child) {}
 
-} // namespace formula
-} // namespace laser
+} // namespace laser::formula

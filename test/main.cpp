@@ -1,10 +1,10 @@
 #include <iostream>
 
+#include <acyclicity/naive_smfa.h>
 #include <core/reasoner.h>
 #include <example/example_io_manager.h>
 #include <rule/rule_parser.h>
 #include <util/chase_algorithm.h>
-#include <acyclicity/naive_smfa.h>
 
 void run(std::string const &name, std::string const &stream_string,
          std::string const &rule_string,
@@ -12,9 +12,9 @@ void run(std::string const &name, std::string const &stream_string,
     std::cout << std::endl;
     std::cout << " Test: " << name << std::endl;
     std::cout << " =================================== " << std::endl;
-    // It might not be very intuitive, but chase_algorithm needs to be set 
+    // It might not be very intuitive, but chase_algorithm needs to be set
     // before parsing the rules !!!
-    // As a general rule set the settings before initializing anything else. 
+    // As a general rule set the settings before initializing anything else.
     // I should make this more obvious somehow...
     laser::util::Settings::get_instance().set_chase_algorithm(chase_algorithm);
     auto example_io_manager = laser::example::ExampleIOManager(stream_string);
@@ -26,18 +26,19 @@ void run(std::string const &name, std::string const &stream_string,
     std::cout << std::endl << std::endl;
 }
 
-void run_acyclicity_test(std::string const &name, 
-         std::string const &rule_string) {
+void run_acyclicity_test(std::string const &name,
+                         std::string const &rule_string, bool expected) {
     bool acyclicity_result;
     std::cout << std::endl;
     std::cout << " Acyclicity Test: " << name << std::endl;
     laser::util::Settings::get_instance().set_chase_algorithm(
-            laser::util::ChaseAlgorithm::SKOLEM);
+        laser::util::ChaseAlgorithm::SKOLEM);
     auto rule_parser = laser::rule::RuleParser(rule_string);
     auto rule_vector = rule_parser.get_rules();
     auto naive_smfa = laser::acyclicity::NaiveSMFA(rule_vector);
     acyclicity_result = naive_smfa.has_terminating_chase();
-    std::cout << " Naive_SMFA returned: " << acyclicity_result << std::endl;
+    std::cout << " Naive_SMFA returned: " << acyclicity_result
+              << " expected: " << expected << ";" << std::endl;
     std::cout << " =================================== " << std::endl;
     std::cout << std::endl;
 }
@@ -45,7 +46,8 @@ void run_acyclicity_test(std::string const &name,
 void test_acyclicity_simple() {
     const std::string name = "Simple";
     std::string rule_string = "p(a, Z, b, X, Z) := q(X, Y, Z)\n";
-    run_acyclicity_test(name, rule_string);
+    bool has_terminating_chase = true;
+    run_acyclicity_test(name, rule_string, has_terminating_chase);
 }
 
 void test_acyclicity_obvious_cycle() {
@@ -53,7 +55,8 @@ void test_acyclicity_obvious_cycle() {
     std::string rule_string = "r(X) := p(X)\n"
                               "p(X) := q(X, Y) && m(X, Y)\n"
                               "q(X) := p(Y) && n(X, Y)\n";
-    run_acyclicity_test(name, rule_string);
+    bool has_terminating_chase = false;
+    run_acyclicity_test(name, rule_string, has_terminating_chase);
 }
 
 void test_simple_mix() {
@@ -896,7 +899,7 @@ void test_conjunction_head_timeref() {
 }
 
 int main() {
-    // test_simple();
+     test_simple();
     // test_simple_mix();
     // test_atoms();
     // test_diamond_atom();
@@ -937,7 +940,7 @@ int main() {
     // test_existential_skolem_complex2();
     // test_existential_restricted_complex();
     // test_existential_restricted_complex2();
-    //test_existential_indexed_simple();
+    // test_existential_indexed_simple();
     // test_existential_indexed_complex();
     // test_existential_indexed_complex2();
     // test_existential_restricted_paper_bmc_eg1();

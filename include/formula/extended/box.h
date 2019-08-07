@@ -13,8 +13,7 @@
 #include "formula/grounding_table.h"
 #include "util/grounding.h"
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
 /**
  * Box Formula
@@ -29,8 +28,6 @@ class Box : public Formula {
 
     std::map<std::string, std::shared_ptr<util::Grounding>> box_map;
 
-    // Methods
-
     std::pair<bool, std::shared_ptr<util::Grounding>>
     adjust_annotation(std::shared_ptr<util::Grounding> const &box_grounding,
                       std::shared_ptr<util::Grounding> const &child_grounding,
@@ -44,8 +41,6 @@ class Box : public Formula {
                    util::Timeline const &timeline);
 
   public:
-    // constructors / destructors
-
     Box() = default;
     explicit Box(Formula *child);
     ~Box() override;
@@ -55,8 +50,6 @@ class Box : public Formula {
 
     Formula &move() override;
 
-    // getters / setters
-
     void set_head(bool is_head) override;
 
     bool is_head() const override;
@@ -65,7 +58,7 @@ class Box : public Formula {
 
     std::vector<std::string> const &get_predicate_vector() const override;
 
-    // methods
+    std::map<std::string, size_t> const &get_arity_map() const override;
 
     std::vector<std::string> const &get_variable_names() const override;
 
@@ -91,7 +84,6 @@ class Box : public Formula {
     void add_child(formula::Formula *child) override;
 };
 
-} // namespace formula
-} // namespace laser
+} // namespace laser::formula
 
 #endif // LASER_FORMULA_EXTENDED_BOX_H

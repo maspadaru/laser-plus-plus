@@ -1,7 +1,6 @@
 #include "formula/extended/diamond.h"
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
 Diamond::~Diamond() { delete child; }
 
@@ -22,8 +21,6 @@ Formula &Diamond::move() {
     return *result;
 }
 
-// getters / setters
-
 void Diamond::set_head(bool is_head) { is_head_m = is_head; }
 
 bool Diamond::is_head() const { return is_head_m; }
@@ -34,7 +31,9 @@ std::vector<std::string> const &Diamond::get_predicate_vector() const {
     return child->get_predicate_vector();
 }
 
-// methods
+std::map<std::string, size_t> const &Diamond::get_arity_map() const {
+    return child->get_arity_map();
+}
 
 std::vector<std::string> const &Diamond::get_variable_names() const {
     return child->get_variable_names();
@@ -89,5 +88,4 @@ void Diamond::expire_outdated_groundings(util::Timeline const &timeline) {
     grounding_table.expire_outdated_groundings(time, tuple_count);
 }
 
-} // namespace formula
-} // namespace laser
+} // namespace laser::formula

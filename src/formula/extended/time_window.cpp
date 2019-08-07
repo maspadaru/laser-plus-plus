@@ -1,7 +1,6 @@
 #include "formula/extended/time_window.h"
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
 TimeWindow::~TimeWindow() { delete child; }
 
@@ -32,6 +31,10 @@ FormulaType TimeWindow::get_type() const { return FormulaType::TIME_WINDOW; }
 
 std::vector<std::string> const &TimeWindow::get_predicate_vector() const {
     return child->get_predicate_vector();
+}
+
+std::map<std::string, size_t> const &TimeWindow::get_arity_map() const {
+    return child->get_arity_map();
 }
 
 std::vector<std::string> const &TimeWindow::get_variable_names() const {
@@ -130,5 +133,4 @@ TimeWindow::TimeWindow(uint64_t past_size, uint64_t future_size,
 
 void TimeWindow::add_child(formula::Formula *child) {}
 
-} // namespace formula
-} // namespace laser
+} // namespace laser::formula

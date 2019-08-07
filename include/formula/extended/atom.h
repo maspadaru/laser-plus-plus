@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <map>
 
 #include "formula/formula.h"
 #include "formula/formula_type.h"
@@ -16,8 +17,7 @@
 #include "util/timeline.h"
 #include "util/database.h"
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
 /**
  * Atomic formula
@@ -29,6 +29,7 @@ class Atom : public Formula {
     bool is_head_m = false;
     bool has_duplicate_variables;
     std::vector<std::string> predicate_vector;
+    std::map<std::string, size_t> arity_map;
 
     /**
      * The names of all variables of the atom without any duplicates
@@ -80,6 +81,8 @@ class Atom : public Formula {
 
     std::vector<std::string> const &get_predicate_vector() const override;
 
+    std::map<std::string, size_t> const &get_arity_map() const override;
+
     void set_head(bool is_head) override;
 
     bool is_head() const override;
@@ -108,7 +111,6 @@ class Atom : public Formula {
     void add_child(formula::Formula *child) override;
 };
 
-} // namespace formula
-} // namespace laser
+} // namespace laser::formula
 
 #endif // LASER_FORMULA_EXTENDED_ATOM_H

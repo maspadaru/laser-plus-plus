@@ -6,8 +6,7 @@
 #include "formula/formula.h"
 #include "util/grounding.h"
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
 /**
  * Time Window Formula
@@ -43,6 +42,8 @@ class TimeWindow : public Formula {
 
     std::vector<std::string> const &get_predicate_vector() const override;
 
+    std::map<std::string, size_t> const &get_arity_map() const override;
+
     std::vector<std::string> const &get_variable_names() const override;
 
     int get_variable_index(std::string const &variable_name) const override;
@@ -66,15 +67,12 @@ class TimeWindow : public Formula {
 
     void add_child(formula::Formula *child) override;
 
-    // Own methodds, not inherited from Formula interface:
-
     explicit TimeWindow(uint64_t size, Formula *child);
 
     explicit TimeWindow(uint64_t past_size, uint64_t future_size,
                         uint64_t step_size, Formula *child);
 };
 
-} // namespace formula
-} // namespace laser
+} // namespace laser::formula
 
 #endif // LASER_FORMULA_EXTENDED_TIME_WINDOW_H

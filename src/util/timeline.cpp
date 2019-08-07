@@ -1,7 +1,6 @@
 #include "util/timeline.h"
 
-namespace laser {
-namespace util {
+namespace laser::util {
 
 Timeline::Timeline()
     : history_mutex(std::make_shared<std::mutex>()), tuple_count_history(std::make_shared<std::unordered_map<uint64_t, uint64_t>>()) {}
@@ -60,5 +59,4 @@ uint64_t Timeline::max(uint64_t first, uint64_t second) const {
     return result;
 }
 
-} // namespace util
-} // namespace laser
+} // namespace util::laser

@@ -1,7 +1,3 @@
-//
-// Created by mike on 9/14/18.
-//
-
 #ifndef LASER_UTIL_TIMELINE_H
 #define LASER_UTIL_TIMELINE_H
 
@@ -11,8 +7,7 @@
 #include <unordered_map>
 #include <mutex>
 
-namespace laser {
-namespace util {
+namespace laser::util {
 
 class Timeline {
   private:
@@ -80,7 +75,6 @@ class Timeline {
 // some private bool values. When this vals are set, get_end_time() should
 // always return ULLONG_MAX, or something.
 
-} // namespace util
-} // namespace laser
+} // namespace util::laser
 
 #endif // LASER_UTIL_TIMELINE_H

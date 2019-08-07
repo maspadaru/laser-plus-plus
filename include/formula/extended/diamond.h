@@ -8,8 +8,7 @@
 #include "formula/grounding_table.h"
 #include "util/grounding.h"
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
 /**
  * Dimond Formula
@@ -21,7 +20,6 @@ class Diamond : public Formula {
     GroundingTable grounding_table;
 
   public:
-    // constructors / destructors
 
     Diamond() = default;
     explicit Diamond(Formula *child);
@@ -32,8 +30,6 @@ class Diamond : public Formula {
 
     Formula &move() override;
 
-    // getters / setters
-
     void set_head(bool is_head) override;
 
     bool is_head() const override;
@@ -42,7 +38,7 @@ class Diamond : public Formula {
 
     std::vector<std::string> const &get_predicate_vector() const override;
 
-    // methods
+    std::map<std::string, size_t> const &get_arity_map() const override;
 
     std::vector<std::string> const &get_variable_names() const override;
 
@@ -68,7 +64,6 @@ class Diamond : public Formula {
     void add_child(formula::Formula *child) override;
 };
 
-} // namespace formula
-} // namespace laser
+} // namespace laser::formula
 
 #endif // LASER_FORMULA_EXTENDED_DIAMOND_H

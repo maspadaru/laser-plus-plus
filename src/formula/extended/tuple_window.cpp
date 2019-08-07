@@ -1,7 +1,6 @@
 #include "formula/extended/tuple_window.h"
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
 TupleWindow::~TupleWindow() { delete child; }
 
@@ -21,8 +20,6 @@ Formula &TupleWindow::move() {
     return *result;
 }
 
-// getters / setters
-
 void TupleWindow::set_head(bool is_head) { child->set_head(is_head); }
 
 bool TupleWindow::is_head() const { return child->is_head(); }
@@ -33,7 +30,9 @@ std::vector<std::string> const &TupleWindow::get_predicate_vector() const {
     return child->get_predicate_vector();
 }
 
-// methods
+std::map<std::string, size_t> const &TupleWindow::get_arity_map() const {
+    return child->get_arity_map();
+}
 
 std::vector<std::string> const &TupleWindow::get_variable_names() const {
     return child->get_variable_names();
@@ -141,5 +140,4 @@ TupleWindow::TupleWindow(uint64_t past_size, uint64_t future_size,
 
 void TupleWindow::add_child(formula::Formula *child) {}
 
-} // namespace formula
-} // namespace laser
+} // namespace laser::formula

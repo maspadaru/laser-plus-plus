@@ -68,6 +68,35 @@ Rule &Rule::operator=(Rule &&other) noexcept {
 
 bool Rule::is_existential() const { return is_existential_m; }
 
+std::set<std::string> Rule::get_body_predicates() const {
+    std::set<std::string> result;
+    auto vector = body.get_predicate_vector();
+    std::copy(vector.begin(), vector.end(),
+              std::inserter(result, result.end()));
+    return result;
+}
+
+std::set<std::string> Rule::get_head_predicates() const {
+    std::set<std::string> result;
+    for (auto const &atom : head_atoms) {
+        auto vector = atom->get_predicate_vector();
+        std::copy(vector.begin(), vector.end(),
+                  std::inserter(result, result.end()));
+    }
+    return result;
+}
+
+std::map<std::string, size_t> Rule::get_arity_map() const {
+    std::map<std::string, size_t> result;
+    auto body_arity_map = body.get_arity_map();
+    result.insert(body_arity_map.begin(), body_arity_map.end());
+    for (auto const &atom : head_atoms) {
+        auto head_arity_map = atom->get_arity_map();
+        result.insert(head_arity_map.begin(), head_arity_map.end());
+    }
+    return result;
+}
+
 void Rule::reset_previous_step() {
     previous_step = 0;
     current_step = 0;
@@ -202,12 +231,14 @@ void Rule::evaluate_head(
 void Rule::evaluate_head_atoms(
     util::Timeline const &timeline,
     std::vector<std::shared_ptr<util::Grounding>> const &body_facts) {
-    for (size_t head_atom_index = 0; head_atom_index < head_atoms.size(); head_atom_index++) {
+    for (size_t head_atom_index = 0; head_atom_index < head_atoms.size();
+         head_atom_index++) {
         auto &head_atom = head_atoms.at(head_atom_index);
         size_t atom_arity = head_atom->get_variable_names().size();
         std::vector<std::shared_ptr<util::Grounding>> head_facts;
         for (auto const &grounding : body_facts) {
-            auto head_fact = make_atom_fact(grounding, head_atom_index, atom_arity);
+            auto head_fact =
+                make_atom_fact(grounding, head_atom_index, atom_arity);
             head_facts.push_back(head_fact);
         }
         if (!head_facts.empty()) {
@@ -224,8 +255,8 @@ Rule::make_atom_fact(std::shared_ptr<util::Grounding> const &body_fact,
     auto const &predicate = atom->get_predicate_vector().at(0);
     auto const &var_pos_vector = head_atoms_var_positions.at(head_atom_index);
     auto result = body_fact->empty_clone(predicate, atom_arity);
-    for (size_t position = 0; position < atom_arity; position++ ) {
-        auto body_position = var_pos_vector.at(position);  
+    for (size_t position = 0; position < atom_arity; position++) {
+        auto body_position = var_pos_vector.at(position);
         auto const &value = body_fact->get_constant(body_position);
         result->push_constant(value);
     }

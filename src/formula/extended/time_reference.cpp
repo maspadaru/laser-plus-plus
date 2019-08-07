@@ -1,7 +1,6 @@
 #include "formula/extended/time_reference.h"
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
 TimeReference::~TimeReference() { delete child; }
 
@@ -41,15 +40,15 @@ Formula &TimeReference::move() {
     return *result;
 }
 
-// getters / setters
-
 FormulaType TimeReference::get_type() const { return formula_type; }
 
 std::vector<std::string> const &TimeReference::get_predicate_vector() const {
     return child->get_predicate_vector();
 }
 
-// methods
+std::map<std::string, size_t> const &TimeReference::get_arity_map() const {
+    return child->get_arity_map();
+}
 
 std::vector<std::string> const &TimeReference::get_variable_names() const {
     return grounding_table.get_variable_names();
@@ -217,5 +216,4 @@ void TimeReference::expire_outdated_groundings(util::Timeline const &timeline) {
     grounding_table.expire_outdated_groundings(time, tuple_count);
 }
 
-} // namespace formula
-} // namespace laser
+} // namespace laser::formula

@@ -7,8 +7,7 @@
 #include "formula/grounding_table.h"
 #include "util/grounding.h"
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
 /**
  * Tuple Window Formula
@@ -27,7 +26,6 @@ class TupleWindow : public Formula {
         std::vector<std::shared_ptr<util::Grounding>> const &facts) const;
 
   public:
-    // from Formula Interface
 
     TupleWindow() = default;
     ~TupleWindow() override;
@@ -44,6 +42,8 @@ class TupleWindow : public Formula {
     FormulaType get_type() const override;
 
     std::vector<std::string> const &get_predicate_vector() const override;
+
+    std::map<std::string, size_t> const &get_arity_map() const override;
 
     std::vector<std::string> const &get_variable_names() const override;
 
@@ -76,7 +76,6 @@ class TupleWindow : public Formula {
                          Formula *child);
 };
 
-} // namespace formula
-} // namespace laser
+} // namespace laser::formula
 
 #endif // LASER_FORMULA_EXTENDED_TUPLE_WINDOW_H

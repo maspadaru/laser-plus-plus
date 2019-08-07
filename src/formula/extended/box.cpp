@@ -1,7 +1,6 @@
 #include "formula/extended/box.h"
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
 Box::~Box() { delete child; }
 
@@ -22,8 +21,6 @@ Formula &Box::move() {
     return *result;
 }
 
-// getters / setters
-
 void Box::set_head(bool is_head) { is_head_m = is_head; }
 
 bool Box::is_head() const { return is_head_m; }
@@ -34,7 +31,9 @@ std::vector<std::string> const &Box::get_predicate_vector() const {
     return child->get_predicate_vector();
 }
 
-// methods
+std::map<std::string, size_t> const &Box::get_arity_map() const {
+    return child->get_arity_map();
+}
 
 std::vector<std::string> const &Box::get_variable_names() const {
     return child->get_variable_names();
@@ -192,5 +191,4 @@ Box::adjust_annotation(std::shared_ptr<util::Grounding> const &box_grounding,
     return {is_modified, box_grounding};
 }
 
-} // namespace formula
-} // namespace laser
+} // namespace laser::formula

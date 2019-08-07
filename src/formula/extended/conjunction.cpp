@@ -2,8 +2,7 @@
 
 #include <algorithm>
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
 Conjunction::~Conjunction() {
     delete left_child;
@@ -17,6 +16,7 @@ Conjunction::Conjunction(Formula *left_child, Formula *right_child,
     is_head_m = is_head;
     populate_variable_collections();
     compute_predicate_vector();
+    compute_arity_map();
 }
 
 Conjunction::Conjunction(Formula *left_child, Formula *right_child) {
@@ -24,6 +24,7 @@ Conjunction::Conjunction(Formula *left_child, Formula *right_child) {
     this->right_child = &right_child->move();
     populate_variable_collections();
     compute_predicate_vector();
+    compute_arity_map();
 }
 
 Formula &Conjunction::create() const {
@@ -95,6 +96,17 @@ void Conjunction::compute_predicate_vector() {
     auto left = left_child->get_predicate_vector();
     auto right = right_child->get_predicate_vector();
     concatenate_vectors(left, right);
+}
+
+std::map<std::string, size_t> const &Conjunction::get_arity_map() const {
+    return arity_map;
+}
+
+
+void Conjunction::compute_arity_map() {
+    arity_map = left_child->get_arity_map();
+    auto right_arity_map = right_child->get_arity_map();
+    arity_map.insert(right_arity_map.begin(), right_arity_map.end());
 }
 
 void Conjunction::concatenate_vectors(std::vector<std::string> const &left,
@@ -248,5 +260,4 @@ bool Conjunction::evaluate(
     return !grounding_set.empty();
 }
 
-} // namespace formula
-} // namespace laser
+} // namespac laser::formula

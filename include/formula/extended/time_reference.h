@@ -8,11 +8,10 @@
 #include "formula/grounding_table.h"
 #include "util/grounding.h"
 
-namespace laser {
-namespace formula {
+namespace laser::formula {
 
 /**
- * TimeReference (@) Formula
+ * Time Reference (@) Formula
  */
 class TimeReference : public Formula {
   private:
@@ -74,8 +73,6 @@ class TimeReference : public Formula {
                   std::vector<std::shared_ptr<util::Grounding>> const &facts);
 
   public:
-    // constructors / destructors
-
     TimeReference() = default;
     TimeReference(std::string time_variable, Formula *child);
     ~TimeReference() override;
@@ -85,17 +82,15 @@ class TimeReference : public Formula {
 
     Formula &move() override;
 
-    // getters / setters
-
     FormulaType get_type() const override;
 
     std::vector<std::string> const &get_predicate_vector() const override;
 
+    std::map<std::string, size_t> const &get_arity_map() const override;
+
     void set_head(bool is_head) override;
 
     bool is_head() const override;
-
-    // methods
 
     std::vector<std::string> const &get_variable_names() const override;
 
@@ -120,7 +115,6 @@ class TimeReference : public Formula {
     void add_child(formula::Formula *child) override;
 };
 
-} // namespace formula
-} // namespace laser
+} // namespace laser::formula
 
 #endif // LASER_FORMULA_EXTENDED_TIME_REFERENCE_H
