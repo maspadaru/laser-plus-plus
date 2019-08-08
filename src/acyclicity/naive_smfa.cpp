@@ -124,6 +124,9 @@ uint64_t NaiveSMFA::get_time(formula::Formula *formula, bool is_head_atom) {
         result = std::min(time_size, child_time);
         break;
     }
+    default: {
+        break;
+    }
     }
     return result;
 }

@@ -12,7 +12,7 @@ RestrictedFilter::~RestrictedFilter() { delete head_formula; }
 
 ChaseFilter *RestrictedFilter::clone() const {
     auto result = new RestrictedFilter();
-    result->free_head_variables = this->free_head_variables;
+    result->frontier_variables = this->frontier_variables;
     result->head_variables = this->head_variables;
     result->free_variables = this->free_variables;
     result->bound_variables = this->bound_variables;
@@ -25,7 +25,7 @@ ChaseFilter *RestrictedFilter::clone() const {
 
 ChaseFilter *RestrictedFilter::move() {
     auto result = new RestrictedFilter();
-    result->free_head_variables = std::move(this->free_head_variables);
+    result->frontier_variables = std::move(this->frontier_variables);
     result->head_variables = std::move(this->head_variables);
     result->free_variables = std::move(this->free_variables);
     result->bound_variables = std::move(this->bound_variables);
@@ -46,7 +46,7 @@ void RestrictedFilter::init(std::vector<formula::Formula *> const &head_atoms,
     this->free_variable_index = rule::shared::make_index(free_variables);
     this->bound_variable_index = rule::shared::make_index(bound_variables);
     this->head_formula = build_head_formula(0, head_atoms);
-    init_free_head_variables(head_atoms);
+    init_frontier_variables(head_atoms);
 }
 
 void RestrictedFilter::update(util::Timeline const &timeline,
@@ -130,7 +130,7 @@ bool RestrictedFilter::is_free_variable_match(
     std::shared_ptr<util::Grounding> const &db_fact,
     std::shared_ptr<util::Grounding> const &input_fact) const {
     // TODO should I check all annotations or is ht enough?
-    for (auto const &var_name : free_head_variables) {
+    for (auto const &var_name : frontier_variables) {
         auto input_index = free_variable_index.at(var_name);
         auto const &input_value = input_fact->get_constant(input_index);
         auto db_index = head_formula->get_variable_index(var_name);
@@ -157,8 +157,10 @@ formula::Formula *RestrictedFilter::build_head_formula(
     return new formula::Conjunction(left, right, true);
 }
 
-void RestrictedFilter::init_free_head_variables(
+void RestrictedFilter::init_frontier_variables(
     std::vector<formula::Formula *> const &head_atoms) {
+    // I am igniring the time variable here, else I will always get new values
+    // at each timepoint
     std::set<std::string> atom_variable_set;
     for (auto atom : head_atoms) {
         auto variable_names = atom->get_variable_names();
@@ -178,7 +180,7 @@ void RestrictedFilter::init_free_head_variables(
         atom_variable_set.erase(variable);
     }
     std::copy(atom_variable_set.begin(), atom_variable_set.end(),
-              std::back_inserter(free_head_variables));
+              std::back_inserter(frontier_variables));
 }
 
 void RestrictedFilter::expire_outdated_groundings(

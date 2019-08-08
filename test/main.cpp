@@ -486,6 +486,18 @@ void test_existential_simple() {
         laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
+void test_existential_fronteier_var() {
+    const std::string name = "Existential Frontier variables";
+    std::string stream_string = "1 4 "
+                                "1 : p(a, b), p(a, c)\n"
+                                "2 : p(a, b), p(c, b)\n"
+                                "3 : \n"
+                                "4 : \n";
+    std::string rule_string = "q(Y, Z) := p(X, Y)\n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::SKOLEM);
+}
+
 // void test_existential_loop() {
 // const std::string name = "Existential Loop";
 // std::string stream_string = "1 4 "
@@ -899,7 +911,7 @@ void test_conjunction_head_timeref() {
 }
 
 int main() {
-     test_simple();
+     //test_simple();
     // test_simple_mix();
     // test_atoms();
     // test_diamond_atom();
@@ -947,6 +959,7 @@ int main() {
     // test_existential_skolem_paper_bmc_eg4();
     // test_existential_skolem_paper_bmc_eg1();
     // test_queries();
-    test_acyclicity_simple();
-    test_acyclicity_obvious_cycle();
+    //test_acyclicity_simple();
+    //test_acyclicity_obvious_cycle();
+    test_existential_fronteier_var();
 }

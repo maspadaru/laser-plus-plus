@@ -46,7 +46,7 @@ TEST(SkolemChaseTest, SkolemTimeRefHead) {
     expected[1] = "1 -> ";
     expected[2] = "2 -> shutdown(sg1, alert0)";
     expected[3] = "3 -> shutdown(sg3, alert1)";
-    expected[4] = "4 -> shutdown(sg3, alert2)";
+    expected[4] = "4 -> shutdown(sg3, alert1)";
 
     test_framework::run_test(stream_string, rule_string, expected,
                              laser::util::ChaseAlgorithm::SKOLEM);

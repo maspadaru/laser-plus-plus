@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 #include <vector>
+#include <set>
 
 #include "formula/formula.h"
 #include "rule/chase_filter.h"
@@ -22,18 +23,25 @@ class SkolemFilter : public ChaseFilter {
   private:
     std::vector<std::string> head_variables;
     std::vector<std::string> free_variables;
+    std::vector<std::string> frontier_variables;
     std::vector<std::string> bound_variables;
     std::unordered_map<std::string, int> free_variable_index;
     std::unordered_map<std::string, int> bound_variable_index;
-    std::map<std::shared_ptr<util::Grounding>, std::vector<std::string>,
-             util::GroundingSubstitutionCompare>
-        skolem_map;
+    std::map<std::string, std::vector<std::string>> skolem_map;
     uint64_t null_value_count = 0;
+
+    /** Returns a new grounding that contains only the values of the fronteer
+     * variables */
+    std::string
+    compute_key(std::shared_ptr<util::Grounding> const &input_fact) const;
 
     std::shared_ptr<util::Grounding>
     generate_chase_fact(std::shared_ptr<util::Grounding> const &input_fact);
 
     std::string generate_new_value(std::string const &var_name);
+
+    void
+    init_frontier_variables(std::vector<formula::Formula *> const &head_atoms);
 
   public:
     SkolemFilter() = default;

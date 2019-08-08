@@ -24,7 +24,7 @@ class RestrictedFilter : public ChaseFilter {
   private:
     uint64_t null_value_count = 0;
     formula::Formula *head_formula;
-    std::vector<std::string> free_head_variables;
+    std::vector<std::string> frontier_variables;
     std::vector<std::string> head_variables;
     std::vector<std::string> free_variables;
     std::vector<std::string> bound_variables;
@@ -49,7 +49,7 @@ class RestrictedFilter : public ChaseFilter {
                        std::vector<formula::Formula *> const &list) const;
 
     void
-    init_free_head_variables(std::vector<formula::Formula *> const &head_atoms);
+    init_frontier_variables(std::vector<formula::Formula *> const &head_atoms);
 
   public:
     RestrictedFilter() = default;
