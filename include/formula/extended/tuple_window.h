@@ -74,6 +74,10 @@ class TupleWindow : public Formula {
 
     explicit TupleWindow(uint64_t past_size, uint64_t future_size,
                          Formula *child);
+
+    std::vector<formula::Formula *> get_children() const override;
+
+    uint64_t get_window_size() const override;
 };
 
 } // namespace laser::formula

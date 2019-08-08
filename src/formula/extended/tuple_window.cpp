@@ -140,4 +140,14 @@ TupleWindow::TupleWindow(uint64_t past_size, uint64_t future_size,
 
 void TupleWindow::add_child(formula::Formula *child) {}
 
+std::vector<formula::Formula *> TupleWindow::get_children() const {
+    std::vector<formula::Formula *> result;
+    result.push_back(child);
+    return result;
+} 
+
+uint64_t TupleWindow::get_window_size() const {
+    return past_size;
+} 
+
 } // namespace laser::formula

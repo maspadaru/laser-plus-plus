@@ -68,6 +68,12 @@ Rule &Rule::operator=(Rule &&other) noexcept {
 
 bool Rule::is_existential() const { return is_existential_m; }
 
+std::vector<formula::Formula *> Rule::get_head_atoms() const {
+    return head_atoms;
+}
+
+formula::Formula *Rule::get_body() const { return &body; }
+
 std::set<std::string> Rule::get_body_predicates() const {
     std::set<std::string> result;
     auto vector = body.get_predicate_vector();

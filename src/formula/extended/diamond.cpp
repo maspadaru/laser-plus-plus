@@ -76,7 +76,7 @@ bool Diamond::evaluate(
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     bool result = child->evaluate(timeline, previous_step, facts);
     auto child_facts = child->get_groundings(timeline);
-    //TODO SNE: I think you should only pick the new child facts
+    // TODO SNE: I think you should only pick the new child facts
     grounding_table.add_grounding_vector(child_facts);
     return result;
 }
@@ -87,5 +87,13 @@ void Diamond::expire_outdated_groundings(util::Timeline const &timeline) {
     auto tuple_count = timeline.get_tuple_count_at(timeline.get_time());
     grounding_table.expire_outdated_groundings(time, tuple_count);
 }
+
+std::vector<formula::Formula *> Diamond::get_children() const {
+    std::vector<formula::Formula *> result;
+    result.push_back(child);
+    return result;
+}
+
+uint64_t Diamond::get_window_size() const { return 0; }
 
 } // namespace laser::formula

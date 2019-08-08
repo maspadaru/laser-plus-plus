@@ -216,4 +216,14 @@ void TimeReference::expire_outdated_groundings(util::Timeline const &timeline) {
     grounding_table.expire_outdated_groundings(time, tuple_count);
 }
 
+std::vector<formula::Formula *> TimeReference::get_children() const {
+    std::vector<formula::Formula *> result;
+    result.push_back(child);
+    return result;
+} 
+
+uint64_t TimeReference::get_window_size() const {
+    return 0;
+} 
+
 } // namespace laser::formula

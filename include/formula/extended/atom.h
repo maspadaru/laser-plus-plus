@@ -2,20 +2,20 @@
 #define LASER_FORMULA_EXTENDED_ATOM_H
 
 #include <iostream>
+#include <map>
 #include <memory>
 #include <set>
 #include <sstream>
 #include <string>
 #include <utility>
 #include <vector>
-#include <map>
 
 #include "formula/formula.h"
 #include "formula/formula_type.h"
 #include "formula/grounding_table.h"
+#include "util/database.h"
 #include "util/grounding.h"
 #include "util/timeline.h"
-#include "util/database.h"
 
 namespace laser::formula {
 
@@ -109,6 +109,10 @@ class Atom : public Formula {
     get_conclusions_step(util::Timeline const &timeline) override;
 
     void add_child(formula::Formula *child) override;
+
+    std::vector<formula::Formula *> get_children() const override;
+
+    uint64_t get_window_size() const override;
 };
 
 } // namespace laser::formula

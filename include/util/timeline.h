@@ -60,6 +60,7 @@ class Timeline {
     uint64_t substract(uint64_t initial_value, uint64_t substracted_val) const;
 
     uint64_t min(uint64_t first, uint64_t second) const;
+
     uint64_t max(uint64_t first, uint64_t second) const;
 
     uint64_t get_tuple_count_at(uint64_t timepoint) const;

@@ -260,4 +260,15 @@ bool Conjunction::evaluate(
     return !grounding_set.empty();
 }
 
+std::vector<formula::Formula *> Conjunction::get_children() const {
+    std::vector<formula::Formula *> result;
+    result.push_back(left_child);
+    result.push_back(right_child);
+    return result;
+} 
+
+uint64_t Conjunction::get_window_size() const {
+    return 0;
+} 
+
 } // namespac laser::formula

@@ -72,7 +72,8 @@ class Rule {
     Rule &operator=(Rule const &other);     // copy assignment
     Rule &operator=(Rule &&other) noexcept; // move assignment
 
-    formula::Formula &get_head() const;
+    std::vector<formula::Formula *> get_head_atoms() const;
+    formula::Formula *get_body() const;
 
     std::set<std::string> get_body_predicates() const;
 

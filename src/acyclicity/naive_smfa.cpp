@@ -72,8 +72,72 @@ void NaiveSMFA::evaluate_smfa_program() {
     }
 }
 
+uint64_t NaiveSMFA::get_time(formula::Formula *formula, bool is_head_atom) {
+    uint64_t result = 0;
+    auto formula_type = formula->get_type();
+    if (formula_type == formula::FormulaType::ATOM) {
+        return 0;
+    }
+    switch (formula_type) {
+    case formula::FormulaType::CONJUNCTION: {
+        auto children = formula->get_children();
+        for (auto *child : children) {
+            result += get_time(child, is_head_atom);
+        }
+        break;
+    }
+    case formula::FormulaType::TIME_REFERENCE: {
+        if (is_head_atom) {
+            result = 0;
+            // TODO: not supported by Laser++ a.t.m.
+            // TODO need to implement MATH atoms in Laser++
+
+        } else {
+            auto child = formula->get_children().at(0);
+            result = get_time(child, is_head_atom);
+        }
+        break;
+    }
+    case formula::FormulaType::DIAMOND: {
+        auto child = formula->get_children().at(0);
+        result = get_time(child, is_head_atom);
+        break;
+    }
+    case formula::FormulaType::BOX: {
+        result = util::Timeline::INFINITE_TIME;
+        break;
+    }
+    case formula::FormulaType::TIME_WINDOW: {
+        auto window_size = formula->get_window_size();
+        auto child = formula->get_children().at(0);
+        uint64_t child_time = get_time(child, is_head_atom);
+        result = std::min(window_size, child_time);
+        break;
+    }
+    case formula::FormulaType::TUPLE_WINDOW: {
+        auto tuple_size = formula->get_window_size();
+        auto child = formula->get_children().at(0);
+        uint64_t child_time = get_time(child, is_head_atom);
+        auto extensional_predicate_count = extensional_predicates.size();
+        double float_time_size = tuple_size / extensional_predicate_count;
+        uint64_t time_size = std::ceil(float_time_size);
+        result = std::min(time_size, child_time);
+        break;
+    }
+    }
+    return result;
+}
+
 void NaiveSMFA::compute_critical_timeline() {
-    // TODO
+    uint64_t sum = 1;
+    for (auto const &rule : rule_vector) {
+        auto head_atoms = rule.get_head_atoms();
+        auto *body = rule.get_body();
+        sum += get_time(body, false);
+        for (auto *atom : head_atoms) {
+            sum += get_time(atom, true);
+        }
+    }
     critical_timeline.set_max_time(1);
 }
 

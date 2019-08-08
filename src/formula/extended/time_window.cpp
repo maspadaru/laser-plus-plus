@@ -133,4 +133,14 @@ TimeWindow::TimeWindow(uint64_t past_size, uint64_t future_size,
 
 void TimeWindow::add_child(formula::Formula *child) {}
 
+std::vector<formula::Formula *> TimeWindow::get_children() const {
+    std::vector<formula::Formula *> result;
+    result.push_back(child);
+    return result;
+} 
+
+uint64_t TimeWindow::get_window_size() const {
+    return past_size;
+} 
+
 } // namespace laser::formula

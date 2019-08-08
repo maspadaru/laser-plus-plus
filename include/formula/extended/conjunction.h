@@ -102,6 +102,10 @@ class Conjunction : public Formula {
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 
     void add_child(formula::Formula *child) override;
+
+    std::vector<formula::Formula *> get_children() const override;
+
+    uint64_t get_window_size() const override;
 };
 
 } // namespace laser::formula

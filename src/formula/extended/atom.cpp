@@ -177,4 +177,15 @@ int Atom::get_variable_index(std::string const &variable_name) const {
 
 void Atom::add_child(formula::Formula *child) {}
 
+
+std::vector<formula::Formula *> Atom::get_children() const {
+    std::vector<formula::Formula *> result;
+    result.push_back(nullptr);
+    return result;
+} 
+
+uint64_t Atom::get_window_size() const {
+    return 0;
+} 
+
 } // namespace laser::formula

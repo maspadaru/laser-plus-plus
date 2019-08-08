@@ -1,14 +1,14 @@
 #ifndef LASER_FORMULA_FORMULA_H
 #define LASER_FORMULA_FORMULA_H
 
+#include <map>
 #include <memory>
 #include <string>
-#include <map>
 
 #include "formula_type.h"
-#include "util/timeline.h"
-#include "util/grounding.h"
 #include "util/database.h"
+#include "util/grounding.h"
+#include "util/timeline.h"
 
 namespace laser::formula {
 
@@ -35,6 +35,8 @@ class Formula {
 
     virtual bool is_head() const = 0;
 
+    virtual uint64_t get_window_size() const = 0;
+
     virtual FormulaType get_type() const = 0;
 
     virtual std::vector<std::string> const &get_predicate_vector() const = 0;
@@ -42,6 +44,8 @@ class Formula {
     virtual std::map<std::string, size_t> const &get_arity_map() const = 0;
 
     virtual void add_child(formula::Formula *child) = 0;
+
+    virtual std::vector<formula::Formula *> get_children() const = 0;
 
     /**
      * Return a list of all variable names, including duplicates.
@@ -52,7 +56,7 @@ class Formula {
 
     virtual int get_variable_index(std::string const &variable_name) const = 0;
 
-    virtual bool 
+    virtual bool
     evaluate(util::Timeline const &timeline, size_t previous_step,
              std::vector<std::shared_ptr<util::Grounding>> const &facts) = 0;
 

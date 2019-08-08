@@ -191,4 +191,14 @@ Box::adjust_annotation(std::shared_ptr<util::Grounding> const &box_grounding,
     return {is_modified, box_grounding};
 }
 
+std::vector<formula::Formula *> Box::get_children() const {
+    std::vector<formula::Formula *> result;
+    result.push_back(child);
+    return result;
+} 
+
+uint64_t Box::get_window_size() const {
+    return 0;
+} 
+
 } // namespace laser::formula

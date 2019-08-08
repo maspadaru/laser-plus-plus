@@ -71,6 +71,10 @@ class TimeWindow : public Formula {
 
     explicit TimeWindow(uint64_t past_size, uint64_t future_size,
                         uint64_t step_size, Formula *child);
+
+    std::vector<formula::Formula *> get_children() const override;
+
+    uint64_t get_window_size() const override;
 };
 
 } // namespace laser::formula
