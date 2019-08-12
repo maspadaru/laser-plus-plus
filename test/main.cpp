@@ -44,17 +44,36 @@ void run_acyclicity_test(std::string const &name,
 }
 
 void test_acyclicity_simple() {
-    const std::string name = "Simple";
+    const std::string name = "Acyclicity Simple";
     std::string rule_string = "p(a, Z, b, X, Z) := q(X, Y, Z)\n";
     bool expected_has_terminating_chase = true;
     run_acyclicity_test(name, rule_string, expected_has_terminating_chase);
 }
 
 void test_acyclicity_obvious_cycle() {
-    const std::string name = "Obvious Cycle";
+    const std::string name = "Acyclicity Obvious Cycle";
     std::string rule_string = "p(X) := r(X)\n"
                               "q(Y) && m(X, Y) := p(X)\n"
                               "p(Y) && n(X, Y) := q(X)\n";
+    bool expected_has_terminating_chase = false;
+    run_acyclicity_test(name, rule_string, expected_has_terminating_chase);
+}
+
+void test_acyclicity_obvious_cycle_with_time() {
+    const std::string name = "Acyclicity Obvious Cycle With Time";
+    std::string rule_string = "p(X) := [$, 3][B]r(X)\n"
+                              "q(Y) && m(X, Y) := [$, 5][D]p(X)\n"
+                              "p(Y) && n(X, Y) := [$, 5][D]q(X)\n";
+    bool expected_has_terminating_chase = false;
+    run_acyclicity_test(name, rule_string, expected_has_terminating_chase);
+}
+
+void test_acyclicity_only_first_timepoint() {
+    // In this test, a cycle will only occur at the first timepoint
+    const std::string name = "Acyclicity Only First Timepoint";
+    std::string rule_string = "p(X) := r(X)\n"
+                              "q(Y) && m(X, Y) := p(X)\n"
+                              "p(Y) && n(X, Y) := [$, 3][B]q(X)\n";
     bool expected_has_terminating_chase = false;
     run_acyclicity_test(name, rule_string, expected_has_terminating_chase);
 }
@@ -962,4 +981,6 @@ int main() {
     //test_existential_fronteier_var();
     test_acyclicity_simple();
     test_acyclicity_obvious_cycle();
+    test_acyclicity_obvious_cycle_with_time();
+    test_acyclicity_only_first_timepoint(); 
 }

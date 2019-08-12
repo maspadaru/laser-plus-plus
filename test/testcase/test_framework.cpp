@@ -39,4 +39,22 @@ void run_test(std::string const &stream_string, std::string const &rule_string,
     }
 }
 
+void run_acyclicity_test(std::string const &rule_string, bool expected) {
+    bool acyclicity_result;
+    laser::util::Settings::get_instance().set_chase_algorithm(
+        laser::util::ChaseAlgorithm::SKOLEM);
+    auto rule_parser = laser::rule::RuleParser(rule_string);
+    auto rule_vector = rule_parser.get_rules();
+    auto naive_smfa = laser::acyclicity::NaiveSMFA(rule_vector);
+    acyclicity_result = naive_smfa.has_terminating_chase();
+    bool error = acyclicity_result != expected;
+    if (error) {
+        std::cout << "Laser found program has terminating chase: "
+                  << acyclicity_result << std::endl;
+        std::cout << "Expected program has terminating chase: " << expected
+                  << std::endl;
+        EXPECT_FALSE(error);
+    }
+}
+
 } // namespace test_framework
