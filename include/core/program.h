@@ -44,6 +44,14 @@ class Program {
              std::vector<std::shared_ptr<util::Grounding>> data_facts);
 
     void set_start_time(uint64_t start_time);
+
+    void
+    init_timepoint(util::Timeline const &timeline,
+                   std::vector<std::shared_ptr<util::Grounding>> data_facts);
+
+    bool evaluate_single_step();
+
+    std::vector<std::shared_ptr<util::Grounding>> get_single_step_conclusions();
 };
 
 } // namespace laser::core

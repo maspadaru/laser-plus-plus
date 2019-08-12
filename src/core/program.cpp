@@ -8,7 +8,7 @@ Program::~Program() {
 }
 
 Program::Program(std::vector<rule::Rule> *rule_vector) {
-    //auto rule_vector = rule_reader->get_rules();
+    // auto rule_vector = rule_reader->get_rules();
     sort_rules(rule_vector);
 }
 
@@ -96,6 +96,27 @@ Program::evaluate(util::Timeline const &timeline,
     database.clear();
     database.insert_facts(std::move(data_facts));
     chase_evaluation();
+    auto conclusions = get_conclusions();
+    return conclusions;
+}
+
+void Program::init_timepoint(
+    util::Timeline const &timeline,
+    std::vector<std::shared_ptr<util::Grounding>> data_facts) {
+    this->timeline = timeline;
+    database.clear();
+    database.insert_facts(std::move(data_facts));
+    reset_rules();
+}
+
+bool Program::evaluate_single_step() {
+    bool changed = evaluate_rule_vector(simple_rule_vector);
+    changed |= evaluate_rule_vector(existential_rule_vector);
+    return changed;
+}
+
+std::vector<std::shared_ptr<util::Grounding>>
+Program::get_single_step_conclusions() {
     auto conclusions = get_conclusions();
     return conclusions;
 }

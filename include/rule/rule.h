@@ -39,6 +39,7 @@ class Rule {
     std::vector<std::string> frontier_variables;
     std::vector<std::string> bound_variables;
 
+    void clear();
     void
     init_frontier_variables(std::vector<formula::Formula *> const &head_atoms);
 

@@ -80,7 +80,7 @@ std::vector<formula::Formula *> Rule::get_head_atoms() const {
 }
 
 void Rule::add_head_atoms(std::vector<formula::Formula *> atom_vector) {
-    head_atoms.insert( head_atoms.end(), atom_vector.begin(), atom_vector.end() );
+    head_atoms.insert(head_atoms.end(), atom_vector.begin(), atom_vector.end());
     init(head_atoms);
 }
 
@@ -246,9 +246,17 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
     }
 }
 
-void Rule::init(std::vector<formula::Formula *> head_atoms) {
+void Rule::clear() {
     frontier_variables.clear();
     bound_variables.clear();
+    head_atoms.clear();
+    head_atoms_var_positions.clear();
+    size_t previous_step = 0;
+    size_t current_step = 0;
+}
+
+void Rule::init(std::vector<formula::Formula *> head_atoms) {
+    this->clear();
     init_chase(head_atoms);
     this->head_atoms = std::move(head_atoms);
     for (auto *head_atom : this->head_atoms) {

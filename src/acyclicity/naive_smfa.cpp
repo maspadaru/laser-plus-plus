@@ -13,7 +13,7 @@ bool NaiveSMFA::has_terminating_chase() {
     }
     compute_critical_timeline();
     compute_smfa_rule_vector();
-    void evaluate_smfa_program();
+    evaluate_smfa_program();
     return !has_cycle;
 }
 
@@ -49,6 +49,7 @@ NaiveSMFA::generate_critical_facts() {
         auto fact = std::make_shared<util::Grounding>(
             predicate, time, time, global_tuple_counter, max_tuple_counter,
             true, false, std::move(constant_vector));
+        result.push_back(fact);
     }
     // all facts have the same tuple counter
     global_tuple_counter += extensional_predicates.size();
@@ -60,15 +61,20 @@ void NaiveSMFA::evaluate_smfa_program() {
     auto smfa_program = core::Program(&smfa_rule_vector);
     while (!(has_cycle || critical_timeline.is_past_max_time())) {
         auto critical_facts = generate_critical_facts();
-        auto conclusions =
-            smfa_program.evaluate(critical_timeline, critical_facts);
-        critical_timeline.increment_time();
-        for (auto const &conclusion : conclusions) {
-            if (conclusion->get_predicate() ==
-                special_predicate::SMFA_PREDICATE_C) {
-                has_cycle = true;
+        smfa_program.init_timepoint(critical_timeline, critical_facts);
+        bool done = false;
+        while (!done) {
+            done = !smfa_program.evaluate_single_step();
+            auto conclusions = smfa_program.get_single_step_conclusions();
+            for (auto const &conclusion : conclusions) {
+                if (conclusion->get_predicate() ==
+                    special_predicate::SMFA_PREDICATE_C) {
+                    has_cycle = true;
+                    done = true;
+                }
             }
         }
+        critical_timeline.increment_time();
     }
 }
 
@@ -180,7 +186,7 @@ rule::Rule NaiveSMFA::generate_S_D_rule() const {
     std::string predicate_S = acyclicity::special_predicate::SMFA_PREDICATE_S;
     auto atom_D = generate_new_binary_atom(predicate_D, variable_X, variable_Y);
     auto atom_S = generate_new_binary_atom(predicate_S, variable_X, variable_Y);
-    std::vector<formula::Formula*> head_atoms;
+    std::vector<formula::Formula *> head_atoms;
     head_atoms.push_back(atom_D);
     return rule::Rule(atom_S, head_atoms);
 }
@@ -192,11 +198,14 @@ rule::Rule NaiveSMFA::generate_D_transitive_rule() const {
     std::string variable_Z = "Z";
     std::string predicate_D = acyclicity::special_predicate::SMFA_PREDICATE_D;
     std::string predicate_S = acyclicity::special_predicate::SMFA_PREDICATE_S;
-    auto head_atom_D = generate_new_binary_atom(predicate_D, variable_X, variable_Z);
-    auto body_atom_D = generate_new_binary_atom(predicate_D, variable_X, variable_Y);
-    auto body_atom_S = generate_new_binary_atom(predicate_S, variable_Y, variable_Z);
+    auto head_atom_D =
+        generate_new_binary_atom(predicate_D, variable_X, variable_Z);
+    auto body_atom_D =
+        generate_new_binary_atom(predicate_D, variable_X, variable_Y);
+    auto body_atom_S =
+        generate_new_binary_atom(predicate_S, variable_Y, variable_Z);
     auto body = new formula::Conjunction(body_atom_D, body_atom_S);
-    std::vector<formula::Formula*> head_atoms;
+    std::vector<formula::Formula *> head_atoms;
     head_atoms.push_back(head_atom_D);
     return rule::Rule(body, head_atoms);
 }
@@ -207,25 +216,28 @@ rule::Rule NaiveSMFA::generate_C_rule(std::string const &predicate_F) const {
     std::string variable_Y = "Y";
     std::string predicate_D = acyclicity::special_predicate::SMFA_PREDICATE_D;
     std::string predicate_C = acyclicity::special_predicate::SMFA_PREDICATE_C;
-    auto head_atom_C = new formula::Atom(predicate_C);
-    auto body_atom_D = generate_new_binary_atom(predicate_D, variable_X, variable_Y);
+    // auto head_atom_C = new formula::Atom(predicate_C);
+    auto head_atom_C =
+        generate_new_binary_atom(predicate_C, variable_X, variable_Y);
+    auto body_atom_D =
+        generate_new_binary_atom(predicate_D, variable_X, variable_Y);
     auto body_atom_F_X = generate_new_unary_atom(predicate_F, variable_X);
     auto body_atom_F_Y = generate_new_unary_atom(predicate_F, variable_Y);
     auto body_F_and_D = new formula::Conjunction(body_atom_F_X, body_atom_D);
     auto body = new formula::Conjunction(body_F_and_D, body_atom_F_Y);
-    std::vector<formula::Formula*> head_atoms;
+    std::vector<formula::Formula *> head_atoms;
     head_atoms.push_back(head_atom_C);
     return rule::Rule(body, head_atoms);
 }
 
 void NaiveSMFA::compute_smfa_rule_vector() {
     std::vector<std::string> f_predicate_vector;
-    std::vector<formula::Formula *> new_atom_vector;
     smfa_rule_vector = rule_vector;
     for (size_t rule_index = 0; rule_index < smfa_rule_vector.size();
          rule_index++) {
         auto &rule = smfa_rule_vector.at(rule_index);
         if (rule.is_existential()) {
+            std::vector<formula::Formula *> new_atom_vector;
             std::vector<std::string> bound_list = rule.get_bound_variables();
             std::vector<std::string> frontier_list =
                 rule.get_frontier_variables();
@@ -246,15 +258,15 @@ void NaiveSMFA::compute_smfa_rule_vector() {
                     new_atom_vector.push_back(s_atom);
                 }
             }
+            rule.add_head_atoms(new_atom_vector);
         }
-        rule.add_head_atoms(new_atom_vector);
     }
-    auto s_d_rule = generate_S_D_rule(); 
-    auto d_transitive_rule = generate_D_transitive_rule(); 
+    auto s_d_rule = generate_S_D_rule();
+    auto d_transitive_rule = generate_D_transitive_rule();
     smfa_rule_vector.push_back(s_d_rule);
     smfa_rule_vector.push_back(d_transitive_rule);
     for (auto f_predicate : f_predicate_vector) {
-        auto c_rule = generate_C_rule(f_predicate); 
+        auto c_rule = generate_C_rule(f_predicate);
         smfa_rule_vector.push_back(c_rule);
     }
 }

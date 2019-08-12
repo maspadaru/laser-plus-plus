@@ -52,9 +52,9 @@ void test_acyclicity_simple() {
 
 void test_acyclicity_obvious_cycle() {
     const std::string name = "Obvious Cycle";
-    std::string rule_string = "r(X) := p(X)\n"
-                              "p(X) := q(X, Y) && m(X, Y)\n"
-                              "q(X) := p(Y) && n(X, Y)\n";
+    std::string rule_string = "p(X) := r(X)\n"
+                              "q(Y) && m(X, Y) := p(X)\n"
+                              "p(Y) && n(X, Y) := q(X)\n";
     bool expected_has_terminating_chase = false;
     run_acyclicity_test(name, rule_string, expected_has_terminating_chase);
 }
