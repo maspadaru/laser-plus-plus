@@ -1,7 +1,6 @@
 #include "rule/filter/skolem_filter.h"
 
-namespace laser {
-namespace rule {
+namespace laser::rule {
 
 ChaseFilter *SkolemFilter::create() const {
     auto result = new SkolemFilter();
@@ -34,42 +33,17 @@ ChaseFilter *SkolemFilter::move() {
     return result;
 }
 
-void SkolemFilter::init_frontier_variables(
-    std::vector<formula::Formula *> const &head_atoms) {
-    // I am igniring the time variable here, else I will always get new values
-    // at each timepoint
-    std::set<std::string> atom_variable_set;
-    for (auto atom : head_atoms) {
-        auto variable_names = atom->get_variable_names();
-        if (atom->get_type() == formula::FormulaType::TIME_REFERENCE) {
-            // Time variable is always the last
-            std::copy(
-                variable_names.begin(), variable_names.end() - 1,
-                std::inserter(atom_variable_set, atom_variable_set.end()));
-        } else {
-            std::copy(
-                variable_names.begin(), variable_names.end(),
-                std::inserter(atom_variable_set, atom_variable_set.end()));
-        }
-    }
-
-    for (auto const &variable : bound_variables) {
-        atom_variable_set.erase(variable);
-    }
-    std::copy(atom_variable_set.begin(), atom_variable_set.end(),
-              std::back_inserter(frontier_variables));
-}
-
 void SkolemFilter::init(std::vector<formula::Formula *> const &head_atoms,
                         std::vector<std::string> const &head_variables,
                         std::vector<std::string> const &free_variables,
-                        std::vector<std::string> const &bound_variables) {
+                        std::vector<std::string> const &bound_variables,
+                        std::vector<std::string> const &frontier_variables) {
     this->head_variables = head_variables;
     this->free_variables = free_variables;
     this->bound_variables = bound_variables;
+    this->frontier_variables = frontier_variables;
     this->free_variable_index = rule::shared::make_index(free_variables);
     this->bound_variable_index = rule::shared::make_index(bound_variables);
-    init_frontier_variables(head_atoms);
 }
 
 void SkolemFilter::update(util::Timeline const &timeline, size_t previous_step,
@@ -152,5 +126,4 @@ std::string SkolemFilter::generate_new_value(std::string const &var_name) {
 
 void SkolemFilter::expire_outdated_groundings(util::Timeline const &timeline) {}
 
-} // namespace rule
-} // namespace laser
+} // namespace laser::rule

@@ -26,7 +26,8 @@ class ChaseFilter {
     virtual void init(std::vector<formula::Formula *> const &head_atoms,
                       std::vector<std::string> const &head_variables,
                       std::vector<std::string> const &free_variables,
-                      std::vector<std::string> const &bound_variables) = 0;
+                      std::vector<std::string> const &bound_variables,
+                      std::vector<std::string> const &frontier_variables) = 0;
 
     virtual void update(util::Timeline const &timeline, size_t previous_step,
                         util::Database const &database) = 0;

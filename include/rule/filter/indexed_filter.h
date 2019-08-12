@@ -2,9 +2,9 @@
 #define LASER_RULE_FILTER_INDEXED_FILTER_H
 
 #include <map>
-#include <unordered_map>
 #include <memory>
 #include <set>
+#include <unordered_map>
 #include <vector>
 
 #include "formula/extended/conjunction.h"
@@ -16,8 +16,7 @@
 #include "util/grounding.h"
 #include "util/timeline.h"
 
-namespace laser {
-namespace rule {
+namespace laser::rule {
 
 /**
  * Restricted Chase Filter using free variable based index
@@ -26,7 +25,7 @@ class IndexedFilter : public ChaseFilter {
   private:
     uint64_t null_value_count = 0;
     formula::Formula *head_formula;
-    std::vector<std::string> free_head_variables;
+    std::vector<std::string> frontier_variables;
     std::vector<std::string> head_variables;
     std::vector<std::string> free_variables;
     std::vector<std::string> bound_variables;
@@ -50,9 +49,6 @@ class IndexedFilter : public ChaseFilter {
     build_head_formula(size_t index,
                        std::vector<formula::Formula *> const &list) const;
 
-    void
-    init_free_head_variables(std::vector<formula::Formula *> const &head_atoms);
-
     void clear_index_map();
     void compute_index_map(
         std::vector<std::shared_ptr<util::Grounding>> database_facts);
@@ -71,7 +67,8 @@ class IndexedFilter : public ChaseFilter {
     void init(std::vector<formula::Formula *> const &head_atoms,
               std::vector<std::string> const &head_variables,
               std::vector<std::string> const &free_variables,
-              std::vector<std::string> const &bound_variables) override;
+              std::vector<std::string> const &bound_variables,
+              std::vector<std::string> const &frontier_variables) override;
 
     void update(util::Timeline const &timeline, size_t previous_step,
                 util::Database const &database) override;
@@ -84,7 +81,6 @@ class IndexedFilter : public ChaseFilter {
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 };
 
-} // namespace rule
-} // namespace laser
+} // namespace laser::rule
 
 #endif // LASER_RULE_FILTER_INDEXED_FILTER_H

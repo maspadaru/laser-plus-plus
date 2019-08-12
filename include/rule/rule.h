@@ -21,8 +21,7 @@
 #include "util/settings.h"
 #include "util/timeline.h"
 
-namespace laser {
-namespace rule {
+namespace laser::rule {
 
 class Rule {
   private:
@@ -37,6 +36,11 @@ class Rule {
     std::unordered_map<std::string, int> head_variable_index;
     size_t previous_step = 0;
     size_t current_step = 0;
+    std::vector<std::string> frontier_variables;
+    std::vector<std::string> bound_variables;
+
+    void
+    init_frontier_variables(std::vector<formula::Formula *> const &head_atoms);
 
     std::shared_ptr<util::Grounding>
     convert_to_head_grounding(std::string const &head_predicate,
@@ -72,8 +76,12 @@ class Rule {
     Rule &operator=(Rule const &other);     // copy assignment
     Rule &operator=(Rule &&other) noexcept; // move assignment
 
+    std::vector<std::string> const &get_frontier_variables() const;
+    std::vector<std::string> const &get_bound_variables() const;
     std::vector<formula::Formula *> get_head_atoms() const;
     formula::Formula *get_body() const;
+
+    void add_head_atoms(std::vector<formula::Formula *> atom_vector);
 
     std::set<std::string> get_body_predicates() const;
 
@@ -110,7 +118,6 @@ class Rule {
     void set_current_step(size_t step);
 };
 
-} // namespace rule
-} // namespace laser
+} // namespace laser::rule
 
 #endif // LASER_RULE_RULE_H

@@ -14,8 +14,7 @@
 #include "util/grounding.h"
 #include "util/timeline.h"
 
-namespace laser {
-namespace rule {
+namespace laser::rule {
 
 /**
  * Restricted Chase Filter
@@ -48,9 +47,6 @@ class RestrictedFilter : public ChaseFilter {
     build_head_formula(size_t index,
                        std::vector<formula::Formula *> const &list) const;
 
-    void
-    init_frontier_variables(std::vector<formula::Formula *> const &head_atoms);
-
   public:
     RestrictedFilter() = default;
     ~RestrictedFilter() override;
@@ -62,7 +58,8 @@ class RestrictedFilter : public ChaseFilter {
     void init(std::vector<formula::Formula *> const &head_atoms,
               std::vector<std::string> const &head_variables,
               std::vector<std::string> const &free_variables,
-              std::vector<std::string> const &bound_variables) override;
+              std::vector<std::string> const &bound_variables,
+              std::vector<std::string> const &frontier_variables) override;
 
     void update(util::Timeline const &timeline, size_t previous_step,
                 util::Database const &database) override;
@@ -75,7 +72,6 @@ class RestrictedFilter : public ChaseFilter {
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 };
 
-} // namespace rule
-} // namespace laser
+} // namespace laser::rule
 
 #endif // LASER_RULE_FILTER_RESTRICTED_FILTER_H

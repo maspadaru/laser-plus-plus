@@ -132,21 +132,131 @@ uint64_t NaiveSMFA::get_time(formula::Formula *formula, bool is_head_atom) {
 }
 
 void NaiveSMFA::compute_critical_timeline() {
-    uint64_t sum = 1;
+    uint64_t result = 1;
     for (auto const &rule : rule_vector) {
         auto head_atoms = rule.get_head_atoms();
         auto *body = rule.get_body();
-        sum += get_time(body, false);
+        result += get_time(body, false);
         for (auto *atom : head_atoms) {
-            sum += get_time(atom, true);
+            result += get_time(atom, true);
         }
     }
-    critical_timeline.set_max_time(1);
+    critical_timeline.set_max_time(result);
+}
+
+std::string NaiveSMFA::generate_new_F_predicate(size_t rule_index,
+                                                size_t bound_index) const {
+    std::string result = acyclicity::special_predicate::SMFA_PREDICATE_F +
+                         " _rule_" + std::to_string(rule_index) +
+                         "_bound_variable_" + std::to_string(bound_index);
+    return result;
+}
+
+formula::Formula *
+NaiveSMFA::generate_new_unary_atom(std::string const &predicate,
+                                   std::string const &variable) const {
+    std::vector<std::string> variable_vector;
+    variable_vector.push_back(variable);
+    auto result = new formula::Atom(predicate, variable_vector);
+    return result;
+}
+
+formula::Formula *
+NaiveSMFA::generate_new_binary_atom(std::string const &predicate,
+                                    std::string const &first_variable,
+                                    std::string const &second_variable) const {
+    std::vector<std::string> variable_vector;
+    variable_vector.push_back(first_variable);
+    variable_vector.push_back(second_variable);
+    auto result = new formula::Atom(predicate, variable_vector);
+    return result;
+}
+
+rule::Rule NaiveSMFA::generate_S_D_rule() const {
+    // D(X, Y) := S(X, Y)
+    std::string variable_X = "X";
+    std::string variable_Y = "Y";
+    std::string predicate_D = acyclicity::special_predicate::SMFA_PREDICATE_D;
+    std::string predicate_S = acyclicity::special_predicate::SMFA_PREDICATE_S;
+    auto atom_D = generate_new_binary_atom(predicate_D, variable_X, variable_Y);
+    auto atom_S = generate_new_binary_atom(predicate_S, variable_X, variable_Y);
+    std::vector<formula::Formula*> head_atoms;
+    head_atoms.push_back(atom_D);
+    return rule::Rule(atom_S, head_atoms);
+}
+
+rule::Rule NaiveSMFA::generate_D_transitive_rule() const {
+    // D(X, Z) := D(X, Y) && S(Y, Z)
+    std::string variable_X = "X";
+    std::string variable_Y = "Y";
+    std::string variable_Z = "Z";
+    std::string predicate_D = acyclicity::special_predicate::SMFA_PREDICATE_D;
+    std::string predicate_S = acyclicity::special_predicate::SMFA_PREDICATE_S;
+    auto head_atom_D = generate_new_binary_atom(predicate_D, variable_X, variable_Z);
+    auto body_atom_D = generate_new_binary_atom(predicate_D, variable_X, variable_Y);
+    auto body_atom_S = generate_new_binary_atom(predicate_S, variable_Y, variable_Z);
+    auto body = new formula::Conjunction(body_atom_D, body_atom_S);
+    std::vector<formula::Formula*> head_atoms;
+    head_atoms.push_back(head_atom_D);
+    return rule::Rule(body, head_atoms);
+}
+
+rule::Rule NaiveSMFA::generate_C_rule(std::string const &predicate_F) const {
+    // C := F(X) && D(X, Y) && F(Y)
+    std::string variable_X = "X";
+    std::string variable_Y = "Y";
+    std::string predicate_D = acyclicity::special_predicate::SMFA_PREDICATE_D;
+    std::string predicate_C = acyclicity::special_predicate::SMFA_PREDICATE_C;
+    auto head_atom_C = new formula::Atom(predicate_C);
+    auto body_atom_D = generate_new_binary_atom(predicate_D, variable_X, variable_Y);
+    auto body_atom_F_X = generate_new_unary_atom(predicate_F, variable_X);
+    auto body_atom_F_Y = generate_new_unary_atom(predicate_F, variable_Y);
+    auto body_F_and_D = new formula::Conjunction(body_atom_F_X, body_atom_D);
+    auto body = new formula::Conjunction(body_F_and_D, body_atom_F_Y);
+    std::vector<formula::Formula*> head_atoms;
+    head_atoms.push_back(head_atom_C);
+    return rule::Rule(body, head_atoms);
 }
 
 void NaiveSMFA::compute_smfa_rule_vector() {
-    // TODO
+    std::vector<std::string> f_predicate_vector;
+    std::vector<formula::Formula *> new_atom_vector;
     smfa_rule_vector = rule_vector;
+    for (size_t rule_index = 0; rule_index < smfa_rule_vector.size();
+         rule_index++) {
+        auto &rule = smfa_rule_vector.at(rule_index);
+        if (rule.is_existential()) {
+            std::vector<std::string> bound_list = rule.get_bound_variables();
+            std::vector<std::string> frontier_list =
+                rule.get_frontier_variables();
+            for (size_t bound_index = 0; bound_index < bound_list.size();
+                 bound_index++) {
+                auto bound_variable = bound_list.at(bound_index);
+                auto f_predicate =
+                    generate_new_F_predicate(rule_index, bound_index);
+                f_predicate_vector.push_back(f_predicate);
+                auto f_atom =
+                    generate_new_unary_atom(f_predicate, bound_variable);
+                new_atom_vector.push_back(f_atom);
+                for (auto const &frontier_variable : frontier_list) {
+                    auto s_predicate =
+                        acyclicity::special_predicate::SMFA_PREDICATE_S;
+                    auto s_atom = generate_new_binary_atom(
+                        s_predicate, frontier_variable, bound_variable);
+                    new_atom_vector.push_back(s_atom);
+                }
+            }
+        }
+        rule.add_head_atoms(new_atom_vector);
+    }
+    auto s_d_rule = generate_S_D_rule(); 
+    auto d_transitive_rule = generate_D_transitive_rule(); 
+    smfa_rule_vector.push_back(s_d_rule);
+    smfa_rule_vector.push_back(d_transitive_rule);
+    for (auto f_predicate : f_predicate_vector) {
+        auto c_rule = generate_C_rule(f_predicate); 
+        smfa_rule_vector.push_back(c_rule);
+    }
 }
 
 } // namespace laser::acyclicity

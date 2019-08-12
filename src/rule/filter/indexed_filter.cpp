@@ -1,7 +1,6 @@
 #include "rule/filter/indexed_filter.h"
 
-namespace laser {
-namespace rule {
+namespace laser::rule {
 
 ChaseFilter *IndexedFilter::create() const {
     auto result = new IndexedFilter();
@@ -12,7 +11,7 @@ IndexedFilter::~IndexedFilter() { delete head_formula; }
 
 ChaseFilter *IndexedFilter::clone() const {
     auto result = new IndexedFilter();
-    result->free_head_variables = this->free_head_variables;
+    result->frontier_variables = this->frontier_variables;
     result->head_variables = this->head_variables;
     result->free_variables = this->free_variables;
     result->bound_variables = this->bound_variables;
@@ -25,7 +24,7 @@ ChaseFilter *IndexedFilter::clone() const {
 
 ChaseFilter *IndexedFilter::move() {
     auto result = new IndexedFilter();
-    result->free_head_variables = std::move(this->free_head_variables);
+    result->frontier_variables = std::move(this->frontier_variables);
     result->head_variables = std::move(this->head_variables);
     result->free_variables = std::move(this->free_variables);
     result->bound_variables = std::move(this->bound_variables);
@@ -39,14 +38,15 @@ ChaseFilter *IndexedFilter::move() {
 void IndexedFilter::init(std::vector<formula::Formula *> const &head_atoms,
                          std::vector<std::string> const &head_variables,
                          std::vector<std::string> const &free_variables,
-                         std::vector<std::string> const &bound_variables) {
+                         std::vector<std::string> const &bound_variables,
+                         std::vector<std::string> const &frontier_variables) {
     this->head_variables = head_variables;
     this->free_variables = free_variables;
     this->bound_variables = bound_variables;
+    this->frontier_variables = frontier_variables;
     this->free_variable_index = rule::shared::make_index(free_variables);
     this->bound_variable_index = rule::shared::make_index(bound_variables);
     this->head_formula = build_head_formula(0, head_atoms);
-    init_free_head_variables(head_atoms);
 }
 
 void IndexedFilter::update(util::Timeline const &timeline, size_t previous_step,
@@ -58,7 +58,7 @@ void IndexedFilter::update(util::Timeline const &timeline, size_t previous_step,
 std::string IndexedFilter::get_index_key(
     std::shared_ptr<util::Grounding> const &fact) const {
     std::vector<std::string> vector;
-    for (auto const &var_name : free_head_variables) {
+    for (auto const &var_name : frontier_variables) {
         auto var_index = free_variable_index.at(var_name);
         auto const &var_value = fact->get_constant(var_index);
         vector.push_back(var_value);
@@ -78,31 +78,31 @@ void IndexedFilter::compute_index_map(
     }
 }
 
-//std::vector<std::shared_ptr<util::Grounding>> IndexedFilter::build_chase_facts(
-    //util::Timeline const &timeline, size_t previous_step,
-    //std::vector<std::shared_ptr<util::Grounding>> const &input_facts) {
-    //std::vector<std::shared_ptr<util::Grounding>> result;
-    //std::vector<std::shared_ptr<util::Grounding>> fresh_facts;
-    //auto current_time = timeline.get_time();
-    //// filtering by SNE first, then we decide if we need to compute the 
-    //// index map or not.
-    //for (auto grounding : input_facts) {
-        //if (grounding->is_fresh_sne(current_time, previous_step)) {
-            //fresh_facts.push_back(std::move(grounding));
-        //}
-    //}
-    //if (!fresh_facts.empty()) {
-        //auto database_facts = head_formula->get_conclusions_timepoint(timeline);
-        //clear_index_map();
-        //compute_index_map(database_facts);
-        //for (auto const &input_fact : fresh_facts) {
-            //if (!has_database_match(input_fact)) {
-                //auto chase_fact = generate_chase_fact(input_fact);
-                //result.push_back(chase_fact);
-            //}
-        //}
-    //}
-    //return result;
+// std::vector<std::shared_ptr<util::Grounding>>
+// IndexedFilter::build_chase_facts( util::Timeline const &timeline, size_t
+// previous_step, std::vector<std::shared_ptr<util::Grounding>> const
+// &input_facts) { std::vector<std::shared_ptr<util::Grounding>> result;
+// std::vector<std::shared_ptr<util::Grounding>> fresh_facts;
+// auto current_time = timeline.get_time();
+//// filtering by SNE first, then we decide if we need to compute the
+//// index map or not.
+// for (auto grounding : input_facts) {
+// if (grounding->is_fresh_sne(current_time, previous_step)) {
+// fresh_facts.push_back(std::move(grounding));
+//}
+//}
+// if (!fresh_facts.empty()) {
+// auto database_facts = head_formula->get_conclusions_timepoint(timeline);
+// clear_index_map();
+// compute_index_map(database_facts);
+// for (auto const &input_fact : fresh_facts) {
+// if (!has_database_match(input_fact)) {
+// auto chase_fact = generate_chase_fact(input_fact);
+// result.push_back(chase_fact);
+//}
+//}
+//}
+// return result;
 //}
 
 std::vector<std::shared_ptr<util::Grounding>> IndexedFilter::build_chase_facts(
@@ -191,33 +191,8 @@ formula::Formula *IndexedFilter::build_head_formula(
     return new formula::Conjunction(left, right, true);
 }
 
-void IndexedFilter::init_free_head_variables(
-    std::vector<formula::Formula *> const &head_atoms) {
-    std::set<std::string> atom_variable_set;
-    for (auto atom : head_atoms) {
-        auto variable_names = atom->get_variable_names();
-        if (atom->get_type() == formula::FormulaType::TIME_REFERENCE) {
-            // Time variable is always the last
-            std::copy(
-                variable_names.begin(), variable_names.end() - 1,
-                std::inserter(atom_variable_set, atom_variable_set.end()));
-        } else {
-            std::copy(
-                variable_names.begin(), variable_names.end(),
-                std::inserter(atom_variable_set, atom_variable_set.end()));
-        }
-    }
-
-    for (auto const &variable : bound_variables) {
-        atom_variable_set.erase(variable);
-    }
-    std::copy(atom_variable_set.begin(), atom_variable_set.end(),
-              std::back_inserter(free_head_variables));
-}
-
 void IndexedFilter::expire_outdated_groundings(util::Timeline const &timeline) {
     head_formula->expire_outdated_groundings(timeline);
 }
 
-} // namespace rule
-} // namespace laser
+} // namespace laser::rule

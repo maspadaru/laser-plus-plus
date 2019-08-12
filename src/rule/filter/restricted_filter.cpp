@@ -1,7 +1,6 @@
 #include "rule/filter/restricted_filter.h"
 
-namespace laser {
-namespace rule {
+namespace laser::rule {
 
 ChaseFilter *RestrictedFilter::create() const {
     auto result = new RestrictedFilter();
@@ -36,17 +35,19 @@ ChaseFilter *RestrictedFilter::move() {
     return result;
 }
 
-void RestrictedFilter::init(std::vector<formula::Formula *> const &head_atoms,
-                            std::vector<std::string> const &head_variables,
-                            std::vector<std::string> const &free_variables,
-                            std::vector<std::string> const &bound_variables) {
+void RestrictedFilter::init(
+    std::vector<formula::Formula *> const &head_atoms,
+    std::vector<std::string> const &head_variables,
+    std::vector<std::string> const &free_variables,
+    std::vector<std::string> const &bound_variables,
+    std::vector<std::string> const &frontier_variables) {
     this->head_variables = head_variables;
     this->free_variables = free_variables;
     this->bound_variables = bound_variables;
+    this->frontier_variables = frontier_variables;
     this->free_variable_index = rule::shared::make_index(free_variables);
     this->bound_variable_index = rule::shared::make_index(bound_variables);
     this->head_formula = build_head_formula(0, head_atoms);
-    init_frontier_variables(head_atoms);
 }
 
 void RestrictedFilter::update(util::Timeline const &timeline,
@@ -157,36 +158,10 @@ formula::Formula *RestrictedFilter::build_head_formula(
     return new formula::Conjunction(left, right, true);
 }
 
-void RestrictedFilter::init_frontier_variables(
-    std::vector<formula::Formula *> const &head_atoms) {
-    // I am igniring the time variable here, else I will always get new values
-    // at each timepoint
-    std::set<std::string> atom_variable_set;
-    for (auto atom : head_atoms) {
-        auto variable_names = atom->get_variable_names();
-        if (atom->get_type() == formula::FormulaType::TIME_REFERENCE) {
-            // Time variable is always the last
-            std::copy(
-                variable_names.begin(), variable_names.end() - 1,
-                std::inserter(atom_variable_set, atom_variable_set.end()));
-        } else {
-            std::copy(
-                variable_names.begin(), variable_names.end(),
-                std::inserter(atom_variable_set, atom_variable_set.end()));
-        }
-    }
-
-    for (auto const &variable : bound_variables) {
-        atom_variable_set.erase(variable);
-    }
-    std::copy(atom_variable_set.begin(), atom_variable_set.end(),
-              std::back_inserter(frontier_variables));
-}
 
 void RestrictedFilter::expire_outdated_groundings(
     util::Timeline const &timeline) {
     head_formula->expire_outdated_groundings(timeline);
 }
 
-} // namespace rule
-} // namespace laser
+} // namespace laser::rule

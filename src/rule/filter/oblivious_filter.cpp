@@ -1,7 +1,6 @@
 #include "rule/filter/oblivious_filter.h"
 
-namespace laser {
-namespace rule {
+namespace laser::rule {
 
 ChaseFilter *ObliviousFilter::create() const {
     auto result = new ObliviousFilter();
@@ -21,7 +20,8 @@ ChaseFilter *ObliviousFilter::move() {
 void ObliviousFilter::init(std::vector<formula::Formula *> const &head_atoms,
                            std::vector<std::string> const &head_variables,
                            std::vector<std::string> const &free_variables,
-                           std::vector<std::string> const &bound_variables) {
+                           std::vector<std::string> const &bound_variables,
+                           std::vector<std::string> const &frontier_variables) {
     return;
 }
 
@@ -48,5 +48,4 @@ ObliviousFilter::build_chase_facts(
 void ObliviousFilter::expire_outdated_groundings(
     util::Timeline const &timeline) {}
 
-} // namespace rule
-} // namespace laser
+} // namespace laser::rule

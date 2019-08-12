@@ -46,8 +46,8 @@ void run_acyclicity_test(std::string const &name,
 void test_acyclicity_simple() {
     const std::string name = "Simple";
     std::string rule_string = "p(a, Z, b, X, Z) := q(X, Y, Z)\n";
-    bool has_terminating_chase = true;
-    run_acyclicity_test(name, rule_string, has_terminating_chase);
+    bool expected_has_terminating_chase = true;
+    run_acyclicity_test(name, rule_string, expected_has_terminating_chase);
 }
 
 void test_acyclicity_obvious_cycle() {
@@ -55,8 +55,8 @@ void test_acyclicity_obvious_cycle() {
     std::string rule_string = "r(X) := p(X)\n"
                               "p(X) := q(X, Y) && m(X, Y)\n"
                               "q(X) := p(Y) && n(X, Y)\n";
-    bool has_terminating_chase = false;
-    run_acyclicity_test(name, rule_string, has_terminating_chase);
+    bool expected_has_terminating_chase = false;
+    run_acyclicity_test(name, rule_string, expected_has_terminating_chase);
 }
 
 void test_simple_mix() {
@@ -959,7 +959,7 @@ int main() {
     // test_existential_skolem_paper_bmc_eg4();
     // test_existential_skolem_paper_bmc_eg1();
     // test_queries();
-    //test_acyclicity_simple();
-    //test_acyclicity_obvious_cycle();
-    test_existential_fronteier_var();
+    //test_existential_fronteier_var();
+    test_acyclicity_simple();
+    test_acyclicity_obvious_cycle();
 }
