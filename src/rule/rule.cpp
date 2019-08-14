@@ -8,6 +8,14 @@ Rule::Rule(formula::Formula *body_formula,
     init(std::move(head_atoms));
 }
 
+Rule::Rule(formula::Formula *body_formula,
+           std::vector<formula::Formula *> head_atoms,
+           std::set<std::string> inertia_variables)
+    : body(body_formula->clone()),
+      inertia_variables(std::move(inertia_variables)) {
+    init(std::move(head_atoms));
+}
+
 Rule::~Rule() {
     delete &body;
     for (auto head_atom : head_atoms) {
@@ -26,9 +34,11 @@ Rule::Rule(Rule const &other) : body(other.body.clone()) {
     head_variable_index = other.head_variable_index;
     frontier_variables = other.frontier_variables;
     bound_variables = other.bound_variables;
+    inertia_variables = other.inertia_variables;
     is_existential_m = other.is_existential_m;
     previous_step = other.previous_step;
     current_step = other.current_step;
+    has_inertia_variables = other.has_inertia_variables;
 }
 
 Rule::Rule(Rule &&other) noexcept : body(other.body.move()) {
@@ -38,9 +48,11 @@ Rule::Rule(Rule &&other) noexcept : body(other.body.move()) {
     head_variable_index = std::move(other.head_variable_index);
     frontier_variables = std::move(other.frontier_variables);
     bound_variables = std::move(other.bound_variables);
+    inertia_variables = std::move(other.inertia_variables);
     is_existential_m = other.is_existential_m;
     previous_step = other.previous_step;
     current_step = other.current_step;
+    has_inertia_variables = other.has_inertia_variables;
 }
 
 Rule &Rule::operator=(Rule const &other) {
@@ -53,9 +65,11 @@ Rule &Rule::operator=(Rule const &other) {
     this->head_variable_index = other.head_variable_index;
     this->frontier_variables = other.frontier_variables;
     this->bound_variables = other.bound_variables;
+    this->inertia_variables = other.inertia_variables;
     this->is_existential_m = other.is_existential_m;
     this->previous_step = other.previous_step;
     this->current_step = other.current_step;
+    this->has_inertia_variables = other.has_inertia_variables;
     return *this;
 }
 
@@ -67,9 +81,11 @@ Rule &Rule::operator=(Rule &&other) noexcept {
     this->head_variable_index = std::move(other.head_variable_index);
     this->frontier_variables = std::move(other.frontier_variables);
     this->bound_variables = std::move(other.bound_variables);
+    this->inertia_variables = std::move(other.inertia_variables);
     this->is_existential_m = other.is_existential_m;
     this->previous_step = other.previous_step;
     this->current_step = other.current_step;
+    this->has_inertia_variables = other.has_inertia_variables;
     return *this;
 }
 
@@ -231,8 +247,13 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
             chase_filter = new ObliviousFilter();
             break;
         }
+        std::vector<bool> is_inertia_variable;
+        if (!inertia_variables.empty()) {
+            is_inertia_variable = generate_inertia_vector();
+        }
         chase_filter->init(head_atoms, head_variables, free_variables,
-                           bound_variables, frontier_variables);
+                           bound_variables, is_inertia_variable,
+                           frontier_variables, has_inertia_variables);
     }
     head_variable_index = rule::shared::make_index(head_variables);
     for (auto head_atom : head_atoms) {
@@ -244,6 +265,21 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
         }
         head_atoms_var_positions.push_back(var_pos_vector);
     }
+}
+
+std::vector<bool> Rule::generate_inertia_vector() {
+    has_inertia_variables = false;
+    size_t bound_variables_count = bound_variables.size();
+    std::vector<bool> result;
+    for (auto const &var_name : bound_variables) {
+        if (inertia_variables.count(var_name) == 0) {
+            result.push_back(false);
+        } else {
+            result.push_back(true);
+            has_inertia_variables = true;
+        }
+    }
+    return result;
 }
 
 void Rule::clear() {

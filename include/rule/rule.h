@@ -38,10 +38,15 @@ class Rule {
     size_t current_step = 0;
     std::vector<std::string> frontier_variables;
     std::vector<std::string> bound_variables;
+    std::set<std::string> inertia_variables;
+    bool has_inertia_variables = false;
 
     void clear();
     void
     init_frontier_variables(std::vector<formula::Formula *> const &head_atoms);
+
+    std::vector<bool>
+    generate_inertia_vector();
 
     std::shared_ptr<util::Grounding>
     convert_to_head_grounding(std::string const &head_predicate,
@@ -66,6 +71,10 @@ class Rule {
                    size_t head_atom_index, size_t atom_arity);
 
   public:
+    explicit Rule(formula::Formula *body_formula,
+                  std::vector<formula::Formula *> head_atoms,
+                  std::set<std::string> inertia_variables);
+
     explicit Rule(formula::Formula *body_formula,
                   std::vector<formula::Formula *> head_atoms);
 

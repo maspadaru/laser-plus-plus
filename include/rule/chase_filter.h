@@ -27,7 +27,9 @@ class ChaseFilter {
                       std::vector<std::string> const &head_variables,
                       std::vector<std::string> const &free_variables,
                       std::vector<std::string> const &bound_variables,
-                      std::vector<std::string> const &frontier_variables) = 0;
+                      std::vector<bool> const &is_inertia_variable,
+                      std::vector<std::string> const &frontier_variables, 
+                      bool has_inertia_variables) = 0;
 
     virtual void update(util::Timeline const &timeline, size_t previous_step,
                         util::Database const &database) = 0;

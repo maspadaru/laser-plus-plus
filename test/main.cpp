@@ -929,7 +929,56 @@ void test_conjunction_head_timeref() {
         laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
+void test_skolem_simple_no_inertia() {
+    const std::string name = "Skolem Simple No Inertia";
+    std::string stream_string = "1 4 "
+                                "1 : q(x1, y1, z1)\n"
+                                "2 : q(x1, y1, z1)\n"
+                                "3 : q(x1, y1, z1)\n"
+                                "4 : \n";
+    std::string rule_string = "p(a, Z, b, X, Z) := q(X, Y, Z)\n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::SKOLEM);
+}
+
+void test_skolem_inertia_full() {
+    const std::string name = "Skolem Inertia Full";
+    std::string stream_string = "1 8 "
+                                "1 : q(x1, y1, z1)\n"
+                                "2 : q(x1, y1, z1)\n"
+                                "3 : q(x2, y2, z2)\n"
+                                "4 : q(x1, y1, z1)\n"
+                                "5 : q(x1, y2, z1)\n"
+                                "6 : q(x1, y2, z2)\n"
+                                "7 : q(x2, y2, z2)\n"
+                                "8 : \n";
+    std::string rule_string =
+        "p(a, Z, b, X, Z) && [I, a] && [I, b] := q(X, Y, Z)\n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::SKOLEM);
+}
+
+void test_skolem_inertia_partial() {
+    const std::string name = "Skolem Inertia Partial";
+    std::string stream_string = "1 7 "
+                                "1 : q(x1, y1, z1)\n"
+                                "2 : q(x1, y1, z1)\n"
+                                "3 : q(x1, y2, z1)\n"
+                                "4 : q(x1, y2, z2)\n"
+                                "5 : q(x1, y2, z2)\n"
+                                "6 : q(x2, y2, z2)\n"
+                                "7 : q(x1, y2, z2)\n"
+                                "7 : \n";
+    std::string rule_string =
+        "p(a, Z, b, X, Z) && [I, a] := q(X, Y, Z)\n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::SKOLEM);
+}
+
 int main() {
+    //test_skolem_simple_no_inertia(); 
+    test_skolem_inertia_full(); 
+    //test_skolem_inertia_partial(); 
      //test_simple();
     // test_simple_mix();
     // test_atoms();
@@ -979,8 +1028,8 @@ int main() {
     // test_existential_skolem_paper_bmc_eg1();
     // test_queries();
     //test_existential_fronteier_var();
-    test_acyclicity_simple();
-    test_acyclicity_obvious_cycle();
-    test_acyclicity_obvious_cycle_with_time();
-    test_acyclicity_only_first_timepoint(); 
+    //test_acyclicity_simple();
+    //test_acyclicity_obvious_cycle();
+    //test_acyclicity_obvious_cycle_with_time();
+    //test_acyclicity_only_first_timepoint();
 }

@@ -5,8 +5,7 @@ namespace laser::rule {
 RuleParser::RuleParser(std::string rule_string)
     : rule_string(std::move(rule_string)) {}
 
-inline void
-RuleParser::syntax_error(std::string const &error_message) const {
+inline void RuleParser::syntax_error(std::string const &error_message) const {
     std::string message = "Line: " + std::to_string(line_counter) +
                           " -> Syntax Error: " + error_message;
     const char *exception_message = message.c_str();
@@ -24,8 +23,8 @@ void RuleParser::skip_expected_char(char c) {
     char input_char = read_next_char();
     if (input_char != c) {
         std::stringstream error_stream;
-        error_stream << "Expected character [" << c
-                     << "] but actual caracter was [" << input_char << "].";
+        error_stream << "Expected character `" << c
+                     << "` but actual caracter was `" << input_char << "`.";
         std::string error_message = error_stream.str();
         syntax_error(error_message);
     }
@@ -202,18 +201,28 @@ std::vector<laser::rule::Rule> RuleParser::parse_program() {
 }
 
 laser::rule::Rule RuleParser::parse_rule() {
+    inertia_variables.clear();
     auto head = parse_head();
     skip_spaces();
     skip_expected_char(':');
     skip_expected_char('=');
     auto body = parse_body();
     parse_eoln();
-    auto result = laser::rule::Rule(body, head);
+    auto result = laser::rule::Rule(body, head, inertia_variables);
     return result;
 }
 
 std::vector<laser::formula::Formula *> RuleParser::parse_head() {
     return parse_formula_vector();
+}
+laser::formula::Formula *RuleParser::parse_extended_head_atom() {
+    laser::formula::Formula *result;
+    if (is_next_char('@')) {
+        result = parse_time_reference();
+    } else if (is_next_char('I')) {
+        result = parse_inertia_operator();
+    }
+    return result;
 }
 
 laser::formula::Formula *RuleParser::parse_head_atom() {
@@ -222,7 +231,7 @@ laser::formula::Formula *RuleParser::parse_head_atom() {
     if (is_next_char('[')) {
         skip_next_char();
         skip_spaces();
-        result = parse_time_reference();
+        result = parse_extended_head_atom();
     } else {
         skip_spaces();
         result = parse_predicate_atom();
@@ -230,9 +239,7 @@ laser::formula::Formula *RuleParser::parse_head_atom() {
     return result;
 }
 
-laser::formula::Formula *RuleParser::parse_body() {
-    return parse_formula();
-}
+laser::formula::Formula *RuleParser::parse_body() { return parse_formula(); }
 
 laser::formula::Formula *RuleParser::parse_formula() {
     laser::formula::Formula *result;
@@ -267,14 +274,19 @@ laser::formula::Formula *RuleParser::parse_binary_formula() {
     return left_term;
 }
 
-std::vector<laser::formula::Formula *>
-RuleParser::parse_formula_vector() {
+std::vector<laser::formula::Formula *> RuleParser::parse_formula_vector() {
     std::vector<laser::formula::Formula *> result;
-    result.push_back(parse_head_atom());
+    auto new_atom = parse_head_atom();
+    if (new_atom != nullptr) {
+        result.push_back(new_atom);
+    }
     skip_spaces();
     while (is_next_char_conjunction_operator()) {
         skip_conjunction_operator();
-        result.push_back(parse_head_atom());
+        auto new_atom = parse_head_atom();
+        if (new_atom != nullptr) {
+            result.push_back(new_atom);
+        }
         skip_spaces();
     }
     return result;
@@ -403,6 +415,20 @@ laser::formula::Formula *RuleParser::parse_box() {
 laser::formula::Formula *RuleParser::parse_negation() {
     // TODO
     return new laser::formula::Atom("TODO");
+}
+
+laser::formula::Formula *RuleParser::parse_inertia_operator() {
+    laser::formula::Formula *result;
+    skip_expected_char('I');
+    skip_spaces();
+    skip_expected_char(',');
+    skip_spaces();
+    std::string argument = parse_identifier();
+    skip_spaces();
+    skip_expected_char(']');
+    inertia_variables.insert(argument);
+    result = nullptr;
+    return result;
 }
 
 laser::formula::Formula *RuleParser::parse_time_reference() {

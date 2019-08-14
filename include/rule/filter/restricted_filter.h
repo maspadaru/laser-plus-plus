@@ -59,7 +59,9 @@ class RestrictedFilter : public ChaseFilter {
               std::vector<std::string> const &head_variables,
               std::vector<std::string> const &free_variables,
               std::vector<std::string> const &bound_variables,
-              std::vector<std::string> const &frontier_variables) override;
+              std::vector<bool> const &is_inertia_variable,
+              std::vector<std::string> const &frontier_variables,
+              bool has_inertia_variables) override;
 
     void update(util::Timeline const &timeline, size_t previous_step,
                 util::Database const &database) override;

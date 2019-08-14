@@ -39,7 +39,9 @@ void IndexedFilter::init(std::vector<formula::Formula *> const &head_atoms,
                          std::vector<std::string> const &head_variables,
                          std::vector<std::string> const &free_variables,
                          std::vector<std::string> const &bound_variables,
-                         std::vector<std::string> const &frontier_variables) {
+                         std::vector<bool> const &is_inertia_variable,
+                         std::vector<std::string> const &frontier_variables,
+                         bool has_inertia_variables) {
     this->head_variables = head_variables;
     this->free_variables = free_variables;
     this->bound_variables = bound_variables;

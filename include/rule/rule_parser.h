@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <set>
 
 #include "formula/extended/atom.h"
 #include "formula/extended/box.h"
@@ -26,6 +27,7 @@ public:
     std::string rule_string;
     std::stringstream input;
     size_t line_counter = 0;
+    std::set<std::string> inertia_variables;
 
     // Error handling
     inline void syntax_error(std::string const &error_message) const;
@@ -86,6 +88,8 @@ public:
     laser::formula::Formula *parse_time_reference();
     laser::formula::Formula *parse_time_window();
     laser::formula::Formula *parse_tuple_window();
+    laser::formula::Formula *parse_inertia_operator(); 
+    laser::formula::Formula *parse_extended_head_atom(); 
     std::vector<laser::formula::Formula *> parse_formula_vector();
 
   public:
