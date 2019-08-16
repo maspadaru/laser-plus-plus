@@ -3,6 +3,15 @@
 namespace laser::rule {
 
 Rule::Rule(formula::Formula *body_formula,
+           std::vector<formula::Formula *> head_atoms,
+           std::vector<MathAtom> math_atoms,
+           std::set<std::string> inertia_variables)
+    : body(body_formula->clone()), math_atoms(std::move(math_atoms)),
+      inertia_variables(std::move(inertia_variables)) {
+    init(std::move(head_atoms));
+}
+
+Rule::Rule(formula::Formula *body_formula,
            std::vector<formula::Formula *> head_atoms)
     : body(body_formula->clone()) {
     init(std::move(head_atoms));
@@ -298,6 +307,12 @@ void Rule::init(std::vector<formula::Formula *> head_atoms) {
     for (auto *head_atom : this->head_atoms) {
         head_atom->set_head(true);
     }
+    trigger_variables = body.get_variable_names();
+    for (auto const &math_atom : math_atoms) {
+        auto const &math_result_variable = math_atom.get_result_name();
+        trigger_variables.push_back(math_result_variable);
+    }
+    // TODO also make an index of trigger variables
 }
 
 bool Rule::derive_conclusions(util::Timeline const &timeline,
@@ -313,8 +328,9 @@ void Rule::evaluate_head(
     util::Timeline const &timeline, util::Database const &database,
     std::vector<std::shared_ptr<util::Grounding>> const &body_facts) {
     chase_filter->update(timeline, previous_step, database);
+    auto triggers = evaluate_math_atoms(std::move(body_facts));
     auto head_facts =
-        chase_filter->build_chase_facts(timeline, previous_step, body_facts);
+        chase_filter->build_chase_facts(timeline, previous_step, triggers);
     evaluate_head_atoms(timeline, head_facts);
 }
 
@@ -360,6 +376,13 @@ std::vector<std::string> const &Rule::get_frontier_variables() const {
 
 std::vector<std::string> const &Rule::get_bound_variables() const {
     return bound_variables;
+}
+std::vector<std::shared_ptr<util::Grounding>> Rule::evaluate_math_atoms(
+        std::vector<std::shared_ptr<util::Grounding>> body_facts) {
+    for (auto &math_atom : math_atoms) {
+        math_atom.evaluate(body_facts);
+    }
+    return body_facts;
 }
 
 } // namespace laser::rule

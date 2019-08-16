@@ -90,6 +90,20 @@ void test_simple_mix() {
         laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
+void test_sne() {
+    const std::string name = "Test SNE";
+    std::string stream_string = "1 4 "
+                                "1 : p(a)\n"
+                                "2 : \n"
+                                "3 : \n"
+                                "4 : \n";
+    std::string rule_string = "q(X) := p(X)\n"
+                              "q(X) := [$, 10][D]p(X)\n"
+                              "n(X) := q(X)\n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::OBLIVIOUS);
+}
+
 void test_simple() {
     const std::string name = "Simple";
     std::string stream_string = "1 4 "
@@ -977,7 +991,7 @@ void test_skolem_inertia_partial() {
 
 int main() {
     //test_skolem_simple_no_inertia(); 
-    test_skolem_inertia_full(); 
+    //test_skolem_inertia_full(); 
     //test_skolem_inertia_partial(); 
      //test_simple();
     // test_simple_mix();
@@ -1032,4 +1046,5 @@ int main() {
     //test_acyclicity_obvious_cycle();
     //test_acyclicity_obvious_cycle_with_time();
     //test_acyclicity_only_first_timepoint();
+    test_sne(); 
 }

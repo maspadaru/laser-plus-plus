@@ -14,6 +14,7 @@
 #include "rule/filter/oblivious_filter.h"
 #include "rule/filter/restricted_filter.h"
 #include "rule/filter/skolem_filter.h"
+#include "rule/math_atom.h"
 #include "rule/shared.h"
 #include "util/chase_algorithm.h"
 #include "util/database.h"
@@ -28,6 +29,7 @@ class Rule {
     bool is_existential_m = false;
     formula::Formula &body;
     std::vector<formula::Formula *> head_atoms;
+    std::vector<MathAtom> math_atoms;
     // for each atom in head_atoms, there is a vector containing the postions
     // in the body grounding where the value of each head variables is found
     std::vector<std::vector<size_t>> head_atoms_var_positions;
@@ -40,13 +42,13 @@ class Rule {
     std::vector<std::string> bound_variables;
     std::set<std::string> inertia_variables;
     bool has_inertia_variables = false;
+    std::vector<std::string> trigger_variables;
 
     void clear();
     void
     init_frontier_variables(std::vector<formula::Formula *> const &head_atoms);
 
-    std::vector<bool>
-    generate_inertia_vector();
+    std::vector<bool> generate_inertia_vector();
 
     std::shared_ptr<util::Grounding>
     convert_to_head_grounding(std::string const &head_predicate,
@@ -70,10 +72,19 @@ class Rule {
     make_atom_fact(std::shared_ptr<util::Grounding> const &body_fact,
                    size_t head_atom_index, size_t atom_arity);
 
+    std::vector<std::shared_ptr<util::Grounding>> evaluate_math_atoms(
+        std::vector<std::shared_ptr<util::Grounding>> body_facts);
+
   public:
     explicit Rule(formula::Formula *body_formula,
                   std::vector<formula::Formula *> head_atoms,
                   std::set<std::string> inertia_variables);
+
+    explicit Rule(formula::Formula *body_formula,
+                  std::vector<formula::Formula *> head_atoms,
+                  std::vector<MathAtom> math_atoms,
+                  std::set<std::string> inertia_variables);
+
 
     explicit Rule(formula::Formula *body_formula,
                   std::vector<formula::Formula *> head_atoms);
