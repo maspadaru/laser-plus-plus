@@ -98,6 +98,23 @@ RestrictedFilter::build_chase_facts(
     return current_facts;
 }
 
+std::shared_ptr<util::Grounding> RestrictedFilter::convert_to_chase_fact(
+    std::shared_ptr<util::Grounding> const &db_fact) {
+    std::vector<std::string> chase_values;
+    for (auto const &var_name : head_variables) {
+        int head_index = head_formula->get_variable_index(var_name);
+        if (head_index >= 0) {
+            auto value = db_fact->get_constant(head_index);
+            chase_values.push_back(value);
+        } else {
+            chase_values.push_back("filler_non-frontier_value");
+        }
+    }
+    auto result = db_fact->clone();
+    result->set_constant_vector(chase_values);
+    return result;
+}
+
 std::shared_ptr<util::Grounding> RestrictedFilter::generate_chase_fact(
     std::shared_ptr<util::Grounding> const &input_fact) {
     std::vector<std::string> chase_values;
@@ -135,20 +152,45 @@ std::string RestrictedFilter::generate_new_value(std::string const &var_name) {
     return result;
 }
 
+std::shared_ptr<util::Grounding>
+RestrictedFilter::generate_chase_fact_from_inertia(
+    std::shared_ptr<util::Grounding> const &input_fact) {
+    std::vector<std::string> chase_values;
+    std::vector<std::string> bound_values;
+    for (auto const &var_name : bound_variables) {
+        auto new_null = generate_new_value(var_name);
+        bound_values.push_back(std::move(new_null));
+    }
+    for (auto const &var_name : head_variables) {
+        if (bound_variable_index.count(var_name) > 0) {
+            auto index = bound_variable_index.at(var_name);
+            auto value = bound_values.at(index);
+            chase_values.push_back(value);
+        } else {
+            auto index = free_variable_index.at(var_name);
+            auto value = input_fact->get_constant(index);
+            chase_values.push_back(value);
+        }
+    }
+    auto result = input_fact->clone();
+    result->set_constant_vector(chase_values);
+    return result;
+}
+
 void RestrictedFilter::find_match(
     std::vector<std::shared_ptr<util::Grounding>> const &database,
     std::shared_ptr<util::Grounding> const &input_fact) {
     for (auto const &db_fact : database) {
         if (is_database_match(db_fact, input_fact)) {
-            // TODO I still need to save them to current
+            auto new_fact = convert_to_chase_fact(db_fact);
+            current_facts.push_back(new_fact);
             return;
         }
     }
     if (has_inertia_variables) {
         for (auto const &inertia_fact : inertia_facts) {
             if (is_inertia_variable_match(inertia_fact, input_fact)) {
-                if (inertia_fact->get_horizon_time() <
-                    current_timepoint) {
+                if (inertia_fact->get_horizon_time() < current_timepoint) {
                     inertia_fact->set_horizon_time(current_timepoint);
                 }
                 current_facts.push_back(inertia_fact);

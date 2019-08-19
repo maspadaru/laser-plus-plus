@@ -44,6 +44,48 @@ TEST(RestrictedChaseTest, RestrictedSimpleNoInertia) {
                              laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
+TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleOne) {
+    std::string stream_string = "1 5 "
+                                "1 : r(1, 2, 3, 4)\n"
+                                "2 : p(1, 2)\n"
+                                "3 : r(1, 2, 3, 4), p(1, 2)\n"
+                                "4 : p(1,2)\n"
+                                "5 : \n";
+    std::string rule_string =
+        "q(B, C) := r(A, B, C, D)\n"
+        "q(B, z) && [I, z] := p(A, B)\n";
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> "; 
+    expected[1] = "1 -> q(2, 3)"; // only conclusion
+    expected[2] = "2 -> q(2, z0)"; // because q(2, 3) was not evaluated by r2
+    expected[3] = "3 -> q(2, 3)"; // because q(2,3) is selected also in r2 
+    expected[4] = "4 -> q(2, 3)"; // because q(2,3) satisfies [I,z] in r2 at t=2
+    expected[5] = "5 -> ";
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
+}
+
+TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleTwo) {
+    std::string stream_string = "1 5 "
+                                "1 : r(1, 2, 3, 4)\n"
+                                "2 : p(1, 2)\n"
+                                "3 : \n"
+                                "4 : \n"
+                                "5 : \n";
+    std::string rule_string =
+        "q(B, r1z) && [I, r1z] := r(A, B, C, D)\n"
+        "q(B, r2z) && [I, r2z] := p(A, B)\n";
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> "; 
+    expected[1] = "1 -> q(2, r1z0)"; 
+    expected[2] = "2 -> q(2, r2z0)";  
+    expected[3] = "3 -> ";  
+    expected[4] = "4 -> "; 
+    expected[5] = "5 -> ";
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
+}
+
 TEST(RestrictedChaseTest, RestrictedInertiaFull) {
     std::string stream_string = "1 8 "
                                 "1 : q(x1, y1, z1)\n"

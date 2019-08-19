@@ -36,13 +36,19 @@ class RestrictedFilter : public ChaseFilter {
     std::vector<bool> is_inertia_variable;
 
     std::shared_ptr<util::Grounding>
+    convert_to_chase_fact(std::shared_ptr<util::Grounding> const &input_fact);
+
+    std::shared_ptr<util::Grounding>
+    generate_chase_fact_from_inertia(std::shared_ptr<util::Grounding> const &input_fact);
+
+    std::shared_ptr<util::Grounding>
     generate_chase_fact(std::shared_ptr<util::Grounding> const &input_fact);
 
     std::string generate_new_value(std::string const &var_name);
 
-    void find_match(
-        std::vector<std::shared_ptr<util::Grounding>> const &database,
-        std::shared_ptr<util::Grounding> const &input_fact);
+    void
+    find_match(std::vector<std::shared_ptr<util::Grounding>> const &database,
+               std::shared_ptr<util::Grounding> const &input_fact);
 
     bool is_database_match(
         std::shared_ptr<util::Grounding> const &db_grounding,
