@@ -19,6 +19,11 @@ ChaseFilter *RestrictedFilter::clone() const {
     result->bound_variable_index = this->bound_variable_index;
     result->null_value_count = this->null_value_count;
     result->head_formula = &this->head_formula->clone();
+    result->has_inertia_variables = this->has_inertia_variables;
+    result->is_inertia_variable = this->is_inertia_variable;
+    result->current_timepoint = this->current_timepoint;
+    result->inertia_facts = this->inertia_facts;
+    result->current_facts = this->current_facts;
     return result;
 }
 
@@ -32,6 +37,11 @@ ChaseFilter *RestrictedFilter::move() {
     result->bound_variable_index = std::move(this->bound_variable_index);
     result->null_value_count = this->null_value_count;
     result->head_formula = &this->head_formula->move();
+    result->has_inertia_variables = this->has_inertia_variables;
+    result->is_inertia_variable = std::move(this->is_inertia_variable);
+    result->current_timepoint = this->current_timepoint;
+    result->inertia_facts = std::move(this->inertia_facts);
+    result->current_facts = std::move(this->current_facts);
     return result;
 }
 
@@ -49,6 +59,8 @@ void RestrictedFilter::init(std::vector<formula::Formula *> const &head_atoms,
     this->free_variable_index = rule::shared::make_index(free_variables);
     this->bound_variable_index = rule::shared::make_index(bound_variables);
     this->head_formula = build_head_formula(0, head_atoms);
+    this->has_inertia_variables = has_inertia_variables;
+    this->is_inertia_variable = is_inertia_variable;
 }
 
 void RestrictedFilter::update(util::Timeline const &timeline,
@@ -61,23 +73,29 @@ void RestrictedFilter::update(util::Timeline const &timeline,
     // SNE in conjunction if (is_head_m == true) {}
     // If we do use local grounding table, get conclusions here using
     // head_formula.get_conclusions_step(timeline);
+    auto new_time = timeline.get_time();
+    if (new_time > current_timepoint) {
+        if (has_inertia_variables) {
+            inertia_facts.clear();
+            inertia_facts = current_facts;
+        }
+        current_facts.clear();
+        current_timepoint = new_time;
+    }
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
 RestrictedFilter::build_chase_facts(
     util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &input_facts) {
-    std::vector<std::shared_ptr<util::Grounding>> result;
     auto database_facts = head_formula->get_conclusions_timepoint(timeline);
     auto current_time = timeline.get_time();
     for (auto const &input_fact : input_facts) {
-        if (input_fact->is_fresh_sne(current_time, previous_step) &&
-            !has_database_match(database_facts, input_fact)) {
-            auto chase_fact = generate_chase_fact(input_fact);
-            result.push_back(chase_fact);
+        if (input_fact->is_fresh_sne(current_time, previous_step)) {
+            find_match(database_facts, input_fact);
         }
     }
-    return result;
+    return current_facts;
 }
 
 std::shared_ptr<util::Grounding> RestrictedFilter::generate_chase_fact(
@@ -117,18 +135,55 @@ std::string RestrictedFilter::generate_new_value(std::string const &var_name) {
     return result;
 }
 
-bool RestrictedFilter::has_database_match(
+void RestrictedFilter::find_match(
     std::vector<std::shared_ptr<util::Grounding>> const &database,
-    std::shared_ptr<util::Grounding> const &input_fact) const {
+    std::shared_ptr<util::Grounding> const &input_fact) {
     for (auto const &db_fact : database) {
-        if (is_free_variable_match(db_fact, input_fact)) {
-            return true;
+        if (is_database_match(db_fact, input_fact)) {
+            // TODO I still need to save them to current
+            return;
         }
     }
-    return false;
+    if (has_inertia_variables) {
+        for (auto const &inertia_fact : inertia_facts) {
+            if (is_inertia_variable_match(inertia_fact, input_fact)) {
+                if (inertia_fact->get_horizon_time() <
+                    current_timepoint) {
+                    inertia_fact->set_horizon_time(current_timepoint);
+                }
+                current_facts.push_back(inertia_fact);
+                return;
+            }
+        }
+    }
+    auto chase_fact = generate_chase_fact(input_fact);
+    current_facts.push_back(chase_fact);
 }
 
-bool RestrictedFilter::is_free_variable_match(
+bool RestrictedFilter::is_database_match(
+    std::shared_ptr<util::Grounding> const &db_fact,
+    std::shared_ptr<util::Grounding> const &input_fact) const {
+    // return false if there is a match but the new grounding expires later
+    return is_frontier_variable_match(db_fact, input_fact) &&
+           input_fact->get_horizon_time() <= db_fact->get_horizon_time();
+}
+
+bool RestrictedFilter::is_inertia_variable_match(
+    std::shared_ptr<util::Grounding> const &inertia_fact,
+    std::shared_ptr<util::Grounding> const &input_fact) const {
+    // TODO should I check all annotations or is ht enough?
+    for (auto const &var_name : frontier_variables) {
+        auto input_index = free_variable_index.at(var_name);
+        auto const &input_value = input_fact->get_constant(input_index);
+        auto const &inertia_value = inertia_fact->get_constant(input_index);
+        if (inertia_value != input_value) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool RestrictedFilter::is_frontier_variable_match(
     std::shared_ptr<util::Grounding> const &db_fact,
     std::shared_ptr<util::Grounding> const &input_fact) const {
     // TODO should I check all annotations or is ht enough?
@@ -141,8 +196,7 @@ bool RestrictedFilter::is_free_variable_match(
             return false;
         }
     }
-    // return false if there is a match but the new grounding expires later
-    return input_fact->get_horizon_time() <= db_fact->get_horizon_time();
+    return true;
 }
 
 formula::Formula *RestrictedFilter::build_head_formula(

@@ -29,17 +29,30 @@ class RestrictedFilter : public ChaseFilter {
     std::vector<std::string> bound_variables;
     std::unordered_map<std::string, int> free_variable_index;
     std::unordered_map<std::string, int> bound_variable_index;
+    std::vector<std::shared_ptr<util::Grounding>> inertia_facts;
+    std::vector<std::shared_ptr<util::Grounding>> current_facts;
+    uint64_t current_timepoint;
+    bool has_inertia_variables = false;
+    std::vector<bool> is_inertia_variable;
 
     std::shared_ptr<util::Grounding>
     generate_chase_fact(std::shared_ptr<util::Grounding> const &input_fact);
 
     std::string generate_new_value(std::string const &var_name);
 
-    bool has_database_match(
+    void find_match(
         std::vector<std::shared_ptr<util::Grounding>> const &database,
-        std::shared_ptr<util::Grounding> const &input_fact) const;
+        std::shared_ptr<util::Grounding> const &input_fact);
 
-    bool is_free_variable_match(
+    bool is_database_match(
+        std::shared_ptr<util::Grounding> const &db_grounding,
+        std::shared_ptr<util::Grounding> const &input_grounding) const;
+
+    bool is_inertia_variable_match(
+        std::shared_ptr<util::Grounding> const &db_grounding,
+        std::shared_ptr<util::Grounding> const &input_grounding) const;
+
+    bool is_frontier_variable_match(
         std::shared_ptr<util::Grounding> const &db_grounding,
         std::shared_ptr<util::Grounding> const &input_grounding) const;
 

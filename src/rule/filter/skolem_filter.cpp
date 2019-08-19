@@ -19,6 +19,9 @@ ChaseFilter *SkolemFilter::clone() const {
     result->skolem_map = this->skolem_map;
     result->null_value_count = this->null_value_count;
     result->has_inertia_variables = this->has_inertia_variables;
+    result->current_timepoint = this->current_timepoint;
+    result->skolem_map = this->skolem_map;
+    result->inertia_map = this->inertia_map;
     return result;
 }
 
@@ -34,6 +37,9 @@ ChaseFilter *SkolemFilter::move() {
     result->skolem_map = std::move(this->skolem_map);
     result->null_value_count = this->null_value_count;
     result->has_inertia_variables = this->has_inertia_variables;
+    result->current_timepoint = this->current_timepoint;
+    result->skolem_map = std::move(this->skolem_map);
+    result->inertia_map = std::move(this->inertia_map);
     return result;
 }
 
