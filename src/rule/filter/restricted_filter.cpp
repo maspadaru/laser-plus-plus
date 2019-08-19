@@ -24,6 +24,7 @@ ChaseFilter *RestrictedFilter::clone() const {
     result->current_timepoint = this->current_timepoint;
     result->inertia_facts = this->inertia_facts;
     result->current_facts = this->current_facts;
+    result->facts_found_in_db = this->facts_found_in_db;
     return result;
 }
 
@@ -42,6 +43,7 @@ ChaseFilter *RestrictedFilter::move() {
     result->current_timepoint = this->current_timepoint;
     result->inertia_facts = std::move(this->inertia_facts);
     result->current_facts = std::move(this->current_facts);
+    result->facts_found_in_db = std::move(this->facts_found_in_db);
     return result;
 }
 
@@ -78,8 +80,11 @@ void RestrictedFilter::update(util::Timeline const &timeline,
         if (has_inertia_variables) {
             inertia_facts.clear();
             inertia_facts = current_facts;
+            inertia_facts.insert(inertia_facts.end(), facts_found_in_db.begin(),
+                                 facts_found_in_db.end());
         }
         current_facts.clear();
+        facts_found_in_db.clear();
         current_timepoint = new_time;
     }
 }
@@ -154,26 +159,24 @@ std::string RestrictedFilter::generate_new_value(std::string const &var_name) {
 
 std::shared_ptr<util::Grounding>
 RestrictedFilter::generate_chase_fact_from_inertia(
-    std::shared_ptr<util::Grounding> const &input_fact) {
+    std::shared_ptr<util::Grounding> const &inertia_fact) {
     std::vector<std::string> chase_values;
-    std::vector<std::string> bound_values;
-    for (auto const &var_name : bound_variables) {
-        auto new_null = generate_new_value(var_name);
-        bound_values.push_back(std::move(new_null));
-    }
-    for (auto const &var_name : head_variables) {
-        if (bound_variable_index.count(var_name) > 0) {
-            auto index = bound_variable_index.at(var_name);
-            auto value = bound_values.at(index);
-            chase_values.push_back(value);
+    for (size_t i = 0; i < head_variables.size(); i++) {
+        auto const &var_name = head_variables.at(i);
+        std::string value;
+        if ((bound_variable_index.count(var_name) > 0) &&
+            (!is_inertia_variable.at(bound_variable_index.at(var_name)))) {
+            value = generate_new_value(var_name);
         } else {
-            auto index = free_variable_index.at(var_name);
-            auto value = input_fact->get_constant(index);
-            chase_values.push_back(value);
+            value = inertia_fact->get_constant(i);
         }
+        chase_values.push_back(value);
     }
-    auto result = input_fact->clone();
+    auto result = inertia_fact->clone();
     result->set_constant_vector(chase_values);
+    if (result->get_horizon_time() < current_timepoint) {
+        result->set_horizon_time(current_timepoint);
+    }
     return result;
 }
 
@@ -183,17 +186,15 @@ void RestrictedFilter::find_match(
     for (auto const &db_fact : database) {
         if (is_database_match(db_fact, input_fact)) {
             auto new_fact = convert_to_chase_fact(db_fact);
-            current_facts.push_back(new_fact);
+            facts_found_in_db.push_back(new_fact);
             return;
         }
     }
     if (has_inertia_variables) {
         for (auto const &inertia_fact : inertia_facts) {
             if (is_inertia_variable_match(inertia_fact, input_fact)) {
-                if (inertia_fact->get_horizon_time() < current_timepoint) {
-                    inertia_fact->set_horizon_time(current_timepoint);
-                }
-                current_facts.push_back(inertia_fact);
+                auto new_fact = generate_chase_fact_from_inertia(inertia_fact);
+                current_facts.push_back(new_fact);
                 return;
             }
         }

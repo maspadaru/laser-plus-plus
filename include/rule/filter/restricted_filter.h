@@ -31,15 +31,16 @@ class RestrictedFilter : public ChaseFilter {
     std::unordered_map<std::string, int> bound_variable_index;
     std::vector<std::shared_ptr<util::Grounding>> inertia_facts;
     std::vector<std::shared_ptr<util::Grounding>> current_facts;
+    std::vector<std::shared_ptr<util::Grounding>> facts_found_in_db;
     uint64_t current_timepoint;
     bool has_inertia_variables = false;
     std::vector<bool> is_inertia_variable;
 
     std::shared_ptr<util::Grounding>
-    convert_to_chase_fact(std::shared_ptr<util::Grounding> const &input_fact);
+    convert_to_chase_fact(std::shared_ptr<util::Grounding> const &db_fact);
 
-    std::shared_ptr<util::Grounding>
-    generate_chase_fact_from_inertia(std::shared_ptr<util::Grounding> const &input_fact);
+    std::shared_ptr<util::Grounding> generate_chase_fact_from_inertia(
+        std::shared_ptr<util::Grounding> const &inertia_fact);
 
     std::shared_ptr<util::Grounding>
     generate_chase_fact(std::shared_ptr<util::Grounding> const &input_fact);

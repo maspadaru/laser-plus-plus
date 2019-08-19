@@ -1054,8 +1054,24 @@ void test_restricted_inertia_multi_rule_two() {
         laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
+void test_restricted_inertia_partial_multi_rule() {
+    const std::string name = "Restricted Inertia Partial Multi Rule";
+    std::string stream_string = "1 5 "
+                                "1 : r(1, 2, 3, 4)\n"
+                                "2 : p(1, 2)\n"
+                                "3 : r(1, 2, 3, 4), p(1,2)\n"
+                                "4 : p(1, 2)\n"
+                                "5 : \n";
+    std::string rule_string =
+        "q(B, C, D) := r(A, B, C, D)\n"
+        "q(B, y, z) && [I, z] := p(A, B)\n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::RESTRICTED);
+}
+
 int main() {
     test_restricted_inertia_partial(); 
+    test_restricted_inertia_partial_multi_rule(); 
     //test_restricted_inertia_multi_rule_two(); 
     //test_restricted_inertia_full(); 
     //test_skolem_simple_no_inertia(); 
