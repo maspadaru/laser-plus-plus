@@ -41,30 +41,34 @@ void Program::chase_evaluation() {
     reset_rules();
     bool changed = true;
     while (changed) {
-        changed = evaluate_rule_vector(simple_rule_vector);
+        auto step = database.get_step() + 1;
+        changed = evaluate_rule_vector(simple_rule_vector, step);
         if (!changed) {
-            changed = evaluate_rule_vector(existential_rule_vector);
+            changed = evaluate_rule_vector(existential_rule_vector, step);
         }
+        database.increment_step();
+        database.insert(step, std::move(new_conclusions));
     }
 }
 
-bool Program::evaluate_rule_vector(std::vector<rule::Rule> &rule_vector) {
+bool Program::evaluate_rule_vector(std::vector<rule::Rule> &rule_vector,
+                                   size_t step) {
     bool changed = false;
     for (auto &rule : rule_vector) {
-        changed |= evaluate_rule(rule);
+        changed |= evaluate_rule(rule, step);
     }
     return changed;
 }
 
-bool Program::evaluate_rule(rule::Rule &rule) {
-    auto step = database.get_step() + 1;
+bool Program::evaluate_rule(rule::Rule &rule, size_t step) {
     rule.set_current_step(step);
     rule.evaluate(timeline, database);
     rule.derive_conclusions(timeline, database);
     auto conclusions = rule.get_conclusions_step(timeline);
     bool changed = !conclusions.empty();
-    database.increment_step();
-    database.insert(step, std::move(conclusions));
+    new_conclusions.insert(new_conclusions.end(),
+                           std::make_move_iterator(conclusions.begin()),
+                           std::make_move_iterator(conclusions.end()));
     rule.set_previous_step(step);
     return changed;
 }
@@ -110,8 +114,11 @@ void Program::init_timepoint(
 }
 
 bool Program::evaluate_single_step() {
-    bool changed = evaluate_rule_vector(simple_rule_vector);
-    changed |= evaluate_rule_vector(existential_rule_vector);
+    auto step = database.get_step() + 1;
+    bool changed = evaluate_rule_vector(simple_rule_vector, step);
+    changed |= evaluate_rule_vector(existential_rule_vector, step);
+    database.increment_step();
+    database.insert(step, std::move(new_conclusions));
     return changed;
 }
 
