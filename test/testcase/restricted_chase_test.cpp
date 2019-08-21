@@ -94,7 +94,7 @@ TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleTwo) {
                                 "4 : r(1, 2, 3, 4), p(1, 2)\n"
                                 "5 : r(1, 2, 3, 4), p(1, 2)\n"
                                 "6 : \n"
-                                "7 : r(1, 2, 3, 4), p(3, 4)\n"
+                                "7 : r(1, 2, 3, 4)\n"
                                 "8 : r(1, 2, 3, 4), p(1, 2)\n"
                                 "9 : \n";
     std::string rule_string =
@@ -110,8 +110,8 @@ TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleTwo) {
                 //  r2 generates new labeled null
     expected[5] = "5 -> q(2, r1z1) q(2, r2z1)";
     expected[6] = "6 -> ";
-    expected[7] = "7 -> q(2, r1z2)"; // r1 fires
-    expected[8] = "8 -> q(2, r1z2) q(2, r2z2)"; // r2 cannot use values from
+    expected[7] = "7 -> q(2, r1z2)"; // only r1 fires
+    expected[8] = "8 -> q(2, r1z2) q(2, r2z2)"; // same as time=2 
     expected[9] = "9 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
                              laser::util::ChaseAlgorithm::RESTRICTED);
