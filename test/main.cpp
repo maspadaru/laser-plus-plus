@@ -1074,10 +1074,29 @@ void test_restricted_inertia_partial_multi_rule() {
         laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
+void test_restricted_inertia_database_noise() {
+    const std::string name = "Restricted Inertia Database Noise";
+    std::string stream_string = "1 5 "
+                                "1 : p(1, 2), q(2)\n"
+                                "2 : p(1, 2), q(2), p(4, 5), q(5)\n"
+                                "3 : p(4, 5), q(5)\n"
+                                "4 : p(1, 2), q(2), p(4, 5), q(5)\n"
+                                "5 : \n";
+    std::string rule_string =
+            "s(z) && t(A, B, z) && u(A, z) && [I, z] := p(A, B) && q(B)\n"
+            "t(A, B, B) := p(A, B) && q(B) \n"
+            "u(A, B) := p(A, B) && q(B) \n"
+            "t(A, B, A) := p(A, B) && q(A) \n"
+            "u(A, A) := p(A, B) && q(A) \n";
+    run(name, stream_string, rule_string,
+        laser::util::ChaseAlgorithm::RESTRICTED);
+}
+
 int main() {
+    test_restricted_inertia_database_noise(); 
     //test_restricted_inertia_partial(); 
     //test_restricted_inertia_partial_multi_rule(); 
-    test_restricted_inertia_multi_rule_two(); 
+    //test_restricted_inertia_multi_rule_two(); 
     //test_restricted_inertia_full(); 
     //test_skolem_simple_no_inertia(); 
     //test_skolem_inertia_full(); 

@@ -65,6 +65,31 @@ TEST(RestrictedChaseTest, RestrictedInertiaPartialMultiRule) {
                              laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
+TEST(RestrictedChaseTest, RestrictedInertiaDatabaseNoise) {
+    // Making sure that inertia values are not mixed with values from db
+    std::string stream_string = "1 5 "
+                                "1 : p(1, 2), q(2)\n"
+                                "2 : p(1, 2), q(2), p(4, 5), q(5)\n"
+                                "3 : p(4, 5), q(5)\n"
+                                "4 : p(1, 2), q(2), p(4, 5), q(5)\n"
+                                "5 : \n";
+    std::string rule_string =
+            "s(z) && t(A, B, z) && u(A, z) && [I, z] := p(A, B) && q(B)\n"
+            "t(A, B, B) := p(A, B) && q(B) \n"
+            "u(A, B) := p(A, B) && q(B) \n"
+            "t(A, B, A) := p(A, B) && q(A) \n"
+            "u(A, A) := p(A, B) && q(A) \n";
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> s(z0) t(1, 2, 2) t(1, 2, z0) u(1, 2) u(1, z0)";
+    expected[2] = "2 -> s(z0) s(z1) t(1, 2, 2) t(1, 2, z0) t(4, 5, 5) t(4, 5, z1) u(1, 2) u(1, z0) u(4, 5) u(4, z1)";
+    expected[3] = "3 -> s(z1) t(4, 5, 5) t(4, 5, z1) u(4, 5) u(4, z1)";
+    expected[4] = "4 -> s(z1) s(z2) t(1, 2, 2) t(1, 2, z2) t(4, 5, 5) t(4, 5, z1) u(1, 2) u(1, z2) u(4, 5) u(4, z1)";
+    expected[5] = "5 -> ";
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
+}
+
 TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleOne) {
     std::string stream_string = "1 5 "
                                 "1 : r(1, 2, 3, 4)\n"
