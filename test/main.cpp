@@ -1041,12 +1041,17 @@ void test_restricted_inertia_multi_rule_one() {
 
 void test_restricted_inertia_multi_rule_two() {
     const std::string name = "Restricted Inertia Multi Rule Two";
-    std::string stream_string = "1 5 "
+    std::string stream_string = "1 9 "
                                 "1 : r(1, 2, 3, 4)\n"
                                 "2 : p(1, 2)\n"
                                 "3 : \n"
-                                "4 : \n"
-                                "5 : \n";
+                                "4 : r(1, 2, 3, 4), p(1, 2)\n"
+                                "5 : r(1, 2, 3, 4), p(1, 2)\n"
+                                "6 : \n"
+                                "7 : r(1, 2, 3, 4)\n"
+                                "8 : r(1, 2, 3, 4), p(1, 2)\n"
+                                "9 : \n";
+
     std::string rule_string =
         "q(B, r1z) && [I, r1z] := r(A, B, C, D)\n"
         "q(B, r2z) && [I, r2z] := p(A, B)\n";
@@ -1070,9 +1075,9 @@ void test_restricted_inertia_partial_multi_rule() {
 }
 
 int main() {
-    test_restricted_inertia_partial(); 
-    test_restricted_inertia_partial_multi_rule(); 
-    //test_restricted_inertia_multi_rule_two(); 
+    //test_restricted_inertia_partial(); 
+    //test_restricted_inertia_partial_multi_rule(); 
+    test_restricted_inertia_multi_rule_two(); 
     //test_restricted_inertia_full(); 
     //test_skolem_simple_no_inertia(); 
     //test_skolem_inertia_full(); 

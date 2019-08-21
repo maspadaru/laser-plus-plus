@@ -44,6 +44,27 @@ TEST(RestrictedChaseTest, RestrictedSimpleNoInertia) {
                              laser::util::ChaseAlgorithm::RESTRICTED);
 }
 
+TEST(RestrictedChaseTest, RestrictedInertiaPartialMultiRule) {
+    std::string stream_string = "1 5 "
+                                "1 : r(1, 2, 3, 4)\n"
+                                "2 : p(1, 2)\n"
+                                "3 : r(1, 2, 3, 4), p(1,2)\n"
+                                "4 : p(1, 2)\n"
+                                "5 : \n";
+    std::string rule_string =
+        "q(B, C, D) := r(A, B, C, D)\n"
+        "q(B, y, z) && [I, z] := p(A, B)\n";
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> q(2, 3, 4)";
+    expected[2] = "2 -> q(2, y0, z1)";
+    expected[3] = "3 -> q(2, 3, 4)";
+    expected[4] = "4 -> q(2, y2, 4)";
+    expected[5] = "5 -> ";
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::RESTRICTED);
+}
+
 TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleOne) {
     std::string stream_string = "1 5 "
                                 "1 : r(1, 2, 3, 4)\n"
@@ -66,22 +87,30 @@ TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleOne) {
 }
 
 TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleTwo) {
-    std::string stream_string = "1 5 "
+    std::string stream_string = "1 9 "
                                 "1 : r(1, 2, 3, 4)\n"
                                 "2 : p(1, 2)\n"
                                 "3 : \n"
-                                "4 : \n"
-                                "5 : \n";
+                                "4 : r(1, 2, 3, 4), p(1, 2)\n"
+                                "5 : r(1, 2, 3, 4), p(1, 2)\n"
+                                "6 : \n"
+                                "7 : r(1, 2, 3, 4)\n"
+                                "8 : r(1, 2, 3, 4), p(1, 2)\n"
+                                "9 : \n";
     std::string rule_string =
         "q(B, r1z) && [I, r1z] := r(A, B, C, D)\n"
         "q(B, r2z) && [I, r2z] := p(A, B)\n";
     std::vector<std::string> expected(15);
     expected[0] = "0 -> "; 
-    expected[1] = "1 -> q(2, r1z0)"; 
-    expected[2] = "2 -> q(2, r2z0)";  
+    expected[1] = "1 -> q(2, r1z0)"; // only r1 fires
+    expected[2] = "2 -> q(2, r2z0)"; // since r2 did not fire at prev timepoint 
     expected[3] = "3 -> ";  
-    expected[4] = "4 -> "; 
-    expected[5] = "5 -> ";
+    expected[4] = "4 -> q(2, r1z1) q(2, r2z1)"; 
+    expected[5] = "5 -> q(2, r1z1) q(2, r2z1)";
+    expected[6] = "6 -> ";
+    expected[7] = "7 -> q(2, r1z2)";
+    expected[8] = "8 -> q(2, r1z2) q(2, r2z2)";
+    expected[9] = "9 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
                              laser::util::ChaseAlgorithm::RESTRICTED);
 }
@@ -134,27 +163,6 @@ TEST(RestrictedChaseTest, RestrictedInertiaPartial) {
     expected[6] = "6 -> p(a7, z2, b8, x2, z2)";
     expected[7] = "7 -> p(a9, z2, b10, x1, z2)";
     expected[8] = "8 -> ";
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
-}
-
-TEST(RestrictedChaseTest, RestrictedInertiaPartialMultiRule) {
-    std::string stream_string = "1 5 "
-                                "1 : r(1, 2, 3, 4)\n"
-                                "2 : p(1, 2)\n"
-                                "3 : r(1, 2, 3, 4), p(1,2)\n"
-                                "4 : p(1, 2)\n"
-                                "5 : \n";
-    std::string rule_string =
-        "q(B, C, D) := r(A, B, C, D)\n"
-        "q(B, y, z) && [I, z] := p(A, B)\n";
-    std::vector<std::string> expected(15);
-    expected[0] = "0 -> ";
-    expected[1] = "1 -> q(2, 3, 4)";
-    expected[2] = "2 -> q(2, y0, z1)";
-    expected[3] = "3 -> q(2, 3, 4)";
-    expected[4] = "4 -> q(2, y2, 4)";
-    expected[5] = "5 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
                              laser::util::ChaseAlgorithm::RESTRICTED);
 }
