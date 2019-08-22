@@ -1093,7 +1093,8 @@ void test_restricted_inertia_database_noise() {
 }
 
 int main() {
-    test_restricted_inertia_database_noise(); 
+    test_restricted_inertia_multi_rule_one(); 
+    //test_restricted_inertia_database_noise(); 
     //test_restricted_inertia_partial(); 
     //test_restricted_inertia_partial_multi_rule(); 
     //test_restricted_inertia_multi_rule_two(); 

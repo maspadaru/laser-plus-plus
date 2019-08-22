@@ -58,8 +58,8 @@ TEST(RestrictedChaseTest, RestrictedInertiaPartialMultiRule) {
     expected[0] = "0 -> ";
     expected[1] = "1 -> q(2, 3, 4)";
     expected[2] = "2 -> q(2, y0, z1)";
-    expected[3] = "3 -> q(2, 3, 4)";
-    expected[4] = "4 -> q(2, y2, 4)";
+    expected[3] = "3 -> q(2, 3, 4) q(2, y2, z1)";
+    expected[4] = "4 -> q(2, y3, z1)";
     expected[5] = "5 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
                              laser::util::ChaseAlgorithm::RESTRICTED);
@@ -104,8 +104,8 @@ TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleOne) {
     expected[0] = "0 -> "; 
     expected[1] = "1 -> q(2, 3)"; // only conclusion
     expected[2] = "2 -> q(2, z0)"; // because q(2, 3) was not evaluated by r2
-    expected[3] = "3 -> q(2, 3)"; // because q(2,3) is selected also in r2 
-    expected[4] = "4 -> q(2, 3)"; // because q(2,3) satisfies [I,z] in r2 at t=2
+    expected[3] = "3 -> q(2, 3) q(2, z0)"; // because q(2,3) is selected also in r2 
+    expected[4] = "4 -> q(2, z0)"; // because q(2,3) satisfies [I,z] in r2 at t=2
     expected[5] = "5 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
                              laser::util::ChaseAlgorithm::RESTRICTED);

@@ -80,8 +80,8 @@ void RestrictedFilter::update(util::Timeline const &timeline,
         if (has_inertia_variables) {
             inertia_facts.clear();
             inertia_facts = current_facts;
-            inertia_facts.insert(inertia_facts.end(), facts_found_in_db.begin(),
-                                 facts_found_in_db.end());
+            //inertia_facts.insert(inertia_facts.end(), facts_found_in_db.begin(),
+                                 //facts_found_in_db.end());
         }
         current_facts.clear();
         facts_found_in_db.clear();
@@ -183,18 +183,19 @@ RestrictedFilter::generate_chase_fact_from_inertia(
 void RestrictedFilter::find_match(
     std::vector<std::shared_ptr<util::Grounding>> const &database,
     std::shared_ptr<util::Grounding> const &input_fact) {
-    for (auto const &db_fact : database) {
-        if (is_database_match(db_fact, input_fact)) {
-            auto new_fact = convert_to_chase_fact(db_fact);
-            facts_found_in_db.push_back(new_fact);
-            return;
-        }
-    }
     if (has_inertia_variables) {
         for (auto const &inertia_fact : inertia_facts) {
             if (is_inertia_variable_match(inertia_fact, input_fact)) {
                 auto new_fact = generate_chase_fact_from_inertia(inertia_fact);
                 current_facts.push_back(new_fact);
+                return;
+            }
+        }
+    } else {
+        for (auto const &db_fact : database) {
+            if (is_database_match(db_fact, input_fact)) {
+                auto new_fact = convert_to_chase_fact(db_fact);
+                //facts_found_in_db.push_back(new_fact);
                 return;
             }
         }
