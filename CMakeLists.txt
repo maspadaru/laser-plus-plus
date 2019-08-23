@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 2.8)
 
 # comment out the following lines to use system's default C/C++ compiler
 # set(CMAKE_C_COMPILER "clang")
@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.7)
 # set(CMAKE_C_COMPILER "gcc")
 # set(CMAKE_CXX_COMPILER "g++")
 
-project(Laser++ VERSION 0.1.1 LANGUAGES CXX)
+project(Laser++ LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
