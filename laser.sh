@@ -2,11 +2,12 @@
 
 TESTAPP_EXECUTABLE=testapp
 GTEST_EXECUTABLE=run_gtest
+CMAKE_EXE=cmake
 
 build_release() {
     mkdir -p cmake-build-release
     cd cmake-build-release
-    cmake -DCMAKE_BUILD_TYPE=Release ..
+    $CMAKE_EXE -DCMAKE_BUILD_TYPE=Release ..
     make # placeholder, should build L++ library
     cd ..
 }
@@ -14,15 +15,15 @@ build_release() {
 build_testapp() {
     mkdir -p cmake-build-debug
     cd cmake-build-debug
-    cmake -DCMAKE_BUILD_TYPE=Debug ..
-    make testapp
+    $CMAKE_EXE -DCMAKE_BUILD_TYPE=Debug ..
+    make VERBOSE=1 testapp
     cd ..
 }
 
 build_gtest() {
     mkdir -p cmake-build-debug
     cd cmake-build-debug
-    cmake -DCMAKE_BUILD_TYPE=Debug ..
+    $CMAKE_EXE -DCMAKE_BUILD_TYPE=Debug ..
     make run_gtest
     cd ..
 }
@@ -57,6 +58,14 @@ print_help () {
     echo "t: run all testcases"
     echo " "
 }
+
+if [ "$IS_DAS5" = "1" ]; then
+    echo 'Running on DAS-5'
+    export CC=/cm/shared/package/gcc/6.4.0/bin/gcc
+    export CXX=/cm/shared/package/gcc/6.4.0/bin/g++
+    export CMAKE_ROOT=~/tools/cmake-3.15.2-Linux-x86_64/
+    CMAKE_EXE=$CMAKE_ROOT/bin/cmake
+fi
 
 if [ $# -eq 0 ]; then 
 	print_help 
