@@ -76,6 +76,9 @@ class Conjunction : public Formula {
 
     FormulaType get_type() const override;
 
+    void set_extensional_predicates(
+        std::set<std::string> const &extensional_predicates) override;
+
     std::vector<std::string> const &get_predicate_vector() const override;
 
     std::map<std::string, size_t> const &get_arity_map() const override;

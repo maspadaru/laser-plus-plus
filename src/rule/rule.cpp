@@ -98,6 +98,12 @@ Rule &Rule::operator=(Rule &&other) noexcept {
     return *this;
 }
 
+void Rule::set_extensional_predicates(
+    std::set<std::string> const &extensional_predicates) {
+    this->extensional_predicates = extensional_predicates;
+    body.set_extensional_predicates(extensional_predicates);
+}
+
 bool Rule::is_existential() const { return is_existential_m; }
 
 std::vector<formula::Formula *> Rule::get_head_atoms() const {
@@ -378,7 +384,7 @@ std::vector<std::string> const &Rule::get_bound_variables() const {
     return bound_variables;
 }
 std::vector<std::shared_ptr<util::Grounding>> Rule::evaluate_math_atoms(
-        std::vector<std::shared_ptr<util::Grounding>> body_facts) {
+    std::vector<std::shared_ptr<util::Grounding>> body_facts) {
     for (auto &math_atom : math_atoms) {
         math_atom.evaluate(body_facts);
     }

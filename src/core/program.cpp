@@ -10,6 +10,35 @@ Program::~Program() {
 Program::Program(std::vector<rule::Rule> *rule_vector) {
     // auto rule_vector = rule_reader->get_rules();
     sort_rules(rule_vector);
+    compute_extensional_predicates();
+}
+
+void Program::compute_extensional_predicates() {
+    std::set<std::string> body_set;
+    std::set<std::string> head_set;
+    for (auto const &rule : simple_rule_vector) {
+        auto body_predicates = rule.get_body_predicates();
+        body_set.insert(body_predicates.begin(), body_predicates.end());
+        auto head_predicates = rule.get_head_predicates();
+        head_set.insert(head_predicates.begin(), head_predicates.end());
+    }
+    for (auto const &rule : existential_rule_vector) {
+        auto body_predicates = rule.get_body_predicates();
+        body_set.insert(body_predicates.begin(), body_predicates.end());
+        auto head_predicates = rule.get_head_predicates();
+        head_set.insert(head_predicates.begin(), head_predicates.end());
+    }
+    for (auto const &body_predicate : body_set) {
+        if (head_set.count(body_predicate) == 0) {
+            extensional_predicates.insert(body_predicate);
+        }
+    }
+    for (auto &rule : simple_rule_vector) {
+        rule.set_extensional_predicates(extensional_predicates);
+    }
+    for (auto &rule : existential_rule_vector) {
+        rule.set_extensional_predicates(extensional_predicates);
+    }
 }
 
 void Program::sort_rules(std::vector<rule::Rule> *rule_vector) {

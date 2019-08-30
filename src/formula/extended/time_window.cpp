@@ -25,6 +25,11 @@ Formula &TimeWindow::move() {
 
 void TimeWindow::set_head(bool is_head) { child->set_head(is_head); }
 
+void TimeWindow::set_extensional_predicates(
+    std::set<std::string> const &extensional_predicates) {
+    child->set_extensional_predicates(extensional_predicates);
+}
+
 bool TimeWindow::is_head() const { return child->is_head(); }
 
 FormulaType TimeWindow::get_type() const { return FormulaType::TIME_WINDOW; }

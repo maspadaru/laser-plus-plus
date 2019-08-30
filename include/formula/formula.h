@@ -4,6 +4,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <set>
 
 #include "formula_type.h"
 #include "util/database.h"
@@ -32,6 +33,10 @@ class Formula {
     virtual Formula &move() = 0;
 
     virtual void set_head(bool is_head) = 0;
+
+    virtual void set_extensional_predicates(
+        std::set<std::string> const &extensional_predicates) = 0;
+
 
     virtual bool is_head() const = 0;
 

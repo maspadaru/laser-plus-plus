@@ -23,6 +23,11 @@ Formula &Box::move() {
 
 void Box::set_head(bool is_head) { is_head_m = is_head; }
 
+void Box::set_extensional_predicates(
+    std::set<std::string> const &extensional_predicates) {
+    child->set_extensional_predicates(extensional_predicates);
+}
+
 bool Box::is_head() const { return is_head_m; }
 
 FormulaType Box::get_type() const { return FormulaType::BOX; }

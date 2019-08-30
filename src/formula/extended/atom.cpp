@@ -19,6 +19,10 @@ void Atom::set_variable_names(std::vector<std::string> &variable_names) {
     compute_unique_variable_names(variable_names);
 }
 
+void Atom::set_extensional_predicates(
+    std::set<std::string> const &extensional_predicates) {
+}
+
 void Atom::compute_unique_variable_names(
     std::vector<std::string> &variable_names) {
     has_duplicate_variables = false;

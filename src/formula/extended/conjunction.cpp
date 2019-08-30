@@ -46,6 +46,12 @@ Formula &Conjunction::move() {
 
 bool Conjunction::is_head() const { return is_head_m; }
 
+void Conjunction::set_extensional_predicates(
+    std::set<std::string> const &extensional_predicates) {
+    left_child->set_extensional_predicates(extensional_predicates);
+    right_child->set_extensional_predicates(extensional_predicates);
+}
+
 void Conjunction::set_head(bool is_head) {
     // Conjunctino in head is used for Existentialy quantified rules using
     // restricted chase algorithm.
