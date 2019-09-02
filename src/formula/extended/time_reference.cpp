@@ -19,11 +19,6 @@ void TimeReference::init() {
 
 void TimeReference::set_head(bool is_head) { child->set_head(is_head); }
 
-void TimeReference::set_extensional_predicates(
-    std::set<std::string> const &extensional_predicates) {
-    child->set_extensional_predicates(extensional_predicates);
-}
-
 bool TimeReference::is_head() const { return child->is_head(); }
 
 size_t TimeReference::get_time_variable_index() const {

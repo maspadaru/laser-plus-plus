@@ -3,7 +3,6 @@
 
 #include <memory>
 #include <string>
-#include <set>
 
 #include "formula/formula.h"
 #include "formula/grounding_table.h"
@@ -19,7 +18,6 @@ class Diamond : public Formula {
     bool is_head_m = false;
     Formula *child;
     GroundingTable grounding_table;
-    std::set<std::string> extensional_predicates;
 
   public:
 
@@ -33,9 +31,6 @@ class Diamond : public Formula {
     Formula &move() override;
 
     void set_head(bool is_head) override;
-
-    void set_extensional_predicates(
-        std::set<std::string> const &extensional_predicates) override;
 
     bool is_head() const override;
 

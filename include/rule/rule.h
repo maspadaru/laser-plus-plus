@@ -43,7 +43,6 @@ class Rule {
     std::set<std::string> inertia_variables;
     bool has_inertia_variables = false;
     std::vector<std::string> trigger_variables;
-    std::set<std::string> extensional_predicates;
 
     void clear();
     void
@@ -86,6 +85,7 @@ class Rule {
                   std::vector<MathAtom> math_atoms,
                   std::set<std::string> inertia_variables);
 
+
     explicit Rule(formula::Formula *body_formula,
                   std::vector<formula::Formula *> head_atoms);
 
@@ -96,9 +96,6 @@ class Rule {
 
     Rule &operator=(Rule const &other);     // copy assignment
     Rule &operator=(Rule &&other) noexcept; // move assignment
-
-    void set_extensional_predicates(
-        std::set<std::string> const &extensional_predicates);
 
     std::vector<std::string> const &get_frontier_variables() const;
     std::vector<std::string> const &get_bound_variables() const;

@@ -55,22 +55,10 @@ Diamond::get_groundings(util::Timeline const &timeline) {
     std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto const &grounding : grounding_vector) {
         auto new_grounding = grounding->clone();
-        auto const &predicate = new_grounding->get_predicate();
-        // Answer stream interpr of minimal model, therefore diamond only 
-        // consideres facts in the data stream, not answer stream
-        // ref: LARS peper, Definition 9.
-        if ( extensional_predicates.count(predicate) > 0 ) {
-            new_grounding->set_horizon_time(util::Timeline::INFINITE_TIME);
-        }
+        new_grounding->set_horizon_time(util::Timeline::INFINITE_TIME);
         result.push_back(std::move(new_grounding));
     }
     return result;
-}
-
-void Diamond::set_extensional_predicates(
-    std::set<std::string> const &extensional_predicates) {
-    this->extensional_predicates = extensional_predicates;
-    child->set_extensional_predicates(extensional_predicates);
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
@@ -88,6 +76,7 @@ bool Diamond::evaluate(
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     bool result = child->evaluate(timeline, previous_step, facts);
     auto child_facts = child->get_groundings(timeline);
+    // TODO SNE: I think you should only pick the new child facts
     grounding_table.add_grounding_vector(child_facts);
     return result;
 }

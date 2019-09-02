@@ -21,7 +21,6 @@ class Program {
     util::Timeline timeline;
     util::Database database;
     std::vector<std::shared_ptr<util::Grounding>> new_conclusions;
-    std::set<std::string> extensional_predicates;
 
     void chase_evaluation();
     void sort_rules(std::vector<rule::Rule> *rule_vector);
@@ -33,7 +32,6 @@ class Program {
     void extract_conclusions(
         rule::Rule &rule,
         std::vector<std::shared_ptr<util::Grounding>> &conclusions) const;
-    void compute_extensional_predicates();
 
     // void do_evaluation_loop();
     // std::vector<std::shared_ptr<util::Grounding>> compute_new_facts();

@@ -104,20 +104,6 @@ void test_sne() {
         laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
-void test_answer_stream() {
-    const std::string name = "Answer Stream";
-    std::string stream_string = "1 4 "
-                                "1 : p(a)\n"
-                                "2 : p(b)\n"
-                                "3 : p(a)\n"
-                                "4 : \n";
-    std::string rule_string = "q(X) := p(X)\n"
-                              "m(X) := [$, 5][D]q(X)\n"
-                              "n(X) := [$, 5][D]p(X)\n";
-    run(name, stream_string, rule_string,
-        laser::util::ChaseAlgorithm::OBLIVIOUS);
-}
-
 void test_simple() {
     const std::string name = "Simple";
     std::string stream_string = "1 4 "
@@ -1107,7 +1093,7 @@ void test_restricted_inertia_database_noise() {
 }
 
 int main() {
-    //test_restricted_inertia_multi_rule_one(); 
+    test_restricted_inertia_multi_rule_one(); 
     //test_restricted_inertia_database_noise(); 
     //test_restricted_inertia_partial(); 
     //test_restricted_inertia_partial_multi_rule(); 
@@ -1170,5 +1156,4 @@ int main() {
     //test_acyclicity_obvious_cycle_with_time();
     //test_acyclicity_only_first_timepoint();
     //test_sne(); 
-    test_answer_stream();
 }

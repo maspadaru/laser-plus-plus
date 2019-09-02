@@ -37,9 +37,6 @@ class TupleWindow : public Formula {
 
     void set_head(bool is_head) override;
 
-    void set_extensional_predicates(
-        std::set<std::string> const &extensional_predicates) override;
-
     bool is_head() const override;
 
     FormulaType get_type() const override;

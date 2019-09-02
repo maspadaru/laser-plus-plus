@@ -22,11 +22,6 @@ Formula &TupleWindow::move() {
 
 void TupleWindow::set_head(bool is_head) { child->set_head(is_head); }
 
-void TupleWindow::set_extensional_predicates(
-    std::set<std::string> const &extensional_predicates) {
-    child->set_extensional_predicates(extensional_predicates);
-}
-
 bool TupleWindow::is_head() const { return child->is_head(); }
 
 FormulaType TupleWindow::get_type() const { return FormulaType::TUPLE_WINDOW; }
