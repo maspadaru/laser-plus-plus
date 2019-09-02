@@ -65,14 +65,6 @@ print_help () {
     echo "t: run all testcases"
     echo " "
 }
-if [ "$IS_DAS5" = "1" ]; then
-    echo 'Running on DAS-5'
-    export CMAKE_ROOT=~/tools/cmake/
-    CMAKE_EXE=$CMAKE_ROOT/bin/cmake
-    export CC=~/tools/llvm/bin/clang
-    export CXX=~/tools/llvm/bin/clang++
-    export PATH=~/tools/llvm/bin:$PATH
-fi
 
 if [ $# -eq 0 ]; then 
 	print_help 
