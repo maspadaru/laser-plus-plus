@@ -13,6 +13,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 ################################### LASER ###################################
 include_directories(include/)
+include_directories(~/tools/llvm/include/c++/v1/)
+
 file(GLOB LASER_SOURCES
         "src/formula/*.cpp"
         "src/formula/extended/*.cpp"

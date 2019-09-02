@@ -2,11 +2,19 @@
 
 TESTAPP_EXECUTABLE=testapp
 GTEST_EXECUTABLE=run_gtest
+echo 'Running on DAS-5'
+CMAKE_EXE=cmake
+export CMAKE_ROOT=/home/msu270/tools/cmake/
+export CMAKE_EXE=$CMAKE_ROOT/bin/cmake
+export CC=/home/msu270/tools/llvm/bin/clang
+export CXX=/home/msu270/tools/llvm/bin/clang++
+export PATH=/home/msu270/tools/llvm/bin:$PATH
+export LD_LIBRARY_PATH=/home/msu270/tools/llvm/lib:$LD_LIBRARY_PATH
 
 build_release() {
     mkdir -p cmake-build-release
     cd cmake-build-release
-    cmake -DCMAKE_BUILD_TYPE=Release ..
+    $CMAKE_EXE -DCMAKE_CXX_FLAGS="-stdlib=libc++ -nostdinc++ -I/home/msu270/llvm/include/c++/v1 -L/home/msu270/llvm/lib" -DCMAKE_BUILD_TYPE=Release ..
     make # placeholder, should build L++ library
     cd ..
 }
@@ -14,7 +22,7 @@ build_release() {
 build_testapp() {
     mkdir -p cmake-build-debug
     cd cmake-build-debug
-    cmake -DCMAKE_BUILD_TYPE=Debug ..
+    $CMAKE_EXE -DCMAKE_CXX_FLAGS="-stdlib=libc++ -nostdinc++ -I/home/msu270/llvm/include/c++/v1 -L/home/msu270/llvm/lib" -DCMAKE_BUILD_TYPE=Debug ..
     make VERBOSE=1 testapp
     cd ..
 }
@@ -22,7 +30,7 @@ build_testapp() {
 build_gtest() {
     mkdir -p cmake-build-debug
     cd cmake-build-debug
-    cmake -DCMAKE_BUILD_TYPE=Debug ..
+    $CMAKE_EXE -DCMAKE_CXX_FLAGS="-stdlib=libc++ -nostdinc++ -I/home/msu270/llvm/include/c++/v1 -L/home/msu270/llvm/lib" -DCMAKE_BUILD_TYPE=Debug ..
     make run_gtest
     cd ..
 }
@@ -57,6 +65,14 @@ print_help () {
     echo "t: run all testcases"
     echo " "
 }
+if [ "$IS_DAS5" = "1" ]; then
+    echo 'Running on DAS-5'
+    export CMAKE_ROOT=~/tools/cmake/
+    CMAKE_EXE=$CMAKE_ROOT/bin/cmake
+    export CC=~/tools/llvm/bin/clang
+    export CXX=~/tools/llvm/bin/clang++
+    export PATH=~/tools/llvm/bin:$PATH
+fi
 
 if [ $# -eq 0 ]; then 
 	print_help 
