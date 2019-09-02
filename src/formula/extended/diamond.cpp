@@ -52,7 +52,6 @@ void Diamond::add_child(formula::Formula *child) {}
 std::vector<std::shared_ptr<util::Grounding>>
 Diamond::get_groundings(util::Timeline const &timeline) {
     auto const &grounding_vector = grounding_table.get_all_groundings();
-    auto current_time = timeline.get_time();
     std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto const &grounding : grounding_vector) {
         auto new_grounding = grounding->clone();
@@ -62,8 +61,6 @@ Diamond::get_groundings(util::Timeline const &timeline) {
         // ref: LARS peper, Definition 9.
         if ( extensional_predicates.count(predicate) > 0 ) {
             new_grounding->set_horizon_time(util::Timeline::INFINITE_TIME);
-        } else {
-            new_grounding->set_horizon_time(current_time);
         }
         result.push_back(std::move(new_grounding));
     }
