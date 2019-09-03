@@ -15,16 +15,15 @@ TEST(RestrictedChaseTest, Simple) {
                                 "4 : \n";
 
     std::string rule_string = "p(a, Z, b, X, Z) := q(X, Y, Z)\n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> p(a0, z1, b1, x1, z1)";
     expected[2] = "2 -> p(a2, z2, b3, x2, z2)";
     expected[3] = "3 -> p(a4, z3, b5, x3, z3)";
     expected[4] = "4 -> ";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, RestrictedSimpleNoInertia) {
@@ -34,6 +33,7 @@ TEST(RestrictedChaseTest, RestrictedSimpleNoInertia) {
                                 "3 : q(x1, y1, z1)\n"
                                 "4 : \n";
     std::string rule_string = "p(a, Z, b, X, Z) := q(X, Y, Z)\n";
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> p(a0, z1, b1, x1, z1)";
@@ -41,7 +41,7 @@ TEST(RestrictedChaseTest, RestrictedSimpleNoInertia) {
     expected[3] = "3 -> p(a4, z1, b5, x1, z1)";
     expected[4] = "4 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, RestrictedInertiaPartialMultiRule) {
@@ -54,6 +54,7 @@ TEST(RestrictedChaseTest, RestrictedInertiaPartialMultiRule) {
     std::string rule_string =
         "q(B, C, D) := r(A, B, C, D)\n"
         "q(B, y, z) && [I, z] := p(A, B)\n";
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> q(2, 3, 4)";
@@ -62,7 +63,7 @@ TEST(RestrictedChaseTest, RestrictedInertiaPartialMultiRule) {
     expected[4] = "4 -> q(2, y3, z1)";
     expected[5] = "5 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, RestrictedInertiaDatabaseNoise) {
@@ -79,6 +80,7 @@ TEST(RestrictedChaseTest, RestrictedInertiaDatabaseNoise) {
             "u(A, B) := p(A, B) && q(B) \n"
             "t(A, B, A) := p(A, B) && q(A) \n"
             "u(A, A) := p(A, B) && q(A) \n";
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> s(z0) t(1, 2, 2) t(1, 2, z0) u(1, 2) u(1, z0)";
@@ -87,7 +89,7 @@ TEST(RestrictedChaseTest, RestrictedInertiaDatabaseNoise) {
     expected[4] = "4 -> s(z1) s(z2) t(1, 2, 2) t(1, 2, z2) t(4, 5, 5) t(4, 5, z1) u(1, 2) u(1, z2) u(4, 5) u(4, z1)";
     expected[5] = "5 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleOne) {
@@ -100,6 +102,7 @@ TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleOne) {
     std::string rule_string =
         "q(B, C) := r(A, B, C, D)\n"
         "q(B, z) && [I, z] := p(A, B)\n";
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> "; 
     expected[1] = "1 -> q(2, 3)"; // only conclusion
@@ -108,7 +111,7 @@ TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleOne) {
     expected[4] = "4 -> q(2, z0)"; // because q(2,3) satisfies [I,z] in r2 at t=2
     expected[5] = "5 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleTwo) {
@@ -125,6 +128,7 @@ TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleTwo) {
     std::string rule_string =
         "q(B, r1z) && [I, r1z] := r(A, B, C, D)\n"
         "q(B, r2z) && [I, r2z] := p(A, B)\n";
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> "; 
     expected[1] = "1 -> q(2, r1z0)"; // only r1 fires
@@ -139,7 +143,7 @@ TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleTwo) {
     expected[8] = "8 -> q(2, r1z2) q(2, r2z2)"; // same as time=2 
     expected[9] = "9 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, RestrictedInertiaFull) {
@@ -154,6 +158,7 @@ TEST(RestrictedChaseTest, RestrictedInertiaFull) {
                                 "8 : \n";
     std::string rule_string =
         "p(a, Z, b, X, Z) && [I, a] && [I, b] := q(X, Y, Z)\n";
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> p(a0, z1, b1, x1, z1)";
@@ -165,7 +170,7 @@ TEST(RestrictedChaseTest, RestrictedInertiaFull) {
     expected[7] = "7 -> p(a8, z2, b9, x2, z2)";
     expected[8] = "8 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, RestrictedInertiaPartial) {
@@ -180,6 +185,7 @@ TEST(RestrictedChaseTest, RestrictedInertiaPartial) {
                                 "7 : \n";
     std::string rule_string =
         "p(a, Z, b, X, Z) && [I, a] := q(X, Y, Z)\n";
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> p(a0, z1, b1, x1, z1)";
@@ -191,17 +197,15 @@ TEST(RestrictedChaseTest, RestrictedInertiaPartial) {
     expected[7] = "7 -> p(a9, z2, b10, x1, z2)";
     expected[8] = "8 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, Loop) {
-
     std::string stream_string = "1 4 "
                                 "1 : Bicycle(x1)\n"
                                 "2 : Bicycle(x2), Bicycle(x3)\n"
                                 "3 : \n"
                                 "4 : \n";
-
     std::string rule_string = "hasPart(X, v) := Bicycle(X)\n"
                               "Wheel(V) := hasPart(X, V) && Bicycle(X)\n"
                               "properPartOf(X, w) := Wheel(X)\n"
@@ -209,7 +213,7 @@ TEST(RestrictedChaseTest, Loop) {
                               "partOf(X, Y) := properPartOf(X, Y) \n"
                               "hasPart(X, Y) := partOf(Y, X) \n"
                               "partOf(X, Y) := hasPart(Y, X) \n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> Bicycle(w0) Wheel(v0) hasPart(w0, v0) hasPart(x1, v0) "
@@ -220,13 +224,11 @@ TEST(RestrictedChaseTest, Loop) {
                   "x3) properPartOf(v1, w1) properPartOf(v2, w2)";
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, TimeRefHead) {
-
     std::string stream_string =
         "1 4 "
         "1 : problem(sg1) \n"
@@ -234,45 +236,40 @@ TEST(RestrictedChaseTest, TimeRefHead) {
         "3 : problem(sg3), problem(sg4)\n"
         "3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
         "4 : \n";
-
     std::string rule_string =
         "[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
         "&& [$, 100] [D] problem(SG) \n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> ";
     expected[2] = "2 -> shutdown(sg1, alert0)";
     expected[3] = "3 -> shutdown(sg3, alert1)";
     expected[4] = "4 -> shutdown(sg3, alert2)";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, TimeRefBody1) {
-
     std::string stream_string = "1 4 "
                                 "1 : Wheel(w1) \n"
                                 "2 : exploded(w1), Wheel(w2)\n"
                                 "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
                                 "3 : Bicycle(b1)\n"
                                 "4 : \n";
-
     std::string rule_string =
         "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
         "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
         "hasFlat(b, W, T) := exploded(W) && [$, 100] [D] [@, T] Wheel(W) \n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> ";
     expected[2] = "2 -> hasFlat(b0, w1, 1)";
     expected[3] = "3 -> hasFlat(b1, w3, 3)";
     expected[4] = "4 -> ";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, TimeRefBody2) {
@@ -288,41 +285,37 @@ TEST(RestrictedChaseTest, TimeRefBody2) {
         "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
         "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
         "hasFlat(b, W, T) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> ";
     expected[2] = "2 -> hasFlat(b0, w1, 2)";
     expected[3] = "3 -> hasFlat(b1, w3, 3)";
     expected[4] = "4 -> ";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, TimeRefHandB) {
-
     std::string stream_string = "1 4 "
                                 "1 : Wheel(w1) \n"
                                 "2 : exploded(w1), Wheel(w2)\n"
                                 "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
                                 "3 : Bicycle(b1)\n"
                                 "4 : \n";
-
     std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
                               "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
                               "[@, T] hasFlat(b, W) := [@, T] exploded(W) && "
                               "[$, 100] [D] Wheel(W) \n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> ";
     expected[2] = "2 -> hasFlat(b0, w1)";
     expected[3] = "3 -> Bicycle(b1) Wheel(w3) hasFlat(b1, w3)";
     expected[4] = "4 -> ";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, ConjunctionTwo) {
@@ -333,16 +326,15 @@ TEST(RestrictedChaseTest, ConjunctionTwo) {
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
     std::string rule_string = "p(a, X) && r(b, Z) := q(X, Y, Z)\n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> p(a0, x1) r(b1, z1)";
     expected[2] = "2 -> p(a2, x2) r(b3, z2)";
     expected[3] = "3 -> p(a4, x3) r(b5, z3)";
     expected[4] = "4 -> ";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, ConjunctionThree) {
@@ -353,16 +345,15 @@ TEST(RestrictedChaseTest, ConjunctionThree) {
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
     std::string rule_string = "p(a, X) && r(b, Z) && s(a, b) := q(X, Y, Z)\n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> p(a0, x1) r(b1, z1) s(a0, b1)";
     expected[2] = "2 -> p(a2, x2) r(b3, z2) s(a2, b3)";
     expected[3] = "3 -> p(a4, x3) r(b5, z3) s(a4, b5)";
     expected[4] = "4 -> ";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, RestrictedSimple) {
@@ -374,16 +365,15 @@ TEST(RestrictedChaseTest, RestrictedSimple) {
                                 "4 : \n";
     std::string rule_string = "p(X, z) := q(X)\n"
                               "p(X, Y) := s(X, Y) \n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> p(x1, z0)";
     expected[2] = "2 -> p(x2, y2)";
     expected[3] = "3 -> p(x3, y3)";
     expected[4] = "4 -> ";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, RestrictedConjunctionBody) {
@@ -396,16 +386,15 @@ TEST(RestrictedChaseTest, RestrictedConjunctionBody) {
     std::string rule_string = "r(X, Y, z)  := p(X, Y) && q(X)\n"
                               "p (X, Y) := s(X, Y) \n"
                               "r(X, Y, Z) := t(X, Y, Z)";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> ";
     expected[2] = "2 -> p(x2, y2)";
     expected[3] = "3 -> p(x3, y3) r(x3, y3, z0)";
     expected[4] = "4 -> p(x4, y4) r(x4, y4, z4)";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, RestrictedConjunctionHeadPaper) {
@@ -430,15 +419,14 @@ TEST(RestrictedChaseTest, RestrictedConjunctionHeadPaper) {
                               "partOf(X, Y) := properPartOf(X, Y)\n"
                               "partOf(Y, X) := hasPart(X, Y)\n"
                               "hasPart(Y, X) := partOf(X, Y)\n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> hasPart(c, v0) Wheel(v0) properPartOf(v0, w0) "
                   "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
     expected[2] = "2 -> ";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, RestrictedConjunctionHeadSwap) {
@@ -453,15 +441,14 @@ TEST(RestrictedChaseTest, RestrictedConjunctionHeadSwap) {
                               "partOf(X, Y) := properPartOf(X, Y)\n"
                               "partOf(Y, X) := hasPart(X, Y)\n"
                               "hasPart(Y, X) := partOf(X, Y)\n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> hasPart(c, v0) Wheel(v0) properPartOf(v0, w0) "
                   "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
     expected[2] = "2 -> ";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }
 
 TEST(RestrictedChaseTest, RestrictedWindow) {
@@ -473,14 +460,13 @@ TEST(RestrictedChaseTest, RestrictedWindow) {
                                 "4 : q(x4)\n";
     std::string rule_string = "p(X, z)  := q(X)\n"
                               "p (X, Y) := [$, 2] [D] s(X, Y) \n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> p(x1, y1)";
     expected[2] = "2 -> p(x1, y1) p(x2, z0)";
     expected[3] = "3 -> p(x1, y1)";
     expected[4] = "4 -> p(x4, z1)";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::RESTRICTED);
+                             chase_alg);
 }

@@ -54,7 +54,7 @@ Diamond::get_groundings(util::Timeline const &timeline) {
     auto const &grounding_vector = grounding_table.get_all_groundings();
     std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto const &grounding : grounding_vector) {
-        auto new_grounding = grounding->clone();
+        auto new_grounding = grounding->shallow_clone();
         new_grounding->set_horizon_time(util::Timeline::INFINITE_TIME);
         result.push_back(std::move(new_grounding));
     }
@@ -76,7 +76,6 @@ bool Diamond::evaluate(
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     bool result = child->evaluate(timeline, previous_step, facts);
     auto child_facts = child->get_groundings(timeline);
-    // TODO SNE: I think you should only pick the new child facts
     grounding_table.add_grounding_vector(child_facts);
     return result;
 }

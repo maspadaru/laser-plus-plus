@@ -7,7 +7,6 @@
 #include <util/chase_algorithm.h>
 
 TEST(BoxTest, BoxAtom) {
-
     std::string stream_string = "1 14 "
                                 "1 : f(1), f(a), c(a, b)\n"
                                 "2 : f(a), f(1), c(a, b), f(x2)\n"
@@ -23,10 +22,9 @@ TEST(BoxTest, BoxAtom) {
                                 "12 : f(1), f(a), c(6,7)\n"
                                 "13 : f(1), f(a)\n"
                                 "14 : f(1), f(a)\n";
-
     std::string rule_string = "q(X) := [B] f(X)\n"
                               "r(Y,X) := [$, 3][B]c(X, Y)\n";
-
+    auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> q(a) q(1) r(b, a)";
@@ -43,7 +41,6 @@ TEST(BoxTest, BoxAtom) {
     expected[12] = "12 -> q(a) r(7, 6)";
     expected[13] = "13 -> q(a)";
     expected[14] = "14 -> q(a)";
-
     test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::OBLIVIOUS);
+                             chase_alg);
 }

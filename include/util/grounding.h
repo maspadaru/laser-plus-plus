@@ -2,6 +2,7 @@
 #define LASER_UTIL_GROUNDING_H
 
 #include <climits>
+#include <functional>
 #include <iostream>
 #include <memory>
 #include <numeric>
@@ -9,7 +10,6 @@
 #include <string>
 #include <utility>
 #include <vector>
-#include <functional>
 
 namespace laser::util {
 
@@ -29,32 +29,36 @@ class Grounding {
     size_t step = 0;
     bool is_background_fact_m = false;
     bool is_fact_m = false;
-    std::vector<std::string> constant_vector;
-    std::string predicate;
+    std::shared_ptr<std::vector<std::string>> constant_vector;
+    std::shared_ptr<std::string> predicate;
 
     bool annotation_less_than(Grounding const &other) const;
 
   public:
-    Grounding(std::string predicate, uint64_t consideration_time,
+    Grounding(std::string const &predicate, uint64_t consideration_time,
               uint64_t horizon_time, uint64_t consideration_count,
-              uint64_t horizon_count, std::vector<std::string> constant_vector);
+              uint64_t horizon_count,
+              std::vector<std::string> const &constant_vector);
 
-    Grounding(std::string predicate, uint64_t consideration_time,
+    Grounding(std::string const &predicate, uint64_t consideration_time,
               uint64_t horizon_time, uint64_t consideration_count,
               uint64_t horizon_count, bool is_fact, bool is_background_fact,
-              std::vector<std::string> constant_vector);
+              std::vector<std::string> const &constant_vector);
 
-    Grounding(std::string predicate, uint64_t consideration_time,
-                     uint64_t horizon_time, uint64_t consideration_count,
-                     uint64_t horizon_count, bool is_fact,
-                     bool is_background_fact, size_t vector_size);
+    Grounding(std::string const &predicate, uint64_t consideration_time,
+              uint64_t horizon_time, uint64_t consideration_count,
+              uint64_t horizon_count, bool is_fact, bool is_background_fact,
+              size_t vector_size);
 
     Grounding() = default;
 
-    std::shared_ptr<Grounding> clone() const;
+    std::shared_ptr<Grounding> deep_clone() const;
+
+    std::shared_ptr<Grounding> shallow_clone() const;
 
     /** creates a new grounding that shares the same annotations */
-    std::shared_ptr<Grounding> empty_clone(std::string predicate, size_t vector_size) const;
+    std::shared_ptr<Grounding> empty_clone(std::string const &predicate,
+                                           size_t vector_size) const;
 
     bool is_fresh_sne(uint64_t now, size_t previous_step) const;
 
@@ -71,7 +75,6 @@ class Grounding {
     uint64_t get_horizon_count() const;
 
     size_t get_step() const;
-
 
     bool is_background_fact() const;
 
@@ -93,18 +96,18 @@ class Grounding {
 
     void set_constant(size_t index, std::string constant);
 
-    void set_constant_vector(std::vector<std::string> &vector); 
+    void set_constant_vector(std::vector<std::string> const &vector);
 
-    void clear_constant_vector(); 
+    void clear_constant_vector();
 
-    void push_constant(std::string const &constant); 
+    void push_constant(std::string const &constant);
 
     void set_predicate(std::string const &predicate);
 
     void set_annotations(uint64_t consideration_time, uint64_t horizon_time,
                          uint64_t consideration_count, uint64_t horizon_count);
 
-    void set_horizon_time(uint64_t horizon_time); 
+    void set_horizon_time(uint64_t horizon_time);
 
     void set_horizon_count(uint64_t horizon_count);
 
@@ -123,22 +126,22 @@ class Grounding {
 };
 
 struct GroundingFullHash {
-public:
-	size_t operator()(Grounding const &x) const {
+  public:
+    size_t operator()(Grounding const &x) const {
         auto substitution_key = x.get_substitution_key();
         auto annotation_key = x.get_annotation_key();
         auto key_str = substitution_key + annotation_key;
         auto result = std::hash<std::string>{}(key_str);
         return result;
-	}
+    }
 
-	size_t operator()(std::shared_ptr<Grounding> const &x) const {
+    size_t operator()(std::shared_ptr<Grounding> const &x) const {
         auto substitution_key = x->get_substitution_key();
         auto annotation_key = x->get_annotation_key();
         auto key_str = substitution_key + annotation_key;
         auto result = std::hash<std::string>{}(key_str);
         return result;
-	}
+    }
 };
 
 struct GroundingEqual {

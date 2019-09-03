@@ -53,7 +53,7 @@ std::vector<std::shared_ptr<util::Grounding>> TupleWindow::adjust_annotations(
         // TODO check if fact->get_predicate in child->get_predicate_vector();
         auto horizon_count = compute_horizon_count(
             fact->get_consideration_count(), fact->get_horizon_count());
-        auto grounding = fact->clone();
+        auto grounding = fact->shallow_clone();
         grounding->set_horizon_count(horizon_count);
         result.push_back(std::move(grounding));
     }

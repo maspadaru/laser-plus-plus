@@ -79,7 +79,6 @@ uint64_t TimeWindow::compute_horizon_time(uint64_t grounding_consideration_time,
                                           uint64_t current_time) const {
     // TODO: current implementation does not take into account future_size and
     // step
-
     // The grounding's lifetime should never excede the size of the window
     uint64_t size_limit = grounding_consideration_time + past_size;
     uint64_t result = (size_limit < grounding_horizon_time)
@@ -97,7 +96,13 @@ TimeWindow::get_groundings(util::Timeline const &timeline) {
         uint64_t window_horizon_time = compute_horizon_time(
             grounding->get_consideration_time(), grounding->get_horizon_time(),
             timeline.get_time());
-        auto new_grounding = grounding->clone();
+        std::shared_ptr<util::Grounding> new_grounding;
+        if (child->get_type() == FormulaType::DIAMOND) {
+            // Diamond clones facts before returning them to parent
+            new_grounding = grounding;  
+        } else {
+            new_grounding = grounding->shallow_clone();
+        }
         new_grounding->set_horizon_time(window_horizon_time);
         result.push_back(std::move(new_grounding));
     }

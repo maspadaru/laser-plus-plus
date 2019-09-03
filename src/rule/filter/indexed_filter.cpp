@@ -146,7 +146,7 @@ std::shared_ptr<util::Grounding> IndexedFilter::generate_chase_fact(
             chase_values.push_back(value);
         }
     }
-    auto result = input_fact->clone();
+    auto result = input_fact->shallow_clone();
     result->set_constant_vector(chase_values);
     return result;
 }

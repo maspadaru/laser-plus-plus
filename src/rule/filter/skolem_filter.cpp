@@ -167,7 +167,7 @@ std::shared_ptr<util::Grounding> SkolemFilter::generate_chase_fact(
             child_values.push_back(value);
         }
     }
-    auto result = input_fact->clone();
+    auto result = input_fact->shallow_clone();
     result->set_constant_vector(child_values);
     return result;
 }

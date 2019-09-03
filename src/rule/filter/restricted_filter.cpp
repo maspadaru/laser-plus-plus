@@ -115,7 +115,7 @@ std::shared_ptr<util::Grounding> RestrictedFilter::convert_to_chase_fact(
             chase_values.push_back("filler_non-frontier_value");
         }
     }
-    auto result = db_fact->clone();
+    auto result = db_fact->shallow_clone();
     result->set_constant_vector(chase_values);
     return result;
 }
@@ -139,7 +139,7 @@ std::shared_ptr<util::Grounding> RestrictedFilter::generate_chase_fact(
             chase_values.push_back(value);
         }
     }
-    auto result = input_fact->clone();
+    auto result = input_fact->shallow_clone();
     result->set_constant_vector(chase_values);
     return result;
 }
@@ -172,7 +172,7 @@ RestrictedFilter::generate_chase_fact_from_inertia(
         }
         chase_values.push_back(value);
     }
-    auto result = inertia_fact->clone();
+    auto result = inertia_fact->shallow_clone();
     result->set_constant_vector(chase_values);
     if (result->get_horizon_time() < current_timepoint) {
         result->set_horizon_time(current_timepoint);

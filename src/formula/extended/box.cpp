@@ -117,7 +117,7 @@ Box::compute_box_conclusions(util::Timeline const &timeline) {
 
         // One grounding should exist at each timepoint in the timeline
         if (ct <= start_time && ht >= current_time) {
-            auto new_grounding = grounding->clone();
+            auto new_grounding = grounding->shallow_clone();
             new_grounding->set_annotations(current_time, current_time, cc, hc);
             result.push_back(std::move(new_grounding));
         }
@@ -184,7 +184,7 @@ Box::adjust_annotation(std::shared_ptr<util::Grounding> const &box_grounding,
     }
 
     if (is_modified) {
-        auto new_box_grounding = box_grounding->clone();
+        auto new_box_grounding = box_grounding->shallow_clone();
         new_box_grounding->set_annotations(ct1, ht1, cc1, hc);
         return {is_modified, new_box_grounding};
     }
