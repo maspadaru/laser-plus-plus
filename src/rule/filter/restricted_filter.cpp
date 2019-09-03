@@ -23,7 +23,8 @@ ChaseFilter *RestrictedFilter::clone() const {
     result->is_inertia_variable = this->is_inertia_variable;
     result->current_timepoint = this->current_timepoint;
     result->inertia_facts = this->inertia_facts;
-    result->current_facts = this->current_facts;
+    result->current_step_facts = this->current_step_facts;
+    result->current_timepoint_facts = this->current_timepoint_facts;
     result->facts_found_in_db = this->facts_found_in_db;
     return result;
 }
@@ -42,7 +43,8 @@ ChaseFilter *RestrictedFilter::move() {
     result->is_inertia_variable = std::move(this->is_inertia_variable);
     result->current_timepoint = this->current_timepoint;
     result->inertia_facts = std::move(this->inertia_facts);
-    result->current_facts = std::move(this->current_facts);
+    result->current_step_facts = std::move(this->current_step_facts);
+    result->current_timepoint_facts = std::move(this->current_timepoint_facts);
     result->facts_found_in_db = std::move(this->facts_found_in_db);
     return result;
 }
@@ -76,14 +78,18 @@ void RestrictedFilter::update(util::Timeline const &timeline,
     // If we do use local grounding table, get conclusions here using
     // head_formula.get_conclusions_step(timeline);
     auto new_time = timeline.get_time();
+    current_timepoint_facts.insert(current_timepoint_facts.end(),
+                                   current_step_facts.begin(),
+                                   current_step_facts.end());
+    current_step_facts.clear();
     if (new_time > current_timepoint) {
         if (has_inertia_variables) {
             inertia_facts.clear();
-            inertia_facts = current_facts;
-            //inertia_facts.insert(inertia_facts.end(), facts_found_in_db.begin(),
-                                 //facts_found_in_db.end());
+            inertia_facts = current_timepoint_facts;
+            // inertia_facts.insert(inertia_facts.end(),
+            // facts_found_in_db.begin(), facts_found_in_db.end());
         }
-        current_facts.clear();
+        current_timepoint_facts.clear();
         facts_found_in_db.clear();
         current_timepoint = new_time;
     }
@@ -100,7 +106,7 @@ RestrictedFilter::build_chase_facts(
             find_match(database_facts, input_fact);
         }
     }
-    return current_facts;
+    return current_step_facts;
 }
 
 std::shared_ptr<util::Grounding> RestrictedFilter::convert_to_chase_fact(
@@ -187,7 +193,7 @@ void RestrictedFilter::find_match(
         for (auto const &inertia_fact : inertia_facts) {
             if (is_inertia_variable_match(inertia_fact, input_fact)) {
                 auto new_fact = generate_chase_fact_from_inertia(inertia_fact);
-                current_facts.push_back(new_fact);
+                current_step_facts.push_back(new_fact);
                 return;
             }
         }
@@ -195,13 +201,13 @@ void RestrictedFilter::find_match(
         for (auto const &db_fact : database) {
             if (is_database_match(db_fact, input_fact)) {
                 auto new_fact = convert_to_chase_fact(db_fact);
-                //facts_found_in_db.push_back(new_fact);
+                // facts_found_in_db.push_back(new_fact);
                 return;
             }
         }
     }
     auto chase_fact = generate_chase_fact(input_fact);
-    current_facts.push_back(chase_fact);
+    current_step_facts.push_back(chase_fact);
 }
 
 bool RestrictedFilter::is_database_match(

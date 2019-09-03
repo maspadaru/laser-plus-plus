@@ -30,7 +30,8 @@ class RestrictedFilter : public ChaseFilter {
     std::unordered_map<std::string, int> free_variable_index;
     std::unordered_map<std::string, int> bound_variable_index;
     std::vector<std::shared_ptr<util::Grounding>> inertia_facts;
-    std::vector<std::shared_ptr<util::Grounding>> current_facts;
+    std::vector<std::shared_ptr<util::Grounding>> current_timepoint_facts;
+    std::vector<std::shared_ptr<util::Grounding>> current_step_facts;
     std::vector<std::shared_ptr<util::Grounding>> facts_found_in_db;
     uint64_t current_timepoint;
     bool has_inertia_variables = false;

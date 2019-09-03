@@ -206,7 +206,7 @@ Conjunction::merge_groundings(util::Timeline const &timeline,
         }
     }
     auto result = std::make_shared<util::Grounding>(
-        util::Grounding("", ct, ht, cc, hc, substitution_vector));
+       "", ct, ht, cc, hc, substitution_vector);
     auto max_step = left.get_step();
     if (max_step < right.get_step()) {
         max_step = right.get_step();

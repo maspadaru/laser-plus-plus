@@ -137,7 +137,7 @@ ExampleParser::parse_token_vector(
             current_tuple_counter++;
             auto grounding = std::make_shared<laser::util::Grounding>(
                 predicate, time, time, current_tuple_counter, max_tuple_counter,
-                true, false, std::move(token_list));
+                true, false, token_list);
             result.push_back(std::move(grounding));
             token_list.clear();
             break;

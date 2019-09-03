@@ -4,37 +4,39 @@ namespace laser::util {
 
 Grounding::Grounding(std::string const &predicate, uint64_t consideration_time,
                      uint64_t horizon_time, uint64_t consideration_count,
+                     uint64_t horizon_count,
+                     std::vector<std::string> const &constant_vector)
+    : consideration_time(consideration_time), horizon_time(horizon_time),
+      consideration_count(consideration_count), horizon_count(horizon_count) {
+    this->predicate = std::make_shared<std::string>(predicate);
+    this->constant_vector =
+        std::make_shared<std::vector<std::string>>(constant_vector);
+}
+
+Grounding::Grounding(std::string const &predicate, uint64_t consideration_time,
+                     uint64_t horizon_time, uint64_t consideration_count,
                      uint64_t horizon_count, bool is_fact,
                      bool is_background_fact,
                      std::vector<std::string> const &constant_vector)
-    : predicate(std::make_shared<std::string>(predicate)),
-      consideration_time(consideration_time), horizon_time(horizon_time),
+    : consideration_time(consideration_time), horizon_time(horizon_time),
       consideration_count(consideration_count), horizon_count(horizon_count),
-      is_fact_m(is_fact), is_background_fact_m(is_background_fact),
-      constant_vector(
-          std::make_shared<std::vector<std::string>>(constant_vector)) {}
+      is_fact_m(is_fact), is_background_fact_m(is_background_fact) {
+    this->predicate = std::make_shared<std::string>(predicate);
+    this->constant_vector =
+        std::make_shared<std::vector<std::string>>(constant_vector);
+}
 
 Grounding::Grounding(std::string const &predicate, uint64_t consideration_time,
                      uint64_t horizon_time, uint64_t consideration_count,
                      uint64_t horizon_count, bool is_fact,
                      bool is_background_fact, size_t vector_size)
-    : predicate(std::make_shared<std::string>(predicate)),
-      consideration_time(consideration_time), horizon_time(horizon_time),
+    : consideration_time(consideration_time), horizon_time(horizon_time),
       consideration_count(consideration_count), horizon_count(horizon_count),
       is_fact_m(is_fact), is_background_fact_m(is_background_fact),
       constant_vector(std::make_shared<std::vector<std::string>>()) {
+    this->predicate = std::make_shared<std::string>(predicate);
     constant_vector->reserve(vector_size);
 }
-
-Grounding::Grounding(std::string const &predicate, uint64_t consideration_time,
-                     uint64_t horizon_time, uint64_t consideration_count,
-                     uint64_t horizon_count,
-                     std::vector<std::string> const &constant_vector)
-    : predicate(std::make_shared<std::string>(predicate)),
-      consideration_time(consideration_time), horizon_time(horizon_time),
-      consideration_count(consideration_count), horizon_count(horizon_count),
-      constant_vector(
-          std::make_shared<std::vector<std::string>>(constant_vector)) {}
 
 size_t Grounding::get_step() const { return step; }
 
