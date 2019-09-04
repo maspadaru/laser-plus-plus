@@ -27,6 +27,37 @@ void GroundingTable::add_grounding(
     }
 }
 
+void GroundingTable::merge_grounding(
+    std::shared_ptr<util::Grounding> const &grounding) {
+    bool found = false;
+    for (auto &iterator : grounding_map) {
+        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
+            &set = iterator.second;
+        for (auto &old_grounding : set) {
+            if (grounding->substitution_equal(*old_grounding)) {
+                old_grounding->set_annotations(*grounding);
+                recent_groundings_vector.push_back(grounding);
+                found = true;
+                break;
+            }
+        }
+        if (found) {
+            break;
+        }
+    }
+    if (!found) {
+        add_grounding(grounding);
+    }
+}
+
+void GroundingTable::merge_grounding_vector(
+    std::vector<std::shared_ptr<util::Grounding>> const &grounding_vector) {
+    for (auto const &grounding : grounding_vector) {
+        merge_grounding(grounding);
+    }
+}
+
+
 void GroundingTable::add_grounding_vector(
     std::vector<std::shared_ptr<util::Grounding>> const &grounding_vector) {
     for (auto const &grounding : grounding_vector) {
@@ -34,7 +65,8 @@ void GroundingTable::add_grounding_vector(
     }
 }
 
-std::vector<std::shared_ptr<util::Grounding>> GroundingTable::get_all_groundings() {
+std::vector<std::shared_ptr<util::Grounding>>
+GroundingTable::get_all_groundings() {
     // Merges all lists together
     std::vector<std::shared_ptr<util::Grounding>> all_groundings;
     for (auto const &map_iterator : grounding_map) {
@@ -64,9 +96,10 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
     }
     // Expire by horizon_count
     for (auto &iterator : grounding_map) {
-        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> &set =
-            iterator.second;
-        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> toRemove;
+        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
+            &set = iterator.second;
+        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
+            toRemove;
         for (auto &grounding : set) {
             auto hc = grounding->get_horizon_count();
             if (hc <= tuple_count) {
@@ -80,7 +113,7 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
             }
         }
         size -= toRemove.size();
-        for (auto &grounding: toRemove) {
+        for (auto &grounding : toRemove) {
             set.erase(grounding);
         }
     }
@@ -105,6 +138,5 @@ void GroundingTable::set_variable_names(
 size_t GroundingTable::get_number_of_variables() const {
     return variable_names.size();
 }
-
 
 } // namespace laser::formula

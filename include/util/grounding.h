@@ -107,6 +107,8 @@ class Grounding {
     void set_annotations(uint64_t consideration_time, uint64_t horizon_time,
                          uint64_t consideration_count, uint64_t horizon_count);
 
+    void set_annotations(Grounding const &other);
+
     void set_horizon_time(uint64_t horizon_time);
 
     void set_horizon_count(uint64_t horizon_count);
@@ -123,6 +125,7 @@ class Grounding {
 
     bool substitution_less_than(Grounding const &other) const;
     bool predsubst_less_than(Grounding const &other) const;
+    bool substitution_equal(Grounding const &other) const; 
 };
 
 struct GroundingFullHash {
