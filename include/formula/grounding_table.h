@@ -45,12 +45,7 @@ class GroundingTable {
 
     void add_grounding(std::shared_ptr<util::Grounding> const &grounding);
 
-    void merge_grounding(std::shared_ptr<util::Grounding> const &grounding);
-
     void add_grounding_vector(
-        std::vector<std::shared_ptr<util::Grounding>> const &grounding_vector);
-
-    void merge_grounding_vector(
         std::vector<std::shared_ptr<util::Grounding>> const &grounding_vector);
 
     /**

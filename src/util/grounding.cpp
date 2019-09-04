@@ -84,13 +84,6 @@ void Grounding::set_annotations(uint64_t consideration_time,
     this->horizon_count = horizon_count;
 }
 
-void Grounding::set_annotations(Grounding const &other) {
-    this->consideration_time = other.get_consideration_time();
-    this->horizon_time = other.get_horizon_time();
-    this->consideration_count = other.get_consideration_count();
-    this->horizon_count = other.get_horizon_count();
-}
-
 void Grounding::set_horizon_time(uint64_t horizon_time) {
     this->horizon_time = horizon_time;
 }
@@ -240,10 +233,6 @@ bool Grounding::predsubst_less_than(Grounding const &other) const {
 bool Grounding::substitution_less_than(Grounding const &other) const {
     // operator< for std::vector is said to have linear time complexity
     return *constant_vector < *(other.constant_vector);
-}
-
-bool Grounding::substitution_equal(Grounding const &other) const {
-    return *constant_vector == *(other.constant_vector);
 }
 
 bool Grounding::operator==(Grounding const &other) const {
