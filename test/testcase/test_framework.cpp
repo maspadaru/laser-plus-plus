@@ -6,6 +6,7 @@ void run_test(std::string const &stream_string, std::string const &rule_string,
               std::vector<std::string> const &expected,
               laser::util::ChaseAlgorithm chase_algorithm) {
     laser::util::Settings::get_instance().set_chase_algorithm(chase_algorithm);
+    laser::util::Settings::get_instance().set_global_null_values(false);
     auto example_io_manager = laser::example::ExampleIOManager(stream_string);
     auto rule_vector = laser::rule::RuleParser(rule_string).get_rules();
     auto reasoner = laser::core::Reasoner(&rule_vector, &example_io_manager);

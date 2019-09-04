@@ -14,6 +14,9 @@
 #include "util/database.h"
 #include "util/grounding.h"
 #include "util/timeline.h"
+#include "util/settings.h"
+#include "util/shared.h"
+#include "util/global.h"
 
 namespace laser::rule {
 
@@ -34,6 +37,7 @@ class SkolemFilter : public ChaseFilter {
     std::map<std::string, std::vector<std::string>> skolem_map;
     std::map<std::string, std::vector<std::string>> inertia_map;
     uint64_t null_value_count = 0;
+    bool use_global_nulls = true;
 
     /** Returns a new grounding that contains only the values of the fronteer
      * variables */

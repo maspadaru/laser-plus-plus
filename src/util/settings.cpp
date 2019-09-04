@@ -15,5 +15,13 @@ void Settings::set_chase_algorithm(ChaseAlgorithm chase_algorithm) {
     this->chase_algorithm = chase_algorithm;
 }
 
+bool Settings::has_global_null_values() const {
+    return has_global_null_values_m;
+}
+
+void Settings::set_global_null_values(bool has_global_nulls) {
+    has_global_null_values_m = has_global_nulls;
+}
+
 } // namespace util
 } // namespace laser

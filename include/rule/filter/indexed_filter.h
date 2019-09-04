@@ -15,6 +15,9 @@
 #include "util/database.h"
 #include "util/grounding.h"
 #include "util/timeline.h"
+#include "util/settings.h"
+#include "util/shared.h"
+#include "util/global.h"
 
 namespace laser::rule {
 
@@ -32,6 +35,7 @@ class IndexedFilter : public ChaseFilter {
     std::unordered_map<std::string, int> free_variable_index;
     std::unordered_map<std::string, int> bound_variable_index;
     std::unordered_map<std::string, std::shared_ptr<util::Grounding>> index_map;
+    bool use_global_nulls = true;
 
     std::shared_ptr<util::Grounding>
     generate_chase_fact(std::shared_ptr<util::Grounding> const &input_fact);

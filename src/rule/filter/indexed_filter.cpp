@@ -19,6 +19,7 @@ ChaseFilter *IndexedFilter::clone() const {
     result->bound_variable_index = this->bound_variable_index;
     result->null_value_count = this->null_value_count;
     result->head_formula = &this->head_formula->clone();
+    result->use_global_nulls = this->use_global_nulls;
     return result;
 }
 
@@ -32,6 +33,7 @@ ChaseFilter *IndexedFilter::move() {
     result->bound_variable_index = std::move(this->bound_variable_index);
     result->null_value_count = this->null_value_count;
     result->head_formula = &this->head_formula->move();
+    result->use_global_nulls = this->use_global_nulls;
     return result;
 }
 
@@ -49,6 +51,7 @@ void IndexedFilter::init(std::vector<formula::Formula *> const &head_atoms,
     this->free_variable_index = rule::shared::make_index(free_variables);
     this->bound_variable_index = rule::shared::make_index(bound_variables);
     this->head_formula = build_head_formula(0, head_atoms);
+    use_global_nulls = util::Settings::get_instance().has_global_null_values();
 }
 
 void IndexedFilter::update(util::Timeline const &timeline, size_t previous_step,
@@ -152,8 +155,16 @@ std::shared_ptr<util::Grounding> IndexedFilter::generate_chase_fact(
 }
 
 std::string IndexedFilter::generate_new_value(std::string const &var_name) {
-    std::string result = var_name + std::to_string(null_value_count);
-    null_value_count++;
+    std::string result;
+    if (use_global_nulls) {
+        auto null_value_count =
+            util::Global::get_instance().get_null_value_count();
+        result = laser::util::special_value::CHASE_LABELED_NULL +
+                 std::to_string(null_value_count);
+    } else {
+        result = var_name + std::to_string(null_value_count);
+        null_value_count++;
+    }
     return result;
 }
 

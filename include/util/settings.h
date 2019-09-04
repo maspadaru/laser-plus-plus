@@ -9,6 +9,7 @@ namespace util {
 class Settings {
   private:
     ChaseAlgorithm chase_algorithm = ChaseAlgorithm::OBLIVIOUS;  
+    bool has_global_null_values_m = true;
 
     Settings() {} 
 
@@ -20,6 +21,10 @@ class Settings {
     static Settings &get_instance();
 
     ChaseAlgorithm get_chase_algorithm() const;
+
+    bool has_global_null_values() const;
+
+    void set_global_null_values(bool has_global_nulls);
 
     void set_chase_algorithm(ChaseAlgorithm chase_algorithm);
 };

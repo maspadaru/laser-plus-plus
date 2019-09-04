@@ -13,6 +13,9 @@
 #include "util/database.h"
 #include "util/grounding.h"
 #include "util/timeline.h"
+#include "util/settings.h"
+#include "util/shared.h"
+#include "util/global.h"
 
 namespace laser::rule {
 
@@ -36,6 +39,7 @@ class RestrictedFilter : public ChaseFilter {
     uint64_t current_timepoint;
     bool has_inertia_variables = false;
     std::vector<bool> is_inertia_variable;
+    bool use_global_nulls = true;
 
     std::shared_ptr<util::Grounding>
     convert_to_chase_fact(std::shared_ptr<util::Grounding> const &db_fact);

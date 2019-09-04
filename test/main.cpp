@@ -80,24 +80,17 @@ void test_acyclicity_only_first_timepoint() {
 
 void test_run() {
     const std::string name = "Test Run";
-    std::string stream_string = "1 14 "
-                                "1 : f(1), f(a), c(a, b)\n"
-                                "2 : f(a), f(1), c(a, b), f(x2)\n"
-                                "3 : f(a), f(1), c(a, b), f(x2)\n"
-                                "4 : f(a), f(1), c(b, a), f(x2)\n"
-                                "5 : f(1), f(a), c(a,b), c(b, a)\n"
-                                "6 : f(1), c(b,a), f(a)\n"
-                                "7 : f(a)\n"
-                                "8 : f(1), f(a), c(a, b), c(6,7), c(1,2)\n"
-                                "9 : f(1), f(a), c(a, b), c(6,7), c(1,2)\n"
-                                "10 : f(1), f(a), c(a, b), c(6,7), c(1,2)\n"
-                                "11 : f(1), f(a), c(6,7), c(1,2)\n"
-                                "12 : f(1), f(a), c(6,7)\n"
-                                "13 : f(1), f(a)\n"
-                                "14 : f(1), f(a)\n";
-    std::string rule_string = "q(X) := [B] f(X)\n"
-                              "r(Y,X) := [$, 3][B]c(X, Y)\n";
-    auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
+    std::string stream_string = "1 4 "
+                                "1 : Wheel(w1) \n"
+                                "2 : exploded(w1), Wheel(w2)\n"
+                                "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
+                                "3 : Bicycle(b1)\n"
+                                "4 : \n";
+    std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+                              "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+                              "[@, T] hasFlat(b, W) := [@, T] exploded(W) && "
+                              "[$, 100] [D] Wheel(W) \n";
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     run(name, stream_string, rule_string,chase_alg);
 }
 
