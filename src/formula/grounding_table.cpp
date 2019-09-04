@@ -30,12 +30,18 @@ void GroundingTable::add_grounding(
 void GroundingTable::merge_grounding(
     std::shared_ptr<util::Grounding> const &grounding) {
     bool found = false;
-    auto &set = grounding_map[grounding->get_horizon_time() - 1];
-    for (auto &old_grounding : set) {
-        if (grounding->substitution_equal(*old_grounding)) {
-            old_grounding->set_annotations(*grounding);
-            recent_groundings_vector.push_back(grounding);
-            found = true;
+    for (auto &iterator : grounding_map) {
+        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
+            &set = iterator.second;
+        for (auto &old_grounding : set) {
+            if (grounding->substitution_equal(*old_grounding)) {
+                old_grounding->set_annotations(*grounding);
+                recent_groundings_vector.push_back(grounding);
+                found = true;
+                break;
+            }
+        }
+        if (found) {
             break;
         }
     }
@@ -43,7 +49,6 @@ void GroundingTable::merge_grounding(
         add_grounding(grounding);
     }
 }
-
 
 void GroundingTable::merge_grounding_vector(
     std::vector<std::shared_ptr<util::Grounding>> const &grounding_vector) {
