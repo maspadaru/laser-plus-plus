@@ -1,7 +1,3 @@
-//
-// Created by mike on 6/21/18.
-//
-
 #include "example/example_reader.h"
 
 namespace laser {

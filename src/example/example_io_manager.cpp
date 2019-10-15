@@ -1,9 +1,5 @@
 #include <utility>
 
-//
-// Created by mike on 7/17/18.
-//
-
 #include "example/example_io_manager.h"
 
 namespace laser {

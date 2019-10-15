@@ -31,8 +31,6 @@ class ExampleReader {
     bool has_metadata_m = false;
     std::string latest_read_line;
 
-    // methods
-
     void check_source() const;
 
     bool read_line();
@@ -47,8 +45,6 @@ class ExampleReader {
   public:
     ~ExampleReader() = default;
 
-    // from laser::input::DataReader
-
     bool has_metadata() const;
 
     bool fetch_metadata();
@@ -60,8 +56,6 @@ class ExampleReader {
     std::vector<std::string> read_all_data();
 
     std::vector<std::string> read_next_data(uint64_t request_time_point);
-
-    // Own Methods:
 
     void set_source(std::string source_string);
 };
