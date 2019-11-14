@@ -6,12 +6,12 @@
 #include <set>
 
 #include "formula/extended/atom.h"
-#include "formula/extended/box.h"
-#include "formula/extended/conjunction.h"
-#include "formula/extended/diamond.h"
-#include "formula/extended/time_reference.h"
-#include "formula/extended/time_window.h"
-#include "formula/extended/tuple_window.h"
+//#include "formula/extended/box.h"
+//#include "formula/extended/conjunction.h"
+//#include "formula/extended/diamond.h"
+//#include "formula/extended/time_reference.h"
+//#include "formula/extended/time_window.h"
+//#include "formula/extended/tuple_window.h"
 #include "rule/rule.h"
 #include "util/format_exception.h"
 
@@ -82,12 +82,12 @@ public:
     std::unique_ptr<laser::formula::Formula> parse_comparison_atom();
     std::unique_ptr<laser::formula::Formula> parse_math_atom();
     std::unique_ptr<laser::formula::Formula> parse_unary_formula();
-    std::unique_ptr<laser::formula::Formula> parse_diamond();
-    std::unique_ptr<laser::formula::Formula> parse_box();
-    std::unique_ptr<laser::formula::Formula> parse_negation();
-    std::unique_ptr<laser::formula::Formula> parse_time_reference();
-    std::unique_ptr<laser::formula::Formula> parse_time_window();
-    std::unique_ptr<laser::formula::Formula> parse_tuple_window();
+    //std::unique_ptr<laser::formula::Formula> parse_diamond();
+    //std::unique_ptr<laser::formula::Formula> parse_box();
+    //std::unique_ptr<laser::formula::Formula> parse_negation();
+    //std::unique_ptr<laser::formula::Formula> parse_time_reference();
+    //std::unique_ptr<laser::formula::Formula> parse_time_window();
+    //std::unique_ptr<laser::formula::Formula> parse_tuple_window();
     std::unique_ptr<laser::formula::Formula> parse_inertia_operator(); 
     std::unique_ptr<laser::formula::Formula> parse_extended_head_atom(); 
     std::vector<std::unique_ptr<laser::formula::Formula>> parse_formula_vector();

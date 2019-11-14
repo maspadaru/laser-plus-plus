@@ -2,48 +2,48 @@
 
 namespace laser::rule {
 
-ChaseFilter *SkolemFilter::create() const {
-    auto result = new SkolemFilter();
-    return result;
-}
+//ChaseFilter *SkolemFilter::create() const {
+    //auto result = new SkolemFilter();
+    //return result;
+//}
 
-ChaseFilter *SkolemFilter::clone() const {
-    auto result = new SkolemFilter();
-    result->head_variables = this->head_variables;
-    result->free_variables = this->free_variables;
-    result->frontier_variables = this->frontier_variables;
-    result->bound_variables = this->bound_variables;
-    result->is_inertia_variable = this->is_inertia_variable;
-    result->free_variable_index = this->free_variable_index;
-    result->bound_variable_index = this->bound_variable_index;
-    result->skolem_map = this->skolem_map;
-    result->null_value_count = this->null_value_count;
-    result->has_inertia_variables = this->has_inertia_variables;
-    result->current_timepoint = this->current_timepoint;
-    result->skolem_map = this->skolem_map;
-    result->inertia_map = this->inertia_map;
-    result->use_global_nulls = this->use_global_nulls;
-    return result;
-}
+//ChaseFilter *SkolemFilter::clone() const {
+    //auto result = new SkolemFilter();
+    //result->head_variables = this->head_variables;
+    //result->free_variables = this->free_variables;
+    //result->frontier_variables = this->frontier_variables;
+    //result->bound_variables = this->bound_variables;
+    //result->is_inertia_variable = this->is_inertia_variable;
+    //result->free_variable_index = this->free_variable_index;
+    //result->bound_variable_index = this->bound_variable_index;
+    //result->skolem_map = this->skolem_map;
+    //result->null_value_count = this->null_value_count;
+    //result->has_inertia_variables = this->has_inertia_variables;
+    //result->current_timepoint = this->current_timepoint;
+    //result->skolem_map = this->skolem_map;
+    //result->inertia_map = this->inertia_map;
+    //result->use_global_nulls = this->use_global_nulls;
+    //return result;
+//}
 
-ChaseFilter *SkolemFilter::move() {
-    auto result = new SkolemFilter();
-    result->head_variables = std::move(this->head_variables);
-    result->free_variables = std::move(this->free_variables);
-    result->frontier_variables = std::move(this->frontier_variables);
-    result->bound_variables = std::move(this->bound_variables);
-    result->is_inertia_variable = std::move(this->is_inertia_variable);
-    result->free_variable_index = std::move(this->free_variable_index);
-    result->bound_variable_index = std::move(this->bound_variable_index);
-    result->skolem_map = std::move(this->skolem_map);
-    result->null_value_count = this->null_value_count;
-    result->has_inertia_variables = this->has_inertia_variables;
-    result->current_timepoint = this->current_timepoint;
-    result->skolem_map = std::move(this->skolem_map);
-    result->inertia_map = std::move(this->inertia_map);
-    result->use_global_nulls = this->use_global_nulls;
-    return result;
-}
+//ChaseFilter *SkolemFilter::move() {
+    //auto result = new SkolemFilter();
+    //result->head_variables = std::move(this->head_variables);
+    //result->free_variables = std::move(this->free_variables);
+    //result->frontier_variables = std::move(this->frontier_variables);
+    //result->bound_variables = std::move(this->bound_variables);
+    //result->is_inertia_variable = std::move(this->is_inertia_variable);
+    //result->free_variable_index = std::move(this->free_variable_index);
+    //result->bound_variable_index = std::move(this->bound_variable_index);
+    //result->skolem_map = std::move(this->skolem_map);
+    //result->null_value_count = this->null_value_count;
+    //result->has_inertia_variables = this->has_inertia_variables;
+    //result->current_timepoint = this->current_timepoint;
+    //result->skolem_map = std::move(this->skolem_map);
+    //result->inertia_map = std::move(this->inertia_map);
+    //result->use_global_nulls = this->use_global_nulls;
+    //return result;
+//}
 
 void SkolemFilter::init(
     std::vector<std::unique_ptr<formula::Formula>> const &head_atoms,

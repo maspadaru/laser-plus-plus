@@ -21,9 +21,9 @@ class ObliviousFilter : public ChaseFilter {
     ObliviousFilter() = default;
     ~ObliviousFilter() override = default;
 
-    ChaseFilter *create() const override;
-    ChaseFilter *clone() const override;
-    ChaseFilter *move() override;
+    //ChaseFilter *create() const override;
+    //ChaseFilter *clone() const override;
+    //ChaseFilter *move() override;
 
     void init(std::vector<std::unique_ptr<formula::Formula>> const &head_atoms,
               std::vector<std::string> const &head_variables,

@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "formula/extended/conjunction.h"
+//#include "formula/extended/conjunction.h"
 #include "formula/formula.h"
 #include "formula/formula_type.h"
 #include "rule/chase_filter.h"

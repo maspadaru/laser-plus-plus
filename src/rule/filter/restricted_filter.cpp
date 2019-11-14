@@ -2,54 +2,54 @@
 
 namespace laser::rule {
 
-ChaseFilter *RestrictedFilter::create() const {
-    auto result = new RestrictedFilter();
-    return result;
-}
+//ChaseFilter *RestrictedFilter::create() const {
+    //auto result = new RestrictedFilter();
+    //return result;
+//}
 
-RestrictedFilter::~RestrictedFilter() { delete head_formula; }
+//RestrictedFilter::~RestrictedFilter() { delete head_formula; }
 
-ChaseFilter *RestrictedFilter::clone() const {
-    auto result = new RestrictedFilter();
-    result->frontier_variables = this->frontier_variables;
-    result->head_variables = this->head_variables;
-    result->free_variables = this->free_variables;
-    result->bound_variables = this->bound_variables;
-    result->free_variable_index = this->free_variable_index;
-    result->bound_variable_index = this->bound_variable_index;
-    result->null_value_count = this->null_value_count;
-    result->head_formula = &this->head_formula->clone();
-    result->has_inertia_variables = this->has_inertia_variables;
-    result->is_inertia_variable = this->is_inertia_variable;
-    result->current_timepoint = this->current_timepoint;
-    result->inertia_facts = this->inertia_facts;
-    result->current_step_facts = this->current_step_facts;
-    result->current_timepoint_facts = this->current_timepoint_facts;
-    result->facts_found_in_db = this->facts_found_in_db;
-    result->use_global_nulls = this->use_global_nulls;
-    return result;
-}
+//ChaseFilter *RestrictedFilter::clone() const {
+    //auto result = new RestrictedFilter();
+    //result->frontier_variables = this->frontier_variables;
+    //result->head_variables = this->head_variables;
+    //result->free_variables = this->free_variables;
+    //result->bound_variables = this->bound_variables;
+    //result->free_variable_index = this->free_variable_index;
+    //result->bound_variable_index = this->bound_variable_index;
+    //result->null_value_count = this->null_value_count;
+    //result->head_formula = &this->head_formula->clone();
+    //result->has_inertia_variables = this->has_inertia_variables;
+    //result->is_inertia_variable = this->is_inertia_variable;
+    //result->current_timepoint = this->current_timepoint;
+    //result->inertia_facts = this->inertia_facts;
+    //result->current_step_facts = this->current_step_facts;
+    //result->current_timepoint_facts = this->current_timepoint_facts;
+    //result->facts_found_in_db = this->facts_found_in_db;
+    //result->use_global_nulls = this->use_global_nulls;
+    //return result;
+//}
 
-ChaseFilter *RestrictedFilter::move() {
-    auto result = new RestrictedFilter();
-    result->frontier_variables = std::move(this->frontier_variables);
-    result->head_variables = std::move(this->head_variables);
-    result->free_variables = std::move(this->free_variables);
-    result->bound_variables = std::move(this->bound_variables);
-    result->free_variable_index = std::move(this->free_variable_index);
-    result->bound_variable_index = std::move(this->bound_variable_index);
-    result->null_value_count = this->null_value_count;
-    result->head_formula = &this->head_formula->move();
-    result->has_inertia_variables = this->has_inertia_variables;
-    result->is_inertia_variable = std::move(this->is_inertia_variable);
-    result->current_timepoint = this->current_timepoint;
-    result->inertia_facts = std::move(this->inertia_facts);
-    result->current_step_facts = std::move(this->current_step_facts);
-    result->current_timepoint_facts = std::move(this->current_timepoint_facts);
-    result->facts_found_in_db = std::move(this->facts_found_in_db);
-    result->use_global_nulls = this->use_global_nulls;
-    return result;
-}
+//ChaseFilter *RestrictedFilter::move() {
+    //auto result = new RestrictedFilter();
+    //result->frontier_variables = std::move(this->frontier_variables);
+    //result->head_variables = std::move(this->head_variables);
+    //result->free_variables = std::move(this->free_variables);
+    //result->bound_variables = std::move(this->bound_variables);
+    //result->free_variable_index = std::move(this->free_variable_index);
+    //result->bound_variable_index = std::move(this->bound_variable_index);
+    //result->null_value_count = this->null_value_count;
+    //result->head_formula = &this->head_formula->move();
+    //result->has_inertia_variables = this->has_inertia_variables;
+    //result->is_inertia_variable = std::move(this->is_inertia_variable);
+    //result->current_timepoint = this->current_timepoint;
+    //result->inertia_facts = std::move(this->inertia_facts);
+    //result->current_step_facts = std::move(this->current_step_facts);
+    //result->current_timepoint_facts = std::move(this->current_timepoint_facts);
+    //result->facts_found_in_db = std::move(this->facts_found_in_db);
+    //result->use_global_nulls = this->use_global_nulls;
+    //return result;
+//}
 
 void RestrictedFilter::init(
     std::vector<std::unique_ptr<formula::Formula>> const &head_atoms,

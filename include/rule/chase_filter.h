@@ -19,6 +19,10 @@ class ChaseFilter {
   public:
     virtual ~ChaseFilter() = default;
 
+    //virtual ChaseFilter *create() const = 0; // Virtual constructor (creation)
+    //virtual ChaseFilter *clone() const = 0;  // Virtual constructor (copying)
+    //virtual ChaseFilter *move() = 0;
+
     virtual void
     init(std::vector<std::unique_ptr<formula::Formula>> const &head_atoms,
          std::vector<std::string> const &head_variables,

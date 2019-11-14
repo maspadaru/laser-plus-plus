@@ -5,7 +5,7 @@
 #include <set>
 #include <vector>
 
-#include "formula/extended/conjunction.h"
+//#include "formula/extended/conjunction.h"
 #include "formula/formula.h"
 #include "formula/formula_type.h"
 #include "rule/chase_filter.h"
@@ -74,11 +74,11 @@ class RestrictedFilter : public ChaseFilter {
 
   public:
     RestrictedFilter() = default;
-    ~RestrictedFilter() override;
+    //~RestrictedFilter() override;
 
-    ChaseFilter *create() const override;
-    ChaseFilter *clone() const override;
-    ChaseFilter *move() override;
+    //ChaseFilter *create() const override;
+    //ChaseFilter *clone() const override;
+    //ChaseFilter *move() override;
 
     void init(std::vector<std::unique_ptr<formula::Formula>> const &head_atoms,
               std::vector<std::string> const &head_variables,

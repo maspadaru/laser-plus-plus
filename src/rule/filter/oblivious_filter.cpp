@@ -2,20 +2,20 @@
 
 namespace laser::rule {
 
-ChaseFilter *ObliviousFilter::create() const {
-    auto result = new ObliviousFilter();
-    return result;
-}
+//ChaseFilter *ObliviousFilter::create() const {
+    //auto result = new ObliviousFilter();
+    //return result;
+//}
 
-ChaseFilter *ObliviousFilter::clone() const {
-    auto result = new ObliviousFilter();
-    return result;
-}
+//ChaseFilter *ObliviousFilter::clone() const {
+    //auto result = new ObliviousFilter();
+    //return result;
+//}
 
-ChaseFilter *ObliviousFilter::move() {
-    auto result = new ObliviousFilter();
-    return result;
-}
+//ChaseFilter *ObliviousFilter::move() {
+    //auto result = new ObliviousFilter();
+    //return result;
+//}
 
 void ObliviousFilter::init(
     std::vector<std::unique_ptr<formula::Formula>> const &head_atoms,

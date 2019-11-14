@@ -158,15 +158,16 @@ bool IndexedFilter::compare_horizon_time(
 std::unique_ptr<formula::Formula> IndexedFilter::build_head_formula(
     size_t index, std::vector<std::unique_ptr<formula::Formula>> const &list) const {
     if (index == list.size() - 1) {
-        auto result = &list[index]->clone();
+        auto result = list[index]->clone();
         result->set_head(false);
         return result;
     }
-    auto left = &list[index]->clone();
+   auto left = list[index]->clone();
     left->set_head(false);
     auto right = build_head_formula(index + 1, list);
-    return std::make_unique<formula::Conjunction>(std::move(left),
-                                                  std::move(right), true);
+    //return std::make_unique<formula::Conjunction>(std::move(left),
+                                                  //std::move(right), true);
+    return left; //TODO Delete this and uncommment line above
 }
 
 void IndexedFilter::expire_outdated_groundings(util::Timeline const &timeline) {
