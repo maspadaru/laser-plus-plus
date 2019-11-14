@@ -11,7 +11,7 @@
 #include "core/io_manager.h"
 #include "core/program.h"
 #include "rule/rule.h"
-#include "service/service_manager.h"
+//#include "service/service_manager.h"
 #include "util/chase_algorithm.h"
 #include "util/grounding.h"
 #include "util/settings.h"
@@ -24,7 +24,7 @@ class Reasoner {
     std::mutex fact_map_mutex;
     std::mutex conclusion_map_mutex;
     IOManager *io_manager;
-    service::ServiceManager *service_manager;
+    //service::ServiceManager *service_manager;
     std::vector<rule::Rule> *rule_vector;
     bool is_listen_on = false;
     std::chrono::duration<double, std::milli> clock_eval;
@@ -56,9 +56,9 @@ class Reasoner {
     explicit Reasoner(std::vector<rule::Rule> *rule_vector,
                       IOManager *io_manager);
 
-    explicit Reasoner(std::vector<rule::Rule> *rule_vector,
-                      IOManager *io_manager,
-                      service::ServiceManager *service_manager);
+    //explicit Reasoner(std::vector<rule::Rule> *rule_vector,
+                      //IOManager *io_manager,
+                      //service::ServiceManager *service_manager);
 
     double start();
 };
