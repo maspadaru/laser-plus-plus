@@ -2,23 +2,9 @@
 
 namespace laser::formula {
 
-TupleWindow::~TupleWindow() { delete child; }
-
-Formula &TupleWindow::create() const {
-    auto result = new TupleWindow();
-    return *result;
-}
-
-Formula &TupleWindow::clone() const {
-    auto *result =
-        new TupleWindow(past_size, future_size, &this->child->clone());
-    return *result;
-}
-
-Formula &TupleWindow::move() {
-    auto result = new TupleWindow(past_size, future_size, &this->child->move());
-    return *result;
-}
+std::unique_ptr<formula::Formula> TupleWindow::clone() const {
+    return std::make_unique<formula::TupleWindow>(*this);
+} 
 
 void TupleWindow::set_head(bool is_head) { child->set_head(is_head); }
 
@@ -125,29 +111,28 @@ TupleWindow::get_conclusions_step(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
 
-TupleWindow::TupleWindow(uint64_t size, Formula *child) {
+TupleWindow::TupleWindow(uint64_t size, std::unique_ptr<formula::Formula> child)
+    : child(std::move(child)) {
     this->past_size = size;
     this->future_size = 0;
-    this->child = &child->move();
 }
 
 TupleWindow::TupleWindow(uint64_t past_size, uint64_t future_size,
-                         Formula *child) {
+                         std::unique_ptr<formula::Formula> child)
+    : child(std::move(child)) {
     this->past_size = past_size;
     this->future_size = future_size;
-    this->child = &child->move();
 }
 
-void TupleWindow::add_child(formula::Formula *child) {}
+void TupleWindow::add_child(std::unique_ptr<formula::Formula> child) {}
 
-std::vector<formula::Formula *> TupleWindow::get_children() const {
-    std::vector<formula::Formula *> result;
-    result.push_back(child);
+std::vector<std::unique_ptr<formula::Formula> const *>
+TupleWindow::get_children() const {
+    std::vector<std::unique_ptr<formula::Formula> const *> result;
+    result.push_back(&child);
     return result;
-} 
+}
 
-uint64_t TupleWindow::get_window_size() const {
-    return past_size;
-} 
+uint64_t TupleWindow::get_window_size() const { return past_size; }
 
 } // namespace laser::formula

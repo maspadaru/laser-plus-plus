@@ -2,13 +2,15 @@
 
 namespace laser::formula {
 
-TimeReference::~TimeReference() { delete child; }
-
-TimeReference::TimeReference(std::string time_variable, Formula *child)
-    : time_variable(std::move(time_variable)) {
-    this->child = &child->move();
+TimeReference::TimeReference(std::string time_variable,
+                             std::unique_ptr<formula::Formula> child)
+    : time_variable(std::move(time_variable)), child(std::move(child)) {
     init();
 }
+
+std::unique_ptr<formula::Formula> TimeReference::clone() const {
+    return std::make_unique<formula::TimeReference>(*this);
+} 
 
 void TimeReference::init() {
     auto variable_names = child->get_variable_names();
@@ -23,21 +25,6 @@ bool TimeReference::is_head() const { return child->is_head(); }
 
 size_t TimeReference::get_time_variable_index() const {
     return grounding_table.get_variable_index(time_variable);
-}
-
-Formula &TimeReference::create() const {
-    auto result = new TimeReference();
-    return *result;
-}
-
-Formula &TimeReference::clone() const {
-    auto result = new TimeReference(time_variable, &this->child->clone());
-    return *result;
-}
-
-Formula &TimeReference::move() {
-    auto result = new TimeReference(time_variable, &this->child->move());
-    return *result;
 }
 
 FormulaType TimeReference::get_type() const { return formula_type; }
@@ -62,14 +49,14 @@ size_t TimeReference::get_number_of_variables() const {
     return grounding_table.get_number_of_variables();
 }
 
-void TimeReference::add_child(formula::Formula *child) {}
+void TimeReference::add_child(std::unique_ptr<formula::Formula> child) {}
 
 std::shared_ptr<util::Grounding>
 TimeReference::add_time_variable(util::Timeline const &timeline,
                                  util::Grounding const &grounding) const {
     auto result = grounding.deep_clone();
     result->set_constant(get_time_variable_index(),
-                               std::move(std::to_string(timeline.get_time())));
+                         std::move(std::to_string(timeline.get_time())));
     return result;
 }
 
@@ -216,14 +203,13 @@ void TimeReference::expire_outdated_groundings(util::Timeline const &timeline) {
     grounding_table.expire_outdated_groundings(time, tuple_count);
 }
 
-std::vector<formula::Formula *> TimeReference::get_children() const {
-    std::vector<formula::Formula *> result;
-    result.push_back(child);
+std::vector<std::unique_ptr<formula::Formula> const *>
+TimeReference::get_children() const {
+    std::vector<std::unique_ptr<formula::Formula> const *> result;
+    result.push_back(&child);
     return result;
-} 
+}
 
-uint64_t TimeReference::get_window_size() const {
-    return 0;
-} 
+uint64_t TimeReference::get_window_size() const { return 0; }
 
 } // namespace laser::formula

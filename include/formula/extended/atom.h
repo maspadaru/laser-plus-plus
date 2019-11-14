@@ -73,9 +73,7 @@ class Atom : public Formula {
 
     ~Atom() override = default;
 
-    Formula &create() const override;
-    Formula &clone() const override;
-    Formula &move() override;
+    std::unique_ptr<formula::Formula> clone() const override;
 
     FormulaType get_type() const override;
 
@@ -108,9 +106,10 @@ class Atom : public Formula {
     std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_step(util::Timeline const &timeline) override;
 
-    void add_child(formula::Formula *child) override;
+    void add_child(std::unique_ptr<formula::Formula> child) override;
 
-    std::vector<formula::Formula *> get_children() const override;
+    std::vector<std::unique_ptr<formula::Formula> const *>
+    get_children() const override;
 
     uint64_t get_window_size() const override;
 };

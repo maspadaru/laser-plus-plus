@@ -16,7 +16,7 @@ class TupleWindow : public Formula {
   private:
     uint64_t past_size = 0;   // L
     uint64_t future_size = 0; // U
-    Formula *child;
+    std::unique_ptr<formula::Formula> child;
 
     util::Timeline alter_timeline(util::Timeline timeline) const;
     uint64_t compute_horizon_count(uint64_t grounding_consideration_count,
@@ -26,14 +26,14 @@ class TupleWindow : public Formula {
         std::vector<std::shared_ptr<util::Grounding>> const &facts) const;
 
   public:
-
     TupleWindow() = default;
     ~TupleWindow() override;
+    explicit TupleWindow(uint64_t size,
+                         std::unique_ptr<formula::Formula> child);
+    explicit TupleWindow(uint64_t past_size, uint64_t future_size,
+                         std::unique_ptr<formula::Formula> child);
 
-    Formula &create() const override;
-    Formula &clone() const override;
-
-    Formula &move() override;
+    std::unique_ptr<formula::Formula> clone() const override;
 
     void set_head(bool is_head) override;
 
@@ -66,16 +66,10 @@ class TupleWindow : public Formula {
     std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_step(util::Timeline const &timeline) override;
 
-    void add_child(formula::Formula *child) override;
+    void add_child(std::unique_ptr<formula::Formula> child) override;
 
-    // Own methodds, not inherited from Formula interface:
-
-    explicit TupleWindow(uint64_t size, Formula *child);
-
-    explicit TupleWindow(uint64_t past_size, uint64_t future_size,
-                         Formula *child);
-
-    std::vector<formula::Formula *> get_children() const override;
+    std::vector<std::unique_ptr<formula::Formula> const *>
+    get_children() const override;
 
     uint64_t get_window_size() const override;
 };

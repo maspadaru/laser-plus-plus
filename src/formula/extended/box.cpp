@@ -2,24 +2,11 @@
 
 namespace laser::formula {
 
-Box::~Box() { delete child; }
+Box::Box(std::unique_ptr<formula::Formula> child) : child(std::move(child)) {}
 
-Box::Box(Formula *child) { this->child = &child->move(); }
-
-Formula &Box::create() const {
-    auto result = new Box();
-    return *result;
-}
-
-Formula &Box::clone() const {
-    auto result = new Box(&this->child->clone());
-    return *result;
-}
-
-Formula &Box::move() {
-    auto result = new Box(&this->child->move());
-    return *result;
-}
+std::unique_ptr<formula::Formula> Box::clone() const {
+    return std::make_unique<formula::Box>(*this);
+} 
 
 void Box::set_head(bool is_head) { is_head_m = is_head; }
 
@@ -47,7 +34,7 @@ size_t Box::get_number_of_variables() const {
     return child->get_number_of_variables();
 }
 
-void Box::add_child(formula::Formula *child) {}
+void Box::add_child(std::unique_ptr<formula::Formula> child) {}
 
 void Box::expire_outdated_groundings(util::Timeline const &timeline) {
     child->expire_outdated_groundings(timeline);
@@ -191,14 +178,13 @@ Box::adjust_annotation(std::shared_ptr<util::Grounding> const &box_grounding,
     return {is_modified, box_grounding};
 }
 
-std::vector<formula::Formula *> Box::get_children() const {
-    std::vector<formula::Formula *> result;
-    result.push_back(child);
+std::vector<std::unique_ptr<formula::Formula> const *>
+Box::get_children() const {
+    std::vector<std::unique_ptr<formula::Formula> const *> result;
+    result.push_back(&child);
     return result;
-} 
+}
 
-uint64_t Box::get_window_size() const {
-    return 0;
-} 
+uint64_t Box::get_window_size() const { return 0; }
 
 } // namespace laser::formula

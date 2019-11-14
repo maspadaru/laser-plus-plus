@@ -15,20 +15,17 @@ namespace laser::formula {
  */
 class Diamond : public Formula {
   private:
+    FormulaType formula_type = FormulaType::DIAMOND;
     bool is_head_m = false;
-    Formula *child;
+    std::unique_ptr<formula::Formula> child;
     GroundingTable grounding_table;
 
   public:
-
     Diamond() = default;
-    explicit Diamond(Formula *child);
-    ~Diamond() override;
 
-    Formula &create() const override;
-    Formula &clone() const override;
+    explicit Diamond(std::unique_ptr<formula::Formula> child);
 
-    Formula &move() override;
+    std::unique_ptr<formula::Formula> clone() const override;
 
     void set_head(bool is_head) override;
 
@@ -61,9 +58,10 @@ class Diamond : public Formula {
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 
-    void add_child(formula::Formula *child) override;
+    void add_child(std::unique_ptr<formula::Formula> child) override;
 
-    std::vector<formula::Formula *> get_children() const override;
+    std::vector<std::unique_ptr<formula::Formula> const *>
+    get_children() const override;
 
     uint64_t get_window_size() const override;
 };

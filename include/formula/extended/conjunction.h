@@ -1,10 +1,10 @@
 #ifndef LASER_FORMULA_EXTENDED_CONJUNCTION_H
 #define LASER_FORMULA_EXTENDED_CONJUNCTION_H
 
+#include <set>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-#include <set>
 #include <vector>
 
 #include "formula/formula.h"
@@ -19,8 +19,8 @@ namespace laser::formula {
 class Conjunction : public Formula {
   private:
     bool is_head_m = false;
-    Formula *left_child;
-    Formula *right_child;
+    std::unique_ptr<formula::Formula> left_child;
+    std::unique_ptr<formula::Formula> right_child;
     std::vector<std::string> predicate_vector;
     std::map<std::string, size_t> arity_map;
     std::vector<std::string> common_child_variables;
@@ -31,12 +31,12 @@ class Conjunction : public Formula {
      */
     std::unordered_map<std::string, size_t> variable_map;
 
-    //std::unordered_set<std::shared_ptr<util::Grounding>,
-                       //util::GroundingFullHash, util::GroundingEqual>
-        //grounding_set;
-    std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> grounding_set;
+    // std::unordered_set<std::shared_ptr<util::Grounding>,
+    // util::GroundingFullHash, util::GroundingEqual>
+    // grounding_set;
+    std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
+        grounding_set;
 
-    
     void compute_predicate_vector();
 
     void compute_arity_map();
@@ -46,7 +46,7 @@ class Conjunction : public Formula {
     bool is_head() const override;
 
     void concatenate_vectors(std::vector<std::string> const &left,
-                                      std::vector<std::string> const &right);
+                             std::vector<std::string> const &right);
 
     void populate_variable_collections();
     void populate_grounding_set(
@@ -64,15 +64,14 @@ class Conjunction : public Formula {
 
   public:
     Conjunction() = default;
-    explicit Conjunction(Formula *left_child, Formula *right_child);
-    explicit Conjunction(Formula *left_child, Formula *right_child,
+    explicit Conjunction(std::unique_ptr<formula::Formula> left_child,
+                         std::unique_ptr<formula::Formula> right_child);
+    explicit Conjunction(std::unique_ptr<formula::Formula> left_child,
+                         std::unique_ptr<formula::Formula> right_child,
                          bool is_head);
-    ~Conjunction() override;
+    ~Conjunction() = default;
 
-    Formula &create() const override;
-    Formula &clone() const override;
-
-    Formula &move() override;
+    std::unique_ptr<formula::Formula> clone() const override;
 
     FormulaType get_type() const override;
 
@@ -101,9 +100,10 @@ class Conjunction : public Formula {
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 
-    void add_child(formula::Formula *child) override;
+    void add_child(std::unique_ptr<formula::Formula> child) override;
 
-    std::vector<formula::Formula *> get_children() const override;
+    std::vector<std::unique_ptr<formula::Formula> const *>
+    get_children() const override;
 
     uint64_t get_window_size() const override;
 };

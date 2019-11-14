@@ -20,16 +20,8 @@ class Formula {
   public:
     virtual ~Formula() = default;
 
-    virtual Formula &create() const = 0; // Virtual constructor (creation)
-    virtual Formula &clone() const = 0;  // Virtual constructor (copying)
-
-    /**
-     * Virtual constructor (moving)
-     *  All the contents of this object are moved to a new object allocated on
-     *  the heap using 'new'.
-     * @return reference to the newly allocated object.
-     */
-    virtual Formula &move() = 0;
+    virtual std::unique_ptr<formula::Formula>
+    clone() const = 0;
 
     virtual void set_head(bool is_head) = 0;
 
@@ -43,9 +35,10 @@ class Formula {
 
     virtual std::map<std::string, size_t> const &get_arity_map() const = 0;
 
-    virtual void add_child(formula::Formula *child) = 0;
+    virtual void add_child(std::unique_ptr<formula::Formula> child) = 0;
 
-    virtual std::vector<formula::Formula *> get_children() const = 0;
+    virtual std::vector<std::unique_ptr<formula::Formula> const *>
+    get_children() const = 0;
 
     /**
      * Return a list of all variable names, including duplicates.

@@ -2,26 +2,9 @@
 
 namespace laser::formula {
 
-TimeWindow::~TimeWindow() { delete child; }
-
-Formula &TimeWindow::create() const {
-    auto result = new TimeWindow();
-    return *result;
-}
-
-Formula &TimeWindow::clone() const {
-    auto *result = new TimeWindow(past_size, future_size, step_size,
-                                  &this->child->clone());
-    result->pivot_time = this->pivot_time;
-    return *result;
-}
-
-Formula &TimeWindow::move() {
-    auto result =
-        new TimeWindow(past_size, future_size, step_size, &this->child->move());
-    result->pivot_time = this->pivot_time;
-    return *result;
-}
+std::unique_ptr<formula::Formula> TimeWindow::clone() const {
+    return std::make_unique<formula::TimeWindow>(*this);
+} 
 
 void TimeWindow::set_head(bool is_head) { child->set_head(is_head); }
 
@@ -99,7 +82,7 @@ TimeWindow::get_groundings(util::Timeline const &timeline) {
         std::shared_ptr<util::Grounding> new_grounding;
         if (child->get_type() == FormulaType::DIAMOND) {
             // Diamond clones facts before returning them to parent
-            new_grounding = grounding;  
+            new_grounding = grounding;
         } else {
             new_grounding = grounding->shallow_clone();
         }
@@ -119,33 +102,33 @@ TimeWindow::get_conclusions_step(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
 
-TimeWindow::TimeWindow(uint64_t size, Formula *child) {
+TimeWindow::TimeWindow(uint64_t size, std::unique_ptr<formula::Formula> child)
+    : child(std::move(child)) {
     this->past_size = size;
     this->future_size = 0;
     this->step_size = 0;
     this->pivot_time = 0;
-    this->child = &child->move();
 }
 
 TimeWindow::TimeWindow(uint64_t past_size, uint64_t future_size,
-                       uint64_t step_size, Formula *child) {
+                       uint64_t step_size,
+                       std::unique_ptr<formula::Formula> child)
+    : child(std::move(child)) {
     this->past_size = past_size;
     this->future_size = future_size;
     this->step_size = step_size;
     this->pivot_time = 0;
-    this->child = &child->move();
 }
 
-void TimeWindow::add_child(formula::Formula *child) {}
+void TimeWindow::add_child(std::unique_ptr<formula::Formula> child) {}
 
-std::vector<formula::Formula *> TimeWindow::get_children() const {
-    std::vector<formula::Formula *> result;
-    result.push_back(child);
+std::vector<std::unique_ptr<formula::Formula> const *>
+TimeWindow::get_children() const {
+    std::vector<std::unique_ptr<formula::Formula> const *> result;
+    result.push_back(&child);
     return result;
-} 
+}
 
-uint64_t TimeWindow::get_window_size() const {
-    return past_size;
-} 
+uint64_t TimeWindow::get_window_size() const { return past_size; }
 
 } // namespace laser::formula

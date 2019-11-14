@@ -4,45 +4,28 @@
 
 namespace laser::formula {
 
-Conjunction::~Conjunction() {
-    delete left_child;
-    delete right_child;
-}
-
-Conjunction::Conjunction(Formula *left_child, Formula *right_child,
-                         bool is_head) {
-    this->left_child = &left_child->move();
-    this->right_child = &right_child->move();
+Conjunction::Conjunction(std::unique_ptr<formula::Formula>,
+                         std::unique_ptr<formula::Formula> right_child,
+                         bool is_head)
+    : left_child(std::move(left_child)), right_child(std::move(right_child)) {
     is_head_m = is_head;
     populate_variable_collections();
     compute_predicate_vector();
     compute_arity_map();
 }
 
-Conjunction::Conjunction(Formula *left_child, Formula *right_child) {
-    this->left_child = &left_child->move();
-    this->right_child = &right_child->move();
+Conjunction::Conjunction(std::unique_ptr<formula::Formula> left_child,
+                         std::unique_ptr<formula::Formula> right_child)
+    : left_child(std::move(left_child)), right_child(std::move(right_child)) {
     populate_variable_collections();
     compute_predicate_vector();
     compute_arity_map();
 }
 
-Formula &Conjunction::create() const {
-    auto result = new Conjunction();
-    return *result;
-}
+std::unique_ptr<formula::Formula> Conjunction::clone() const {
+    return std::make_unique<formula::Conjunction>(*this);
+} 
 
-Formula &Conjunction::clone() const {
-    auto result = new Conjunction(&this->left_child->clone(),
-                                  &this->right_child->clone());
-    return *result;
-}
-
-Formula &Conjunction::move() {
-    auto result =
-        new Conjunction(&this->left_child->move(), &this->right_child->move());
-    return *result;
-}
 
 bool Conjunction::is_head() const { return is_head_m; }
 
@@ -102,7 +85,6 @@ std::map<std::string, size_t> const &Conjunction::get_arity_map() const {
     return arity_map;
 }
 
-
 void Conjunction::compute_arity_map() {
     arity_map = left_child->get_arity_map();
     auto right_arity_map = right_child->get_arity_map();
@@ -135,11 +117,11 @@ size_t Conjunction::get_number_of_variables() const {
     return variable_names.size();
 }
 
-void Conjunction::add_child(formula::Formula *child) {
+void Conjunction::add_child(std::unique_ptr<formula::Formula> child) {
     if (!left_child) {
-        left_child = &child->move();
+        left_child = std::move(child);
     } else if (!right_child) {
-        right_child = &child->move();
+        right_child = std::move(child);
         populate_variable_collections();
         compute_predicate_vector();
     }
@@ -205,8 +187,8 @@ Conjunction::merge_groundings(util::Timeline const &timeline,
             substitution_vector.push_back(right.get_constant(right_index));
         }
     }
-    auto result = std::make_shared<util::Grounding>(
-       "", ct, ht, cc, hc, substitution_vector);
+    auto result = std::make_shared<util::Grounding>("", ct, ht, cc, hc,
+                                                    substitution_vector);
     auto max_step = left.get_step();
     if (max_step < right.get_step()) {
         max_step = right.get_step();
@@ -260,15 +242,14 @@ bool Conjunction::evaluate(
     return !grounding_set.empty();
 }
 
-std::vector<formula::Formula *> Conjunction::get_children() const {
-    std::vector<formula::Formula *> result;
-    result.push_back(left_child);
-    result.push_back(right_child);
+std::vector<std::unique_ptr<formula::Formula> const *>
+Conjunction::get_children() const {
+    std::vector<std::unique_ptr<formula::Formula> const *> result;
+    result.push_back(&left_child);
+    result.push_back(&right_child);
     return result;
-} 
+}
 
-uint64_t Conjunction::get_window_size() const {
-    return 0;
-} 
+uint64_t Conjunction::get_window_size() const { return 0; }
 
-} // namespac laser::formula
+} // namespace laser::formula

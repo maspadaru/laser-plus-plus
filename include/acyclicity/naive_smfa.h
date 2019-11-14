@@ -26,7 +26,8 @@ class NaiveSMFA {
     std::map<std::string, size_t> arity_map;
     uint64_t global_tuple_counter = 0;
 
-    uint64_t get_time(formula::Formula *formula, bool is_head_atom);
+    uint64_t get_time(std::unique_ptr<formula::Formula> const &formula,
+                      bool is_head_atom);
     std::vector<std::shared_ptr<util::Grounding>> generate_critical_facts();
     void compute_extensional_predicates();
     void compute_critical_timeline();
@@ -42,10 +43,10 @@ class NaiveSMFA {
                              std::string const &frist_variable,
                              std::string const &second_variable) const;
 
-    rule::Rule generate_S_D_rule() const; 
+    rule::Rule generate_S_D_rule() const;
 
-    rule::Rule generate_D_transitive_rule() const; 
-            
+    rule::Rule generate_D_transitive_rule() const;
+
     rule::Rule generate_C_rule(std::string const &predicate_F) const;
 
   public:

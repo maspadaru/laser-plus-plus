@@ -22,7 +22,7 @@ class Box : public Formula {
   private:
     bool is_head_m = false;
 
-    Formula *child;
+    std::unique_ptr<Formula> child;
 
     GroundingTable grounding_table;
 
@@ -42,13 +42,10 @@ class Box : public Formula {
 
   public:
     Box() = default;
-    explicit Box(Formula *child);
+    explicit Box(std::unique_ptr<formula::Formula> child);
     ~Box() override;
 
-    Formula &create() const override;
-    Formula &clone() const override;
-
-    Formula &move() override;
+    std::unique_ptr<formula::Formula> clone() const override;
 
     void set_head(bool is_head) override;
 
@@ -81,12 +78,12 @@ class Box : public Formula {
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 
-    void add_child(formula::Formula *child) override;
+    void add_child(std::unique_ptr<formula::Formula> child) override;
 
-    std::vector<formula::Formula *> get_children() const override;
+    std::vector<std::unique_ptr<formula::Formula> const *>
+    get_children() const override;
 
     uint64_t get_window_size() const override;
-
 };
 
 } // namespace laser::formula

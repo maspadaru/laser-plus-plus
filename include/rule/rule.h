@@ -28,12 +28,12 @@ class Rule {
   private:
     bool is_existential_m = false;
     formula::Formula &body;
-    std::vector<formula::Formula *> head_atoms;
+    std::vector<std::unique_ptr<formula::Formula>> head_atoms;
     std::vector<MathAtom> math_atoms;
     // for each atom in head_atoms, there is a vector containing the postions
     // in the body grounding where the value of each head variables is found
     std::vector<std::vector<size_t>> head_atoms_var_positions;
-    ChaseFilter *chase_filter;
+    std::unique_ptr<ChaseFilter> chase_filter;
     // maps head variables names to postion of variables in the body grounding
     std::unordered_map<std::string, int> head_variable_index;
     size_t previous_step = 0;
@@ -46,7 +46,7 @@ class Rule {
 
     void clear();
     void
-    init_frontier_variables(std::vector<formula::Formula *> const &head_atoms);
+    init_frontier_variables(std::vector<std::unique_ptr<formula::Formula>> const &head_atoms);
 
     std::vector<bool> generate_inertia_vector();
 
@@ -54,9 +54,9 @@ class Rule {
     convert_to_head_grounding(std::string const &head_predicate,
                               util::Grounding const &grounding) const;
 
-    void init_chase(std::vector<formula::Formula *> const &head_atoms);
+    void init_chase(std::vector<std::unique_ptr<formula::Formula>> const &head_atoms);
 
-    void init(std::vector<formula::Formula *> head_atoms);
+    void init(std::vector<std::unique_ptr<formula::Formula>> head_atoms);
 
     void expire_head_groundings(util::Timeline const &timeline);
 
@@ -76,18 +76,18 @@ class Rule {
         std::vector<std::shared_ptr<util::Grounding>> body_facts);
 
   public:
-    explicit Rule(formula::Formula *body_formula,
-                  std::vector<formula::Formula *> head_atoms,
-                  std::set<std::string> inertia_variables);
+    explicit Rule(std::unique_ptr<formula::Formula> body_formula,
+           std::vector<std::unique_ptr<formula::Formula>> head_atoms,
+                 std::set<std::string> inertia_variables);
 
-    explicit Rule(formula::Formula *body_formula,
-                  std::vector<formula::Formula *> head_atoms,
+    explicit Rule(std::unique_ptr<formula::Formula> body_formula,
+           std::vector<std::unique_ptr<formula::Formula>> head_atoms,
                   std::vector<MathAtom> math_atoms,
                   std::set<std::string> inertia_variables);
 
 
-    explicit Rule(formula::Formula *body_formula,
-                  std::vector<formula::Formula *> head_atoms);
+    explicit Rule(std::unique_ptr<formula::Formula> body_formula,
+           std::vector<std::unique_ptr<formula::Formula>> head_atoms);
 
     Rule(Rule const &other);     // copy constructor
     Rule(Rule &&other) noexcept; // move constructor
@@ -99,10 +99,10 @@ class Rule {
 
     std::vector<std::string> const &get_frontier_variables() const;
     std::vector<std::string> const &get_bound_variables() const;
-    std::vector<formula::Formula *> get_head_atoms() const;
-    formula::Formula *get_body() const;
+    std::vector<std::unique_ptr<formula::Formula>> const &get_head_atoms() const;
+    formula::Formula const &get_body() const;
 
-    void add_head_atoms(std::vector<formula::Formula *> atom_vector);
+    void add_head_atoms(std::vector<std::unique_ptr<formula::Formula>> atom_vector);
 
     std::set<std::string> get_body_predicates() const;
 

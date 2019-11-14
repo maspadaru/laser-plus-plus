@@ -12,11 +12,11 @@
 #include "rule/chase_filter.h"
 #include "rule/shared.h"
 #include "util/database.h"
+#include "util/global.h"
 #include "util/grounding.h"
-#include "util/timeline.h"
 #include "util/settings.h"
 #include "util/shared.h"
-#include "util/global.h"
+#include "util/timeline.h"
 
 namespace laser::rule {
 
@@ -69,7 +69,7 @@ class SkolemFilter : public ChaseFilter {
     ChaseFilter *clone() const override;
     ChaseFilter *move() override;
 
-    void init(std::vector<formula::Formula *> const &head_atoms,
+    void init(std::vector<std::unique_ptr<formula::Formula>> const &head_atoms,
               std::vector<std::string> const &head_variables,
               std::vector<std::string> const &free_variables,
               std::vector<std::string> const &bound_variables,

@@ -2,10 +2,9 @@
 
 namespace laser::formula {
 
-Atom::Atom(std::string predicate) { 
+Atom::Atom(std::string predicate) {
     this->arity_map.try_emplace(predicate, 0);
-    this->predicate_vector.push_back(std::move(predicate)); 
-
+    this->predicate_vector.push_back(std::move(predicate));
 }
 
 Atom::Atom(std::string predicate, std::vector<std::string> variable_names) {
@@ -13,6 +12,11 @@ Atom::Atom(std::string predicate, std::vector<std::string> variable_names) {
     this->predicate_vector.push_back(std::move(predicate));
     set_variable_names(variable_names);
 }
+
+
+std::unique_ptr<formula::Formula> Atom::clone() const {
+    return std::make_unique<formula::Atom>(*this);
+} 
 
 void Atom::set_variable_names(std::vector<std::string> &variable_names) {
     grounding_table.set_variable_names(variable_names);
@@ -49,37 +53,6 @@ void Atom::compute_unique_variable_names(
             }
         }
     }
-}
-
-Formula &Atom::create() const {
-    auto result = new Atom();
-    return *result;
-}
-
-Formula &Atom::clone() const {
-    Atom *result = new Atom(this->predicate_vector.at(0));
-    result->is_head_m = this->is_head_m;
-    result->type = this->type;
-    result->has_duplicate_variables = this->has_duplicate_variables;
-    result->unique_variable_names = this->unique_variable_names;
-    result->binding_map = this->binding_map;
-    result->grounding_table = this->grounding_table;
-    result->predicate_vector = this->predicate_vector;
-    result->arity_map = this->arity_map;
-    return *result;
-}
-
-Formula &Atom::move() {
-    Atom *result = new Atom(this->predicate_vector.at(0));
-    result->is_head_m = this->is_head_m;
-    result->type = this->type;
-    result->has_duplicate_variables = this->has_duplicate_variables;
-    result->unique_variable_names = std::move(this->unique_variable_names);
-    result->binding_map = std::move(this->binding_map);
-    result->grounding_table = std::move(this->grounding_table);
-    result->predicate_vector = std::move(this->predicate_vector);
-    result->arity_map = std::move(this->arity_map);
-    return *result;
 }
 
 FormulaType Atom::get_type() const { return this->type; }
@@ -175,17 +148,14 @@ int Atom::get_variable_index(std::string const &variable_name) const {
     return grounding_table.get_variable_index(variable_name);
 }
 
-void Atom::add_child(formula::Formula *child) {}
+void Atom::add_child(std::unique_ptr<formula::Formula> child) {}
 
-
-std::vector<formula::Formula *> Atom::get_children() const {
-    std::vector<formula::Formula *> result;
-    result.push_back(nullptr);
+std::vector<std::unique_ptr<formula::Formula> const *>
+Atom::get_children() const {
+    std::vector<std::unique_ptr<formula::Formula> const *> result;
     return result;
-} 
+}
 
-uint64_t Atom::get_window_size() const {
-    return 0;
-} 
+uint64_t Atom::get_window_size() const { return 0; }
 
 } // namespace laser::formula

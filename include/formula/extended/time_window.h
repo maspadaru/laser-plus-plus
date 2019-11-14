@@ -17,7 +17,7 @@ class TimeWindow : public Formula {
     uint64_t future_size = 0; // U
     uint64_t step_size = 0;   // D
     uint64_t pivot_time = 0;
-    Formula *child;
+    std::unique_ptr<formula::Formula> child;
 
     util::Timeline alter_timeline(util::Timeline timeline) const;
     uint64_t compute_horizon_time(uint64_t grounding_consideration_time,
@@ -25,14 +25,13 @@ class TimeWindow : public Formula {
                                   uint64_t current_time) const;
 
   public:
-
     TimeWindow() = default;
-    ~TimeWindow() override;
+    explicit TimeWindow(uint64_t size, std::unique_ptr<formula::Formula> child);
+    explicit TimeWindow(uint64_t past_size, uint64_t future_size,
+                        uint64_t step_size,
+                        std::unique_ptr<formula::Formula> child);
 
-    Formula &create() const override;
-    Formula &clone() const override;
-
-    Formula &move() override;
+    std::unique_ptr<formula::Formula> clone() const override;
 
     void set_head(bool is_head) override;
 
@@ -65,14 +64,10 @@ class TimeWindow : public Formula {
     std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_step(util::Timeline const &timeline) override;
 
-    void add_child(formula::Formula *child) override;
+    void add_child(std::unique_ptr<formula::Formula> child) override;
 
-    explicit TimeWindow(uint64_t size, Formula *child);
-
-    explicit TimeWindow(uint64_t past_size, uint64_t future_size,
-                        uint64_t step_size, Formula *child);
-
-    std::vector<formula::Formula *> get_children() const override;
+    std::vector<std::unique_ptr<formula::Formula> const *>
+    get_children() const override;
 
     uint64_t get_window_size() const override;
 };

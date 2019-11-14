@@ -96,4 +96,5 @@ void test_run() {
 
 int main() {
     test_run(); 
+    exit(0);
 }

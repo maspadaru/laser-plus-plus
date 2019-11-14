@@ -2,48 +2,14 @@
 
 namespace laser::rule {
 
-ChaseFilter *IndexedFilter::create() const {
-    auto result = new IndexedFilter();
-    return result;
-}
-
-IndexedFilter::~IndexedFilter() { delete head_formula; }
-
-ChaseFilter *IndexedFilter::clone() const {
-    auto result = new IndexedFilter();
-    result->frontier_variables = this->frontier_variables;
-    result->head_variables = this->head_variables;
-    result->free_variables = this->free_variables;
-    result->bound_variables = this->bound_variables;
-    result->free_variable_index = this->free_variable_index;
-    result->bound_variable_index = this->bound_variable_index;
-    result->null_value_count = this->null_value_count;
-    result->head_formula = &this->head_formula->clone();
-    result->use_global_nulls = this->use_global_nulls;
-    return result;
-}
-
-ChaseFilter *IndexedFilter::move() {
-    auto result = new IndexedFilter();
-    result->frontier_variables = std::move(this->frontier_variables);
-    result->head_variables = std::move(this->head_variables);
-    result->free_variables = std::move(this->free_variables);
-    result->bound_variables = std::move(this->bound_variables);
-    result->free_variable_index = std::move(this->free_variable_index);
-    result->bound_variable_index = std::move(this->bound_variable_index);
-    result->null_value_count = this->null_value_count;
-    result->head_formula = &this->head_formula->move();
-    result->use_global_nulls = this->use_global_nulls;
-    return result;
-}
-
-void IndexedFilter::init(std::vector<formula::Formula *> const &head_atoms,
-                         std::vector<std::string> const &head_variables,
-                         std::vector<std::string> const &free_variables,
-                         std::vector<std::string> const &bound_variables,
-                         std::vector<bool> const &is_inertia_variable,
-                         std::vector<std::string> const &frontier_variables,
-                         bool has_inertia_variables) {
+void IndexedFilter::init(
+    std::vector<std::unique_ptr<formula::Formula>> const &head_atoms,
+    std::vector<std::string> const &head_variables,
+    std::vector<std::string> const &free_variables,
+    std::vector<std::string> const &bound_variables,
+    std::vector<bool> const &is_inertia_variable,
+    std::vector<std::string> const &frontier_variables,
+    bool has_inertia_variables) {
     this->head_variables = head_variables;
     this->free_variables = free_variables;
     this->bound_variables = bound_variables;
@@ -189,10 +155,8 @@ bool IndexedFilter::compare_horizon_time(
     return input_fact->get_horizon_time() <= db_fact->get_horizon_time();
 }
 
-formula::Formula *IndexedFilter::build_head_formula(
-    size_t index, std::vector<formula::Formula *> const &list) const {
-    // TODO check if clone is properly implemented in Atom, TimeReference &
-    // Conj
+std::unique_ptr<formula::Formula> IndexedFilter::build_head_formula(
+    size_t index, std::vector<std::unique_ptr<formula::Formula>> const &list) const {
     if (index == list.size() - 1) {
         auto result = &list[index]->clone();
         result->set_head(false);
@@ -201,7 +165,8 @@ formula::Formula *IndexedFilter::build_head_formula(
     auto left = &list[index]->clone();
     left->set_head(false);
     auto right = build_head_formula(index + 1, list);
-    return new formula::Conjunction(left, right, true);
+    return std::make_unique<formula::Conjunction>(std::move(left),
+                                                  std::move(right), true);
 }
 
 void IndexedFilter::expire_outdated_groundings(util::Timeline const &timeline) {

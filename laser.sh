@@ -15,7 +15,8 @@ build_testapp() {
     mkdir -p cmake-build-debug
     cd cmake-build-debug
     cmake -DCMAKE_BUILD_TYPE=Debug ..
-    make VERBOSE=1 testapp
+    #make VERBOSE=1 testapp
+    make testapp
     cd ..
 }
 
@@ -47,6 +48,16 @@ run_gtest () {
     cmake-build-debug/$GTEST_EXECUTABLE
 }
 
+run_valgrind_testapp () {
+    build_testapp
+    valgrind cmake-build-debug/$TESTAPP_EXECUTABLE
+}
+
+run_valgrind_gtest () {
+    build_gtest
+    valgrind cmake-build-debug/$GTEST_EXECUTABLE
+}
+
 print_help () {
     echo "Usage: laser.sh [b c d h r t]"
     echo "b: build Laser++"
@@ -54,7 +65,9 @@ print_help () {
     echo "d: Debug Test App using GDB"
     echo "h: Print help"
     echo "r: Run Test App"
-    echo "t: run all testcases"
+    echo "t: Run all testcases"
+    echo "vr: Run Valgrind on Test App"
+    echo "vt: Run valgrind on testcases"
     echo " "
 }
 
@@ -76,6 +89,10 @@ elif [ $1 = "r" ]; then
     run_testapp
 elif [ $1 = "t" ]; then
     run_gtest
+elif [ $1 = "vr" ]; then
+    run_valgrind_testapp
+elif [ $1 = "vt" ]; then
+    run_valgrind_gtest
 else
 	print_help
 fi

@@ -2,24 +2,12 @@
 
 namespace laser::formula {
 
-Diamond::~Diamond() { delete child; }
+Diamond::Diamond(std::unique_ptr<formula::Formula> child)
+    : child(std::move(child)) {}
 
-Diamond::Diamond(Formula *child) { this->child = &child->move(); }
-
-Formula &Diamond::create() const {
-    auto result = new Diamond();
-    return *result;
-}
-
-Formula &Diamond::clone() const {
-    auto result = new Diamond(&this->child->clone());
-    return *result;
-}
-
-Formula &Diamond::move() {
-    auto result = new Diamond(&this->child->move());
-    return *result;
-}
+std::unique_ptr<formula::Formula> Diamond::clone() const {
+    return std::make_unique<formula::Diamond>(*this);
+} 
 
 void Diamond::set_head(bool is_head) { is_head_m = is_head; }
 
@@ -47,7 +35,7 @@ size_t Diamond::get_number_of_variables() const {
     return child->get_number_of_variables();
 }
 
-void Diamond::add_child(formula::Formula *child) {}
+void Diamond::add_child(std::unique_ptr<formula::Formula> child) {}
 
 std::vector<std::shared_ptr<util::Grounding>>
 Diamond::get_groundings(util::Timeline const &timeline) {
@@ -87,9 +75,10 @@ void Diamond::expire_outdated_groundings(util::Timeline const &timeline) {
     grounding_table.expire_outdated_groundings(time, tuple_count);
 }
 
-std::vector<formula::Formula *> Diamond::get_children() const {
-    std::vector<formula::Formula *> result;
-    result.push_back(child);
+std::vector<std::unique_ptr<formula::Formula> const *>
+Diamond::get_children() const {
+    std::vector<std::unique_ptr<formula::Formula> const *> result;
+    result.push_back(&child);
     return result;
 }
 

@@ -16,7 +16,7 @@ namespace laser::formula {
 class TimeReference : public Formula {
   private:
     FormulaType formula_type = FormulaType::TIME_REFERENCE;
-    Formula *child;
+    std::unique_ptr<formula::Formula> child;
     GroundingTable grounding_table;
     /** Name of the time variable. Will always be on the last possition in the
      * grounding.
@@ -74,13 +74,10 @@ class TimeReference : public Formula {
 
   public:
     TimeReference() = default;
-    TimeReference(std::string time_variable, Formula *child);
+    TimeReference(std::string time_variable, std::unique_ptr<formula::Formula> child);
     ~TimeReference() override;
 
-    Formula &create() const override;
-    Formula &clone() const override;
-
-    Formula &move() override;
+    std::unique_ptr<formula::Formula> clone() const override;
 
     FormulaType get_type() const override;
 
@@ -112,9 +109,10 @@ class TimeReference : public Formula {
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 
-    void add_child(formula::Formula *child) override;
+    void add_child(std::unique_ptr<formula::Formula> child) override;
 
-    std::vector<formula::Formula *> get_children() const override;
+    std::vector<std::unique_ptr<formula::Formula> const *>
+    get_children() const override;
 
     uint64_t get_window_size() const override;
 };

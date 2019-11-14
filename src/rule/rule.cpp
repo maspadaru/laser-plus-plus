@@ -2,114 +2,45 @@
 
 namespace laser::rule {
 
-Rule::Rule(formula::Formula *body_formula,
-           std::vector<formula::Formula *> head_atoms,
+Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
+           std::vector<std::unique_ptr<formula::Formula>> head_atoms,
            std::vector<MathAtom> math_atoms,
            std::set<std::string> inertia_variables)
-    : body(body_formula->clone()), math_atoms(std::move(math_atoms)),
+    : body(*body_formula.release()), math_atoms(std::move(math_atoms)),
       inertia_variables(std::move(inertia_variables)) {
     init(std::move(head_atoms));
 }
 
-Rule::Rule(formula::Formula *body_formula,
-           std::vector<formula::Formula *> head_atoms)
-    : body(body_formula->clone()) {
+Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
+           std::vector<std::unique_ptr<formula::Formula>> head_atoms)
+    : body(*body_formula.release()) {
     init(std::move(head_atoms));
 }
 
-Rule::Rule(formula::Formula *body_formula,
-           std::vector<formula::Formula *> head_atoms,
+Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
+           std::vector<std::unique_ptr<formula::Formula>> head_atoms,
            std::set<std::string> inertia_variables)
-    : body(body_formula->clone()),
+    : body(*body_formula.release()),
       inertia_variables(std::move(inertia_variables)) {
     init(std::move(head_atoms));
-}
-
-Rule::~Rule() {
-    delete &body;
-    for (auto head_atom : head_atoms) {
-        delete head_atom;
-    }
-    head_atoms.clear();
-    delete chase_filter;
-}
-
-Rule::Rule(Rule const &other) : body(other.body.clone()) {
-    for (auto head_atom : other.head_atoms) {
-        head_atoms.push_back(&head_atom->clone());
-    }
-    head_atoms_var_positions = other.head_atoms_var_positions;
-    chase_filter = other.chase_filter->clone();
-    head_variable_index = other.head_variable_index;
-    frontier_variables = other.frontier_variables;
-    bound_variables = other.bound_variables;
-    inertia_variables = other.inertia_variables;
-    is_existential_m = other.is_existential_m;
-    previous_step = other.previous_step;
-    current_step = other.current_step;
-    has_inertia_variables = other.has_inertia_variables;
-}
-
-Rule::Rule(Rule &&other) noexcept : body(other.body.move()) {
-    head_atoms = std::move(other.head_atoms);
-    head_atoms_var_positions = std::move(other.head_atoms_var_positions);
-    chase_filter = other.chase_filter->move();
-    head_variable_index = std::move(other.head_variable_index);
-    frontier_variables = std::move(other.frontier_variables);
-    bound_variables = std::move(other.bound_variables);
-    inertia_variables = std::move(other.inertia_variables);
-    is_existential_m = other.is_existential_m;
-    previous_step = other.previous_step;
-    current_step = other.current_step;
-    has_inertia_variables = other.has_inertia_variables;
-}
-
-Rule &Rule::operator=(Rule const &other) {
-    for (auto head_atom : other.head_atoms) {
-        this->head_atoms.push_back(&head_atom->clone());
-    }
-    this->body = other.body.clone();
-    this->head_atoms_var_positions = other.head_atoms_var_positions;
-    this->chase_filter = other.chase_filter->clone();
-    this->head_variable_index = other.head_variable_index;
-    this->frontier_variables = other.frontier_variables;
-    this->bound_variables = other.bound_variables;
-    this->inertia_variables = other.inertia_variables;
-    this->is_existential_m = other.is_existential_m;
-    this->previous_step = other.previous_step;
-    this->current_step = other.current_step;
-    this->has_inertia_variables = other.has_inertia_variables;
-    return *this;
-}
-
-Rule &Rule::operator=(Rule &&other) noexcept {
-    this->body = other.body.move();
-    this->head_atoms = std::move(other.head_atoms);
-    this->head_atoms_var_positions = std::move(other.head_atoms_var_positions);
-    this->chase_filter = other.chase_filter->move();
-    this->head_variable_index = std::move(other.head_variable_index);
-    this->frontier_variables = std::move(other.frontier_variables);
-    this->bound_variables = std::move(other.bound_variables);
-    this->inertia_variables = std::move(other.inertia_variables);
-    this->is_existential_m = other.is_existential_m;
-    this->previous_step = other.previous_step;
-    this->current_step = other.current_step;
-    this->has_inertia_variables = other.has_inertia_variables;
-    return *this;
 }
 
 bool Rule::is_existential() const { return is_existential_m; }
 
-std::vector<formula::Formula *> Rule::get_head_atoms() const {
+std::vector<std::unique_ptr<formula::Formula>> const &
+Rule::get_head_atoms() const {
     return head_atoms;
 }
 
-void Rule::add_head_atoms(std::vector<formula::Formula *> atom_vector) {
-    head_atoms.insert(head_atoms.end(), atom_vector.begin(), atom_vector.end());
-    init(head_atoms);
+void Rule::add_head_atoms(
+    std::vector<std::unique_ptr<formula::Formula>> atom_vector) {
+    head_atoms.insert(head_atoms.end(),
+                      std::make_move_iterator(atom_vector.begin()),
+                      std::make_move_iterator(atom_vector.end()));
+    init(std::move(head_atoms));
 }
 
-formula::Formula *Rule::get_body() const { return &body; }
+formula::Formula const &Rule::get_body() const { return body; }
 
 std::set<std::string> Rule::get_body_predicates() const {
     std::set<std::string> result;
@@ -152,7 +83,7 @@ void Rule::set_current_step(size_t step) { current_step = step; }
 std::vector<std::shared_ptr<util::Grounding>>
 Rule::get_conclusions_step(util::Timeline const &timeline) {
     std::vector<std::shared_ptr<util::Grounding>> result;
-    for (auto head_atom : head_atoms) {
+    for (auto const &head_atom : head_atoms) {
         auto head_groundings = head_atom->get_conclusions_step(timeline);
         result.insert(result.end(), head_groundings.begin(),
                       head_groundings.end());
@@ -163,7 +94,7 @@ Rule::get_conclusions_step(util::Timeline const &timeline) {
 std::vector<std::shared_ptr<util::Grounding>>
 Rule::get_conclusions_timepoint(util::Timeline const &timeline) {
     std::vector<std::shared_ptr<util::Grounding>> result;
-    for (auto head_atom : head_atoms) {
+    for (auto const &head_atom : head_atoms) {
         auto head_groundings = head_atom->get_conclusions_timepoint(timeline);
         result.insert(result.end(), head_groundings.begin(),
                       head_groundings.end());
@@ -178,7 +109,7 @@ void Rule::expire_outdated_groundings(util::Timeline const &timeline) {
 }
 
 void Rule::expire_head_groundings(util::Timeline const &timeline) {
-    for (auto atom : head_atoms) {
+    for (auto const &atom : head_atoms) {
         atom->expire_outdated_groundings(timeline);
     }
 }
@@ -190,11 +121,11 @@ void Rule::evaluate(util::Timeline const &timeline,
 }
 
 void Rule::init_frontier_variables(
-    std::vector<formula::Formula *> const &head_atoms) {
+    std::vector<std::unique_ptr<formula::Formula>> const &head_atoms) {
     // I am igniring the time variable here, else I will always get new values
     // at each timepoint
     std::set<std::string> atom_variable_set;
-    for (auto atom : head_atoms) {
+    for (auto const &atom : head_atoms) {
         auto variable_names = atom->get_variable_names();
         if (atom->get_type() == formula::FormulaType::TIME_REFERENCE) {
             // Time variable is always the last
@@ -215,14 +146,15 @@ void Rule::init_frontier_variables(
               std::back_inserter(frontier_variables));
 }
 
-void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
+void Rule::init_chase(
+    std::vector<std::unique_ptr<formula::Formula>> const &head_atoms) {
     std::vector<std::string> free_variables = body.get_variable_names();
     std::set<std::string> free_variable_set(free_variables.begin(),
                                             free_variables.end());
     std::vector<std::string> head_variables;
     head_variables = free_variables;
     std::set<std::string> bound_variable_set;
-    for (auto atom : head_atoms) {
+    for (auto const &atom : head_atoms) {
         auto const &variable_names = atom->get_variable_names();
         for (auto const &var_name : variable_names) {
             if (free_variable_set.count(var_name) == 0) {
@@ -232,7 +164,7 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
     }
     if (bound_variable_set.empty()) {
         is_existential_m = false;
-        chase_filter = new ObliviousFilter();
+        chase_filter = std::make_unique<ObliviousFilter>();
     } else {
         is_existential_m = true;
         std::copy(bound_variable_set.begin(), bound_variable_set.end(),
@@ -244,16 +176,16 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
             util::Settings::get_instance().get_chase_algorithm();
         switch (chase_algorithm) {
         case util::ChaseAlgorithm::RESTRICTED:
-            chase_filter = new RestrictedFilter();
+            chase_filter = std::make_unique<RestrictedFilter>();
             break;
         case util::ChaseAlgorithm::INDEXED:
-            chase_filter = new IndexedFilter();
+            chase_filter = std::make_unique<IndexedFilter>();
             break;
         case util::ChaseAlgorithm::SKOLEM:
-            chase_filter = new SkolemFilter();
+            chase_filter = std::make_unique<SkolemFilter>();
             break;
         default:
-            chase_filter = new ObliviousFilter();
+            chase_filter = std::make_unique<ObliviousFilter>();
             break;
         }
         std::vector<bool> is_inertia_variable;
@@ -265,7 +197,7 @@ void Rule::init_chase(std::vector<formula::Formula *> const &head_atoms) {
                            frontier_variables, has_inertia_variables);
     }
     head_variable_index = rule::shared::make_index(head_variables);
-    for (auto head_atom : head_atoms) {
+    for (auto const &head_atom : head_atoms) {
         std::vector<size_t> var_pos_vector;
         auto const &atom_variables = head_atom->get_variable_names();
         for (auto const &var : atom_variables) {
@@ -300,11 +232,11 @@ void Rule::clear() {
     size_t current_step = 0;
 }
 
-void Rule::init(std::vector<formula::Formula *> head_atoms) {
+void Rule::init(std::vector<std::unique_ptr<formula::Formula>> head_atoms) {
     this->clear();
     init_chase(head_atoms);
     this->head_atoms = std::move(head_atoms);
-    for (auto *head_atom : this->head_atoms) {
+    for (auto const &head_atom : this->head_atoms) {
         head_atom->set_head(true);
     }
     trigger_variables = body.get_variable_names();
@@ -378,7 +310,7 @@ std::vector<std::string> const &Rule::get_bound_variables() const {
     return bound_variables;
 }
 std::vector<std::shared_ptr<util::Grounding>> Rule::evaluate_math_atoms(
-        std::vector<std::shared_ptr<util::Grounding>> body_facts) {
+    std::vector<std::shared_ptr<util::Grounding>> body_facts) {
     for (auto &math_atom : math_atoms) {
         math_atom.evaluate(body_facts);
     }
