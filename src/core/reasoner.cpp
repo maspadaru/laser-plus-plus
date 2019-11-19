@@ -2,7 +2,7 @@
 
 namespace laser::core {
 
-Reasoner::Reasoner(std::vector<std::unique_ptr<laser::rule::Rule>> *rule_vector,
+Reasoner::Reasoner(std::vector<std::unique_ptr<laser::rule::Rule>> &rule_vector,
                    IOManager *io_manager)
     : rule_vector(rule_vector), io_manager(io_manager), clock_eval(0) {
     is_listen_on = false;

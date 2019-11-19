@@ -11,7 +11,7 @@
 #include <util/chase_algorithm.h>
 #include <rule/rule_parser.h>
 #include <example/example_io_manager.h>
-#include <acyclicity/naive_smfa.h>
+//#include <acyclicity/naive_smfa.h>
 
 namespace test_framework {
 

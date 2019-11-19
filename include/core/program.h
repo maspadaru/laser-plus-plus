@@ -24,7 +24,7 @@ class Program {
 
     void chase_evaluation();
     void
-    sort_rules(std::vector<std::unique_ptr<laser::rule::Rule>> *rule_vector);
+    sort_rules(std::vector<std::unique_ptr<laser::rule::Rule>> &rule_vector);
     void reset_rules();
     bool evaluate_rule_vector(
         std::vector<std::unique_ptr<laser::rule::Rule>> &rule_vector,
@@ -40,7 +40,7 @@ class Program {
 
   public:
     explicit Program(
-        std::vector<std::unique_ptr<laser::rule::Rule>> *rule_vector);
+        std::vector<std::unique_ptr<laser::rule::Rule>> &rule_vector);
 
     virtual ~Program();
 

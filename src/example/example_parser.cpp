@@ -43,8 +43,6 @@ static inline void syntax_error(std::string error_message) {
     throw laser::util::FormatException(exception_message);
 }
 
-// === Tokenizer ===
-
 Token ExampleParser::recognize(std::string token_string) const {
     trim(&token_string);
     Token token;
@@ -78,7 +76,7 @@ void ExampleParser::add_new_token(std::vector<Token> &token_vector,
 }
 
 std::vector<Token>
-ExampleParser::tokenize(std::string const &rule_string) const {
+ExampleParser::tokenize(std::string &rule_string) const {
     std::vector<Token> token_vector;
     std::istringstream rule_stream(rule_string);
     std::ostringstream token_stream;
@@ -149,9 +147,9 @@ ExampleParser::parse_token_vector(
 
 std::vector<std::shared_ptr<laser::util::Grounding>>
 ExampleParser::parse_data(laser::util::Timeline &timeline,
-                          std::vector<std::string> const &raw_data_vector) {
+                          std::vector<std::string> &raw_data_vector) {
     std::vector<std::shared_ptr<laser::util::Grounding>> grounding_vector;
-    for (const auto &raw_string : raw_data_vector) {
+    for (auto &raw_string : raw_data_vector) {
         auto token_vector = tokenize(raw_string);
         if (!token_vector.empty()) {
             auto temp_vector = parse_token_vector(timeline, token_vector);

@@ -20,7 +20,7 @@ void run(std::string const &name, std::string const &stream_string,
     auto example_io_manager = laser::example::ExampleIOManager(stream_string);
     auto rule_parser = laser::rule::RuleParser(rule_string);
     auto rule_vector = rule_parser.get_rules();
-    auto reasoner = laser::core::Reasoner(&rule_vector, &example_io_manager);
+    auto reasoner = laser::core::Reasoner(rule_vector, &example_io_manager);
     reasoner.start();
     std::cout << " =================================== " << std::endl;
     std::cout << std::endl << std::endl;

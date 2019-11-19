@@ -1,7 +1,3 @@
-//
-// Created by mike on 7/17/18.
-//
-
 #ifndef LASER_EXAMPLE_EXAMPLE_IO_MANAGER_H
 #define LASER_EXAMPLE_EXAMPLE_IO_MANAGER_H
 

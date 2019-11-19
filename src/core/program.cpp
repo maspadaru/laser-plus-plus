@@ -7,14 +7,14 @@ Program::~Program() {
     existential_rule_vector.clear();
 }
 
-Program::Program(std::vector<std::unique_ptr<laser::rule::Rule>> *rule_vector) {
+Program::Program(std::vector<std::unique_ptr<laser::rule::Rule>> &rule_vector) {
     // auto rule_vector = rule_reader->get_rules();
     sort_rules(rule_vector);
 }
 
 void Program::sort_rules(
-    std::vector<std::unique_ptr<laser::rule::Rule>> *rule_vector) {
-    for (auto &rule : *rule_vector) {
+    std::vector<std::unique_ptr<laser::rule::Rule>> &rule_vector) {
+    for (auto &rule : rule_vector) {
         if (rule->is_existential()) {
             existential_rule_vector.push_back(std::move(rule));
         } else {

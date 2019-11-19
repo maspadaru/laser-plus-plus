@@ -13,8 +13,8 @@
 #include <utility>
 #include <vector>
 
-#include <util/grounding.h>
 #include <util/format_exception.h>
+#include <util/grounding.h>
 #include <util/timeline.h>
 
 namespace laser {
@@ -50,7 +50,7 @@ class ExampleParser {
 
     Token recognize(std::string token_string) const;
 
-    std::vector<Token> tokenize(std::string const &rule_string) const;
+    std::vector<Token> tokenize(std::string &rule_string) const;
 
     void add_token_attempt(std::vector<Token> &token_vector,
                            std::ostringstream &token_stream) const;
@@ -67,10 +67,10 @@ class ExampleParser {
 
     std::vector<std::shared_ptr<laser::util::Grounding>>
     parse_data(laser::util::Timeline &timeline,
-               std::vector<std::string> const &raw_data_vector);
+               std::vector<std::string> &raw_data_vector);
 };
 
-} // namespace example 
+} // namespace example
 } // namespace laser
 
 #endif // LASER_EXAMPLE_EXAMPLE_PARSER_H

@@ -1,7 +1,3 @@
-//
-// Created by mike on 6/21/18.
-//
-
 #ifndef LASER_EXAMPLE_EXAMPLE_WRITER_H
 #define LASER_EXAMPLE_EXAMPLE_WRITER_H
 
@@ -18,20 +14,12 @@ namespace example {
 
 class ExampleWriter {
   private:
-    // methods
-
     std::vector<std::shared_ptr<laser::util::Grounding>>
     remove_duplicates(std::vector<std::shared_ptr<laser::util::Grounding>>
                           input_groundings) const;
 
   public:
-    // constructors & destructors
-
     ~ExampleWriter() = default;
-
-    // getters & setters
-
-    // methods
 
     void write_output(std::string const &formatted_output_string) const;
 
