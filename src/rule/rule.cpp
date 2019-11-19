@@ -2,25 +2,25 @@
 
 namespace laser::rule {
 
-Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
-           std::vector<std::unique_ptr<formula::Formula>> head_atoms,
-           std::vector<MathAtom> math_atoms,
-           std::set<std::string> inertia_variables)
-    : body(*body_formula.release()), math_atoms(std::move(math_atoms)),
-      inertia_variables(std::move(inertia_variables)) {
-    init(std::move(head_atoms));
-}
+//Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
+           //std::vector<std::unique_ptr<formula::Formula>> head_atoms,
+           //std::vector<MathAtom> math_atoms,
+           //std::set<std::string> inertia_variables)
+    //: body(*body_formula.release()), math_atoms(std::move(math_atoms)),
+      //inertia_variables(std::move(inertia_variables)) {
+    //init(std::move(head_atoms));
+//}
+
+//Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
+           //std::vector<std::unique_ptr<formula::Formula>> head_atoms)
+    //: body(*body_formula.release()) {
+    //init(std::move(head_atoms));
+//}
 
 Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
-           std::vector<std::unique_ptr<formula::Formula>> head_atoms)
-    : body(*body_formula.release()) {
-    init(std::move(head_atoms));
-}
-
-Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
            std::vector<std::unique_ptr<formula::Formula>> head_atoms,
            std::set<std::string> inertia_variables)
-    : body(*body_formula.release()),
+    : body(std::move(body_formula)),
       inertia_variables(std::move(inertia_variables)) {
     init(std::move(head_atoms));
 }
@@ -40,11 +40,11 @@ void Rule::add_head_atoms(
     init(std::move(head_atoms));
 }
 
-formula::Formula const &Rule::get_body() const { return body; }
+formula::Formula const &Rule::get_body() const { return *body; }
 
 std::set<std::string> Rule::get_body_predicates() const {
     std::set<std::string> result;
-    auto vector = body.get_predicate_vector();
+    auto vector = body->get_predicate_vector();
     std::copy(vector.begin(), vector.end(),
               std::inserter(result, result.end()));
     return result;
@@ -62,7 +62,7 @@ std::set<std::string> Rule::get_head_predicates() const {
 
 std::map<std::string, size_t> Rule::get_arity_map() const {
     std::map<std::string, size_t> result;
-    auto body_arity_map = body.get_arity_map();
+    auto body_arity_map = body->get_arity_map();
     result.insert(body_arity_map.begin(), body_arity_map.end());
     for (auto const &atom : head_atoms) {
         auto head_arity_map = atom->get_arity_map();
@@ -104,7 +104,7 @@ Rule::get_conclusions_timepoint(util::Timeline const &timeline) {
 
 void Rule::expire_outdated_groundings(util::Timeline const &timeline) {
     expire_head_groundings(timeline);
-    body.expire_outdated_groundings(timeline);
+    body->expire_outdated_groundings(timeline);
     chase_filter->expire_outdated_groundings(timeline);
 }
 
@@ -117,7 +117,7 @@ void Rule::expire_head_groundings(util::Timeline const &timeline) {
 void Rule::evaluate(util::Timeline const &timeline,
                     util::Database const &database) {
     auto facts = database.get_data_since(previous_step);
-    body.evaluate(timeline, previous_step, facts);
+    body->evaluate(timeline, previous_step, facts);
 }
 
 void Rule::init_frontier_variables(
@@ -148,7 +148,7 @@ void Rule::init_frontier_variables(
 
 void Rule::init_chase(
     std::vector<std::unique_ptr<formula::Formula>> const &head_atoms) {
-    std::vector<std::string> free_variables = body.get_variable_names();
+    std::vector<std::string> free_variables = body->get_variable_names();
     std::set<std::string> free_variable_set(free_variables.begin(),
                                             free_variables.end());
     std::vector<std::string> head_variables;
@@ -239,7 +239,7 @@ void Rule::init(std::vector<std::unique_ptr<formula::Formula>> head_atoms) {
     for (auto const &head_atom : this->head_atoms) {
         head_atom->set_head(true);
     }
-    trigger_variables = body.get_variable_names();
+    trigger_variables = body->get_variable_names();
     for (auto const &math_atom : math_atoms) {
         auto const &math_result_variable = math_atom.get_result_name();
         trigger_variables.push_back(math_result_variable);
@@ -251,7 +251,7 @@ bool Rule::derive_conclusions(util::Timeline const &timeline,
                               util::Database const &database) {
     bool result = false;
     std::vector<std::shared_ptr<util::Grounding>> body_groundings =
-        body.get_groundings(timeline);
+        body->get_groundings(timeline);
     evaluate_head(timeline, database, body_groundings);
     return true;
 }

@@ -35,8 +35,8 @@ void run_acyclicity_test(std::string const &name,
         laser::util::ChaseAlgorithm::SKOLEM);
     auto rule_parser = laser::rule::RuleParser(rule_string);
     auto rule_vector = rule_parser.get_rules();
-    //auto naive_smfa = laser::acyclicity::NaiveSMFA(rule_vector);
-    //acyclicity_result = naive_smfa.has_terminating_chase();
+    // auto naive_smfa = laser::acyclicity::NaiveSMFA(rule_vector);
+    // acyclicity_result = naive_smfa.has_terminating_chase();
     std::cout << " Naive_SMFA returned: " << acyclicity_result
               << " expected: " << expected << ";" << std::endl;
     std::cout << " =================================== " << std::endl;
@@ -81,20 +81,17 @@ void test_acyclicity_only_first_timepoint() {
 void test_run() {
     const std::string name = "Test Run";
     std::string stream_string = "1 4 "
-                                "1 : Wheel(w1) \n"
-                                "2 : exploded(w1), Wheel(w2)\n"
-                                "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
-                                "3 : Bicycle(b1)\n"
+                                "1 : a(x1, y1, z1)\n"
+                                "2 : a(x2, y2, z2)\n"
+                                "3 : a(x3, y3, z3)\n"
                                 "4 : \n";
-    std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
-                              "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-                              "[@, T] hasFlat(b, W) := [@, T] exploded(W) && "
-                              "[$, 100] [D] Wheel(W) \n";
+
+    std::string rule_string = "p(X, Y, Z) := a(X, Y, Z)\n";
     auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
-    run(name, stream_string, rule_string,chase_alg);
+    run(name, stream_string, rule_string, chase_alg);
 }
 
 int main() {
-    test_run(); 
+    test_run();
     exit(0);
 }

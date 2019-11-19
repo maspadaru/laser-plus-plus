@@ -7,14 +7,15 @@ Program::~Program() {
     existential_rule_vector.clear();
 }
 
-Program::Program(std::vector<rule::Rule> *rule_vector) {
+Program::Program(std::vector<std::unique_ptr<laser::rule::Rule>> *rule_vector) {
     // auto rule_vector = rule_reader->get_rules();
     sort_rules(rule_vector);
 }
 
-void Program::sort_rules(std::vector<rule::Rule> *rule_vector) {
+void Program::sort_rules(
+    std::vector<std::unique_ptr<laser::rule::Rule>> *rule_vector) {
     for (auto &rule : *rule_vector) {
-        if (rule.is_existential()) {
+        if (rule->is_existential()) {
             existential_rule_vector.push_back(std::move(rule));
         } else {
             simple_rule_vector.push_back(std::move(rule));
@@ -28,12 +29,12 @@ void Program::set_start_time(uint64_t start_time) {
 
 void Program::reset_rules() {
     for (auto &rule : simple_rule_vector) {
-        rule.reset_previous_step();
-        rule.expire_outdated_groundings(timeline);
+        rule->reset_previous_step();
+        rule->expire_outdated_groundings(timeline);
     }
     for (auto &rule : existential_rule_vector) {
-        rule.reset_previous_step();
-        rule.expire_outdated_groundings(timeline);
+        rule->reset_previous_step();
+        rule->expire_outdated_groundings(timeline);
     }
 }
 
@@ -51,11 +52,11 @@ void Program::chase_evaluation() {
     }
 }
 
-bool Program::evaluate_rule_vector(std::vector<rule::Rule> &rule_vector,
-                                   size_t step) {
+bool Program::evaluate_rule_vector(
+    std::vector<std::unique_ptr<laser::rule::Rule>> &rule_vector, size_t step) {
     bool changed = false;
     for (auto &rule : rule_vector) {
-        changed |= evaluate_rule(rule, step);
+        changed |= evaluate_rule(*rule, step);
     }
     return changed;
 }
@@ -76,10 +77,10 @@ bool Program::evaluate_rule(rule::Rule &rule, size_t step) {
 std::vector<std::shared_ptr<util::Grounding>> Program::get_conclusions() {
     std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto &rule : simple_rule_vector) {
-        extract_conclusions(rule, result);
+        extract_conclusions(*rule, result);
     }
     for (auto &rule : existential_rule_vector) {
-        extract_conclusions(rule, result);
+        extract_conclusions(*rule, result);
     }
     return result;
 }

@@ -27,7 +27,7 @@ namespace laser::rule {
 class Rule {
   private:
     bool is_existential_m = false;
-    formula::Formula &body;
+    std::unique_ptr<formula::Formula> body;
     std::vector<std::unique_ptr<formula::Formula>> head_atoms;
     std::vector<MathAtom> math_atoms;
     // for each atom in head_atoms, there is a vector containing the postions
@@ -80,22 +80,16 @@ class Rule {
            std::vector<std::unique_ptr<formula::Formula>> head_atoms,
                  std::set<std::string> inertia_variables);
 
-    explicit Rule(std::unique_ptr<formula::Formula> body_formula,
-           std::vector<std::unique_ptr<formula::Formula>> head_atoms,
-                  std::vector<MathAtom> math_atoms,
-                  std::set<std::string> inertia_variables);
+    //explicit Rule(std::unique_ptr<formula::Formula> body_formula,
+           //std::vector<std::unique_ptr<formula::Formula>> head_atoms,
+                  //std::vector<MathAtom> math_atoms,
+                  //std::set<std::string> inertia_variables);
 
 
-    explicit Rule(std::unique_ptr<formula::Formula> body_formula,
-           std::vector<std::unique_ptr<formula::Formula>> head_atoms);
+    //explicit Rule(std::unique_ptr<formula::Formula> body_formula,
+           //std::vector<std::unique_ptr<formula::Formula>> head_atoms);
 
-    Rule(Rule const &other);     // copy constructor
-    Rule(Rule &&other) noexcept; // move constructor
-
-    ~Rule();
-
-    Rule &operator=(Rule const &other);     // copy assignment
-    Rule &operator=(Rule &&other) noexcept; // move assignment
+    ~Rule() = default;
 
     std::vector<std::string> const &get_frontier_variables() const;
     std::vector<std::string> const &get_bound_variables() const;

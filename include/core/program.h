@@ -16,17 +16,19 @@ namespace laser::core {
 
 class Program {
   private:
-    std::vector<rule::Rule> simple_rule_vector;
-    std::vector<rule::Rule> existential_rule_vector;
+    std::vector<std::unique_ptr<laser::rule::Rule>> simple_rule_vector;
+    std::vector<std::unique_ptr<laser::rule::Rule>> existential_rule_vector;
     util::Timeline timeline;
     util::Database database;
     std::vector<std::shared_ptr<util::Grounding>> new_conclusions;
 
     void chase_evaluation();
-    void sort_rules(std::vector<rule::Rule> *rule_vector);
+    void
+    sort_rules(std::vector<std::unique_ptr<laser::rule::Rule>> *rule_vector);
     void reset_rules();
-    bool evaluate_rule_vector(std::vector<rule::Rule> &rule_vector,
-                              size_t step);
+    bool evaluate_rule_vector(
+        std::vector<std::unique_ptr<laser::rule::Rule>> &rule_vector,
+        size_t step);
     bool evaluate_rule(rule::Rule &rule, size_t step);
     std::vector<std::shared_ptr<util::Grounding>> get_conclusions();
     void extract_conclusions(
@@ -37,7 +39,8 @@ class Program {
     // std::vector<std::shared_ptr<util::Grounding>> compute_new_facts();
 
   public:
-    explicit Program(std::vector<rule::Rule> *rule_vector);
+    explicit Program(
+        std::vector<std::unique_ptr<laser::rule::Rule>> *rule_vector);
 
     virtual ~Program();
 

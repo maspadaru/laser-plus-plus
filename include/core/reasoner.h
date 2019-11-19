@@ -24,8 +24,8 @@ class Reasoner {
     std::mutex fact_map_mutex;
     std::mutex conclusion_map_mutex;
     IOManager *io_manager;
-    //service::ServiceManager *service_manager;
-    std::vector<rule::Rule> *rule_vector;
+    // service::ServiceManager *service_manager;
+    std::vector<std::unique_ptr<laser::rule::Rule>> *rule_vector;
     bool is_listen_on = false;
     std::chrono::duration<double, std::milli> clock_eval;
 
@@ -53,12 +53,13 @@ class Reasoner {
     get_conclusions(uint64_t timepoint);
 
   public:
-    explicit Reasoner(std::vector<rule::Rule> *rule_vector,
-                      IOManager *io_manager);
+    explicit Reasoner(
+        std::vector<std::unique_ptr<laser::rule::Rule>> *rule_vector,
+        IOManager *io_manager);
 
-    //explicit Reasoner(std::vector<rule::Rule> *rule_vector,
-                      //IOManager *io_manager,
-                      //service::ServiceManager *service_manager);
+    // explicit Reasoner(std::vector<rule::Rule> *rule_vector,
+    // IOManager *io_manager,
+    // service::ServiceManager *service_manager);
 
     double start();
 };

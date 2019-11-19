@@ -67,8 +67,8 @@ public:
     std::string parse_float_argument();
 
     // rules and formulas
-    std::vector<laser::rule::Rule> parse_program();
-    laser::rule::Rule parse_rule();
+    std::vector<std::unique_ptr<laser::rule::Rule>> parse_program();
+    std::unique_ptr<laser::rule::Rule> parse_rule();
     std::vector<std::unique_ptr<laser::formula::Formula>> parse_head();
     std::unique_ptr<laser::formula::Formula> parse_head_atom();
     std::unique_ptr<laser::formula::Formula> parse_body();
@@ -104,7 +104,7 @@ public:
     * @throw ReadException if any problem occurred while reading the input,
     * e.g.: source file is inaccessible
     */
-    std::vector<laser::rule::Rule> get_rules();
+    std::vector<std::unique_ptr<laser::rule::Rule>> get_rules();
 };
 
 } // namespace laser::rule 

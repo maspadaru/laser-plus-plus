@@ -2,16 +2,17 @@
 
 namespace laser::core {
 
-Reasoner::Reasoner(std::vector<rule::Rule> *rule_vector, IOManager *io_manager)
+Reasoner::Reasoner(std::vector<std::unique_ptr<laser::rule::Rule>> *rule_vector,
+                   IOManager *io_manager)
     : rule_vector(rule_vector), io_manager(io_manager), clock_eval(0) {
     is_listen_on = false;
 }
 
-//Reasoner::Reasoner(std::vector<rule::Rule> *rule_vector, IOManager *io_manager,
-                   //service::ServiceManager *service_manager)
-    //: rule_vector(rule_vector), io_manager(io_manager), clock_eval(0),
-      //service_manager(service_manager) {
-    //is_listen_on = true;
+// Reasoner::Reasoner(std::vector<rule::Rule> *rule_vector, IOManager
+// *io_manager, service::ServiceManager *service_manager)
+//: rule_vector(rule_vector), io_manager(io_manager), clock_eval(0),
+// service_manager(service_manager) {
+// is_listen_on = true;
 //}
 
 void Reasoner::insert_facts(
@@ -87,8 +88,8 @@ void Reasoner::evaluate(util::Timeline timeline) {
             // TODO listen in separate thread,
             // TODO but only start new thread if is_listen_on == true
             if (is_listen_on) {
-                //service_manager->update(time, std::move(facts),
-                                        //std::move(conclusions));
+                // service_manager->update(time, std::move(facts),
+                // std::move(conclusions));
                 listen(timeline);
             }
             // TODO
@@ -117,7 +118,7 @@ void Reasoner::write(util::Timeline timeline) {
 }
 
 void Reasoner::listen(util::Timeline timeline) {
-    //service_manager->serve_requests();
+    // service_manager->serve_requests();
 }
 
 } // namespace laser::core
