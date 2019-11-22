@@ -302,7 +302,7 @@ std::unique_ptr<laser::formula::Formula> RuleParser::parse_binary_operator() {
     if (is_next_char('&')) {
         skip_expected_char('&');
         skip_expected_char('&');
-        // result = std::make_unique<laser::formula::Conjunction>();
+         result = std::make_unique<laser::formula::Conjunction>();
     } else {
         skip_expected_char('|');
         skip_expected_char('|');

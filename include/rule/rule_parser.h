@@ -7,7 +7,7 @@
 
 #include "formula/extended/atom.h"
 //#include "formula/extended/box.h"
-//#include "formula/extended/conjunction.h"
+#include "formula/extended/conjunction.h"
 //#include "formula/extended/diamond.h"
 //#include "formula/extended/time_reference.h"
 //#include "formula/extended/time_window.h"

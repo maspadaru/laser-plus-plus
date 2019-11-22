@@ -80,13 +80,23 @@ void test_acyclicity_only_first_timepoint() {
 
 void test_run() {
     const std::string name = "Test Run";
-    std::string stream_string = "1 4 "
-                                "1 : a(x1, y1, z1)\n"
-                                "2 : a(x2, y2, z2)\n"
-                                "3 : a(x3, y3, z3)\n"
-                                "4 : \n";
+    std::string stream_string = "1 14 "
+                                "1 : a(x)\n"
+                                "2 : a(x), b(y)\n"
+                                "3 : a(x)\n"
+                                "4 : a(x)\n"
+                                "5 : a(x), b(y)\n"
+                                "6 : b(x)\n"
+                                "7 : b(x)\n"
+                                "8 : \n"
+                                "9 : a(x)\n"
+                                "10 : a(x), b(y)\n"
+                                "11 : a(x)\n"
+                                "12 : a(x)\n"
+                                "13 : a(x)\n"
+                                "14 : a(x)\n";
 
-    std::string rule_string = "p(X, Y, Z) := a(X, Y, Z)\n";
+    std::string rule_string = "q(X,Y) := a(X) &&  b(Y)\n";
     auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     run(name, stream_string, rule_string, chase_alg);
 }

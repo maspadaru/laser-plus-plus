@@ -176,13 +176,13 @@ void Rule::init_chase(
             util::Settings::get_instance().get_chase_algorithm();
         switch (chase_algorithm) {
         case util::ChaseAlgorithm::RESTRICTED:
-            //chase_filter = std::make_unique<RestrictedFilter>();
+            chase_filter = std::make_unique<RestrictedFilter>();
             break;
         case util::ChaseAlgorithm::INDEXED:
-            //chase_filter = std::make_unique<IndexedFilter>();
+            chase_filter = std::make_unique<IndexedFilter>();
             break;
         case util::ChaseAlgorithm::SKOLEM:
-            //chase_filter = std::make_unique<SkolemFilter>();
+            chase_filter = std::make_unique<SkolemFilter>();
             break;
         default:
             chase_filter = std::make_unique<ObliviousFilter>();

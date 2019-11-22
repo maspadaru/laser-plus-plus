@@ -15,7 +15,9 @@ Atom::Atom(std::string predicate, std::vector<std::string> variable_names) {
 
 
 std::unique_ptr<formula::Formula> Atom::clone() const {
-    return std::make_unique<formula::Atom>(*this);
+    auto predicate = predicate_vector.at(0);
+    auto variable_names = grounding_table.get_variable_names();
+    return std::make_unique<formula::Atom>(predicate, variable_names);
 } 
 
 void Atom::set_variable_names(std::vector<std::string> &variable_names) {
