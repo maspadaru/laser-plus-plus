@@ -1,6 +1,6 @@
 #include <iostream>
 
-//#include <acyclicity/naive_smfa.h>
+#include <acyclicity/naive_smfa.h>
 #include <core/reasoner.h>
 #include <example/example_io_manager.h>
 #include <rule/rule_parser.h>
@@ -35,8 +35,8 @@ void run_acyclicity_test(std::string const &name,
         laser::util::ChaseAlgorithm::SKOLEM);
     auto rule_parser = laser::rule::RuleParser(rule_string);
     auto rule_vector = rule_parser.get_rules();
-    // auto naive_smfa = laser::acyclicity::NaiveSMFA(rule_vector);
-    // acyclicity_result = naive_smfa.has_terminating_chase();
+    auto naive_smfa = laser::acyclicity::NaiveSMFA(rule_vector);
+    acyclicity_result = naive_smfa.has_terminating_chase();
     std::cout << " Naive_SMFA returned: " << acyclicity_result
               << " expected: " << expected << ";" << std::endl;
     std::cout << " =================================== " << std::endl;
@@ -103,5 +103,9 @@ void test_run() {
 
 int main() {
     test_run();
+    test_acyclicity_simple();
+    test_acyclicity_obvious_cycle();
+    //test_acyclicity_obvious_cycle_with_time();
+    //test_acyclicity_only_first_timepoint();
     exit(0);
 }

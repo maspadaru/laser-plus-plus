@@ -2,20 +2,20 @@
 
 namespace laser::rule {
 
-//Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
-           //std::vector<std::unique_ptr<formula::Formula>> head_atoms,
-           //std::vector<MathAtom> math_atoms,
-           //std::set<std::string> inertia_variables)
-    //: body(*body_formula.release()), math_atoms(std::move(math_atoms)),
-      //inertia_variables(std::move(inertia_variables)) {
-    //init(std::move(head_atoms));
+// Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
+// std::vector<std::unique_ptr<formula::Formula>> head_atoms,
+// std::vector<MathAtom> math_atoms,
+// std::set<std::string> inertia_variables)
+//: body(*body_formula.release()), math_atoms(std::move(math_atoms)),
+// inertia_variables(std::move(inertia_variables)) {
+// init(std::move(head_atoms));
 //}
 
-//Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
-           //std::vector<std::unique_ptr<formula::Formula>> head_atoms)
-    //: body(*body_formula.release()) {
-    //init(std::move(head_atoms));
-//}
+Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
+           std::vector<std::unique_ptr<formula::Formula>> head_atoms)
+    : body(std::move(body_formula)) {
+    init(std::move(head_atoms));
+}
 
 Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
            std::vector<std::unique_ptr<formula::Formula>> head_atoms,
@@ -23,6 +23,16 @@ Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
     : body(std::move(body_formula)),
       inertia_variables(std::move(inertia_variables)) {
     init(std::move(head_atoms));
+}
+
+std::unique_ptr<Rule> Rule::clone() const {
+    auto body_clone = body->clone();
+    std::vector<std::unique_ptr<formula::Formula>> clone_head_atoms;
+    for (auto const &atom : head_atoms) {
+        clone_head_atoms.push_back(atom->clone());
+    }
+    return std::make_unique<rule::Rule>(
+        std::move(body_clone), std::move(clone_head_atoms), inertia_variables);
 }
 
 bool Rule::is_existential() const { return is_existential_m; }
@@ -40,7 +50,7 @@ void Rule::add_head_atoms(
     init(std::move(head_atoms));
 }
 
-formula::Formula const &Rule::get_body() const { return *body; }
+std::unique_ptr<formula::Formula> const &Rule::get_body() const { return body; }
 
 std::set<std::string> Rule::get_body_predicates() const {
     std::set<std::string> result;

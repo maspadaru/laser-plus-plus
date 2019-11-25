@@ -58,6 +58,16 @@ run_valgrind_gtest () {
     valgrind cmake-build-debug/$GTEST_EXECUTABLE
 }
 
+run_valgrind_testapp_v () {
+    build_testapp
+    valgrind -v cmake-build-debug/$TESTAPP_EXECUTABLE 
+}
+
+run_valgrind_gtest_v () {
+    build_gtest
+    valgrind -v cmake-build-debug/$GTEST_EXECUTABLE
+}
+
 print_help () {
     echo "Usage: laser.sh [b c d h r t]"
     echo "b: build Laser++"
@@ -92,6 +102,10 @@ elif [ $1 = "t" ]; then
 elif [ $1 = "vr" ]; then
     run_valgrind_testapp
 elif [ $1 = "vt" ]; then
+    run_valgrind_gtest_v
+elif [ $1 = "vrv" ]; then
+    run_valgrind_testapp_v
+elif [ $1 = "vtv" ]; then
     run_valgrind_gtest
 else
 	print_help
