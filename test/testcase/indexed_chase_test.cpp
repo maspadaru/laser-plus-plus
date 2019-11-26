@@ -1,0 +1,310 @@
+#include <sstream>
+#include <string>
+#include <vector>
+
+#include "test_framework.h"
+
+#include <util/chase_algorithm.h>
+
+TEST(IndexedChaseTest, Simple) {
+
+    std::string stream_string = "1 4 "
+                                "1 : q(x1, y1, z1)\n"
+                                "2 : q(x2, y2, z2)\n"
+                                "3 : q(x3, y3, z3)\n"
+                                "4 : \n";
+
+    std::string rule_string = "p(a, Z, b, X, Z) := q(X, Y, Z)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(a0, z1, b1, x1, z1)";
+    expected[2] = "2 -> p(a2, z2, b3, x2, z2)";
+    expected[3] = "3 -> p(a4, z3, b5, x3, z3)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
+
+TEST(IndexedChaseTest, Loop) {
+
+    std::string stream_string = "1 4 "
+                                "1 : Bicycle(x1)\n"
+                                "2 : Bicycle(x2), Bicycle(x3)\n"
+                                "3 : \n"
+                                "4 : \n";
+
+    std::string rule_string = "hasPart(X, v) := Bicycle(X)\n"
+                              "Wheel(V) := hasPart(X, V) && Bicycle(X)\n"
+                              "properPartOf(X, w) := Wheel(X)\n"
+                              "Bicycle(W) := properPartOf(X, W) && Wheel(X)\n"
+                              "partOf(X, Y) := properPartOf(X, Y) \n"
+                              "hasPart(X, Y) := partOf(Y, X) \n"
+                              "partOf(X, Y) := hasPart(Y, X) \n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> Bicycle(w0) Wheel(v0) hasPart(w0, v0) hasPart(x1, v0) "
+                  "partOf(v0, w0) partOf(v0, x1) properPartOf(v0, w0)";
+    expected[2] = "2 -> Bicycle(w1) Bicycle(w2) Wheel(v1) Wheel(v2) "
+                  "hasPart(w1, v1) hasPart(w2, v2) hasPart(x2, v1) hasPart(x3, "
+                  "v2) partOf(v1, w1) partOf(v1, x2) partOf(v2, w2) partOf(v2, "
+                  "x3) properPartOf(v1, w1) properPartOf(v2, w2)";
+    expected[3] = "3 -> ";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
+
+TEST(IndexedChaseTest, TimeRefHead) {
+
+    std::string stream_string =
+        "1 4 "
+        "1 : problem(sg1) \n"
+        "2 : willOverheat(sg1, 2), problem(sg2)\n"
+        "3 : problem(sg3), problem(sg4)\n"
+        "3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
+        "4 : \n";
+
+    std::string rule_string =
+        "[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
+        "&& [$, 100] [D] problem(SG) \n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> ";
+    expected[2] = "2 -> shutdown(sg1, alert0)";
+    expected[3] = "3 -> shutdown(sg3, alert1)";
+    expected[4] = "4 -> shutdown(sg3, alert2)";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
+
+TEST(IndexedChaseTest, TimeRefBody1) {
+
+    std::string stream_string = "1 4 "
+                                "1 : Wheel(w1) \n"
+                                "2 : exploded(w1), Wheel(w2)\n"
+                                "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
+                                "3 : Bicycle(b1)\n"
+                                "4 : \n";
+
+    std::string rule_string =
+        "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+        "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+        "hasFlat(b, W, T) := exploded(W) && [$, 100] [D] [@, T] Wheel(W) \n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> ";
+    expected[2] = "2 -> hasFlat(b0, w1, 1)";
+    expected[3] = "3 -> hasFlat(b1, w3, 3)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
+
+TEST(IndexedChaseTest, TimeRefBody2) {
+
+    std::string stream_string = "1 4 "
+                                "1 : Wheel(w1) \n"
+                                "2 : exploded(w1), Wheel(w2)\n"
+                                "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
+                                "3 : Bicycle(b1)\n"
+                                "4 : \n";
+
+    std::string rule_string =
+        "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+        "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+        "hasFlat(b, W, T) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> ";
+    expected[2] = "2 -> hasFlat(b0, w1, 2)";
+    expected[3] = "3 -> hasFlat(b1, w3, 3)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
+
+TEST(IndexedChaseTest, TimeRefHandB) {
+
+    std::string stream_string = "1 4 "
+                                "1 : Wheel(w1) \n"
+                                "2 : exploded(w1), Wheel(w2)\n"
+                                "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
+                                "3 : Bicycle(b1)\n"
+                                "4 : \n";
+
+    std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+                              "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+                              "[@, T] hasFlat(b, W) := [@, T] exploded(W) && "
+                              "[$, 100] [D] Wheel(W) \n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> ";
+    expected[2] = "2 -> hasFlat(b0, w1)";
+    expected[3] = "3 -> Bicycle(b1) Wheel(w3) hasFlat(b1, w3)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
+
+TEST(IndexedChaseTest, ConjunctionTwo) {
+
+    std::string stream_string = "1 4 "
+                                "1 : q(x1, y1, z1)\n"
+                                "2 : q(x2, y2, z2)\n"
+                                "3 : q(x3, y3, z3)\n"
+                                "4 : \n";
+    std::string rule_string = "p(a, X) && r(b, Z) := q(X, Y, Z)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(a0, x1) r(b1, z1)";
+    expected[2] = "2 -> p(a2, x2) r(b3, z2)";
+    expected[3] = "3 -> p(a4, x3) r(b5, z3)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
+
+TEST(IndexedChaseTest, ConjunctionThree) {
+
+    std::string stream_string = "1 4 "
+                                "1 : q(x1, y1, z1)\n"
+                                "2 : q(x2, y2, z2)\n"
+                                "3 : q(x3, y3, z3)\n"
+                                "4 : \n";
+    std::string rule_string = "p(a, X) && r(b, Z) && s(a, b) := q(X, Y, Z)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(a0, x1) r(b1, z1) s(a0, b1)";
+    expected[2] = "2 -> p(a2, x2) r(b3, z2) s(a2, b3)";
+    expected[3] = "3 -> p(a4, x3) r(b5, z3) s(a4, b5)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
+
+TEST(IndexedChaseTest, IndexedSimple) {
+    // At the same timepoint
+    std::string stream_string = "1 4 "
+                                "1 : q(x1)\n"
+                                "2 : s(x2, y2)\n"
+                                "3 : q(x3), s(x3, y3)\n"
+                                "4 : \n";
+    std::string rule_string = "p(X, z) := q(X)\n"
+                              "p(X, Y) := s(X, Y) \n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(x1, z0)";
+    expected[2] = "2 -> p(x2, y2)";
+    expected[3] = "3 -> p(x3, y3)";
+    expected[4] = "4 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
+
+TEST(IndexedChaseTest, IndexedConjunctionBody) {
+    // A conjunction is pressent is the body of the existential rule
+    std::string stream_string = "1 4 "
+                                "1 : q(x1)\n"
+                                "2 : s(x2, y2)\n"
+                                "3 : q(x3), s(x3, y3)\n"
+                                "4 : q(x4), s(x4, y4), t(x4, y4, z4)\n";
+    std::string rule_string = "r(X, Y, z)  := p(X, Y) && q(X)\n"
+                              "p (X, Y) := s(X, Y) \n"
+                              "r(X, Y, Z) := t(X, Y, Z)";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> ";
+    expected[2] = "2 -> p(x2, y2)";
+    expected[3] = "3 -> p(x3, y3) r(x3, y3, z0)";
+    expected[4] = "4 -> p(x4, y4) r(x4, y4, z4)";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
+
+TEST(IndexedChaseTest, IndexedConjunctionHeadPaper) {
+    // Example from paper: "Efficient Model Construction for Horn Logic
+    // with VLog - System Description" - J. Urbani, M. Krotzsch, I. Dragoste,
+    // David Carral - 2018
+    std::string stream_string = "1 2 "
+                                "1 : Bicycle(c) \n"
+                                "2 : \n";
+
+    std::string rule_string = "hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
+                              "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+                              "partOf(X, Y) := properPartOf(X, Y)\n"
+                              "partOf(Y, X) := hasPart(X, Y)\n"
+                              "hasPart(Y, X) := partOf(X, Y)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> hasPart(c, v0) Wheel(v0) properPartOf(v0, w0) "
+                  "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
+    expected[2] = "2 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
+
+TEST(IndexedChaseTest, IndexedConjunctionHeadSwap) {
+    // see ExistentialIndexedConjunctionHeadPaper
+    // same exaple, but atoms in head are swaped in the first rule
+    std::string stream_string = "1 2 "
+                                "1 : Bicycle(c) \n"
+                                "2 : \n";
+
+    std::string rule_string = "Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
+                              "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
+                              "partOf(X, Y) := properPartOf(X, Y)\n"
+                              "partOf(Y, X) := hasPart(X, Y)\n"
+                              "hasPart(Y, X) := partOf(X, Y)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> hasPart(c, v0) Wheel(v0) properPartOf(v0, w0) "
+                  "Bicycle(w0) partOf(v0, w0) partOf(v0, c) hasPart(w0, v0)";
+    expected[2] = "2 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
+
+TEST(IndexedChaseTest, IndexedWindow) {
+    // At diferent timepoints
+    std::string stream_string = "1 4 "
+                                "1 : s(x1, y1),q(x1)\n"
+                                "2 : q(x2)\n"
+                                "3 : q(x1)\n"
+                                "4 : q(x4)\n";
+    std::string rule_string = "p(X, z)  := q(X)\n"
+                              "p (X, Y) := [$, 2] [D] s(X, Y) \n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(x1, y1)";
+    expected[2] = "2 -> p(x1, y1) p(x2, z0)";
+    expected[3] = "3 -> p(x1, y1)";
+    expected[4] = "4 -> p(x4, z1)";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::INDEXED);
+}
