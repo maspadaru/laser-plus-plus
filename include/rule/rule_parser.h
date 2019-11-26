@@ -72,7 +72,6 @@ public:
     std::vector<std::unique_ptr<laser::formula::Formula>> parse_head();
     std::unique_ptr<laser::formula::Formula> parse_head_atom();
     std::unique_ptr<laser::formula::Formula> parse_body();
-    std::unique_ptr<laser::formula::Formula> parse_formula();
     std::unique_ptr<laser::formula::Formula> parse_complex_formula();
     std::unique_ptr<laser::formula::Formula> parse_binary_formula();
     std::unique_ptr<laser::formula::Formula> parse_binary_operator();

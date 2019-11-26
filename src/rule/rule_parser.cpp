@@ -242,10 +242,6 @@ std::unique_ptr<laser::formula::Formula> RuleParser::parse_head_atom() {
 }
 
 std::unique_ptr<laser::formula::Formula> RuleParser::parse_body() {
-    return parse_formula();
-}
-
-std::unique_ptr<laser::formula::Formula> RuleParser::parse_formula() {
     std::unique_ptr<laser::formula::Formula> result;
     skip_spaces();
     if (is_next_char('(')) {
@@ -258,7 +254,7 @@ std::unique_ptr<laser::formula::Formula> RuleParser::parse_formula() {
 
 std::unique_ptr<laser::formula::Formula> RuleParser::parse_complex_formula() {
     skip_expected_char('(');
-    auto result = parse_formula();
+    auto result = parse_binary_formula();
     skip_spaces();
     skip_expected_char(')');
     return result;
@@ -407,7 +403,7 @@ std::unique_ptr<laser::formula::Formula> RuleParser::parse_diamond() {
     skip_expected_char('D');
     skip_spaces();
     skip_expected_char(']');
-    auto child = parse_formula();
+    auto child = parse_term();
     return std::make_unique<laser::formula::Diamond>(std::move(child));
 }
 
@@ -415,7 +411,7 @@ std::unique_ptr<laser::formula::Formula> RuleParser::parse_box() {
     skip_expected_char('B');
     skip_spaces();
     skip_expected_char(']');
-    auto child = parse_formula();
+    auto child = parse_term();
     return std::make_unique<laser::formula::Box>(std::move(child));
 }
 
@@ -446,7 +442,7 @@ std::unique_ptr<laser::formula::Formula> RuleParser::parse_time_reference() {
     std::string argument = parse_identifier();
     skip_spaces();
     skip_expected_char(']');
-    auto child = parse_formula();
+    auto child = parse_term();
     return std::make_unique<laser::formula::TimeReference>(argument,
                                                            std::move(child));
 }
@@ -459,7 +455,7 @@ std::unique_ptr<laser::formula::Formula> RuleParser::parse_time_window() {
     std::string argument = parse_natural_number();
     skip_spaces();
     skip_expected_char(']');
-    auto child = parse_formula();
+    auto child = parse_term();
     uint64_t window_size = std::stoull(argument);
     return std::make_unique<laser::formula::TimeWindow>(window_size,
                                                         std::move(child));
@@ -473,7 +469,7 @@ std::unique_ptr<laser::formula::Formula> RuleParser::parse_tuple_window() {
     std::string argument = parse_natural_number();
     skip_spaces();
     skip_expected_char(']');
-    auto child = parse_formula();
+    auto child = parse_term();
     uint64_t window_size = std::stoull(argument);
     return std::make_unique<laser::formula::TupleWindow>(window_size,
                                                          std::move(child));

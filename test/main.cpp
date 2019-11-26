@@ -82,29 +82,29 @@ void test_run() {
     const std::string name = "Test Run";
     std::string stream_string = "1 14 "
                                 "1 : a(x)\n"
-                                "2 : a(x), b(y)\n"
-                                "3 : a(x)\n"
-                                "4 : a(x)\n"
-                                "5 : a(x), b(y)\n"
+                                "2 : a(x), b(x)\n"
+                                "3 : a(x), b(x)\n"
+                                "4 : a(x), b(x)\n"
+                                "5 : a(x), b(x)\n"
                                 "6 : b(x)\n"
                                 "7 : b(x)\n"
                                 "8 : \n"
                                 "9 : a(x)\n"
-                                "10 : a(x), b(y)\n"
-                                "11 : a(x)\n"
-                                "12 : a(x)\n"
-                                "13 : a(x)\n"
+                                "10 : a(x), b(x)\n"
+                                "11 : a(x), b(x)\n"
+                                "12 : a(x), b(x)\n"
+                                "13 : a(x), b(x)\n"
                                 "14 : a(x)\n";
 
-    std::string rule_string = "q(X,Y) := a(X) &&  b(Y)\n";
+    std::string rule_string = "q(X) := [$, 3] [D] a(X) && [$, 3] [D] b(X)\n";
     auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     run(name, stream_string, rule_string, chase_alg);
 }
 
 int main() {
     test_run();
-    test_acyclicity_simple();
-    test_acyclicity_obvious_cycle();
+    //test_acyclicity_simple();
+    //test_acyclicity_obvious_cycle();
     //test_acyclicity_obvious_cycle_with_time();
     //test_acyclicity_only_first_timepoint();
     exit(0);

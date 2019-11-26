@@ -295,3 +295,28 @@ TEST(ConjunctionTest, ConjunctionHeadTimeReference) {
     test_framework::run_test(stream_string, rule_string, expected,
                              laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
+
+TEST(ConjunctionTest, ConjunctionCommutative) {
+    std::string stream_string = "1 6 "
+                                "1 : b(x)\n"
+                                "2 : a(x)\n"
+                                "3 : \n"
+                                "4 : \n"
+                                "5 : \n"
+                                "6 : a(x)\n";
+
+    std::string rule_string = "q(X) := [$, 2] [D] a(X) && [D] b(X)\n"
+                              "r(X) := [D] b(X) && [$, 2] [D] a(X)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> ";
+    expected[2] = "2 -> q(x) r(x)";
+    expected[3] = "3 -> q(x) r(x)";
+    expected[4] = "4 -> q(x) r(x)";
+    expected[5] = "5 -> ";
+    expected[6] = "6 -> q(x) r(x)";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
+}
