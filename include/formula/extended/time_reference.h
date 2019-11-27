@@ -99,6 +99,7 @@ class TimeReference : public Formula {
 
     std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_step(util::Timeline const &timeline) override;
+
     std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions_timepoint(util::Timeline const &timeline) override;
 

@@ -200,7 +200,7 @@ bool TimeReference::evaluate(
 void TimeReference::expire_outdated_groundings(util::Timeline const &timeline) {
     timepoint_conclusions.clear();
     child->expire_outdated_groundings(timeline);
-    auto time = timeline.get_time();
+    auto time = timeline.get_min_time();
     auto tuple_count = timeline.get_tuple_count_at(timeline.get_time());
     grounding_table.expire_outdated_groundings(time, tuple_count);
 }
