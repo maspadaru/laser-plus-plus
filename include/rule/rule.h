@@ -61,9 +61,10 @@ class Rule {
 
     void expire_head_groundings(util::Timeline const &timeline);
 
-    void evaluate_head(
-        util::Timeline const &timeline, util::Database const &database,
-        std::vector<std::shared_ptr<util::Grounding>> const &body_facts);
+    void
+    evaluate_head(util::Timeline const &timeline,
+                  util::Database const &database,
+                  std::vector<std::shared_ptr<util::Grounding>> &body_facts);
 
     void evaluate_head_atoms(
         util::Timeline const &timeline,
@@ -73,8 +74,8 @@ class Rule {
     make_atom_fact(std::shared_ptr<util::Grounding> const &body_fact,
                    size_t head_atom_index, size_t atom_arity);
 
-    std::vector<std::shared_ptr<util::Grounding>> evaluate_math_atoms(
-        std::vector<std::shared_ptr<util::Grounding>> body_facts);
+    void evaluate_math_atoms(
+        std::vector<std::shared_ptr<util::Grounding>> &body_facts);
 
   public:
     explicit Rule(std::unique_ptr<formula::Formula> body_formula,

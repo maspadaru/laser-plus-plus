@@ -268,11 +268,11 @@ bool Rule::derive_conclusions(util::Timeline const &timeline,
 
 void Rule::evaluate_head(
     util::Timeline const &timeline, util::Database const &database,
-    std::vector<std::shared_ptr<util::Grounding>> const &body_facts) {
+    std::vector<std::shared_ptr<util::Grounding>> &body_facts) {
     chase_filter->update(timeline, previous_step, database);
-    auto triggers = evaluate_math_atoms(std::move(body_facts));
+    evaluate_math_atoms(body_facts);
     auto head_facts =
-        chase_filter->build_chase_facts(timeline, previous_step, triggers);
+        chase_filter->build_chase_facts(timeline, previous_step, body_facts);
     evaluate_head_atoms(timeline, head_facts);
 }
 
@@ -319,12 +319,11 @@ std::vector<std::string> const &Rule::get_frontier_variables() const {
 std::vector<std::string> const &Rule::get_bound_variables() const {
     return bound_variables;
 }
-std::vector<std::shared_ptr<util::Grounding>> Rule::evaluate_math_atoms(
-    std::vector<std::shared_ptr<util::Grounding>> body_facts) {
+void Rule::evaluate_math_atoms(
+    std::vector<std::shared_ptr<util::Grounding>> &body_facts) {
     for (auto &math_atom : math_atoms) {
-        math_atom.evaluate(body_facts);
+        math_atom.evaluate(body, body_facts);
     }
-    return body_facts;
 }
 
 } // namespace laser::rule

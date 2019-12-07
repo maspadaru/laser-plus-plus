@@ -1,17 +1,21 @@
 #ifndef LASER_RULE_MATH_ATOM_H
 #define LASER_RULE_MATH_ATOM_H
 
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <vector>
-#include <cstdlib>
 
 #include "util/grounding.h"
+#include "formula/formula.h"
 
 namespace laser::rule {
 
 /**
  * Math formula
+ * result = left + right
+ * Requirement: The result variable should not be used in other places in the
+ * rule. Use Comparison Atom for that (not yet implemented).
  */
 class MathAtom {
   private:
@@ -31,8 +35,8 @@ class MathAtom {
 
     int64_t get_result_value();
 
-    std::vector<std::shared_ptr<util::Grounding>>
-    evaluate(std::vector<std::shared_ptr<util::Grounding>> body_facts);
+    void evaluate(std::unique_ptr<formula::Formula> const &body,
+                  std::vector<std::shared_ptr<util::Grounding>> &body_facts);
 };
 
 } // namespace laser::rule
