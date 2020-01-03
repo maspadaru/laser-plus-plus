@@ -1,7 +1,6 @@
 #ifndef LASER_CORE_REASONER_H
 #define LASER_CORE_REASONER_H
 
-#include <chrono>
 #include <iostream>
 #include <mutex>
 #include <thread>
@@ -21,17 +20,15 @@ namespace laser::core {
 
 class Reasoner {
   private:
+    uint64_t total_facts_read = 0;
     std::mutex fact_map_mutex;
     std::mutex conclusion_map_mutex;
     IOManager *io_manager;
     // service::ServiceManager *service_manager;
     std::vector<std::unique_ptr<laser::rule::Rule>> &rule_vector;
     bool is_listen_on = false;
-    std::chrono::duration<double, std::milli> clock_eval;
-
     std::unordered_map<uint64_t, std::vector<std::shared_ptr<util::Grounding>>>
         fact_map;
-
     std::unordered_map<uint64_t, std::vector<std::shared_ptr<util::Grounding>>>
         conclusion_map;
 
@@ -61,7 +58,9 @@ class Reasoner {
     // IOManager *io_manager,
     // service::ServiceManager *service_manager);
 
-    double start();
+    void start();
+
+    uint64_t get_total_facts_read() const;
 };
 
 } // namespace laser::core

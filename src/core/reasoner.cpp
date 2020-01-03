@@ -4,13 +4,13 @@ namespace laser::core {
 
 Reasoner::Reasoner(std::vector<std::unique_ptr<laser::rule::Rule>> &rule_vector,
                    IOManager *io_manager)
-    : rule_vector(rule_vector), io_manager(io_manager), clock_eval(0) {
+    : rule_vector(rule_vector), io_manager(io_manager) {
     is_listen_on = false;
 }
 
 // Reasoner::Reasoner(std::vector<rule::Rule> *rule_vector, IOManager
 // *io_manager, service::ServiceManager *service_manager)
-//: rule_vector(rule_vector), io_manager(io_manager), clock_eval(0),
+//: rule_vector(rule_vector), io_manager(io_manager),
 // service_manager(service_manager) {
 // is_listen_on = true;
 //}
@@ -18,6 +18,7 @@ Reasoner::Reasoner(std::vector<std::unique_ptr<laser::rule::Rule>> &rule_vector,
 void Reasoner::insert_facts(
     uint64_t timepoint, std::vector<std::shared_ptr<util::Grounding>> facts) {
     std::lock_guard<std::mutex> guard(fact_map_mutex);
+    total_facts_read += facts.size();
     fact_map.try_emplace(timepoint, std::move(facts));
 }
 
@@ -44,7 +45,7 @@ Reasoner::get_conclusions(uint64_t timepoint) {
     return result;
 }
 
-double Reasoner::start() {
+void Reasoner::start() {
     util::Timeline main_timeline;
     auto start_time = io_manager->read_stream_start_time();
     auto end_time = io_manager->read_stream_end_time();
@@ -57,7 +58,6 @@ double Reasoner::start() {
     read_thread.join();
     evaluate_thread.join();
     write_thread.join();
-    return clock_eval.count();
 }
 
 void Reasoner::read(util::Timeline timeline) {
@@ -77,12 +77,7 @@ void Reasoner::evaluate(util::Timeline timeline) {
         bool has_new_input = fact_map.count(time) > 0;
         if (has_new_input) {
             auto facts = get_facts(time);
-            auto clock_start = std::chrono::high_resolution_clock::now();
             auto conclusions = program.evaluate(timeline, facts);
-            auto clock_end = std::chrono::high_resolution_clock::now();
-            std::chrono::duration<double, std::milli> clock_elapsed =
-                clock_end - clock_start;
-            clock_eval += clock_elapsed;
             insert_conclusions(time, conclusions);
 
             // TODO listen in separate thread,
@@ -116,6 +111,8 @@ void Reasoner::write(util::Timeline timeline) {
         }
     }
 }
+
+uint64_t Reasoner::get_total_facts_read() const { return total_facts_read; }
 
 void Reasoner::listen(util::Timeline timeline) {
     // service_manager->serve_requests();
