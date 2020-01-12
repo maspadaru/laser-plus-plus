@@ -88,7 +88,6 @@ void test_run() {
         "4 : a(5, x4), c(y)\n"
         "6 : c(y6)\n"
         "7 : \n";
-
     std::string rule_string = "[@,T]p(X, Y, T) := b(X) && [@,T]c(Y)\n"
                               "[@,T]b(X) := a(T, X)\n";
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;

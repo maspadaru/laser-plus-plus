@@ -320,3 +320,18 @@ TEST(ConjunctionTest, ConjunctionCommutative) {
     test_framework::run_test(stream_string, rule_string, expected,
                              laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
+
+TEST(ConjunctionTest, ConjunctionCommonVariables) {
+    std::string stream_string = "1 1 "
+                                "1 : s1(a, b, c) s2(d, b, d)\n"
+                                "1 : \n";
+    std::string rule_string =
+        "t1(x1) := s1(x1,x2,x3) && s2(x4,x3,x4)\n";
+
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> ";
+
+    test_framework::run_test(stream_string, rule_string, expected,
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
+}

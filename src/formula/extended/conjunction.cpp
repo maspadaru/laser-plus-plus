@@ -42,13 +42,11 @@ void Conjunction::set_head(bool is_head) {
 void Conjunction::populate_variable_collections() {
     // Get all variables from children and insert into variable_names
     auto left = left_child->get_variable_names();
+    sort(left.begin(), left.end());
     left.erase(unique(left.begin(), left.end()), left.end());
     auto right = right_child->get_variable_names();
+    sort(right.begin(), right.end());
     right.erase(unique(right.begin(), right.end()), right.end());
-    for (auto const &left_var : left) {
-        for (auto const &right_var : right) {
-        }
-    }
     variable_names.insert(variable_names.end(),
                           std::make_move_iterator(left.begin()),
                           std::make_move_iterator(left.end()));
