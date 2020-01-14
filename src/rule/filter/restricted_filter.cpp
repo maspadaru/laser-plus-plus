@@ -27,11 +27,6 @@ void RestrictedFilter::update(util::Timeline const &timeline,
                               util::Database const &database) {
     auto const &facts = database.get_data_full();
     head_formula->evaluate(timeline, previous_step, facts);
-    // TODO we might want to store results in a grounding table, since we don't
-    // want some conclusions to be skipped due to SNE. Alternative, disable
-    // SNE in conjunction if (is_head_m == true) {}
-    // If we do use local grounding table, get conclusions here using
-    // head_formula.get_conclusions_step(timeline);
     auto new_time = timeline.get_time();
     current_timepoint_facts.insert(current_timepoint_facts.end(),
                                    current_step_facts.begin(),
@@ -146,6 +141,13 @@ void RestrictedFilter::find_match(
     std::vector<std::shared_ptr<util::Grounding>> const &database,
     std::shared_ptr<util::Grounding> const &input_fact) {
     if (has_inertia_variables) {
+        for (auto const &inertia_fact : current_timepoint_facts) {
+            if (is_inertia_variable_match(inertia_fact, input_fact)) {
+                auto new_fact = generate_chase_fact_from_inertia(inertia_fact);
+                current_step_facts.push_back(new_fact);
+                return;
+            }
+        }
         for (auto const &inertia_fact : inertia_facts) {
             if (is_inertia_variable_match(inertia_fact, input_fact)) {
                 auto new_fact = generate_chase_fact_from_inertia(inertia_fact);
@@ -153,13 +155,12 @@ void RestrictedFilter::find_match(
                 return;
             }
         }
-    } else {
-        for (auto const &db_fact : database) {
-            if (is_database_match(db_fact, input_fact)) {
-                auto new_fact = convert_to_chase_fact(db_fact);
-                // facts_found_in_db.push_back(new_fact);
-                return;
-            }
+    }
+    for (auto const &db_fact : database) {
+        if (is_database_match(db_fact, input_fact)) {
+            auto new_fact = convert_to_chase_fact(db_fact);
+            current_step_facts.push_back(new_fact);
+            return;
         }
     }
     auto chase_fact = generate_chase_fact(input_fact);
