@@ -48,8 +48,9 @@ std::vector<std::shared_ptr<util::Grounding>> GroundingTable::get_all_groundings
 
 int GroundingTable::get_variable_index(std::string const &variable_name) const {
     int result = -1;
-    if (variable_index.count(variable_name) > 0) {
-        result = variable_index.at(variable_name);
+    auto it = variable_index.find(variable_name);
+    if (it != variable_index.end()) {
+        result = it->second;
     }
     return result;
 }

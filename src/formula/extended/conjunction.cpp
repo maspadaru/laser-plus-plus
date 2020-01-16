@@ -107,8 +107,9 @@ std::vector<std::string> const &Conjunction::get_variable_names() const {
 
 int Conjunction::get_variable_index(std::string const &variable_name) const {
     int result = -1;
-    if (variable_map.count(variable_name) > 0) {
-        result = variable_map.at(variable_name);
+    auto it = variable_map.find(variable_name);
+    if (it != variable_map.end()) {
+        result = it->second;
     }
     return result;
 }
