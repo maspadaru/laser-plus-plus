@@ -25,7 +25,8 @@ void RestrictedFilter::init(
 void RestrictedFilter::update(util::Timeline const &timeline,
                               size_t previous_step,
                               util::Database const &database) {
-    auto const &facts = database.get_data_full();
+    //auto const &facts = database.get_data_full();
+    auto const &facts = database.get_data_since(previous_step);
     head_formula->evaluate(timeline, previous_step, facts);
     auto new_time = timeline.get_time();
     current_timepoint_facts.insert(current_timepoint_facts.end(),
@@ -205,6 +206,29 @@ bool RestrictedFilter::is_frontier_variable_match(
     }
     return true;
 }
+
+//std::unique_ptr<formula::Formula> RestrictedFilter::build_head_formulas(
+    //std::vector<std::unique_ptr<formula::Formula>> const &list) const {
+    //bool merge = true;
+    //std::set<int> index_set;
+    //while(merge) {
+        //merge = false;
+        //for (int i = 0; i < list.size()-1; i++) {
+            //auto const &left = list.at(i);
+            //for (int j = i+1; j < list.size(); j++) {
+                //auto const &right = list.at(j);
+                //if (have_common_variables(i,j)){
+                    //auto result = merge(left, right);
+                    //merge = true;
+                    //index_set.insert(i);
+                    //index_set.insert(j);
+                //}
+            //}
+        //}
+
+    //}
+
+//}
 
 std::unique_ptr<formula::Formula> RestrictedFilter::build_head_formula(
     size_t index,

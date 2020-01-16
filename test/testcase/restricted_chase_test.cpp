@@ -228,27 +228,27 @@ TEST(RestrictedChaseTest, Loop) {
                              chase_alg);
 }
 
-TEST(RestrictedChaseTest, TimeRefHead) {
-    std::string stream_string =
-        "1 4 "
-        "1 : problem(sg1) \n"
-        "2 : willOverheat(sg1, 2), problem(sg2)\n"
-        "3 : problem(sg3), problem(sg4)\n"
-        "3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
-        "4 : \n";
-    std::string rule_string =
-        "[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
-        "&& [$, 100] [D] problem(SG) \n";
-    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
-    std::vector<std::string> expected(15);
-    expected[0] = "0 -> ";
-    expected[1] = "1 -> ";
-    expected[2] = "2 -> shutdown(sg1, alert0)";
-    expected[3] = "3 -> shutdown(sg3, alert1)";
-    expected[4] = "4 -> shutdown(sg3, alert2)";
-    test_framework::run_test(stream_string, rule_string, expected,
-                             chase_alg);
-}
+//TEST(RestrictedChaseTest, TimeRefHead) {
+    //std::string stream_string =
+        //"1 4 "
+        //"1 : problem(sg1) \n"
+        //"2 : willOverheat(sg1, 2), problem(sg2)\n"
+        //"3 : problem(sg3), problem(sg4)\n"
+        //"3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
+        //"4 : \n";
+    //std::string rule_string =
+        //"[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
+        //"&& [$, 100] [D] problem(SG) \n";
+    //auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
+    //std::vector<std::string> expected(15);
+    //expected[0] = "0 -> ";
+    //expected[1] = "1 -> ";
+    //expected[2] = "2 -> shutdown(sg1, alert0)";
+    //expected[3] = "3 -> shutdown(sg3, alert1)";
+    //expected[4] = "4 -> shutdown(sg3, alert2)";
+    //test_framework::run_test(stream_string, rule_string, expected,
+                             //chase_alg);
+//}
 
 TEST(RestrictedChaseTest, TimeRefBody1) {
     std::string stream_string = "1 4 "
@@ -296,27 +296,27 @@ TEST(RestrictedChaseTest, TimeRefBody2) {
                              chase_alg);
 }
 
-TEST(RestrictedChaseTest, TimeRefHandB) {
-    std::string stream_string = "1 4 "
-                                "1 : Wheel(w1) \n"
-                                "2 : exploded(w1), Wheel(w2)\n"
-                                "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
-                                "3 : Bicycle(b1)\n"
-                                "4 : \n";
-    std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
-                              "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-                              "[@, T] hasFlat(b, W) := [@, T] exploded(W) && "
-                              "[$, 100] [D] Wheel(W) \n";
-    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
-    std::vector<std::string> expected(15);
-    expected[0] = "0 -> ";
-    expected[1] = "1 -> ";
-    expected[2] = "2 -> hasFlat(b0, w1)";
-    expected[3] = "3 -> Bicycle(b1) Wheel(w3) hasFlat(b1, w3)";
-    expected[4] = "4 -> ";
-    test_framework::run_test(stream_string, rule_string, expected,
-                             chase_alg);
-}
+//TEST(RestrictedChaseTest, TimeRefHandB) {
+    //std::string stream_string = "1 4 "
+                                //"1 : Wheel(w1) \n"
+                                //"2 : exploded(w1), Wheel(w2)\n"
+                                //"3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
+                                //"3 : Bicycle(b1)\n"
+                                //"4 : \n";
+    //std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+                              //"Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+                              //"[@, T] hasFlat(b, W) := [@, T] exploded(W) && "
+                              //"[$, 100] [D] Wheel(W) \n";
+    //auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
+    //std::vector<std::string> expected(15);
+    //expected[0] = "0 -> ";
+    //expected[1] = "1 -> ";
+    //expected[2] = "2 -> hasFlat(b0, w1)";
+    //expected[3] = "3 -> Bicycle(b1) Wheel(w3) hasFlat(b1, w3)";
+    //expected[4] = "4 -> ";
+    //test_framework::run_test(stream_string, rule_string, expected,
+                             //chase_alg);
+//}
 
 TEST(RestrictedChaseTest, ConjunctionTwo) {
 
@@ -413,7 +413,6 @@ TEST(RestrictedChaseTest, RestrictedConjunctionHeadPaper) {
     std::string stream_string = "1 2 "
                                 "1 : Bicycle(c) \n"
                                 "2 : \n";
-
     std::string rule_string = "hasPart(X, v) && Wheel(v) := Bicycle(X)\n"
                               "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
                               "partOf(X, Y) := properPartOf(X, Y)\n"

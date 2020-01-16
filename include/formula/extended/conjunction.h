@@ -25,6 +25,12 @@ class Conjunction : public Formula {
     std::map<std::string, size_t> arity_map;
     std::vector<std::string> common_child_variables;
     std::vector<std::string> variable_names;
+    std::vector<int> left_variable_indices;
+    std::vector<int> right_variable_indices;
+    size_t number_of_variables = 0;
+    std::vector<int> left_common_variable_indices;
+    std::vector<int> right_common_variable_indices;
+    size_t number_of_common_variables = 0;
 
     /**
      * Variable Name -> position in variable_vector and groundings.
@@ -36,6 +42,8 @@ class Conjunction : public Formula {
     // grounding_set;
     std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
         grounding_set;
+     //std::vector<std::shared_ptr<util::Grounding>>
+     //grounding_vector;
 
     void compute_predicate_vector();
 
@@ -54,8 +62,19 @@ class Conjunction : public Formula {
         std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
         std::vector<std::shared_ptr<util::Grounding>> const &right_groundings);
 
-    std::string hash_common_variables(Formula const &child,
-                                      util::Grounding const &grounding) const;
+    void populate_grounding_set_with_common(
+        util::Timeline const &timeline, size_t previous_step,
+        std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
+        std::vector<std::shared_ptr<util::Grounding>> const &right_groundings);
+
+    void populate_grounding_set_no_common(
+        util::Timeline const &timeline, size_t previous_step,
+        std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
+        std::vector<std::shared_ptr<util::Grounding>> const &right_groundings);
+
+    std::string
+    hash_common_variables(std::vector<int> const &common_variable_indices,
+                          util::Grounding const &grounding) const;
 
     std::shared_ptr<util::Grounding>
     merge_groundings(util::Timeline const &timeline,

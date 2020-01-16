@@ -58,30 +58,30 @@ TEST(IndexedChaseTest, Loop) {
                              laser::util::ChaseAlgorithm::INDEXED);
 }
 
-TEST(IndexedChaseTest, TimeRefHead) {
+//TEST(IndexedChaseTest, TimeRefHead) {
 
-    std::string stream_string =
-        "1 4 "
-        "1 : problem(sg1) \n"
-        "2 : willOverheat(sg1, 2), problem(sg2)\n"
-        "3 : problem(sg3), problem(sg4)\n"
-        "3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
-        "4 : \n";
+    //std::string stream_string =
+        //"1 4 "
+        //"1 : problem(sg1) \n"
+        //"2 : willOverheat(sg1, 2), problem(sg2)\n"
+        //"3 : problem(sg3), problem(sg4)\n"
+        //"3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
+        //"4 : \n";
 
-    std::string rule_string =
-        "[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
-        "&& [$, 100] [D] problem(SG) \n";
+    //std::string rule_string =
+        //"[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
+        //"&& [$, 100] [D] problem(SG) \n";
 
-    std::vector<std::string> expected(15);
-    expected[0] = "0 -> ";
-    expected[1] = "1 -> ";
-    expected[2] = "2 -> shutdown(sg1, alert0)";
-    expected[3] = "3 -> shutdown(sg3, alert1)";
-    expected[4] = "4 -> shutdown(sg3, alert2)";
+    //std::vector<std::string> expected(15);
+    //expected[0] = "0 -> ";
+    //expected[1] = "1 -> ";
+    //expected[2] = "2 -> shutdown(sg1, alert0)";
+    //expected[3] = "3 -> shutdown(sg3, alert1)";
+    //expected[4] = "4 -> shutdown(sg3, alert2)";
 
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::INDEXED);
-}
+    //test_framework::run_test(stream_string, rule_string, expected,
+                             //laser::util::ChaseAlgorithm::INDEXED);
+//}
 
 TEST(IndexedChaseTest, TimeRefBody1) {
 

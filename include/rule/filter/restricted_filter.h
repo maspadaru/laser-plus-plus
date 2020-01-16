@@ -26,6 +26,7 @@ class RestrictedFilter : public ChaseFilter {
   private:
     uint64_t null_value_count = 0;
     std::unique_ptr<formula::Formula> head_formula;
+    //std::vector<std::unique_ptr<formula::Formula>> head_formulas;
     std::vector<std::string> frontier_variables;
     std::vector<std::string> head_variables;
     std::vector<std::string> free_variables;
