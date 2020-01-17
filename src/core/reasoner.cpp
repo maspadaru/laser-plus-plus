@@ -79,6 +79,7 @@ void Reasoner::evaluate(util::Timeline timeline) {
             auto facts = get_facts(time);
             auto conclusions = program.evaluate(timeline, facts);
             insert_conclusions(time, conclusions);
+            output_ready_condition.notify_one();
 
             // TODO listen in separate thread,
             // TODO but only start new thread if is_listen_on == true
@@ -100,15 +101,14 @@ void Reasoner::evaluate(util::Timeline timeline) {
 void Reasoner::write(util::Timeline timeline) {
     auto time = timeline.get_time();
     while (!timeline.is_past_max_time()) {
-        bool has_new_output = conclusion_map.count(time) > 0;
-        if (has_new_output) {
-            auto conclusions = get_conclusions(time);
-            io_manager->write_output_data(time, std::move(conclusions));
-            timeline.increment_time();
-            time = timeline.get_time();
-        } else {
-            std::this_thread::yield();
+        std::unique_lock<std::mutex> lock(output_ready_mutex);
+        while(conclusion_map.count(time) <= 0) {
+            output_ready_condition.wait(lock);
         }
+        auto conclusions = get_conclusions(time);
+        io_manager->write_output_data(time, std::move(conclusions));
+        timeline.increment_time();
+        time = timeline.get_time();
     }
 }
 

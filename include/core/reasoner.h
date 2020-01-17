@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <mutex>
+#include <condition_variable>
 #include <thread>
 #include <unordered_map>
 #include <vector>
@@ -23,6 +24,8 @@ class Reasoner {
     uint64_t total_facts_read = 0;
     std::mutex fact_map_mutex;
     std::mutex conclusion_map_mutex;
+    std::mutex output_ready_mutex;
+    std::condition_variable output_ready_condition;
     IOManager *io_manager;
     // service::ServiceManager *service_manager;
     std::vector<std::unique_ptr<laser::rule::Rule>> &rule_vector;
