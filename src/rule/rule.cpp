@@ -258,7 +258,7 @@ void Rule::init(std::vector<std::unique_ptr<formula::Formula>> head_atoms) {
 }
 
 bool Rule::derive_conclusions(util::Timeline const &timeline,
-                              util::Database const &database) {
+                              util::Database &database) {
     bool result = false;
     std::vector<std::shared_ptr<util::Grounding>> body_groundings =
         body->get_groundings(timeline);
@@ -267,7 +267,7 @@ bool Rule::derive_conclusions(util::Timeline const &timeline,
 }
 
 void Rule::evaluate_head(
-    util::Timeline const &timeline, util::Database const &database,
+    util::Timeline const &timeline, util::Database &database,
     std::vector<std::shared_ptr<util::Grounding>> &body_facts) {
     chase_filter->update(timeline, previous_step, database);
     evaluate_math_atoms(body_facts);

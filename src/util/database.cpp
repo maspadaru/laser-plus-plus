@@ -3,7 +3,8 @@
 namespace laser {
 namespace util {
 
-void Database::clear() { 
+void Database::clear() {
+    clear_predicate_map();
     delta.clear();
     current_step = 0;
 }
@@ -42,11 +43,37 @@ Database::get_data_since(size_t start) const {
     return get_data_range(start, current_step);
 }
 
-std::vector<std::shared_ptr<util::Grounding>>
-Database::get_data_full() const {
+std::vector<std::shared_ptr<util::Grounding>> Database::get_data_full() const {
     return get_data_range(0, current_step);
 }
-void Database::increment_step() { current_step++; }
+void Database::increment_step() {
+    update_predicate_map();
+    current_step++;
+}
+
+void Database::update_predicate_map() {
+    auto const &new_facts = delta[current_step];
+    for (auto const &fact : delta[current_step]) {
+        auto const &predicate = fact->get_predicate();
+        predicate_map.try_emplace(predicate);
+        auto &list = predicate_map.at(predicate);
+        list.push_back(fact);
+    }
+}
+
+void Database::clear_predicate_map() {
+    for (auto &iterator : predicate_map) {
+        auto &vector = iterator.second;
+        vector.clear();
+    }
+}
+
+std::vector<std::shared_ptr<util::Grounding>> const &
+Database::get_predicate_data(std::string const &predicate) {
+    predicate_map.try_emplace(predicate);
+    auto const &result = predicate_map.at(predicate);
+    return result;
+}
 
 size_t Database::get_step() const { return current_step; }
 

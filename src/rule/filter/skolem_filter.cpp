@@ -65,7 +65,7 @@ void SkolemFilter::init(
 }
 
 void SkolemFilter::update(util::Timeline const &timeline, size_t previous_step,
-                          util::Database const &database) {
+                          util::Database &database) {
     auto new_time = timeline.get_time();
     if (new_time > current_timepoint) {
         if (has_inertia_variables) {

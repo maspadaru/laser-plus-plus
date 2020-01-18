@@ -12,33 +12,35 @@ namespace util {
 
 class Database {
   private:
-    // std::vector<
-    // std::unordered_map<
-    // std::string,
-    // std::vector<std::shared_ptr<util::Grounding>>
-    //>
-    //> delta;
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<util::Grounding>>>
+        predicate_map;
 
     std::vector<std::vector<std::shared_ptr<util::Grounding>>> delta;
     size_t current_step = 0;
 
-  public:
-    /**TODO should create shared_ptr<Grounding> and insert into delta[0]
-     */
-    void emplace_fact();
+    void update_predicate_map();
+    void clear_predicate_map(); 
 
+  public:
     void increment_step();
     void clear();
     void insert_facts(std::vector<std::shared_ptr<util::Grounding>> facts);
     void insert(size_t step,
                 std::vector<std::shared_ptr<util::Grounding>> groundings);
-    std::vector<std::shared_ptr<util::Grounding>> get_data_step(size_t step) const;
-    std::vector<std::shared_ptr<util::Grounding>> get_data_range(size_t start,
-                                                                 size_t end) const;
-    std::vector<std::shared_ptr<util::Grounding>> get_data_range(size_t end) const;
-    std::vector<std::shared_ptr<util::Grounding>> get_data_since(size_t start) const;
+    std::vector<std::shared_ptr<util::Grounding>>
+    get_data_step(size_t step) const;
+    std::vector<std::shared_ptr<util::Grounding>>
+    get_data_range(size_t start, size_t end) const;
+    std::vector<std::shared_ptr<util::Grounding>>
+    get_data_range(size_t end) const;
+    std::vector<std::shared_ptr<util::Grounding>>
+    get_data_since(size_t start) const;
     std::vector<std::shared_ptr<util::Grounding>> get_data_full() const;
     size_t get_step() const;
+
+    std::vector<std::shared_ptr<util::Grounding>> const &
+    get_predicate_data(std::string const &predicate);
 };
 
 } // namespace util

@@ -78,7 +78,7 @@ class SkolemFilter : public ChaseFilter {
               bool has_inertia_variables) override;
 
     void update(util::Timeline const &timeline, size_t previous_step,
-                util::Database const &database) override;
+                util::Database &database) override;
 
     std::vector<std::shared_ptr<util::Grounding>>
     build_chase_facts(util::Timeline const &timeline, size_t previous_step,

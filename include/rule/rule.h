@@ -63,7 +63,7 @@ class Rule {
 
     void
     evaluate_head(util::Timeline const &timeline,
-                  util::Database const &database,
+                  util::Database &database,
                   std::vector<std::shared_ptr<util::Grounding>> &body_facts);
 
     void evaluate_head_atoms(
@@ -133,7 +133,7 @@ class Rule {
     void expire_outdated_groundings(util::Timeline const &timeline);
 
     bool derive_conclusions(util::Timeline const &timeline,
-                            util::Database const &database);
+                            util::Database &database);
 
     void reset_previous_step();
 

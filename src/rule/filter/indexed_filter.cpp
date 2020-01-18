@@ -21,7 +21,7 @@ void IndexedFilter::init(
 }
 
 void IndexedFilter::update(util::Timeline const &timeline, size_t previous_step,
-                           util::Database const &database) {
+                           util::Database &database) {
     auto const &facts = database.get_data_full();
     head_formula->evaluate(timeline, previous_step, facts);
 }

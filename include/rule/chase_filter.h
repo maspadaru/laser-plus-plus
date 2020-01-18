@@ -33,7 +33,7 @@ class ChaseFilter {
          bool has_inertia_variables) = 0;
 
     virtual void update(util::Timeline const &timeline, size_t previous_step,
-                        util::Database const &database) = 0;
+                        util::Database &database) = 0;
 
     virtual std::vector<std::shared_ptr<util::Grounding>> build_chase_facts(
         util::Timeline const &timeline, size_t previous_step,
