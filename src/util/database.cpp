@@ -47,7 +47,6 @@ std::vector<std::shared_ptr<util::Grounding>> Database::get_data_full() const {
     return get_data_range(0, current_step);
 }
 void Database::increment_step() {
-    update_predicate_map();
     current_step++;
 }
 

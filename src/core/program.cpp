@@ -49,6 +49,7 @@ void Program::chase_evaluation() {
         }
         database.increment_step();
         database.insert(step, std::move(new_conclusions));
+        database.update_predicate_map();
     }
 }
 

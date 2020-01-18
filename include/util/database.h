@@ -19,7 +19,6 @@ class Database {
     std::vector<std::vector<std::shared_ptr<util::Grounding>>> delta;
     size_t current_step = 0;
 
-    void update_predicate_map();
     void clear_predicate_map(); 
 
   public:
@@ -38,6 +37,8 @@ class Database {
     get_data_since(size_t start) const;
     std::vector<std::shared_ptr<util::Grounding>> get_data_full() const;
     size_t get_step() const;
+
+    void update_predicate_map();
 
     std::vector<std::shared_ptr<util::Grounding>>  
     *get_predicate_data(std::string const &predicate);

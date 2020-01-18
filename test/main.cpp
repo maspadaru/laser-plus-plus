@@ -80,12 +80,14 @@ void test_acyclicity_only_first_timepoint() {
 
 void test_run() {
     const std::string name = "Test Run";
+    //BUG: p(x1,y1) should be in db at timepoint 2 and 3 
     std::string stream_string = "1 4 "
-                                "1 : q(x1, y1, z1)\n"
-                                "2 : q(x2, y2, z2)\n"
-                                "3 : q(x3, y3, z3)\n"
-                                "4 : \n";
-    std::string rule_string = "p(a, Z, b, X, Z) := q(X, Y, Z)\n";
+                                "1 : s(x1, y1),q(x1)\n"
+                                "2 : q(x2)\n"
+                                "3 : q(x1)\n"
+                                "4 : q(x4)\n";
+    std::string rule_string = "p(X, z)  := q(X)\n"
+                              "p (X, Y) := [$, 2] [D] s(X, Y) \n";
     auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     run(name, stream_string, rule_string, chase_alg);
 }

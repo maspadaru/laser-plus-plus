@@ -72,12 +72,14 @@ void RestrictedFilter::expire_outdated_groundings(
 }
 
 void RestrictedFilter::init_event_variable_list() {
-    for (size_t i = 0; i < head_variables_count; i++) {
-        auto const &var_name = head_variables.at(i);
-        if (bound_variable_index.count(var_name) > 0) {
-            auto bound_index = bound_variable_index.at(var_name);
-            if (is_event_variable.at(bound_index)) {
-                event_variable_list.push_back(i);
+    if (has_event_variables) {
+        for (size_t i = 0; i < head_variables_count; i++) {
+            auto const &var_name = head_variables.at(i);
+            if (bound_variable_index.count(var_name) > 0) {
+                auto bound_index = bound_variable_index.at(var_name);
+                if (is_event_variable.at(bound_index)) {
+                    event_variable_list.push_back(i);
+                }
             }
         }
     }
@@ -152,7 +154,7 @@ std::vector<std::string> RestrictedFilter::extract_substitution(
     std::shared_ptr<util::Grounding> const &input_fact) const {
     std::vector<std::string> substitution;
     for (auto body_var_index : body_head_var_index) {
-        if (body_var_index > 0) {
+        if (body_var_index >= 0) {
             auto const &value = input_fact->get_constant(body_var_index);
             substitution.push_back(value);
         } else {
@@ -297,7 +299,7 @@ void RestrictedFilter::search_database(
     // event variables.
     auto extended_substitution = generate_extension(substitution_list.at(0));
     current_step_substitutions.push_back(extended_substitution);
-    auto new_fact = generate_fact(substitution_list.at(0), input_fact);
+    auto new_fact = generate_fact(extended_substitution, input_fact);
     current_step_facts.push_back(new_fact);
 }
 
