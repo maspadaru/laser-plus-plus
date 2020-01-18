@@ -39,8 +39,8 @@ class Database {
     std::vector<std::shared_ptr<util::Grounding>> get_data_full() const;
     size_t get_step() const;
 
-    std::vector<std::shared_ptr<util::Grounding>> const &
-    get_predicate_data(std::string const &predicate);
+    std::vector<std::shared_ptr<util::Grounding>>  
+    *get_predicate_data(std::string const &predicate);
 };
 
 } // namespace util

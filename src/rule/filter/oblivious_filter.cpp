@@ -30,7 +30,7 @@ void ObliviousFilter::init(
 
 void ObliviousFilter::update(util::Timeline const &timeline,
                              size_t previous_step,
-                             util::Database const &database) {
+                             util::Database &database) {
     return;
 }
 

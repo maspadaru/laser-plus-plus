@@ -13,7 +13,6 @@ TEST(RestrictedChaseTest, Simple) {
                                 "2 : q(x2, y2, z2)\n"
                                 "3 : q(x3, y3, z3)\n"
                                 "4 : \n";
-
     std::string rule_string = "p(a, Z, b, X, Z) := q(X, Y, Z)\n";
     auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);

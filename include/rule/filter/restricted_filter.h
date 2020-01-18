@@ -3,7 +3,6 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <vector>
 
 #include "formula/extended/conjunction.h"
@@ -45,11 +44,9 @@ class RestrictedFilter : public ChaseFilter {
     bool has_database_facts = false;
     std::string const BOUND_VALUE_PLACEHOLDER = "";
 
-    std::vector<std::vector<std::string const &>> current_step_substitutions;
-    std::vector<std::vector<std::string const &>> current_timepoint_substitutions;
-    std::vector<std::vector<std::string const &>> inertia_substitutions;
-
-
+    std::vector<std::vector<std::string>> current_step_substitutions;
+    std::vector<std::vector<std::string>> current_timepoint_substitutions;
+    std::vector<std::vector<std::string>> inertia_substitutions;
 
     // position of event variables in head_variables
     std::vector<int> event_variable_list;
@@ -59,59 +56,95 @@ class RestrictedFilter : public ChaseFilter {
     // subvector value = variable index in head_variables; -1 if absent
     std::vector<std::vector<int>> head_atoms_var_index_atom_to_head;
 
-
     // index = variable position in head_variable vector
     // value = variable position in input_fact (free_variables vector)
     std::vector<int> body_head_var_index;
 
     std::vector<std::string> head_atom_predicates;
 
+    std::vector<std::vector<std::shared_ptr<util::Grounding>> *>
+        database_facts; // positions correspond to head_atoms
+
+    // moethods
+
+    void init_event_variable_list();
     void init_body_head_var_index();
     void init_head_atom_predicates(
         std::vector<std::unique_ptr<formula::Formula>> const &head_atoms);
-
     void init_head_atoms_var_index_atom_to_head(
         std::vector<std::unique_ptr<formula::Formula>> const &head_atoms);
-
     void init_database_facts(util::Database &database);
+    std::string generate_new_value(std::string const &var_name);
 
-    std::vector<std::vector<std::shared_ptr<util::Grounding>> const &>
-        database_facts; // positions correspond to head_atoms
+    std::shared_ptr<util::Grounding>
+    generate_fact(std::vector<std::string> const &substitution,
+                  std::shared_ptr<util::Grounding> const &input_fact) const;
 
-    std::vector<std::string const &> extract_substitution(
+    std::vector<std::string> extract_substitution(
         std::shared_ptr<util::Grounding> const &input_fact) const;
 
-    std::shared_ptr<util::Grounding>
-    convert_to_chase_fact(std::shared_ptr<util::Grounding> const &db_fact);
+    bool is_substitution_match(std::vector<std::string> const &left,
+                               std::vector<std::string> const &right) const;
 
-    std::shared_ptr<util::Grounding> generate_chase_fact_from_inertia(
-        std::shared_ptr<util::Grounding> const &inertia_fact);
+    bool has_match_current_timepoint(
+        std::vector<std::string> const &initial_substitution) const;
 
-    std::shared_ptr<util::Grounding>
-    generate_chase_fact(std::shared_ptr<util::Grounding> const &input_fact);
+    bool is_full_match(std::vector<std::string> const &substitution) const;
 
-    std::string generate_new_value(std::string const &var_name);
+    bool is_fact_match(std::vector<std::string> const &substitution,
+                       std::shared_ptr<util::Grounding> const &fact,
+                       size_t head_atom_index) const;
+
+    std::vector<std::string>
+    fact_extend(std::vector<std::string> const &substitution,
+                std::shared_ptr<util::Grounding> const &fact,
+                size_t head_atom_index) const;
+
+    std::vector<std::string>
+    event_extend(std::vector<std::string> const &left,
+                 std::vector<std::string> const &right) const;
+
+    std::vector<std::string>
+    generate_extension(std::vector<std::string> const &substitution);
 
     void search_database(std::shared_ptr<util::Grounding> const &input_fact);
 
-    void find_match(std::vector<std::string const &> substitution,
-                    size_t head_atom_index);
+    std::vector<std::vector<std::string>>
+    match_events(std::vector<std::string> const &initial_substitution) const;
 
-    void
-    find_match(std::vector<std::shared_ptr<util::Grounding>> const &database,
-               std::shared_ptr<util::Grounding> const &input_fact);
+    std::vector<std::vector<std::string>>
+    match_database(std::vector<std::string> const &initial_substitution,
+                   size_t head_atom_index) const;
 
-    bool is_database_match(
-        std::shared_ptr<util::Grounding> const &db_grounding,
-        std::shared_ptr<util::Grounding> const &input_grounding) const;
+    bool
+    find_database_match(std::shared_ptr<util::Grounding> const &input_fact,
+                        std::vector<std::string> const &initial_substitution,
+                        size_t head_atom_index);
 
-    bool is_event_variable_match(
-        std::shared_ptr<util::Grounding> const &db_grounding,
-        std::shared_ptr<util::Grounding> const &input_grounding) const;
+    // std::shared_ptr<util::Grounding>
+    // convert_to_chase_fact(std::shared_ptr<util::Grounding> const &db_fact);
 
-    bool is_frontier_variable_match(
-        std::shared_ptr<util::Grounding> const &db_grounding,
-        std::shared_ptr<util::Grounding> const &input_grounding) const;
+    // std::shared_ptr<util::Grounding> generate_chase_fact_from_inertia(
+    // std::shared_ptr<util::Grounding> const &inertia_fact);
+
+    // std::shared_ptr<util::Grounding>
+    // generate_chase_fact(std::shared_ptr<util::Grounding> const &input_fact);
+
+    // void
+    // find_match(std::vector<std::shared_ptr<util::Grounding>> const &database,
+    // std::shared_ptr<util::Grounding> const &input_fact);
+
+    // bool is_database_match(
+    // std::shared_ptr<util::Grounding> const &db_grounding,
+    // std::shared_ptr<util::Grounding> const &input_grounding) const;
+
+    // bool is_event_variable_match(
+    // std::shared_ptr<util::Grounding> const &db_grounding,
+    // std::shared_ptr<util::Grounding> const &input_grounding) const;
+
+    // bool is_frontier_variable_match(
+    // std::shared_ptr<util::Grounding> const &db_grounding,
+    // std::shared_ptr<util::Grounding> const &input_grounding) const;
 
     // std::unique_ptr<formula::Formula> build_head_formula(
     // size_t index,

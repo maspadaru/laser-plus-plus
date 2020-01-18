@@ -68,11 +68,11 @@ void Database::clear_predicate_map() {
     }
 }
 
-std::vector<std::shared_ptr<util::Grounding>> const &
-Database::get_predicate_data(std::string const &predicate) {
+std::vector<std::shared_ptr<util::Grounding>> 
+*Database::get_predicate_data(std::string const &predicate) {
     predicate_map.try_emplace(predicate);
-    auto const &result = predicate_map.at(predicate);
-    return result;
+    auto &result = predicate_map.at(predicate);
+    return &result;
 }
 
 size_t Database::get_step() const { return current_step; }
