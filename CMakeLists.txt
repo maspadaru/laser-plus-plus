@@ -26,10 +26,12 @@ file(GLOB LASER_SOURCES
         "src/service/*.cpp"
         "src/acyclicity/*.cpp"
         )
+find_package(Threads)
 
 
 ################################## TESTAPP ##################################
 add_executable(testapp test/main.cpp ${LASER_SOURCES})
+target_link_libraries(testapp ${CMAKE_THREAD_LIBS_INIT})
 ################################### TESTS ###################################
 
 find_package(GTest)
@@ -39,5 +41,5 @@ if(GTEST_FOUND)
     )
     include_directories(${GTEST_INCLUDE_DIRS})
     add_executable(run_gtest test/test.cpp ${LASER_SOURCES} ${TEST_SOURCES})
-    target_link_libraries(run_gtest ${GTEST_LIBRARIES})
+    target_link_libraries(run_gtest ${GTEST_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 endif(GTEST_FOUND)
