@@ -73,6 +73,7 @@ bool Program::evaluate_rule(rule::Rule &rule, size_t step) {
     rule.evaluate(timeline, database);
     rule.derive_conclusions(timeline, database);
     auto conclusions = rule.get_conclusions_step(timeline);
+    database.insert_in_predicate_map(conclusions);
     bool changed = !conclusions.empty();
     new_conclusions.insert(new_conclusions.end(),
                            std::make_move_iterator(conclusions.begin()),

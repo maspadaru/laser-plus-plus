@@ -90,8 +90,6 @@ void test_run() {
                                 "7 : r(1, 2, 3, 4)\n"
                                 "8 : r(1, 2, 3, 4), p(1, 2)\n"
                                 "9 : \n";
-    // Since rules are evaluated together, they are unaware of each other's 
-    // conclusions
     std::string rule_string =
         "q(B, r1z) && [I, r1z] := r(A, B, C, D)\n"
         "q(B, r2z) && [I, r2z] := p(A, B)\n";

@@ -54,6 +54,16 @@ std::vector<std::shared_ptr<util::Grounding>> Database::get_data_full() const {
 }
 void Database::increment_step() { current_step++; }
 
+void Database::insert_in_predicate_map(
+    std::vector<std::shared_ptr<util::Grounding>> groundings) {
+    for (auto const &fact : groundings) {
+        auto const &predicate = fact->get_predicate();
+        predicate_map.try_emplace(predicate);
+        auto &list = predicate_map.at(predicate);
+        list.push_back(fact);
+    }
+}
+
 void Database::update_predicate_map() {
     auto const &new_facts = delta[current_step];
     for (auto const &fact : delta[current_step]) {

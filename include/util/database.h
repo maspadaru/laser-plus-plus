@@ -44,6 +44,8 @@ class Database {
     size_t get_step() const;
 
     void update_predicate_map();
+    void insert_in_predicate_map(
+    std::vector<std::shared_ptr<util::Grounding>> groundings); 
 
     std::vector<std::shared_ptr<util::Grounding>>  
     *get_predicate_data(std::string const &predicate);

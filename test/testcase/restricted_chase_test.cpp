@@ -130,16 +130,14 @@ TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleTwo) {
     auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> "; 
-    expected[1] = "1 -> q(2, z0)"; // only r1 fires
-    expected[2] = "2 -> q(2, z0)"; // since r2 did not fire at prev timepoint 
+    expected[1] = "1 -> q(2, z0)"; 
+    expected[2] = "2 -> q(2, z0)";  
     expected[3] = "3 -> ";  
-    expected[4] = "4 -> q(2, z1)"; // both rules fire, 
-                //  since conclusions from r1 were not added to database yet, 
-                //  r2 generates new labeled null
+    expected[4] = "4 -> q(2, z1)";  
     expected[5] = "5 -> q(2, z1) ";
     expected[6] = "6 -> ";
-    expected[7] = "7 -> q(2, z2)"; // only r1 fires
-    expected[8] = "8 -> q(2, z2)"; // same as time=2 
+    expected[7] = "7 -> q(2, z2)"; 
+    expected[8] = "8 -> q(2, z2)";  
     expected[9] = "9 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
                              chase_alg);
