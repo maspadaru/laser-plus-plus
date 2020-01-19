@@ -40,9 +40,15 @@ void Program::reset_rules() {
 
 void Program::chase_evaluation() {
     reset_rules();
+    // facts derived at previous time-points that are still valid now.
+    auto initial_conclusions = get_conclusions();
+    auto step = database.get_step();
+    database.insert(step, std::move(initial_conclusions));
+    database.update_predicate_map();
+    // chase:
     bool changed = true;
     while (changed) {
-        auto step = database.get_step() + 1;
+        step = database.get_step() + 1;
         changed = evaluate_rule_vector(simple_rule_vector, step);
         if (!changed) {
             changed = evaluate_rule_vector(existential_rule_vector, step);

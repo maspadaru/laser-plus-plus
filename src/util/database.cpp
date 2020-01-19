@@ -16,7 +16,13 @@ void Database::insert_facts(
 
 void Database::insert(
     size_t step, std::vector<std::shared_ptr<util::Grounding>> groundings) {
-    delta.insert(delta.begin() + step, std::move(groundings));
+    while (delta.size() <= step) {
+        delta.emplace_back();
+    }
+    auto &delta_step = delta.at(step);
+    delta_step.insert(delta_step.end(),
+                      std::make_move_iterator(groundings.begin()),
+                      std::make_move_iterator(groundings.end()));
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
@@ -46,9 +52,7 @@ Database::get_data_since(size_t start) const {
 std::vector<std::shared_ptr<util::Grounding>> Database::get_data_full() const {
     return get_data_range(0, current_step);
 }
-void Database::increment_step() {
-    current_step++;
-}
+void Database::increment_step() { current_step++; }
 
 void Database::update_predicate_map() {
     auto const &new_facts = delta[current_step];
@@ -61,16 +65,24 @@ void Database::update_predicate_map() {
 }
 
 void Database::clear_predicate_map() {
+    inertia_predicate_map = std::move(predicate_map);
     for (auto &iterator : predicate_map) {
         auto &vector = iterator.second;
         vector.clear();
     }
 }
 
-std::vector<std::shared_ptr<util::Grounding>> 
-*Database::get_predicate_data(std::string const &predicate) {
+std::vector<std::shared_ptr<util::Grounding>> *
+Database::get_predicate_data(std::string const &predicate) {
     predicate_map.try_emplace(predicate);
     auto &result = predicate_map.at(predicate);
+    return &result;
+}
+
+std::vector<std::shared_ptr<util::Grounding>> *
+Database::get_inertia_predicate_data(std::string const &predicate) {
+    inertia_predicate_map.try_emplace(predicate);
+    auto &result = inertia_predicate_map.at(predicate);
     return &result;
 }
 

@@ -39,14 +39,19 @@ class RestrictedFilter : public ChaseFilter {
     std::vector<std::shared_ptr<util::Grounding>> current_step_facts;
     // position of event variables in head_variables
     std::vector<int> event_variable_list;
+    // position of free variables in head_variables
+    std::vector<int> free_variable_list;
     // index = variable position in head_variable vector
     // value = variable position in input_fact (free_variables vector)
     std::vector<int> body_head_var_index;
     std::vector<std::string> head_atom_predicates;
     std::vector<std::vector<std::shared_ptr<util::Grounding>> *>
         database_facts; // positions correspond to head_atoms
+    std::vector<std::vector<std::shared_ptr<util::Grounding>> *>
+        inertia_facts; // positions correspond to head_atoms
     std::vector<std::vector<std::shared_ptr<util::Grounding>>> head_facts;
     std::vector<std::vector<std::string>> current_step_substitutions;
+    std::vector<std::vector<std::string>> event_substitutions;
     std::vector<std::vector<std::string>> current_timepoint_substitutions;
     std::vector<std::vector<std::string>> inertia_substitutions;
     // index = head_atom,
@@ -64,6 +69,7 @@ class RestrictedFilter : public ChaseFilter {
     void init_head_atoms(
         std::vector<std::unique_ptr<formula::Formula>> const &head_atoms);
     void init_event_variable_list();
+    void init_free_variable_list();
     void init_body_head_var_index();
     void init_head_atom_predicates(
         std::vector<std::unique_ptr<formula::Formula>> const &head_atoms);
@@ -76,11 +82,14 @@ class RestrictedFilter : public ChaseFilter {
                   std::shared_ptr<util::Grounding> const &input_fact) const;
     std::vector<std::string> extract_substitution(
         std::shared_ptr<util::Grounding> const &input_fact) const;
+    std::vector<std::string> extract_event_substitution(
+        std::vector<std::string> const &substitution) const;
     bool is_substitution_match(std::vector<std::string> const &left,
                                std::vector<std::string> const &right) const;
     bool has_match_current_timepoint(
         std::vector<std::string> const &initial_substitution) const;
     bool is_full_match(std::vector<std::string> const &substitution) const;
+    bool is_event_match(std::vector<std::string> const &substitution) const;
     bool is_fact_match(std::vector<std::string> const &substitution,
                        std::shared_ptr<util::Grounding> const &fact,
                        size_t head_atom_index) const;
@@ -88,23 +97,35 @@ class RestrictedFilter : public ChaseFilter {
     fact_extend(std::vector<std::string> const &substitution,
                 std::shared_ptr<util::Grounding> const &fact,
                 size_t head_atom_index) const;
-    std::vector<std::string>
-    event_extend(std::vector<std::string> const &left,
-                 std::vector<std::string> const &right) const;
+    //std::vector<std::string>
+    //event_extend(std::vector<std::string> const &left,
+                 //std::vector<std::string> const &right) const;
     std::vector<std::string>
     generate_extension(std::vector<std::string> const &substitution);
     void search_database(std::shared_ptr<util::Grounding> const &input_fact);
+    //std::vector<std::vector<std::string>>
+    //match_events(std::vector<std::string> const &initial_substitution) const;
     std::vector<std::vector<std::string>>
-    match_events(std::vector<std::string> const &initial_substitution) const;
+    event_match_list(std::vector<std::string> const &initial_substitution,
+               std::vector<std::shared_ptr<util::Grounding>> const &fact_vector,
+               size_t head_atom_index) const;
     std::vector<std::vector<std::string>>
     match_list(std::vector<std::string> const &initial_substitution,
                std::vector<std::shared_ptr<util::Grounding>> const &fact_vector,
                size_t head_atom_index) const;
     std::vector<std::vector<std::string>>
-    match_database(std::vector<std::string> const &initial_substitution,
+    get_all_database_match(std::vector<std::string> const &initial_substitution,
+                   size_t head_atom_index) const;
+    std::vector<std::vector<std::string>>
+    get_all_event_match(std::vector<std::string> const &initial_substitution,
                    size_t head_atom_index) const;
     bool
     find_database_match(std::shared_ptr<util::Grounding> const &input_fact,
+                        std::vector<std::string> const &initial_substitution,
+                        size_t head_atom_index);
+
+    bool
+    find_event_match(std::shared_ptr<util::Grounding> const &input_fact,
                         std::vector<std::string> const &initial_substitution,
                         size_t head_atom_index);
 

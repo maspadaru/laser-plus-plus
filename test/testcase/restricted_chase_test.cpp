@@ -57,9 +57,9 @@ TEST(RestrictedChaseTest, RestrictedInertiaPartialMultiRule) {
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> q(2, 3, 4)";
-    expected[2] = "2 -> q(2, y0, z1)";
-    expected[3] = "3 -> q(2, 3, 4) q(2, y2, z1)";
-    expected[4] = "4 -> q(2, y3, z1)";
+    expected[2] = "2 -> q(2, y0, 4)";
+    expected[3] = "3 -> q(2, 3, 4)";
+    expected[4] = "4 -> q(2, y1, 4)";
     expected[5] = "5 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
                              chase_alg);

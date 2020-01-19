@@ -16,6 +16,11 @@ class Database {
                        std::vector<std::shared_ptr<util::Grounding>>>
         predicate_map;
 
+
+    std::unordered_map<std::string,
+                       std::vector<std::shared_ptr<util::Grounding>>>
+        inertia_predicate_map;
+
     std::vector<std::vector<std::shared_ptr<util::Grounding>>> delta;
     size_t current_step = 0;
 
@@ -42,6 +47,9 @@ class Database {
 
     std::vector<std::shared_ptr<util::Grounding>>  
     *get_predicate_data(std::string const &predicate);
+
+    std::vector<std::shared_ptr<util::Grounding>>  
+    *get_inertia_predicate_data(std::string const &predicate);
 };
 
 } // namespace util

@@ -25,15 +25,14 @@ void RestrictedFilter::init(
     init_head_atom_predicates(head_atoms);
     init_body_head_var_index();
     init_event_variable_list();
+    init_free_variable_list();
     init_head_facts();
     use_global_nulls = util::Settings::get_instance().has_global_null_values();
 }
 
 void RestrictedFilter::update(util::Timeline const &timeline,
                               size_t previous_step, util::Database &database) {
-    if (!has_database_facts) {
-        init_database_facts(database);
-    }
+    init_database_facts(database);
     auto new_time = timeline.get_time();
     current_timepoint_substitutions.insert(
         current_timepoint_substitutions.end(),
@@ -67,8 +66,7 @@ RestrictedFilter::build_chase_facts(
 }
 
 void RestrictedFilter::expire_outdated_groundings(
-    util::Timeline const &timeline) {
-}
+    util::Timeline const &timeline) {}
 
 void RestrictedFilter::update_head_facts(util::Timeline const &timeline) {
     head_facts.clear();
@@ -107,6 +105,15 @@ void RestrictedFilter::init_event_variable_list() {
     }
 }
 
+void RestrictedFilter::init_free_variable_list() {
+    for (size_t i = 0; i < head_variables_count; i++) {
+        auto const &var_name = head_variables.at(i);
+        if (free_variable_index.count(var_name) > 0) {
+            free_variable_list.push_back(i);
+        }
+    }
+}
+
 void RestrictedFilter::init_body_head_var_index() {
     for (auto const &variable : head_variables) {
         int input_index = -1;
@@ -140,8 +147,10 @@ void RestrictedFilter::init_head_atoms_var_index_atom_to_head(
 
 void RestrictedFilter::init_database_facts(util::Database &database) {
     database_facts.clear();
+    inertia_facts.clear();
     for (auto const &predicate : head_atom_predicates) {
         database_facts.push_back(database.get_predicate_data(predicate));
+        inertia_facts.push_back(database.get_inertia_predicate_data(predicate));
     }
     has_database_facts = true;
 }
@@ -182,6 +191,21 @@ std::vector<std::string> RestrictedFilter::extract_substitution(
     return substitution;
 }
 
+std::vector<std::string> RestrictedFilter::extract_event_substitution(
+    std::vector<std::string> const &substitution) const {
+    std::vector<std::string> result;
+    for (auto head_var_index : head_variables) {
+        result.push_back(BOUND_VALUE_PLACEHOLDER);
+    }
+    for (auto i : free_variable_list) {
+        result[i] = substitution.at(i);
+    }
+    for (auto i : event_variable_list) {
+        result[i] = substitution.at(i);
+    }
+    return result;
+}
+
 bool RestrictedFilter::is_substitution_match(
     std::vector<std::string> const &left,
     std::vector<std::string> const &right) const {
@@ -212,6 +236,17 @@ bool RestrictedFilter::has_match_current_timepoint(
 bool RestrictedFilter::is_full_match(
     std::vector<std::string> const &substitution) const {
     for (auto const &value : substitution) {
+        if (value == BOUND_VALUE_PLACEHOLDER) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool RestrictedFilter::is_event_match(
+    std::vector<std::string> const &substitution) const {
+    for (auto index : event_variable_list) {
+        auto value = substitution.at(index);
         if (value == BOUND_VALUE_PLACEHOLDER) {
             return false;
         }
@@ -263,16 +298,6 @@ RestrictedFilter::fact_extend(std::vector<std::string> const &substitution,
     return result;
 }
 
-std::vector<std::string>
-RestrictedFilter::event_extend(std::vector<std::string> const &left,
-                               std::vector<std::string> const &right) const {
-    std::vector<std::string> result = left;
-    for (auto index : event_variable_list) {
-        result.at(index) = right.at(index);
-    }
-    return result;
-}
-
 std::vector<std::string> RestrictedFilter::generate_extension(
     std::vector<std::string> const &substitution) {
     std::vector<std::string> result = substitution;
@@ -295,7 +320,14 @@ void RestrictedFilter::search_database(
     // previous events if frontier variables match
     std::vector<std::vector<std::string>> substitution_list;
     if (has_event_variables) {
-        substitution_list = match_events(initial_substitution);
+        event_substitutions.clear();
+        // substitution_list = match_events(initial_substitution);
+        bool match_found =
+            find_event_match(input_fact, initial_substitution, 0);
+        for (auto &substitution : event_substitutions) {
+            substitution_list.push_back(
+                extract_event_substitution(substitution));
+        }
     }
     substitution_list.push_back(initial_substitution);
     // if all bound variables are events -> substitution is complete
@@ -321,19 +353,19 @@ void RestrictedFilter::search_database(
     current_step_facts.push_back(new_fact);
 }
 
-std::vector<std::vector<std::string>> RestrictedFilter::match_events(
-    std::vector<std::string> const &initial_substitution) const {
-    std::vector<std::vector<std::string>> result;
-    // Look for frontier and event match in inertia_substitutions
-    for (auto const &substitution : inertia_substitutions) {
-        if (is_substitution_match(initial_substitution, substitution)) {
-            auto new_substitution =
-                event_extend(initial_substitution, substitution);
-            result.push_back(new_substitution);
-        }
-    }
-    return result;
-}
+//std::vector<std::vector<std::string>> RestrictedFilter::match_events(
+    //std::vector<std::string> const &initial_substitution) const {
+    //std::vector<std::vector<std::string>> result;
+    //// Look for frontier and event match in inertia_substitutions
+    //for (auto const &substitution : inertia_substitutions) {
+        //if (is_substitution_match(initial_substitution, substitution)) {
+            //auto new_substitution =
+                //event_extend(initial_substitution, substitution);
+            //result.push_back(new_substitution);
+        //}
+    //}
+    //return result;
+//}
 
 std::vector<std::vector<std::string>> RestrictedFilter::match_list(
     std::vector<std::string> const &initial_substitution,
@@ -350,7 +382,7 @@ std::vector<std::vector<std::string>> RestrictedFilter::match_list(
     return result;
 }
 
-std::vector<std::vector<std::string>> RestrictedFilter::match_database(
+std::vector<std::vector<std::string>> RestrictedFilter::get_all_database_match(
     std::vector<std::string> const &initial_substitution,
     size_t head_atom_index) const {
     auto const &atom_facts = head_facts.at(head_atom_index);
@@ -358,9 +390,50 @@ std::vector<std::vector<std::string>> RestrictedFilter::match_database(
     auto *database = database_facts.at(head_atom_index);
     auto database_result =
         match_list(initial_substitution, *database, head_atom_index);
-    result.insert(result.end(), std::make_move_iterator(database_result.begin()),
+    result.insert(result.end(),
+                  std::make_move_iterator(database_result.begin()),
                   std::make_move_iterator(database_result.end()));
     return result;
+}
+
+std::vector<std::vector<std::string>> RestrictedFilter::get_all_event_match(
+    std::vector<std::string> const &initial_substitution,
+    size_t head_atom_index) const {
+    auto *database = inertia_facts.at(head_atom_index);
+    auto result =
+        match_list(initial_substitution, *database, head_atom_index);
+    return result;
+}
+
+bool RestrictedFilter::find_event_match(
+    std::shared_ptr<util::Grounding> const &input_fact,
+    std::vector<std::string> const &initial_substitution,
+    size_t head_atom_index) {
+    auto substitution_list =
+        get_all_event_match(initial_substitution, head_atom_index);
+    if (substitution_list.empty()) {
+        return false;
+    }
+    size_t next_head_atom = head_atom_index + 1;
+    if (next_head_atom < head_atom_count) {
+        for (auto const &substitution : substitution_list) {
+            bool found_extension =
+                find_event_match(input_fact, substitution, next_head_atom);
+            if (found_extension) {
+                return true;
+            }
+        }
+    } else {
+        // we have reached the last atom in the head -> we check if match
+        // it is sufficient to check the first substitution
+        auto substitution = substitution_list.at(0);
+        // TODO
+        if (is_event_match(substitution)) {
+            event_substitutions.push_back(substitution);
+            return true;
+        }
+    }
+    return false;
 }
 
 bool RestrictedFilter::find_database_match(
@@ -368,7 +441,7 @@ bool RestrictedFilter::find_database_match(
     std::vector<std::string> const &initial_substitution,
     size_t head_atom_index) {
     auto substitution_list =
-        match_database(initial_substitution, head_atom_index);
+        get_all_database_match(initial_substitution, head_atom_index);
     if (substitution_list.empty()) {
         return false;
     }
