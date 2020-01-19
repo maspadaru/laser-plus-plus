@@ -433,7 +433,6 @@ TEST(RestrictedChaseTest, RestrictedConjunctionHeadSwap) {
     std::string stream_string = "1 2 "
                                 "1 : Bicycle(c) \n"
                                 "2 : \n";
-
     std::string rule_string = "Wheel(v) && hasPart(X, v) := Bicycle(X)\n"
                               "properPartOf(X, w) && Bicycle(w) := Wheel(X)\n"
                               "partOf(X, Y) := properPartOf(X, Y)\n"

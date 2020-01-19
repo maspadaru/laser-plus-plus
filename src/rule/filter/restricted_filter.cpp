@@ -11,12 +11,11 @@ void RestrictedFilter::init(
     std::vector<std::string> const &frontier_variables,
     bool has_event_variables) {
     // TODO First try to sort head_atoms by highest number of frontier variables
+    init_head_atoms(head_atoms);
     this->head_atom_count = head_atoms.size();
     this->head_variables_count = head_variables.size();
     this->head_variables = head_variables;
     this->free_variables = free_variables;
-    this->bound_variables = bound_variables;
-    this->frontier_variables = frontier_variables;
     this->free_variable_index = rule::shared::make_index(free_variables);
     this->bound_variable_index = rule::shared::make_index(bound_variables);
     this->head_variable_index = rule::shared::make_index(head_variables);
@@ -26,6 +25,7 @@ void RestrictedFilter::init(
     init_head_atom_predicates(head_atoms);
     init_body_head_var_index();
     init_event_variable_list();
+    init_head_facts();
     use_global_nulls = util::Settings::get_instance().has_global_null_values();
 }
 
@@ -41,12 +41,14 @@ void RestrictedFilter::update(util::Timeline const &timeline,
     current_step_substitutions.clear();
     current_step_facts.clear();
     if (new_time > current_timepoint) {
+        // This is the first update in a new timepoint
         if (has_event_variables) {
             inertia_substitutions.clear();
             inertia_substitutions = current_timepoint_substitutions;
         }
         current_timepoint_substitutions.clear();
         current_timepoint = new_time;
+        update_head_facts(timeline);
     }
 }
 
@@ -54,8 +56,6 @@ std::vector<std::shared_ptr<util::Grounding>>
 RestrictedFilter::build_chase_facts(
     util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &input_facts) {
-    // auto database_facts = head_formula->get_conclusions_timepoint(timeline);
-    // auto const &database_facts = database.get_data_full();
     auto current_time = timeline.get_time();
     for (auto const &input_fact : input_facts) {
         if (input_fact->is_fresh_sne(current_time, previous_step)) {
@@ -68,7 +68,29 @@ RestrictedFilter::build_chase_facts(
 
 void RestrictedFilter::expire_outdated_groundings(
     util::Timeline const &timeline) {
-    // head_formula->expire_outdated_groundings(timeline);
+}
+
+void RestrictedFilter::update_head_facts(util::Timeline const &timeline) {
+    head_facts.clear();
+    for (auto &atom : head_atoms) {
+        auto facts = atom->get_groundings(timeline);
+        head_facts.push_back(std::move(facts));
+    }
+}
+
+void RestrictedFilter::init_head_facts() {
+    head_facts.clear();
+    for (auto const &atom : head_atoms) {
+        head_facts.emplace_back();
+    }
+}
+
+void RestrictedFilter::init_head_atoms(
+    std::vector<std::unique_ptr<formula::Formula>> const &head_atoms) {
+    for (auto const &atom : head_atoms) {
+        formula::Formula *atom_ptr = atom.get();
+        this->head_atoms.push_back(atom_ptr);
+    }
 }
 
 void RestrictedFilter::init_event_variable_list() {
@@ -107,10 +129,6 @@ void RestrictedFilter::init_head_atoms_var_index_atom_to_head(
     std::vector<std::unique_ptr<formula::Formula>> const &head_atoms) {
     for (auto const &head_atom : head_atoms) {
         std::vector<int> var_index;
-        // for (auto const &head_variable : head_variables) {
-        // auto atom_variable = head_atom->get_variable_index(head_variable);
-        // var_index.push_back(atom_variable);
-        //}
         auto const &atom_variable_names = head_atom->get_variable_names();
         for (auto const &atom_variable : atom_variable_names) {
             auto head_index = head_variable_index.at(atom_variable);
@@ -317,15 +335,12 @@ std::vector<std::vector<std::string>> RestrictedFilter::match_events(
     return result;
 }
 
-std::vector<std::vector<std::string>> RestrictedFilter::match_database(
+std::vector<std::vector<std::string>> RestrictedFilter::match_list(
     std::vector<std::string> const &initial_substitution,
+    std::vector<std::shared_ptr<util::Grounding>> const &fact_vector,
     size_t head_atom_index) const {
     std::vector<std::vector<std::string>> result;
-    // TODO for all facts in database_facts.at(head_atom_index)
-    // if substition matches fact ->
-    // create extended substitution -> add it to substitution list
-    auto *database = database_facts.at(head_atom_index);
-    for (auto const &fact : *database) {
+    for (auto const &fact : fact_vector) {
         if (is_fact_match(initial_substitution, fact, head_atom_index)) {
             auto new_substitution =
                 fact_extend(initial_substitution, fact, head_atom_index);
@@ -335,8 +350,21 @@ std::vector<std::vector<std::string>> RestrictedFilter::match_database(
     return result;
 }
 
+std::vector<std::vector<std::string>> RestrictedFilter::match_database(
+    std::vector<std::string> const &initial_substitution,
+    size_t head_atom_index) const {
+    auto const &atom_facts = head_facts.at(head_atom_index);
+    auto result = match_list(initial_substitution, atom_facts, head_atom_index);
+    auto *database = database_facts.at(head_atom_index);
+    auto database_result =
+        match_list(initial_substitution, *database, head_atom_index);
+    result.insert(result.end(), std::make_move_iterator(database_result.begin()),
+                  std::make_move_iterator(database_result.end()));
+    return result;
+}
+
 bool RestrictedFilter::find_database_match(
-    std::shared_ptr<util::Grounding> const &input_fact, 
+    std::shared_ptr<util::Grounding> const &input_fact,
     std::vector<std::string> const &initial_substitution,
     size_t head_atom_index) {
     auto substitution_list =
@@ -366,176 +394,5 @@ bool RestrictedFilter::find_database_match(
     }
     return false;
 }
-
-// void RestrictedFilter::find_match(
-// std::vector<std::shared_ptr<util::Grounding>> const &database,
-// std::shared_ptr<util::Grounding> const &input_fact) {
-// if (has_event_variables) {
-// for (auto const &inertia_fact : current_timepoint_facts) {
-// if (is_event_variable_match(inertia_fact, input_fact)) {
-// auto new_fact = generate_chase_fact_from_inertia(inertia_fact);
-// current_step_facts.push_back(new_fact);
-// return;
-//}
-//}
-// for (auto const &inertia_fact : inertia_facts) {
-// if (is_event_variable_match(inertia_fact, input_fact)) {
-// auto new_fact = generate_chase_fact_from_inertia(inertia_fact);
-// current_step_facts.push_back(new_fact);
-// return;
-//}
-//}
-//}
-// for (auto const &db_fact : database) {
-// if (is_database_match(db_fact, input_fact)) {
-// auto new_fact = convert_to_chase_fact(db_fact);
-// current_step_facts.push_back(new_fact);
-// return;
-//}
-//}
-// auto chase_fact = generate_chase_fact(input_fact);
-// current_step_facts.push_back(chase_fact);
-//}
-
-// bool RestrictedFilter::is_database_match(
-// std::shared_ptr<util::Grounding> const &db_fact,
-// std::shared_ptr<util::Grounding> const &input_fact) const {
-//// return false if there is a match but the new grounding expires later
-// return is_frontier_variable_match(db_fact, input_fact) &&
-// input_fact->get_horizon_time() <= db_fact->get_horizon_time();
-//}
-
-// bool RestrictedFilter::is_event_variable_match(
-// std::shared_ptr<util::Grounding> const &inertia_fact,
-// std::shared_ptr<util::Grounding> const &input_fact) const {
-//// TODO should I check all annotations or is ht enough?
-// for (auto const &var_name : frontier_variables) {
-// auto input_index = free_variable_index.at(var_name);
-// auto const &input_value = input_fact->get_constant(input_index);
-// auto const &event_value = inertia_fact->get_constant(input_index);
-// if (event_value != input_value) {
-// return false;
-//}
-//}
-// return true;
-//}
-
-// bool RestrictedFilter::is_frontier_variable_match(
-// std::shared_ptr<util::Grounding> const &db_fact,
-// std::shared_ptr<util::Grounding> const &input_fact) const {
-//// TODO should I check all annotations or is ht enough?
-// for (auto const &var_name : frontier_variables) {
-// auto input_index = free_variable_index.at(var_name);
-// auto const &input_value = input_fact->get_constant(input_index);
-// auto db_index = head_formula->get_variable_index(var_name);
-// auto const &db_value = db_fact->get_constant(db_index);
-// if (db_value != input_value) {
-// return false;
-//}
-//}
-// return true;
-//}
-
-// std::unique_ptr<formula::Formula> RestrictedFilter::build_head_formulas(
-// std::vector<std::unique_ptr<formula::Formula>> const &list) const {
-// bool merge = true;
-// std::set<int> index_set;
-// while(merge) {
-// merge = false;
-// for (int i = 0; i < list.size()-1; i++) {
-// auto const &left = list.at(i);
-// for (int j = i+1; j < list.size(); j++) {
-// auto const &right = list.at(j);
-// if (have_common_variables(i,j)){
-// auto result = merge(left, right);
-// merge = true;
-// index_set.insert(i);
-// index_set.insert(j);
-//}
-//}
-//}
-
-//}
-
-//}
-
-// std::unique_ptr<formula::Formula> RestrictedFilter::build_head_formula(
-// size_t index,
-// std::vector<std::unique_ptr<formula::Formula>> const &list) const {
-// if (index == list.size() - 1) {
-// auto result = list[index]->clone();
-// result->set_head(false);
-// return result;
-//}
-// auto left = list[index]->clone();
-// left->set_head(false);
-// auto right = build_head_formula(index + 1, list);
-// return std::make_unique<formula::Conjunction>(std::move(left),
-// std::move(right), true);
-//}
-
-// std::shared_ptr<util::Grounding> RestrictedFilter::convert_to_chase_fact(
-// std::shared_ptr<util::Grounding> const &db_fact) {
-// std::vector<std::string> chase_values;
-// for (auto const &var_name : head_variables) {
-// int head_index = head_formula->get_variable_index(var_name);
-// if (head_index >= 0) {
-// auto value = db_fact->get_constant(head_index);
-// chase_values.push_back(value);
-//} else {
-// chase_values.push_back("filler_non-frontier_value");
-//}
-//}
-// auto result = db_fact->shallow_clone();
-// result->set_constant_vector(chase_values);
-// return result;
-//}
-
-// std::shared_ptr<util::Grounding> RestrictedFilter::generate_chase_fact(
-// std::shared_ptr<util::Grounding> const &input_fact) {
-// std::vector<std::string> chase_values;
-// std::vector<std::string> bound_values;
-// for (auto const &var_name : bound_variables) {
-// auto new_null = generate_new_value(var_name);
-// bound_values.push_back(std::move(new_null));
-//}
-// for (auto const &var_name : head_variables) {
-// if (bound_variable_index.count(var_name) > 0) {
-// auto index = bound_variable_index.at(var_name);
-// auto value = bound_values.at(index);
-// chase_values.push_back(value);
-//} else {
-// auto index = free_variable_index.at(var_name);
-// auto value = input_fact->get_constant(index);
-// chase_values.push_back(value);
-//}
-//}
-// auto result = input_fact->shallow_clone();
-// result->set_constant_vector(chase_values);
-// return result;
-//}
-
-// std::shared_ptr<util::Grounding>
-// RestrictedFilter::generate_chase_fact_from_inertia(
-// std::shared_ptr<util::Grounding> const &inertia_fact) {
-// std::vector<std::string> chase_values;
-// for (size_t i = 0; i < head_variables.size(); i++) {
-// auto const &var_name = head_variables.at(i);
-// std::string value;
-// if ((bound_variable_index.count(var_name) > 0) &&
-//(!is_event_variable.at(bound_variable_index.at(var_name)))) {
-// value = generate_new_value(var_name);
-//} else {
-// value = inertia_fact->get_constant(i);
-//}
-// chase_values.push_back(value);
-//}
-// auto result = inertia_fact->shallow_clone();
-// result->set_constant_vector(chase_values);
-// if (result->get_horizon_time() < current_timepoint) {
-// result->set_horizon_time(current_timepoint);
-//}
-// return result;
-//}
 
 } // namespace laser::rule
