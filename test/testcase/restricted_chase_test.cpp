@@ -104,10 +104,10 @@ TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleOne) {
     auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> "; 
-    expected[1] = "1 -> q(2, 3)"; // only conclusion
-    expected[2] = "2 -> q(2, z0)"; // because q(2, 3) was not evaluated by r2
-    expected[3] = "3 -> q(2, 3) q(2, z0)"; // because q(2,3) is selected also in r2 
-    expected[4] = "4 -> q(2, z0)"; // because q(2,3) satisfies [I,z] in r2 at t=2
+    expected[1] = "1 -> q(2, 3)"; 
+    expected[2] = "2 -> q(2, 3)"; 
+    expected[3] = "3 -> q(2, 3) ";  
+    expected[4] = "4 -> q(2, 3)"; 
     expected[5] = "5 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
                              chase_alg);
@@ -125,21 +125,21 @@ TEST(RestrictedChaseTest, RestrictedInertiaMultiRuleTwo) {
                                 "8 : r(1, 2, 3, 4), p(1, 2)\n"
                                 "9 : \n";
     std::string rule_string =
-        "q(B, r1z) && [I, r1z] := r(A, B, C, D)\n"
-        "q(B, r2z) && [I, r2z] := p(A, B)\n";
+        "q(B, z) && [I, z] := r(A, B, C, D)\n"
+        "q(B, z) && [I, z] := p(A, B)\n";
     auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> "; 
-    expected[1] = "1 -> q(2, r1z0)"; // only r1 fires
-    expected[2] = "2 -> q(2, r2z0)"; // since r2 did not fire at prev timepoint 
+    expected[1] = "1 -> q(2, z0)"; // only r1 fires
+    expected[2] = "2 -> q(2, z0)"; // since r2 did not fire at prev timepoint 
     expected[3] = "3 -> ";  
-    expected[4] = "4 -> q(2, r1z1) q(2, r2z1)"; // both rules fire, 
+    expected[4] = "4 -> q(2, z1)"; // both rules fire, 
                 //  since conclusions from r1 were not added to database yet, 
                 //  r2 generates new labeled null
-    expected[5] = "5 -> q(2, r1z1) q(2, r2z1)";
+    expected[5] = "5 -> q(2, z1) ";
     expected[6] = "6 -> ";
-    expected[7] = "7 -> q(2, r1z2)"; // only r1 fires
-    expected[8] = "8 -> q(2, r1z2) q(2, r2z2)"; // same as time=2 
+    expected[7] = "7 -> q(2, z2)"; // only r1 fires
+    expected[8] = "8 -> q(2, z2)"; // same as time=2 
     expected[9] = "9 -> ";
     test_framework::run_test(stream_string, rule_string, expected,
                              chase_alg);

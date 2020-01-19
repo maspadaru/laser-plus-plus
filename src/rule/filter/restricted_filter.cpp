@@ -424,12 +424,14 @@ bool RestrictedFilter::find_event_match(
             }
         }
     } else {
-        // we have reached the last atom in the head -> we check if match
-        // it is sufficient to check the first substitution
-        auto substitution = substitution_list.at(0);
-        // TODO
-        if (is_event_match(substitution)) {
-            event_substitutions.push_back(substitution);
+        bool found_match = false;
+        for (auto &substitution : substitution_list) {
+            if (is_event_match(substitution)) {
+                event_substitutions.push_back(substitution);
+                found_match = true;
+            }
+        }
+        if (found_match) {
             return true;
         }
     }
