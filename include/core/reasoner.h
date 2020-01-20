@@ -34,6 +34,7 @@ class Reasoner {
         fact_map;
     std::unordered_map<uint64_t, std::vector<std::shared_ptr<util::Grounding>>>
         conclusion_map;
+    std::vector<double> runtimes;
 
     void read(util::Timeline timeline);
     void evaluate(util::Timeline timeline);
@@ -64,6 +65,7 @@ class Reasoner {
     void start();
 
     uint64_t get_total_facts_read() const;
+    std::vector<double> const &get_runtimes() const;
 };
 
 } // namespace laser::core

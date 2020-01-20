@@ -108,12 +108,18 @@ Program::evaluate(util::Timeline const &timeline,
                   std::vector<std::shared_ptr<util::Grounding>> data_facts) {
     this->timeline = timeline;
     database.clear();
+    auto clock_start = std::chrono::high_resolution_clock::now();
     database.insert_facts(std::move(data_facts));
     chase_evaluation();
     auto conclusions = get_conclusions();
-    std::cout << "Input size: " << database.get_data_step(0).size() << std::endl;
-    std::cout << "Number of Steps: " << database.get_step() << std::endl;
-    std::cout << "Total Conclusions: " << conclusions.size() << std::endl;
+    auto clock_end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::milli> clock_elapsed =
+        clock_end - clock_start;
+    double elapsed_seconds = clock_elapsed.count() / 1000;
+    runtimes.push_back(elapsed_seconds);
+    //std::cout << "Input size: " << database.get_data_step(0).size() << std::endl;
+    //std::cout << "Number of Steps: " << database.get_step() << std::endl;
+    //std::cout << "Total Conclusions: " << conclusions.size() << std::endl;
     return conclusions;
 }
 
@@ -139,6 +145,11 @@ std::vector<std::shared_ptr<util::Grounding>>
 Program::get_single_step_conclusions() {
     auto conclusions = get_conclusions();
     return conclusions;
+}
+
+
+std::vector<double> const &Program::get_runtimes() const {
+    return runtimes;
 }
 
 } // namespace laser::core

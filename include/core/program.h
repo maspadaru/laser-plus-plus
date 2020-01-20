@@ -21,6 +21,7 @@ class Program {
     util::Timeline timeline;
     util::Database database;
     std::vector<std::shared_ptr<util::Grounding>> new_conclusions;
+    std::vector<double> runtimes;
 
     void chase_evaluation();
     void
@@ -57,6 +58,8 @@ class Program {
     bool evaluate_single_step();
 
     std::vector<std::shared_ptr<util::Grounding>> get_single_step_conclusions();
+
+    std::vector<double> const &get_runtimes() const;
 };
 
 } // namespace laser::core

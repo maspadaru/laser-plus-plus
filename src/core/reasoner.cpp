@@ -96,6 +96,7 @@ void Reasoner::evaluate(util::Timeline timeline) {
             std::this_thread::yield();
         }
     }
+    runtimes = program.get_runtimes();
 }
 
 void Reasoner::write(util::Timeline timeline) {
@@ -116,6 +117,10 @@ uint64_t Reasoner::get_total_facts_read() const { return total_facts_read; }
 
 void Reasoner::listen(util::Timeline timeline) {
     // service_manager->serve_requests();
+}
+
+std::vector<double> const &Reasoner::get_runtimes() const {
+    return runtimes;
 }
 
 } // namespace laser::core
