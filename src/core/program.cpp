@@ -42,13 +42,14 @@ void Program::chase_evaluation() {
     reset_rules();
     // facts derived at previous time-points that are still valid now.
     auto initial_conclusions = get_conclusions();
-    auto step = database.get_step();
-    database.insert(step, std::move(initial_conclusions));
+    //auto step = database.get_step();
+    //database.insert(step, std::move(initial_conclusions));
+    database.insert_in_predicate_map(initial_conclusions);
     database.update_predicate_map();
     // chase:
     bool changed = true;
     while (changed) {
-        step = database.get_step() + 1;
+        auto step = database.get_step() + 1;
         changed = evaluate_rule_vector(simple_rule_vector, step);
         if (!changed) {
             changed = evaluate_rule_vector(existential_rule_vector, step);
@@ -110,9 +111,9 @@ Program::evaluate(util::Timeline const &timeline,
     database.insert_facts(std::move(data_facts));
     chase_evaluation();
     auto conclusions = get_conclusions();
-    //std::cout << "Input size: " << database.get_data_step(0).size() << std::endl;
-    //std::cout << "Number of Steps: " << database.get_step() << std::endl;
-    //std::cout << "Total Conclusions: " << conclusions.size() << std::endl;
+    std::cout << "Input size: " << database.get_data_step(0).size() << std::endl;
+    std::cout << "Number of Steps: " << database.get_step() << std::endl;
+    std::cout << "Total Conclusions: " << conclusions.size() << std::endl;
     return conclusions;
 }
 
