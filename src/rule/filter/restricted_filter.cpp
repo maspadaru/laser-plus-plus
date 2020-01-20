@@ -461,9 +461,9 @@ bool RestrictedFilter::find_database_match(
         // it is sufficient to check the first substitution
         auto substitution = substitution_list.at(0);
         if (is_full_match(substitution)) {
-            current_step_substitutions.push_back(substitution);
-            auto new_fact = generate_fact(substitution, input_fact);
-            current_step_facts.push_back(new_fact);
+            //current_step_substitutions.push_back(substitution);
+            //auto new_fact = generate_fact(substitution, input_fact);
+            //current_step_facts.push_back(new_fact);
             return true;
         }
     }

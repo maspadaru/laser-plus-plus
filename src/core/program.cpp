@@ -110,8 +110,9 @@ Program::evaluate(util::Timeline const &timeline,
     database.insert_facts(std::move(data_facts));
     chase_evaluation();
     auto conclusions = get_conclusions();
-    std::cout << "Number of Steps: " << database.get_step() << std::endl;
-    std::cout << "Total Conclusions: " << conclusions.size() << std::endl;
+    //std::cout << "Input size: " << database.get_data_step(0).size() << std::endl;
+    //std::cout << "Number of Steps: " << database.get_step() << std::endl;
+    //std::cout << "Total Conclusions: " << conclusions.size() << std::endl;
     return conclusions;
 }
 
