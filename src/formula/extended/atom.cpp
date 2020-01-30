@@ -90,13 +90,10 @@ Atom::get_groundings(util::Timeline const &timeline) {
     return grounding_table.get_all_groundings();
 }
 
-std::vector<std::shared_ptr<util::Grounding>> Atom::get_conclusion_set() {
-    return grounding_table.get_all_groundings();
-}
 
 std::vector<std::shared_ptr<util::Grounding>>
 Atom::get_conclusions_timepoint(util::Timeline const &timeline) {
-    return get_conclusion_set();
+    return grounding_table.get_all_groundings();
 }
 
 std::vector<std::shared_ptr<util::Grounding>>

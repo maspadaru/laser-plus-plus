@@ -112,3 +112,4 @@ else
 fi
 
 #ln -s cmake-build-debug/compile_commands.json
+# cmake-build-debug/run_gtest --gtest_filter=AtomsTest.Atom

@@ -58,11 +58,6 @@ class Atom : public Formula {
 
     bool is_valid_fact(util::Grounding const &grounding) const;
 
-    /** returns a vector containing only unique groundings in regards to
-     * substitutions, not annotations
-     */
-    std::vector<std::shared_ptr<util::Grounding>> get_conclusion_set();
-
   public:
     Atom() = default;
 

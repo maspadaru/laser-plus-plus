@@ -80,20 +80,30 @@ void test_acyclicity_only_first_timepoint() {
 
 void test_run() {
     const std::string name = "Test Run";
-    std::string stream_string = "1 9 "
-                                "1 : r(1, 2, 3, 4)\n"
-                                "2 : p(1, 2)\n"
-                                "3 : \n"
-                                "4 : r(1, 2, 3, 4), p(1, 2)\n"
-                                "5 : r(1, 2, 3, 4), p(1, 2)\n"
-                                "6 : \n"
-                                "7 : r(1, 2, 3, 4)\n"
-                                "8 : r(1, 2, 3, 4), p(1, 2)\n"
-                                "9 : \n";
-    std::string rule_string =
-        "q(B, r1z) && [I, r1z] := r(A, B, C, D)\n"
-        "q(B, r2z) && [I, r2z] := p(A, B)\n";
-    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
+    std::string stream_string = "1 14 "
+                                "1 : f(x1)\n"
+                                "2 : c(x2, y2)\n"
+                                "2 : d(x2, y2)\n"
+                                "4 : \n"
+                                "5 : \n"
+                                "5 : e(x5, y5), e(a5, b5), e(x5, y5)\n"
+                                "5 : e(x5, y5)\n"
+                                "6 : a(x6, y6, z6)\n"
+                                "7 : \n"
+                                "8 : a(x8, y8, z8), b(y8, z8)\n"
+                                "9 : \n"
+                                "10 : a(x10, y10, z10)\n"
+                                "11 : f(a11)\n"
+                                "12 : e(x12, x12)\n"
+                                "13 : \n"
+                                "14 : \n";
+    std::string rule_string = "q(X, Y, Z) := a(X, Y, Z)\n"
+                              "r(Y) := c(X, Y)\n"
+                              "s(X) := e(X, X)\n"
+                              "t(Y, X) := d(X, Y)\n"
+                              "u(X, X) := f(X)\n"
+                              "v(X, Y, X, Y) := e(X, Y)\n";
+    auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     run(name, stream_string, rule_string, chase_alg);
 }
 

@@ -88,6 +88,40 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
     recent_groundings_vector.clear();
 }
 
+//void GroundingTable::expire_outdated_groundings(uint64_t current_time,
+                                                //uint64_t tuple_count) {
+    //// Expire by horizon_time
+    ////uint64_t expiration_time = current_time - 1;
+    ////if (grounding_map.count(horizon_time) > 0) {
+        ////size -= grounding_map[horizon_time].size();
+        ////grounding_map.erase(horizon_time);
+    ////}
+    //// Expire by horizon_count
+    //for (auto &iterator : grounding_map) {
+        //std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> &set =
+            //iterator.second;
+        //std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> toRemove;
+        //for (auto &grounding : set) {
+            //auto hc = grounding->get_horizon_count();
+            //auto ht = grounding->get_horizon_time();
+            //if ( ht < current_time || hc <= tuple_count) {
+                //toRemove.insert(grounding);
+                //// set.erase(grounding);
+                //// size--;
+            //} else {
+                //// Sets in map are ordered with lowest horizon_counter
+                //// first.
+                //break;
+            //}
+        //}
+        //size -= toRemove.size();
+        //for (auto &grounding: toRemove) {
+            //set.erase(grounding);
+        //}
+    //}
+    //recent_groundings_vector.clear();
+//}
+
 std::vector<std::string> const &GroundingTable::get_variable_names() const {
     return variable_names;
 }

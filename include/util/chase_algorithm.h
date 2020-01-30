@@ -5,7 +5,6 @@ namespace laser {
 namespace util {
 
 enum class ChaseAlgorithm {
-    INDEXED,
     RESTRICTED,
     SKOLEM,
     OBLIVIOUS,

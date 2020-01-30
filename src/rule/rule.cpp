@@ -188,9 +188,6 @@ void Rule::init_chase(
         case util::ChaseAlgorithm::RESTRICTED:
             chase_filter = std::make_unique<RestrictedFilter>();
             break;
-        case util::ChaseAlgorithm::INDEXED:
-            chase_filter = std::make_unique<IndexedFilter>();
-            break;
         case util::ChaseAlgorithm::SKOLEM:
             chase_filter = std::make_unique<SkolemFilter>();
             break;
