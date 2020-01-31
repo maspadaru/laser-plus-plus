@@ -8,16 +8,13 @@ bool GroundingTable::has_recent_groundings() {
     return !recent_groundings_vector.empty();
 }
 
-std::vector<std::shared_ptr<util::Grounding>>
-GroundingTable::get_recent_groundings() {
-    std::vector<std::shared_ptr<util::Grounding>> result =
-        std::move(recent_groundings_vector);
+std::vector<grounding_sptr> GroundingTable::get_recent_groundings() {
+    std::vector<grounding_sptr> result = std::move(recent_groundings_vector);
     recent_groundings_vector.clear();
     return result;
 }
 
-void GroundingTable::add_grounding(
-    std::shared_ptr<util::Grounding> const &grounding) {
+void GroundingTable::add_grounding(grounding_sptr const &grounding) {
     auto &groundings = grounding_map[grounding->get_horizon_time()];
     bool was_inserted = false;
     std::tie(std::ignore, was_inserted) = groundings.insert(grounding);
@@ -28,15 +25,15 @@ void GroundingTable::add_grounding(
 }
 
 void GroundingTable::add_grounding_vector(
-    std::vector<std::shared_ptr<util::Grounding>> const &grounding_vector) {
+    std::vector<grounding_sptr> const &grounding_vector) {
     for (auto const &grounding : grounding_vector) {
         add_grounding(grounding);
     }
 }
 
-std::vector<std::shared_ptr<util::Grounding>> GroundingTable::get_all_groundings() {
+std::vector<grounding_sptr> GroundingTable::get_all_groundings() {
     // Merges all lists together
-    std::vector<std::shared_ptr<util::Grounding>> all_groundings;
+    std::vector<grounding_sptr> all_groundings;
     for (auto const &map_iterator : grounding_map) {
         auto const &grounding_list = map_iterator.second;
         all_groundings.insert(all_groundings.end(), grounding_list.begin(),
@@ -65,9 +62,10 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
     }
     // Expire by horizon_count
     for (auto &iterator : grounding_map) {
-        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> &set =
-            iterator.second;
-        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> toRemove;
+        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
+            &set = iterator.second;
+        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
+            toRemove;
         for (auto &grounding : set) {
             auto hc = grounding->get_horizon_count();
             if (hc <= tuple_count) {
@@ -81,7 +79,7 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
             }
         }
         size -= toRemove.size();
-        for (auto &grounding: toRemove) {
+        for (auto &grounding : toRemove) {
             set.erase(grounding);
         }
     }
@@ -90,32 +88,19 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
 
 //void GroundingTable::expire_outdated_groundings(uint64_t current_time,
                                                 //uint64_t tuple_count) {
-    //// Expire by horizon_time
-    ////uint64_t expiration_time = current_time - 1;
-    ////if (grounding_map.count(horizon_time) > 0) {
-        ////size -= grounding_map[horizon_time].size();
-        ////grounding_map.erase(horizon_time);
-    ////}
-    //// Expire by horizon_count
+    //// Expire by horizon_time and horizon_count
     //for (auto &iterator : grounding_map) {
-        //std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> &set =
-            //iterator.second;
-        //std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare> toRemove;
+        //grounding_set &set = iterator.second;
+        //grounding_set toRemove;
         //for (auto &grounding : set) {
             //auto hc = grounding->get_horizon_count();
             //auto ht = grounding->get_horizon_time();
-            //if ( ht < current_time || hc <= tuple_count) {
+            //if (ht < current_time || hc <= tuple_count) {
                 //toRemove.insert(grounding);
-                //// set.erase(grounding);
-                //// size--;
-            //} else {
-                //// Sets in map are ordered with lowest horizon_counter
-                //// first.
-                //break;
             //}
         //}
         //size -= toRemove.size();
-        //for (auto &grounding: toRemove) {
+        //for (auto &grounding : toRemove) {
             //set.erase(grounding);
         //}
     //}
@@ -140,6 +125,5 @@ void GroundingTable::set_variable_names(
 size_t GroundingTable::get_number_of_variables() const {
     return variable_names.size();
 }
-
 
 } // namespace laser::formula

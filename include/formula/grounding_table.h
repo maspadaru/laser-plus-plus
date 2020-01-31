@@ -12,14 +12,20 @@
 
 namespace laser::formula {
 
+using grounding_sptr = std::shared_ptr<util::Grounding>;
+using grounding_set = std::set<grounding_sptr, util::GroundingFullCompare>;
+
 class GroundingTable {
   private:
     // grounding_map: key: horizon_time
     //        value: Set of all groundings sharing consideration_time
-    std::unordered_map<uint64_t, std::set<std::shared_ptr<util::Grounding>,
-                                          util::GroundingFullCompare>>
-        grounding_map;
-    std::vector<std::shared_ptr<util::Grounding>> recent_groundings_vector;
+    std::unordered_map<uint64_t, grounding_set> grounding_map;
+
+    // std::unordered_map<grounding_sptr, grounding_set,
+    // util::GroundingFullHash, util::GroundingEqual>
+    // grounding_map;
+
+    std::vector<grounding_sptr> recent_groundings_vector;
     std::vector<std::string> variable_names;
     std::unordered_map<std::string, int> variable_index;
     size_t size = 0;
@@ -33,7 +39,7 @@ class GroundingTable {
 
     /** Returns the contents of recent groundings set as a vector, and clears it
      */
-    std::vector<std::shared_ptr<util::Grounding>> get_recent_groundings();
+    std::vector<grounding_sptr> get_recent_groundings();
 
     bool has_recent_groundings();
 
@@ -41,12 +47,12 @@ class GroundingTable {
 
     int get_variable_index(std::string const &variable_name) const;
 
-    std::vector<std::shared_ptr<util::Grounding>> get_all_groundings();
+    std::vector<grounding_sptr> get_all_groundings();
 
-    void add_grounding(std::shared_ptr<util::Grounding> const &grounding);
+    void add_grounding(grounding_sptr const &grounding);
 
-    void add_grounding_vector(
-        std::vector<std::shared_ptr<util::Grounding>> const &grounding_vector);
+    void
+    add_grounding_vector(std::vector<grounding_sptr> const &grounding_vector);
 
     /**
      * Removes all annotated grounding that have expired due to horizon time

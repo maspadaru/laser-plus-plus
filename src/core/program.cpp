@@ -117,9 +117,9 @@ Program::evaluate(util::Timeline const &timeline,
         clock_end - clock_start;
     double elapsed_seconds = clock_elapsed.count() / 1000;
     runtimes.push_back(elapsed_seconds);
-    std::cout << "Input size: " << database.get_data_step(0).size() << std::endl;
-    std::cout << "Number of Steps: " << database.get_step() << std::endl;
-    std::cout << "Total Conclusions: " << conclusions.size() << std::endl;
+    //std::cout << "Input size: " << database.get_data_step(0).size() << std::endl;
+    //std::cout << "Number of Steps: " << database.get_step() << std::endl;
+    //std::cout << "Total Conclusions: " << conclusions.size() << std::endl;
     return conclusions;
 }
 

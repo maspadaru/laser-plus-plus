@@ -78,37 +78,55 @@ void test_acyclicity_only_first_timepoint() {
     run_acyclicity_test(name, rule_string, expected_has_terminating_chase);
 }
 
+//void test_run() {
+    //const std::string name = "Test Run";
+    //std::string stream_string = "1 4 "
+                                //"1 : q(x1, y1, z1)\n"
+                                //"2 : q(x1, y1, z1)\n"
+                                //"3 : q(x1, y1, z1)\n"
+                                //"4 : \n";
+    //std::string rule_string =
+        //"p(a, b, X, Z) && [I, a] && [I, b] := [$, 100] [D] q(X, Y, Z)\n"
+        //" r(X, Z, c, d) && [I, c] && [I, d]  := [$, 100] [D] p(a, b, X, Z)\n";
+    //auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
+    //run(name, stream_string, rule_string, chase_alg);
+//}
+
+//void test_run_no_events() {
+    //const std::string name = "Test Run";
+    //std::string stream_string = "1 4 "
+                                //"1 : q(x1, y1, z1)\n"
+                                //"2 : q(x1, y1, z1)\n"
+                                //"3 : q(x1, y1, z1)\n"
+                                //"4 : \n";
+    //std::string rule_string =
+        //"p(a, b, X, Z) := [$, 100] [D] q(X, Y, Z)\n"
+        //" r(X, Z, c, d) := [$, 100] [D] p(a, b, X, Z)\n";
+    //auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
+    //run(name, stream_string, rule_string, chase_alg);
+//}
+
 void test_run() {
     const std::string name = "Test Run";
-    std::string stream_string = "1 14 "
-                                "1 : f(x1)\n"
-                                "2 : c(x2, y2)\n"
-                                "2 : d(x2, y2)\n"
-                                "4 : \n"
-                                "5 : \n"
-                                "5 : e(x5, y5), e(a5, b5), e(x5, y5)\n"
-                                "5 : e(x5, y5)\n"
-                                "6 : a(x6, y6, z6)\n"
-                                "7 : \n"
-                                "8 : a(x8, y8, z8), b(y8, z8)\n"
-                                "9 : \n"
-                                "10 : a(x10, y10, z10)\n"
-                                "11 : f(a11)\n"
-                                "12 : e(x12, x12)\n"
-                                "13 : \n"
-                                "14 : \n";
-    std::string rule_string = "q(X, Y, Z) := a(X, Y, Z)\n"
-                              "r(Y) := c(X, Y)\n"
-                              "s(X) := e(X, X)\n"
-                              "t(Y, X) := d(X, Y)\n"
-                              "u(X, X) := f(X)\n"
-                              "v(X, Y, X, Y) := e(X, Y)\n";
-    auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
+    std::string stream_string = "1 4 "
+                                "1 : Bicycle(x1)\n"
+                                "2 : Bicycle(x2), Bicycle(x3)\n"
+                                "3 : \n"
+                                "4 : \n";
+    std::string rule_string = "hasPart(X, v) := Bicycle(X)\n"
+                              "Wheel(V) := hasPart(X, V) && Bicycle(X)\n"
+                              "properPartOf(X, w) := Wheel(X)\n"
+                              "Bicycle(W) := properPartOf(X, W) && Wheel(X)\n"
+                              "partOf(X, Y) := properPartOf(X, Y) \n"
+                              "hasPart(X, Y) := partOf(Y, X) \n"
+                              "partOf(X, Y) := hasPart(Y, X) \n";
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
     run(name, stream_string, rule_string, chase_alg);
 }
 
 
 int main() {
+    //test_run_no_events();
     test_run();
     // test_acyclicity_simple();
     // test_acyclicity_obvious_cycle();

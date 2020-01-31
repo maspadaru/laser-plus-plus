@@ -235,6 +235,10 @@ bool Grounding::substitution_less_than(Grounding const &other) const {
     return *constant_vector < *(other.constant_vector);
 }
 
+bool Grounding::substitution_equal(Grounding const &other) const {
+    return *constant_vector == *(other.constant_vector);
+}
+
 bool Grounding::operator==(Grounding const &other) const {
     bool result;
     result = this->constant_vector == other.constant_vector &&

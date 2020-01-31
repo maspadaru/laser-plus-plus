@@ -121,6 +121,7 @@ class Grounding {
 
     bool operator==(const Grounding &other) const;
 
+    bool substitution_equal(Grounding const &other) const; 
     bool substitution_less_than(Grounding const &other) const;
     bool predsubst_less_than(Grounding const &other) const;
 };
@@ -144,6 +145,21 @@ struct GroundingFullHash {
     }
 };
 
+struct GroundingSubstitutionHash {
+  public:
+    size_t operator()(Grounding const &x) const {
+        auto key_str  = x.get_substitution_key();
+        auto result = std::hash<std::string>{}(key_str);
+        return result;
+    }
+
+    size_t operator()(std::shared_ptr<Grounding> const &x) const {
+        auto key_str = x->get_substitution_key();
+        auto result = std::hash<std::string>{}(key_str);
+        return result;
+    }
+};
+
 struct GroundingEqual {
     bool operator()(Grounding const &x, Grounding const &y) const {
         return x == y;
@@ -152,6 +168,17 @@ struct GroundingEqual {
     bool operator()(std::shared_ptr<Grounding> const &x,
                     std::shared_ptr<Grounding> const &y) const {
         return *x == *y;
+    }
+};
+
+struct GroundingSubstitutionEqual {
+    bool operator()(Grounding const &x, Grounding const &y) const {
+        return x.substitution_equal(y);
+    }
+
+    bool operator()(std::shared_ptr<Grounding> const &x,
+                    std::shared_ptr<Grounding> const &y) const {
+        return x->substitution_equal(*y);
     }
 };
 

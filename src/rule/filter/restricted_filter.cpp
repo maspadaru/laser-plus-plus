@@ -333,6 +333,7 @@ void RestrictedFilter::search_database(
     // if all bound variables are events -> substitution is complete
     if (is_full_match(substitution_list.at(0))) {
         current_step_substitutions.push_back(substitution_list.at(0));
+        // We generate a new fact with the annotations of the body fact.
         auto new_fact = generate_fact(substitution_list.at(0), input_fact);
         current_step_facts.push_back(new_fact);
         return;
@@ -341,6 +342,8 @@ void RestrictedFilter::search_database(
     for (auto const &substitution : substitution_list) {
         bool match_found = find_database_match(input_fact, substitution, 0);
         if (match_found) {
+            // TODO: I should check annotations, db annotations are old, 
+            // then I should still generate new fact using found substitution
             return;
         }
     }
@@ -457,13 +460,15 @@ bool RestrictedFilter::find_database_match(
             }
         }
     } else {
-        // we have reached the last atom in the head -> we check if match
-        // it is sufficient to check the first substitution
+        // We have reached the last atom in the head -> we check if match.
+        // It is sufficient to check the first substitution.
         auto substitution = substitution_list.at(0);
         if (is_full_match(substitution)) {
-            //current_step_substitutions.push_back(substitution);
-            //auto new_fact = generate_fact(substitution, input_fact);
-            //current_step_facts.push_back(new_fact);
+            // I need to generate a new fact, in case the facts in db expire
+            // sooner than the inpuut fact.
+            // TODO: I could also compare ht & hc when comparing substitutions. 
+            auto new_fact = generate_fact(substitution, input_fact);
+            current_step_facts.push_back(new_fact);
             return true;
         }
     }

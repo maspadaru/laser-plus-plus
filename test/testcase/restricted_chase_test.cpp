@@ -25,6 +25,34 @@ TEST(RestrictedChaseTest, Simple) {
                              chase_alg);
 }
 
+TEST(RestrictedChaseTest, RestrictedDiamondNoEvent) {
+    // In this test, the same null values generated at T=1 should
+    // be reused, since they are still valid, because of Diamond.
+    // Even if no input is given at T=4, a conclusion will still be outputed
+    // because it was derived by Diamond at T=3.
+    std::string stream_string = "1 7 "
+                                "1 : q(x1, y1, z1)\n"
+                                "2 : q(x1, y1, z1)\n"
+                                "3 : q(x1, y1, z1)\n"
+                                "4 : \n"
+                                "5 : q(x1, y1, z1)\n"
+                                "6 : q(x1, y1, z1)\n"
+                                "7 : \n";
+    std::string rule_string = "p(a, b, X, Z) := [$, 2] [D]q(X, Y, Z)\n";
+    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> p(a0, b1, x1, z1)";
+    expected[2] = "2 -> p(a0, b1, x1, z1)";
+    expected[3] = "3 -> p(a0, b1, x1, z1)";
+    expected[4] = "4 -> p(a0, b1, x1, z1)";
+    expected[5] = "5 -> p(a0, b1, x1, z1)";
+    expected[6] = "6 -> p(a0, b1, x1, z1)";
+    expected[7] = "7 -> p(a0, b1, x1, z1)";
+    test_framework::run_test(stream_string, rule_string, expected,
+                             chase_alg);
+}
+
 TEST(RestrictedChaseTest, RestrictedSimpleNoInertia) {
     std::string stream_string = "1 4 "
                                 "1 : q(x1, y1, z1)\n"
