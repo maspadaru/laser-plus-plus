@@ -13,12 +13,11 @@ Atom::Atom(std::string predicate, std::vector<std::string> variable_names) {
     set_variable_names(variable_names);
 }
 
-
 std::unique_ptr<formula::Formula> Atom::clone() const {
     auto predicate = predicate_vector.at(0);
     auto variable_names = grounding_table.get_variable_names();
     return std::make_unique<formula::Atom>(predicate, variable_names);
-} 
+}
 
 void Atom::set_variable_names(std::vector<std::string> &variable_names) {
     grounding_table.set_variable_names(variable_names);
@@ -85,20 +84,25 @@ void Atom::expire_outdated_groundings(util::Timeline const &timeline) {
     grounding_table.expire_outdated_groundings(time, tuple_count);
 }
 
+void Atom::new_step(uint64_t current_time) {
+    grounding_table.new_step(current_time);
+} 
+
 std::vector<std::shared_ptr<util::Grounding>>
-Atom::get_groundings(util::Timeline const &timeline) {
-    return grounding_table.get_all_groundings();
+Atom::get_old_facts(util::Timeline const &timeline) {
+    return grounding_table.get_old_groundings();
 }
 
-
 std::vector<std::shared_ptr<util::Grounding>>
-Atom::get_conclusions_timepoint(util::Timeline const &timeline) {
-    return grounding_table.get_all_groundings();
+Atom::get_conclusions(util::Timeline const &timeline) {
+    auto time = timeline.get_time();
+    grounding_table.new_step(time);
+    return grounding_table.get_groundings_at(time);
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-Atom::get_conclusions_step(util::Timeline const &timeline) {
-    return grounding_table.get_recent_groundings();
+Atom::get_new_facts(util::Timeline const &timeline) {
+    return grounding_table.get_new_groundings();
 }
 
 bool Atom::evaluate(

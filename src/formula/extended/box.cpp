@@ -59,21 +59,29 @@ void Box::expire_outdated_groundings(util::Timeline const &timeline) {
     }
 }
 
+void Box::new_step(uint64_t current_time) {
+    grounding_table.new_step(current_time);
+} 
+
 std::vector<std::shared_ptr<util::Grounding>>
-Box::get_groundings(util::Timeline const &timeline) {
-    auto grounding_vector = grounding_table.get_all_groundings();
+Box::get_old_facts(util::Timeline const &timeline) {
+    auto grounding_vector = grounding_table.get_old_groundings();
     return grounding_vector;
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-Box::get_conclusions_timepoint(util::Timeline const &timeline) {
-    auto result = get_groundings(timeline);
+Box::get_conclusions(util::Timeline const &timeline) {
+    auto time = timeline.get_time();
+    auto result = grounding_table.get_groundings_at(time);
+    auto new_facts = grounding_table.get_new_groundings();
+    result.insert(result.end(), std::make_move_iterator(new_facts.begin()),
+                  std::make_move_iterator(new_facts.end()));
     return result;
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-Box::get_conclusions_step(util::Timeline const &timeline) {
-    auto result = grounding_table.get_recent_groundings();
+Box::get_new_facts(util::Timeline const &timeline) {
+    auto result = grounding_table.get_new_groundings();
     return result;
 }
 

@@ -112,18 +112,22 @@ TupleWindow::compute_horizon_count(uint64_t grounding_consideration_count,
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-TupleWindow::get_groundings(util::Timeline const &timeline) {
-    return child->get_groundings(timeline);
+TupleWindow::get_new_facts(util::Timeline const &timeline) {
+    return child->get_new_facts(timeline);
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-TupleWindow::get_conclusions_timepoint(util::Timeline const &timeline) {
-    return get_groundings(timeline);
+TupleWindow::get_old_facts(util::Timeline const &timeline) {
+    return child->get_old_facts(timeline);
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-TupleWindow::get_conclusions_step(util::Timeline const &timeline) {
-    return get_groundings(timeline);
+TupleWindow::get_conclusions(util::Timeline const &timeline) {
+    return child->get_conclusions(timeline);
+}
+
+void TupleWindow::new_step(uint64_t current_time) {
+    child->new_step(current_time);
 }
 
 void TupleWindow::add_child(std::unique_ptr<formula::Formula> child) {}

@@ -150,7 +150,7 @@ void Conjunction::expire_outdated_groundings(util::Timeline const &timeline) {
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-Conjunction::get_groundings(util::Timeline const &timeline) {
+Conjunction::get_groundings(util::Timeline const &timeline) const {
      //return grounding_vector;
     std::vector<std::shared_ptr<util::Grounding>> result_vector;
     std::copy(grounding_set.begin(), grounding_set.end(),
@@ -159,14 +159,24 @@ Conjunction::get_groundings(util::Timeline const &timeline) {
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-Conjunction::get_conclusions_timepoint(util::Timeline const &timeline) {
+Conjunction::get_conclusions(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-Conjunction::get_conclusions_step(util::Timeline const &timeline) {
+Conjunction::get_new_facts(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
+
+std::vector<std::shared_ptr<util::Grounding>>
+Conjunction::get_old_facts(util::Timeline const &timeline) {
+    return get_groundings(timeline);
+}
+
+void Conjunction::new_step(uint64_t current_time) {
+    left_child->new_step(current_time);
+    right_child->new_step(current_time);
+} 
 
 std::string
 Conjunction::hash_common_variables(std::vector<int> const &common_variable_indices,
@@ -233,9 +243,11 @@ Conjunction::merge_groundings(util::Timeline const &timeline,
 }
 
 void Conjunction::populate_grounding_set_with_common(
-    util::Timeline const &timeline, size_t previous_step,
-    std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
-    std::vector<std::shared_ptr<util::Grounding>> const &right_groundings) {
+    util::Timeline const &timeline, size_t previous_step) {
+    auto left_new = left_child->get_new_facts(timeline);
+    auto left_old = left_child->get_old_facts(timeline);
+    auto right_new = right_child->get_new_facts(timeline);
+    auto right_old = right_child->get_new_facts(timeline);
     std::unordered_map<std::string,
                        std::vector<std::shared_ptr<util::Grounding>>>
         hashmap;
@@ -265,9 +277,11 @@ void Conjunction::populate_grounding_set_with_common(
 }
 
 void Conjunction::populate_grounding_set_no_common(
-    util::Timeline const &timeline, size_t previous_step,
-    std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
-    std::vector<std::shared_ptr<util::Grounding>> const &right_groundings) {
+    util::Timeline const &timeline, size_t previous_step) {
+    auto left_new = left_child->get_new_facts(timeline);
+    auto left_old = left_child->get_old_facts(timeline);
+    auto right_new = right_child->get_new_facts(timeline);
+    auto right_old = right_child->get_new_facts(timeline);
     auto current_time = timeline.get_time();
     for (auto const &gl : left_groundings) {
         auto gl_fresh = gl->is_fresh_sne(current_time, previous_step);
@@ -283,15 +297,11 @@ void Conjunction::populate_grounding_set_no_common(
 }
 
 void Conjunction::populate_grounding_set(
-    util::Timeline const &timeline, size_t previous_step,
-    std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
-    std::vector<std::shared_ptr<util::Grounding>> const &right_groundings) {
+    util::Timeline const &timeline, size_t previous_step) {
     if (common_child_variables.empty()) {
-        populate_grounding_set_no_common(timeline, previous_step, left_groundings,
-                               right_groundings);
+        populate_grounding_set_no_common(timeline, previous_step);
     } else {
-        populate_grounding_set_with_common(timeline, previous_step, left_groundings,
-                               right_groundings);
+        populate_grounding_set_with_common(timeline, previous_step);
     }
 }
 
@@ -302,10 +312,7 @@ bool Conjunction::evaluate(
     // children
     left_child->evaluate(timeline, previous_step, facts);
     right_child->evaluate(timeline, previous_step, facts);
-    auto left_groundings = left_child->get_groundings(timeline);
-    auto right_groundings = right_child->get_groundings(timeline);
-    populate_grounding_set(timeline, previous_step, left_groundings,
-                           right_groundings);
+    populate_grounding_set(timeline, previous_step);
     return !grounding_set.empty();
     //return !grounding_vector.empty();
 }

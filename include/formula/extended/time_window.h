@@ -24,6 +24,10 @@ class TimeWindow : public Formula {
                                   uint64_t grounding_horizon_time,
                                   uint64_t current_time) const;
 
+    std::vector<std::shared_ptr<util::Grounding>>
+    convert_facts(std::vector<std::shared_ptr<util::Grounding>> child_facts,
+                  util::Timeline const &timeline);
+
   public:
     TimeWindow() = default;
     explicit TimeWindow(uint64_t size, std::unique_ptr<formula::Formula> child);
@@ -55,21 +59,23 @@ class TimeWindow : public Formula {
 
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 
-    std::vector<std::shared_ptr<util::Grounding>>
-    get_groundings(util::Timeline const &timeline) override;
-
-    std::vector<std::shared_ptr<util::Grounding>>
-    get_conclusions_timepoint(util::Timeline const &timeline) override;
-
-    std::vector<std::shared_ptr<util::Grounding>>
-    get_conclusions_step(util::Timeline const &timeline) override;
-
     void add_child(std::unique_ptr<formula::Formula> child) override;
 
     std::vector<std::unique_ptr<formula::Formula> const *>
     get_children() const override;
 
     uint64_t get_window_size() const override;
+
+    std::vector<std::shared_ptr<util::Grounding>>
+    get_new_facts(util::Timeline const &timeline) override;
+
+    std::vector<std::shared_ptr<util::Grounding>>
+    get_old_facts(util::Timeline const &timeline) override;
+
+    std::vector<std::shared_ptr<util::Grounding>>
+    get_conclusions(util::Timeline const &timeline) override;
+
+    void new_step(uint64_t current_time) override;
 };
 
 } // namespace laser::formula

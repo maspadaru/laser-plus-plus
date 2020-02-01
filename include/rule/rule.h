@@ -137,7 +137,7 @@ class Rule {
     void reset_previous_step();
 
     void set_previous_step(size_t step);
-    void set_current_step(size_t step);
+    void set_current_step(uint64_t time, size_t step);
 };
 
 } // namespace laser::rule

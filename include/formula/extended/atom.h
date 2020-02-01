@@ -93,13 +93,15 @@ class Atom : public Formula {
     void expire_outdated_groundings(util::Timeline const &timeline) override;
 
     std::vector<std::shared_ptr<util::Grounding>>
-    get_groundings(util::Timeline const &timeline) override;
+    get_new_facts(util::Timeline const &timeline) override;
 
     std::vector<std::shared_ptr<util::Grounding>>
-    get_conclusions_timepoint(util::Timeline const &timeline) override;
+    get_old_facts(util::Timeline const &timeline) override;
 
     std::vector<std::shared_ptr<util::Grounding>>
-    get_conclusions_step(util::Timeline const &timeline) override;
+    get_conclusions(util::Timeline const &timeline) override;
+
+    void new_step(uint64_t current_time) override; 
 
     void add_child(std::unique_ptr<formula::Formula> child) override;
 
@@ -107,6 +109,7 @@ class Atom : public Formula {
     get_children() const override;
 
     uint64_t get_window_size() const override;
+
 };
 
 } // namespace laser::formula

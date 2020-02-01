@@ -8,7 +8,7 @@ Diamond::Diamond(std::unique_ptr<formula::Formula> child)
 std::unique_ptr<formula::Formula> Diamond::clone() const {
     auto child_clone = child->clone();
     return std::make_unique<formula::Diamond>(std::move(child_clone));
-} 
+}
 
 void Diamond::set_head(bool is_head) { is_head_m = is_head; }
 
@@ -38,9 +38,9 @@ size_t Diamond::get_number_of_variables() const {
 
 void Diamond::add_child(std::unique_ptr<formula::Formula> child) {}
 
-std::vector<std::shared_ptr<util::Grounding>>
-Diamond::get_groundings(util::Timeline const &timeline) {
-    auto const &grounding_vector = grounding_table.get_all_groundings();
+std::vector<std::shared_ptr<util::Grounding>> Diamond::convert_facts(
+    std::vector<std::shared_ptr<util::Grounding>> const &grounding_vector,
+    util::Timeline const &timeline) {
     std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto const &grounding : grounding_vector) {
         auto new_grounding = grounding->shallow_clone();
@@ -51,13 +51,29 @@ Diamond::get_groundings(util::Timeline const &timeline) {
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-Diamond::get_conclusions_timepoint(util::Timeline const &timeline) {
-    return get_groundings(timeline);
+Diamond::get_new_facts(util::Timeline const &timeline) {
+    auto const &grounding_vector = grounding_table.get_new_groundings();
+    return convert_facts(grounding_vector, timeline);
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-Diamond::get_conclusions_step(util::Timeline const &timeline) {
-    return grounding_table.get_recent_groundings();
+Diamond::get_old_facts(util::Timeline const &timeline) {
+    auto const &grounding_vector = grounding_table.get_old_groundings();
+    return convert_facts(grounding_vector, timeline);
+}
+
+std::vector<std::shared_ptr<util::Grounding>>
+Diamond::get_conclusions(util::Timeline const &timeline) {
+    auto time = timeline.get_time();
+    auto result = grounding_table.get_groundings_at(time);
+    auto new_facts = grounding_table.get_new_groundings();
+    result.insert(result.end(), std::make_move_iterator(new_facts.begin()),
+                  std::make_move_iterator(new_facts.end()));
+    return result;
+}
+
+void Diamond::new_step(uint64_t current_time) {
+    grounding_table.new_step(current_time);
 }
 
 bool Diamond::evaluate(

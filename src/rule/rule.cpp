@@ -88,13 +88,19 @@ void Rule::reset_previous_step() {
 
 void Rule::set_previous_step(size_t step) { previous_step = step; }
 
-void Rule::set_current_step(size_t step) { current_step = step; }
+void Rule::set_current_step(uint64_t time, size_t step) {
+    current_step = step;
+    body->new_step(time);
+    for (auto &atom : head_atoms) {
+        atom->new_step(time);
+    }
+}
 
 std::vector<std::shared_ptr<util::Grounding>>
 Rule::get_conclusions_step(util::Timeline const &timeline) {
     std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto const &head_atom : head_atoms) {
-        auto head_groundings = head_atom->get_conclusions_step(timeline);
+        auto head_groundings = head_atom->get_new_facts(timeline);
         result.insert(result.end(), head_groundings.begin(),
                       head_groundings.end());
     }
@@ -105,7 +111,7 @@ std::vector<std::shared_ptr<util::Grounding>>
 Rule::get_conclusions_timepoint(util::Timeline const &timeline) {
     std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto const &head_atom : head_atoms) {
-        auto head_groundings = head_atom->get_conclusions_timepoint(timeline);
+        auto head_groundings = head_atom->get_conclusions(timeline);
         result.insert(result.end(), head_groundings.begin(),
                       head_groundings.end());
     }
@@ -258,7 +264,7 @@ bool Rule::derive_conclusions(util::Timeline const &timeline,
                               util::Database &database) {
     bool result = false;
     std::vector<std::shared_ptr<util::Grounding>> body_groundings =
-        body->get_groundings(timeline);
+        body->get_new_facts(timeline);
     evaluate_head(timeline, database, body_groundings);
     return true;
 }
