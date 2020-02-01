@@ -2,8 +2,6 @@
 
 namespace laser::formula {
 
-size_t GroundingTable::get_size() const { return size; }
-
 bool GroundingTable::has_recent_groundings() {
     return !recent_groundings_vector.empty();
 }
@@ -20,7 +18,6 @@ void GroundingTable::add_grounding(grounding_sptr const &grounding) {
     std::tie(std::ignore, was_inserted) = groundings.insert(grounding);
     if (was_inserted) {
         recent_groundings_vector.push_back(grounding);
-        size += 1;
     }
 }
 
@@ -57,34 +54,27 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
     // Expire by horizon_time
     uint64_t horizon_time = current_time - 1;
     if (grounding_map.count(horizon_time) > 0) {
-        size -= grounding_map[horizon_time].size();
         grounding_map.erase(horizon_time);
     }
     // Expire by horizon_count
     for (auto &iterator : grounding_map) {
-        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
-            &set = iterator.second;
-        std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
-            toRemove;
+        grounding_set  &set = iterator.second;
+        grounding_set toRemove;
         for (auto &grounding : set) {
             auto hc = grounding->get_horizon_count();
             if (hc <= tuple_count) {
                 toRemove.insert(grounding);
-                // set.erase(grounding);
-                // size--;
             } else {
-                // Sets in map are ordered with lowest horizon_counter
-                // first.
                 break;
             }
         }
-        size -= toRemove.size();
         for (auto &grounding : toRemove) {
             set.erase(grounding);
         }
     }
     recent_groundings_vector.clear();
 }
+
 
 //void GroundingTable::expire_outdated_groundings(uint64_t current_time,
                                                 //uint64_t tuple_count) {
@@ -99,7 +89,6 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
                 //toRemove.insert(grounding);
             //}
         //}
-        //size -= toRemove.size();
         //for (auto &grounding : toRemove) {
             //set.erase(grounding);
         //}

@@ -21,17 +21,11 @@ class GroundingTable {
     //        value: Set of all groundings sharing consideration_time
     std::unordered_map<uint64_t, grounding_set> grounding_map;
 
-    // std::unordered_map<grounding_sptr, grounding_set,
-    // util::GroundingFullHash, util::GroundingEqual>
-    // grounding_map;
-
     std::vector<grounding_sptr> recent_groundings_vector;
     std::vector<std::string> variable_names;
     std::unordered_map<std::string, int> variable_index;
-    size_t size = 0;
 
   public:
-    size_t get_size() const;
 
     std::vector<std::string> const &get_variable_names() const;
 
