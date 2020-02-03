@@ -25,6 +25,9 @@ class GroundingTable {
     std::vector<std::string> variable_names;
     std::unordered_map<std::string, int> variable_index;
 
+    bool is_match(grounding_sptr const &left,
+                              grounding_sptr const &right) const; 
+
   public:
 
     std::vector<std::string> const &get_variable_names() const;
@@ -54,6 +57,8 @@ class GroundingTable {
      */
     void expire_outdated_groundings(uint64_t expiration_time,
                                     uint64_t expiration_tuple_count);
+
+    void diamond_update_table(std::vector<grounding_sptr> const &new_facts);
 };
 
 } // namespace laser::formula

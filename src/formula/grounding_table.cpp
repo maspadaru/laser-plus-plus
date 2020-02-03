@@ -58,7 +58,7 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
     }
     // Expire by horizon_count
     for (auto &iterator : grounding_map) {
-        grounding_set  &set = iterator.second;
+        grounding_set &set = iterator.second;
         grounding_set toRemove;
         for (auto &grounding : set) {
             auto hc = grounding->get_horizon_count();
@@ -75,26 +75,29 @@ void GroundingTable::expire_outdated_groundings(uint64_t current_time,
     recent_groundings_vector.clear();
 }
 
+bool GroundingTable::is_match(grounding_sptr const &left,
+                              grounding_sptr const &right) const {
+    return left->substitution_equal(*right);
+}
 
-//void GroundingTable::expire_outdated_groundings(uint64_t current_time,
-                                                //uint64_t tuple_count) {
-    //// Expire by horizon_time and horizon_count
-    //for (auto &iterator : grounding_map) {
-        //grounding_set &set = iterator.second;
-        //grounding_set toRemove;
-        //for (auto &grounding : set) {
-            //auto hc = grounding->get_horizon_count();
-            //auto ht = grounding->get_horizon_time();
-            //if (ht < current_time || hc <= tuple_count) {
-                //toRemove.insert(grounding);
-            //}
-        //}
-        //for (auto &grounding : toRemove) {
-            //set.erase(grounding);
-        //}
-    //}
-    //recent_groundings_vector.clear();
-//}
+void GroundingTable::diamond_update_table(
+    std::vector<grounding_sptr> const &new_facts) {
+    for (auto &iterator : grounding_map) {
+        grounding_set &set = iterator.second;
+        grounding_set to_remove;
+        for (auto const &new_fact : new_facts) {
+            for (auto const &old_fact : set) {
+                if (is_match(new_fact, old_fact)) {
+                    to_remove.insert(old_fact);
+                }
+            }
+        }
+        for (auto &grounding : to_remove) {
+            set.erase(grounding);
+        }
+    }
+    add_grounding_vector(new_facts);
+}
 
 std::vector<std::string> const &GroundingTable::get_variable_names() const {
     return variable_names;
