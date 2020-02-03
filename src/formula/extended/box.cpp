@@ -89,7 +89,7 @@ bool Box::evaluate(util::Timeline const &timeline, size_t previous_step,
                    std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     bool result = child->evaluate(timeline, previous_step, facts);
     if (result) {
-        auto child_facts = child->get_new_facts(timeline);
+        auto child_facts = child->get_groundings(timeline);
         update_box_map(child_facts, timeline);
         auto box_groundings = compute_box_conclusions(timeline);
         grounding_table.add_grounding_vector(box_groundings);

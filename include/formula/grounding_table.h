@@ -31,7 +31,7 @@ class GroundingTable {
     bool is_match(grounding_sptr const &left,
                   grounding_sptr const &right) const;
 
-    void update_map(uint64_t current_time);
+    void GroundingTable::update_map(uint64_t current_time);
 
   public:
     std::vector<std::string> const &get_variable_names() const;

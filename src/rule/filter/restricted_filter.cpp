@@ -71,10 +71,7 @@ void RestrictedFilter::expire_outdated_groundings(
 void RestrictedFilter::update_head_facts(util::Timeline const &timeline) {
     head_facts.clear();
     for (auto &atom : head_atoms) {
-        auto facts = atom->get_new_facts(timeline);
-        auto old_facts = atom->get_old_facts(timeline);
-        facts.insert(facts.end(), std::make_move_iterator(old_facts.begin()),
-                  std::make_move_iterator(old_facts.end()));
+        auto facts = atom->get_groundings(timeline);
         head_facts.push_back(std::move(facts));
     }
 }

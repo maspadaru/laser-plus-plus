@@ -117,7 +117,7 @@ TimeReference::get_conclusions(util::Timeline const &timeline) {
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-TimeReference::get_old_facts(util::Timeline const &timeline) {
+TupleReference::get_old_facts(util::Timeline const &timeline) {
     auto grounding_vector = grounding_table.get_old_groundings();
     std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto &grounding : grounding_vector) {
@@ -179,7 +179,7 @@ void TimeReference::evaluate_body(
     util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     child->evaluate(timeline, previous_step, facts);
-    auto child_conclusions = child->get_new_facts(timeline);
+    auto child_conclusions = child->get_groundings(timeline);
     auto exact_time_groundings =
         convert_groundings_body(timeline, child_conclusions);
     grounding_table.add_grounding_vector(exact_time_groundings);

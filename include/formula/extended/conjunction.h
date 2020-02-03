@@ -42,8 +42,8 @@ class Conjunction : public Formula {
     // grounding_set;
     std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
         grounding_set;
-    // std::vector<std::shared_ptr<util::Grounding>>
-    // grounding_vector;
+     //std::vector<std::shared_ptr<util::Grounding>>
+     //grounding_vector;
 
     void compute_predicate_vector();
 
@@ -58,14 +58,14 @@ class Conjunction : public Formula {
 
     void populate_variable_collections();
 
-    void populate_grounding_set(util::Timeline const &timeline,
-                                size_t previous_step);
+    void populate_grounding_set(
+        util::Timeline const &timeline, size_t previous_step);
 
-    void populate_grounding_set_with_common(util::Timeline const &timeline,
-                                            size_t previous_step);
+    void populate_grounding_set_with_common(
+        util::Timeline const &timeline, size_t previous_step);
 
-    void populate_grounding_set_no_common(util::Timeline const &timeline,
-                                          size_t previous_step);
+    void populate_grounding_set_no_common(
+        util::Timeline const &timeline, size_t previous_step);
 
     std::string
     hash_common_variables(std::vector<int> const &common_variable_indices,
@@ -78,23 +78,6 @@ class Conjunction : public Formula {
 
     std::vector<std::shared_ptr<util::Grounding>>
     get_groundings(util::Timeline const &timeline) const;
-
-    void join_fact_vectors_with_common(
-        std::vector<std::shared_ptr<util::Grounding>> const &left_vector,
-        std::unordered_map<std::string,
-                           std::vector<std::shared_ptr<util::Grounding>>> const
-            &right_hashmap,
-        util::Timeline const &timeline);
-
-    std::unordered_map<std::string,
-                       std::vector<std::shared_ptr<util::Grounding>>>
-    hash_fact_vector(
-        std::vector<std::shared_ptr<util::Grounding>> const &fact_vector) const;
-
-    void join_fact_vectors_no_common(
-        std::vector<std::shared_ptr<util::Grounding>> const &left_vector,
-        std::vector<std::shared_ptr<util::Grounding>> const &right_vector,
-        util::Timeline const &timeline);
 
   public:
     Conjunction() = default;
@@ -119,6 +102,7 @@ class Conjunction : public Formula {
 
     size_t get_number_of_variables() const override;
 
+
     std::vector<std::shared_ptr<util::Grounding>>
     get_conclusions(util::Timeline const &timeline) override;
 
@@ -128,7 +112,7 @@ class Conjunction : public Formula {
     std::vector<std::shared_ptr<util::Grounding>>
     get_old_facts(util::Timeline const &timeline) override;
 
-    void new_step(uint64_t current_time) override;
+    void new_step(uint64_t current_time) override; 
 
     bool evaluate(
         util::Timeline const &timeline, size_t previous_step,

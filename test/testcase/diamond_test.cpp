@@ -27,9 +27,10 @@ TEST(DiamondTest, DiamondAtom) {
                                 "12 : e(x12, x12)\n"
                                 "13 : \n"
                                 "14 : \n";
+
     std::string rule_string = "q(X, Y, Z) := [D] a(X, Y, Z)\n"
                               "u(X, X) := [D]f(X)\n";
-    auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
+
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> ";
@@ -50,6 +51,7 @@ TEST(DiamondTest, DiamondAtom) {
         "u(Z, Z) u(a11, a11) u(-9.099, -9.099)";
     expected[14] = "14 -> q(x8, y8, z8) q(x10, y10, z10) q(x6, y6, z6) "
         "u(Z, Z) u(a11, a11) u(-9.099, -9.099)";
+
     test_framework::run_test(stream_string, rule_string, expected,
-                             chase_alg);
+                             laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
