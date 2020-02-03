@@ -90,12 +90,12 @@ uint64_t TimeWindow::compute_horizon_time(uint64_t grounding_consideration_time,
     return result;
 }
 
-std::vector<std::shared_ptr<util::Grounding>> TimeWindow::convert_facts(
-    std::vector<std::shared_ptr<util::Grounding>> child_facts,
-    util::Timeline const &timeline) {
+std::vector<std::shared_ptr<util::Grounding>>
+TimeWindow::get_groundings(util::Timeline const &timeline) {
     auto window_timeline = alter_timeline(timeline);
+    auto child_conclusions = child->get_groundings(window_timeline);
     std::vector<std::shared_ptr<util::Grounding>> result;
-    for (auto &grounding : child_facts) {
+    for (auto &grounding : child_conclusions) {
         uint64_t window_horizon_time = compute_horizon_time(
             grounding->get_consideration_time(), grounding->get_horizon_time(),
             timeline.get_time());
@@ -113,21 +113,13 @@ std::vector<std::shared_ptr<util::Grounding>> TimeWindow::convert_facts(
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-TimeWindow::get_old_facts(util::Timeline const &timeline) {
-    auto child_facts = child->get_old_facts(timeline);
-    return convert_facts(child_facts, timeline);
+TimeWindow::get_conclusions_timepoint(util::Timeline const &timeline) {
+    return get_groundings(timeline);
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-TimeWindow::get_new_facts(util::Timeline const &timeline) {
-    auto child_facts = child->get_new_facts(timeline);
-    return convert_facts(child_facts, timeline);
-}
-
-std::vector<std::shared_ptr<util::Grounding>>
-TimeWindow::get_conclusions(util::Timeline const &timeline) {
-    auto child_facts = child->get_conclusions(timeline);
-    return convert_facts(child_facts, timeline);
+TimeWindow::get_conclusions_step(util::Timeline const &timeline) {
+    return get_groundings(timeline);
 }
 
 void TimeWindow::add_child(std::unique_ptr<formula::Formula> child) {}
@@ -137,10 +129,6 @@ TimeWindow::get_children() const {
     std::vector<std::unique_ptr<formula::Formula> const *> result;
     result.push_back(&child);
     return result;
-}
-
-void TimeWindow::new_step(uint64_t current_time) {
-    child->new_step(current_time);
 }
 
 uint64_t TimeWindow::get_window_size() const { return past_size; }

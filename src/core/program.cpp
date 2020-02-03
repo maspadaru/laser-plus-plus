@@ -70,7 +70,7 @@ bool Program::evaluate_rule_vector(
 }
 
 bool Program::evaluate_rule(rule::Rule &rule, size_t step) {
-    rule.set_current_step(timeline.get_time(), step);
+    rule.set_current_step(step);
     rule.evaluate(timeline, database);
     rule.derive_conclusions(timeline, database);
     auto conclusions = rule.get_conclusions_step(timeline);

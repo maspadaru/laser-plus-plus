@@ -57,15 +57,20 @@ class Conjunction : public Formula {
                              std::vector<std::string> const &right);
 
     void populate_variable_collections();
-
     void populate_grounding_set(
-        util::Timeline const &timeline, size_t previous_step);
+        util::Timeline const &timeline, size_t previous_step,
+        std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
+        std::vector<std::shared_ptr<util::Grounding>> const &right_groundings);
 
     void populate_grounding_set_with_common(
-        util::Timeline const &timeline, size_t previous_step);
+        util::Timeline const &timeline, size_t previous_step,
+        std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
+        std::vector<std::shared_ptr<util::Grounding>> const &right_groundings);
 
     void populate_grounding_set_no_common(
-        util::Timeline const &timeline, size_t previous_step);
+        util::Timeline const &timeline, size_t previous_step,
+        std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
+        std::vector<std::shared_ptr<util::Grounding>> const &right_groundings);
 
     std::string
     hash_common_variables(std::vector<int> const &common_variable_indices,
@@ -75,9 +80,6 @@ class Conjunction : public Formula {
     merge_groundings(util::Timeline const &timeline,
                      util::Grounding const &left,
                      util::Grounding const &right) const;
-
-    std::vector<std::shared_ptr<util::Grounding>>
-    get_groundings(util::Timeline const &timeline) const;
 
   public:
     Conjunction() = default;
@@ -102,17 +104,14 @@ class Conjunction : public Formula {
 
     size_t get_number_of_variables() const override;
 
+    std::vector<std::shared_ptr<util::Grounding>>
+    get_groundings(util::Timeline const &timeline) override;
 
     std::vector<std::shared_ptr<util::Grounding>>
-    get_conclusions(util::Timeline const &timeline) override;
+    get_conclusions_step(util::Timeline const &timeline) override;
 
     std::vector<std::shared_ptr<util::Grounding>>
-    get_new_facts(util::Timeline const &timeline) override;
-
-    std::vector<std::shared_ptr<util::Grounding>>
-    get_old_facts(util::Timeline const &timeline) override;
-
-    void new_step(uint64_t current_time) override; 
+    get_conclusions_timepoint(util::Timeline const &timeline) override;
 
     bool evaluate(
         util::Timeline const &timeline, size_t previous_step,

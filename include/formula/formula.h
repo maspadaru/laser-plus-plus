@@ -57,17 +57,19 @@ class Formula {
 
     virtual void expire_outdated_groundings(util::Timeline const &timeline) = 0;
 
+    virtual std::vector<std::shared_ptr<util::Grounding>>
+    get_groundings(util::Timeline const &timeline) = 0;
+
     /**
      * Returns only the new conclusion that were derived since the rule was last
      * evaluated.
      * Useful when adding new conclusions as facts to the input of the next
      * evaluation step during some timepoint.
+     * Used to get conclusions from the head of the rule, i.e.: only for
+     * Atom and Exact_Time
      */
     virtual std::vector<std::shared_ptr<util::Grounding>>
-    get_new_facts(util::Timeline const &timeline) = 0;
-
-    virtual std::vector<std::shared_ptr<util::Grounding>>
-    get_old_facts(util::Timeline const &timeline) = 0;
+    get_conclusions_step(util::Timeline const &timeline) = 0;
 
     /**
      * Returns all the new conclusion that were derived during the current
@@ -75,10 +77,7 @@ class Formula {
      * conclusions from the head of the rule, i.e.: only for Atom and Exact_Time
      */
     virtual std::vector<std::shared_ptr<util::Grounding>>
-    get_conclusions(util::Timeline const &timeline) = 0;
-
-    virtual void new_step(uint64_t current_time) = 0; 
-
+    get_conclusions_timepoint(util::Timeline const &timeline) = 0;
 };
 
 } // namespace laser::formula

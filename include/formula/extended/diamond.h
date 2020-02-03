@@ -20,10 +20,6 @@ class Diamond : public Formula {
     std::unique_ptr<formula::Formula> child;
     GroundingTable grounding_table;
 
-    std::vector<std::shared_ptr<util::Grounding>> convert_facts(
-        std::vector<std::shared_ptr<util::Grounding>> const &grounding_vector,
-        util::Timeline const &timeline);
-
   public:
     Diamond() = default;
 
@@ -48,15 +44,13 @@ class Diamond : public Formula {
     size_t get_number_of_variables() const override;
 
     std::vector<std::shared_ptr<util::Grounding>>
-    get_new_facts(util::Timeline const &timeline) override;
+    get_groundings(util::Timeline const &timeline) override;
 
     std::vector<std::shared_ptr<util::Grounding>>
-    get_old_facts(util::Timeline const &timeline) override;
+    get_conclusions_timepoint(util::Timeline const &timeline) override;
 
     std::vector<std::shared_ptr<util::Grounding>>
-    get_conclusions(util::Timeline const &timeline) override;
-
-    void new_step(uint64_t current_time) override;
+    get_conclusions_step(util::Timeline const &timeline) override;
 
     bool evaluate(
         util::Timeline const &timeline, size_t previous_step,

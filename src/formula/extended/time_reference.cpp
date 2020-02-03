@@ -111,14 +111,8 @@ std::vector<std::shared_ptr<util::Grounding>> TimeReference::revert_groundings(
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-TimeReference::get_conclusions(util::Timeline const &timeline) {
-    get_new_facts(timeline); // just to populate timepoint_conclusions
-    return timepoint_conclusions;
-}
-
-std::vector<std::shared_ptr<util::Grounding>>
-TupleReference::get_old_facts(util::Timeline const &timeline) {
-    auto grounding_vector = grounding_table.get_old_groundings();
+TimeReference::get_groundings(util::Timeline const &timeline) {
+    auto grounding_vector = grounding_table.get_all_groundings();
     std::vector<std::shared_ptr<util::Grounding>> result;
     for (auto &grounding : grounding_vector) {
         std::string const &timevar_string =
@@ -132,13 +126,18 @@ TupleReference::get_old_facts(util::Timeline const &timeline) {
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-TimeReference::get_new_facts(util::Timeline const &timeline) {
+TimeReference::get_conclusions_timepoint(util::Timeline const &timeline) {
+    get_conclusions_step(timeline); // just to populate timepoint_conclusions
+    return timepoint_conclusions;
+}
+
+std::vector<std::shared_ptr<util::Grounding>>
+TimeReference::get_conclusions_step(util::Timeline const &timeline) {
     // 1. Get recent groundings and add them to conclusions_vector or
     // furure_conclusion_map
     auto now = timeline.get_time();
     std::vector<std::shared_ptr<util::Grounding>> conclusions_vector;
-    auto grounding_vector =
-        grounding_table.get_new_groundings();
+    auto grounding_vector = grounding_table.get_recent_groundings();
     for (auto &grounding : grounding_vector) {
         std::string const &timevar_string =
             grounding->get_constant(get_time_variable_index());
@@ -196,10 +195,6 @@ bool TimeReference::evaluate(
         evaluate_body(timeline, previous_step, facts);
     }
     return grounding_table.has_recent_groundings();
-}
-
-void TimeReference::new_step(uint64_t current_time) {
-    child->new_step(current_time);
 }
 
 void TimeReference::expire_outdated_groundings(util::Timeline const &timeline) {
