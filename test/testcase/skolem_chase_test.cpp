@@ -96,105 +96,105 @@ TEST(SkolemChaseTest, SkolemInertiaPartial) {
                              laser::util::ChaseAlgorithm::SKOLEM);
 }
 
-TEST(SkolemChaseTest, SkolemTimeRefHead) {
+//TEST(SkolemChaseTest, SkolemTimeRefHead) {
 
-    std::string stream_string =
-        "1 4 "
-        "1 : problem(sg1) \n"
-        "2 : willOverheat(sg1, 2), problem(sg2)\n"
-        "3 : problem(sg3), problem(sg4)\n"
-        "3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
-        "4 : \n";
+    //std::string stream_string =
+        //"1 4 "
+        //"1 : problem(sg1) \n"
+        //"2 : willOverheat(sg1, 2), problem(sg2)\n"
+        //"3 : problem(sg3), problem(sg4)\n"
+        //"3 : willOverheat(sg3, 4), willOverheat(sg3, 3)\n"
+        //"4 : \n";
 
-    std::string rule_string =
-        "[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
-        "&& [$, 100] [D] problem(SG) \n";
+    //std::string rule_string =
+        //"[@, TIME] shutdown(SG, alert) := willOverheat(SG, TIME) "
+        //"&& [$, 100] [D] problem(SG) \n";
 
-    std::vector<std::string> expected(15);
-    expected[0] = "0 -> ";
-    expected[1] = "1 -> ";
-    expected[2] = "2 -> shutdown(sg1, alert0)";
-    expected[3] = "3 -> shutdown(sg3, alert1)";
-    expected[4] = "4 -> shutdown(sg3, alert1)";
+    //std::vector<std::string> expected(15);
+    //expected[0] = "0 -> ";
+    //expected[1] = "1 -> ";
+    //expected[2] = "2 -> shutdown(sg1, alert0)";
+    //expected[3] = "3 -> shutdown(sg3, alert1)";
+    //expected[4] = "4 -> shutdown(sg3, alert1)";
 
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::SKOLEM);
-}
+    //test_framework::run_test(stream_string, rule_string, expected,
+                             //laser::util::ChaseAlgorithm::SKOLEM);
+//}
 
-TEST(SkolemChaseTest, SkolemTimeRefBody1) {
+//TEST(SkolemChaseTest, SkolemTimeRefBody1) {
 
-    std::string stream_string = "1 4 "
-                                "1 : Wheel(w1) \n"
-                                "2 : exploded(w1), Wheel(w2)\n"
-                                "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
-                                "3 : Bicycle(b1)\n"
-                                "4 : \n";
+    //std::string stream_string = "1 4 "
+                                //"1 : Wheel(w1) \n"
+                                //"2 : exploded(w1), Wheel(w2)\n"
+                                //"3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
+                                //"3 : Bicycle(b1)\n"
+                                //"4 : \n";
 
-    std::string rule_string =
-        "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
-        "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-        "hasFlat(b, W, T) := exploded(W) && [$, 100] [D] [@, T] Wheel(W) \n";
+    //std::string rule_string =
+        //"Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+        //"Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+        //"hasFlat(b, W, T) := exploded(W) && [$, 100] [D] [@, T] Wheel(W) \n";
 
-    std::vector<std::string> expected(15);
-    expected[0] = "0 -> ";
-    expected[1] = "1 -> ";
-    expected[2] = "2 -> hasFlat(b0, w1, 1)";
-    expected[3] = "3 -> hasFlat(b1, w3, 3)";
-    expected[4] = "4 -> ";
+    //std::vector<std::string> expected(15);
+    //expected[0] = "0 -> ";
+    //expected[1] = "1 -> ";
+    //expected[2] = "2 -> hasFlat(b0, w1, 1)";
+    //expected[3] = "3 -> hasFlat(b1, w3, 3)";
+    //expected[4] = "4 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::SKOLEM);
-}
+    //test_framework::run_test(stream_string, rule_string, expected,
+                             //laser::util::ChaseAlgorithm::SKOLEM);
+//}
 
-TEST(SkolemChaseTest, SkolemTimeRefBody2) {
+//TEST(SkolemChaseTest, SkolemTimeRefBody2) {
 
-    std::string stream_string = "1 4 "
-                                "1 : Wheel(w1) \n"
-                                "2 : exploded(w1), Wheel(w2)\n"
-                                "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
-                                "3 : Bicycle(b1)\n"
-                                "4 : \n";
+    //std::string stream_string = "1 4 "
+                                //"1 : Wheel(w1) \n"
+                                //"2 : exploded(w1), Wheel(w2)\n"
+                                //"3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
+                                //"3 : Bicycle(b1)\n"
+                                //"4 : \n";
 
-    std::string rule_string =
-        "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
-        "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-        "hasFlat(b, W, T) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
+    //std::string rule_string =
+        //"Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+        //"Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+        //"hasFlat(b, W, T) := [@, T] exploded(W) && [$, 100] [D] Wheel(W) \n";
 
-    std::vector<std::string> expected(15);
-    expected[0] = "0 -> ";
-    expected[1] = "1 -> ";
-    expected[2] = "2 -> hasFlat(b0, w1, 2)";
-    expected[3] = "3 -> hasFlat(b1, w3, 3)";
-    expected[4] = "4 -> ";
+    //std::vector<std::string> expected(15);
+    //expected[0] = "0 -> ";
+    //expected[1] = "1 -> ";
+    //expected[2] = "2 -> hasFlat(b0, w1, 2)";
+    //expected[3] = "3 -> hasFlat(b1, w3, 3)";
+    //expected[4] = "4 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::SKOLEM);
-}
+    //test_framework::run_test(stream_string, rule_string, expected,
+                             //laser::util::ChaseAlgorithm::SKOLEM);
+//}
 
-TEST(SkolemChaseTest, SkolemTimeRefHandB) {
+//TEST(SkolemChaseTest, SkolemTimeRefHandB) {
 
-    std::string stream_string = "1 4 "
-                                "1 : Wheel(w1) \n"
-                                "2 : exploded(w1), Wheel(w2)\n"
-                                "3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
-                                "3 : Bicycle(b1)\n"
-                                "4 : \n";
+    //std::string stream_string = "1 4 "
+                                //"1 : Wheel(w1) \n"
+                                //"2 : exploded(w1), Wheel(w2)\n"
+                                //"3 : Wheel(w3), Wheel(w4), exploded(w3)\n"
+                                //"3 : Bicycle(b1)\n"
+                                //"4 : \n";
 
-    std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
-                              "Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
-                              "[@, T] hasFlat(b, W) := [@, T] exploded(W) && "
-                              "[$, 100] [D] Wheel(W) \n";
+    //std::string rule_string = "Wheel(W) := hasFlat(B, W) && Bicycle(B)\n"
+                              //"Bicycle(B) := hasFlat(B, W) && Wheel(W)\n"
+                              //"[@, T] hasFlat(b, W) := [@, T] exploded(W) && "
+                              //"[$, 100] [D] Wheel(W) \n";
 
-    std::vector<std::string> expected(15);
-    expected[0] = "0 -> ";
-    expected[1] = "1 -> ";
-    expected[2] = "2 -> hasFlat(b0, w1)";
-    expected[3] = "3 -> Bicycle(b1) Wheel(w3) hasFlat(b1, w3)";
-    expected[4] = "4 -> ";
+    //std::vector<std::string> expected(15);
+    //expected[0] = "0 -> ";
+    //expected[1] = "1 -> ";
+    //expected[2] = "2 -> hasFlat(b0, w1)";
+    //expected[3] = "3 -> Bicycle(b1) Wheel(w3) hasFlat(b1, w3)";
+    //expected[4] = "4 -> ";
 
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::SKOLEM);
-}
+    //test_framework::run_test(stream_string, rule_string, expected,
+                             //laser::util::ChaseAlgorithm::SKOLEM);
+//}
 
 TEST(SkolemChaseTest, SkolemConjunctionTwo) {
 

@@ -80,7 +80,7 @@ bool Diamond::evaluate(
     util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     bool result = child->evaluate(timeline, previous_step, facts);
-    auto child_facts = child->get_groundings(timeline);
+    auto child_facts = child->get_new_facts(timeline);
     grounding_table.add_grounding_vector(child_facts);
     return result;
 }

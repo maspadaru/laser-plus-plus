@@ -108,19 +108,30 @@ void test_acyclicity_only_first_timepoint() {
 
 void test_run() {
     const std::string name = "Test Run";
-    std::string stream_string = "1 7 "
-                                "1 : q(x1, y1, z1)\n"
-                                "2 : q(x1, y1, z1)\n"
-                                "3 : q(x1, y1, z1)\n"
+    std::string stream_string = "1 14 "
+                                "1 : \n"
+                                "2 : c(x2, y2)\n"
+                                "2 : d(x2, y2)\n"
                                 "4 : \n"
-                                "5 : q(x1, y1, z1)\n"
-                                "6 : q(x1, y1, z1)\n"
-                                "7 : \n";
-    std::string rule_string = "p(a, b, X, Z) := [$, 2] [D]q(X, Y, Z)\n";
-    auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
+                                "5 : \n"
+                                "5 : e(x5, y5), e(a5, b5), e(x5, y5)\n"
+                                "5 : e(x5, y5)\n"
+                                "6 : a(x6, y6, z6)\n"
+                                "7 : \n"
+                                "8 : a(x8, y8, z8), b(y8, z8)\n"
+                                "9 : \n"
+                                "10 : a(x10, y10, z10)\n"
+                                "11 : f(a11)\n"
+                                "11 : f(-9.099)\n"
+                                "11 : f(Z)\n"
+                                "12 : e(x12, x12)\n"
+                                "13 : \n"
+                                "14 : \n";
+    std::string rule_string = "q(X, Y, Z) := [D] a(X, Y, Z)\n"
+                              "u(X, X) := [D]f(X)\n";
+    auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     run(name, stream_string, rule_string, chase_alg);
 }
-
 
 int main() {
     //test_run_no_events();

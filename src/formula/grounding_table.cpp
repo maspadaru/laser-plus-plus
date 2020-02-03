@@ -18,7 +18,7 @@ std::vector<grounding_sptr> GroundingTable::get_old_groundings() const {
 
 std::vector<grounding_sptr> GroundingTable::get_new_groundings() const {
     std::vector<grounding_sptr> result;
-    std::move(recent_groundings_set.begin(), recent_groundings_set.end(),
+    std::copy(recent_groundings_set.begin(), recent_groundings_set.end(),
               std::back_inserter(result));
     return result;
 }
@@ -26,6 +26,8 @@ std::vector<grounding_sptr> GroundingTable::get_new_groundings() const {
 std::vector<grounding_sptr>
 GroundingTable::get_groundings_at(uint64_t time) const {
     std::vector<grounding_sptr> result;
+    GroundingTable mygt = *this;
+    std::unordered_map<uint64_t, grounding_set> gt_map = this->grounding_map;
     if (grounding_map.count(time) > 0) {
         auto const &facts = grounding_map.at(time);
         std::copy(facts.begin(), facts.end(), std::back_inserter(result));
@@ -96,7 +98,7 @@ bool GroundingTable::is_match(grounding_sptr const &left,
 }
 
 void GroundingTable::update_map(uint64_t current_time) {
-    grounding_set new_set = grounding_map[current_time];
+    grounding_set &new_set = grounding_map[current_time];
     grounding_set to_remove;
     auto previous_time = current_time - 1;
     if (previous_time > 0 && grounding_map.count(previous_time) > 0) {
