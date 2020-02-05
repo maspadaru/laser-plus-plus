@@ -1,8 +1,8 @@
-#include "rule/math_atom.h"
+#include "formula/condition_atom.h"
 
-namespace laser::rule {
+namespace laser::formula {
 
-void MathAtom::evaluate(
+void ConditionAtom::evaluate(
     std::unique_ptr<formula::Formula> const &body,
     std::vector<std::shared_ptr<util::Grounding>> &body_facts) {
     auto left_index = body->get_variable_index(left_name);
@@ -20,6 +20,6 @@ void MathAtom::evaluate(
     }
 }
 
-std::string const &MathAtom::get_result_name() const { return result_name; }
+std::string const &ConditionAtom::get_result_name() const { return result_name; }
 
-} // namespace laser::rule
+} // namespace laser::formula
