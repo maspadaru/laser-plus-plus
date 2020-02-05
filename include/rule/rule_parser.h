@@ -12,6 +12,7 @@
 #include "formula/extended/time_reference.h"
 #include "formula/extended/time_window.h"
 #include "formula/extended/tuple_window.h"
+#include "formula/math/assignment.h"
 #include "rule/rule.h"
 #include "util/format_exception.h"
 
@@ -45,12 +46,16 @@ public:
     bool is_next_char_letter_or_digit();
     bool is_next_char_binary_operator();
     bool is_next_char_conjunction_operator();
-    bool is_next_char_math_operator();
-    bool is_next_char_comparison_operator();
+    bool is_next_char_algebra_operator();
+    bool is_next_char_condition_operator();
+    bool is_next_char_equals_sign();
 
     // EBNF Parser Methods
 
     // characters and identifiers
+    std::string parse_algebra_operator();
+    std::string parse_condition_operator();
+    std::string parse_assignment_operator();
     void parse_eoln();
     std::string parse_math_sign();
     std::string parse_comparison_sign();
@@ -65,8 +70,12 @@ public:
     std::string parse_identifier();
     std::string parse_argument();
     std::string parse_float_argument();
+    std::vector<std::string> parse_argument_vector(); 
 
     // rules and formulas
+    std::unique_ptr<laser::formula::Formula> parse_assignment_atom();
+    std::unique_ptr<laser::formula::Formula> parse_condition_atom();
+    std::unique_ptr<laser::formula::Formula> parse_algebra_atom();
     std::vector<std::unique_ptr<laser::rule::Rule>> parse_program();
     std::unique_ptr<laser::rule::Rule> parse_rule();
     std::vector<std::unique_ptr<laser::formula::Formula>> parse_head();

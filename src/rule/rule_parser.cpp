@@ -59,13 +59,15 @@ bool RuleParser::is_next_char_conjunction_operator() {
     return is_next_char('&');
 }
 
-bool RuleParser::is_next_char_math_operator() {
+bool RuleParser::is_next_char_algebra_operator() {
     return is_next_char('+') || is_next_char('-') || is_next_char('*') ||
            is_next_char('/');
 }
 
-bool RuleParser::is_next_char_comparison_operator() {
-    return is_next_char('<') || is_next_char('>') || is_next_char('=') ||
+bool RuleParser::is_next_char_equals_sign() { return is_next_char('='); }
+
+bool RuleParser::is_next_char_condition_operator() {
+    return is_next_char('<') || is_next_char('>') || is_next_char('?') ||
            is_next_char('!');
 }
 
@@ -76,14 +78,25 @@ void RuleParser::parse_eoln() {
     }
 }
 
-std::string RuleParser::parse_math_sign() {
-    // TODO
-    return "";
+std::string RuleParser::parse_assignment_operator() {
+    std::stringstream result_stream;
+    result_stream << read_next_char();
+    return result_stream.str();
 }
 
-std::string RuleParser::parse_comparison_sign() {
-    // TODO
-    return "";
+std::string RuleParser::parse_algebra_operator() {
+    std::stringstream result_stream;
+    result_stream << read_next_char();
+    return result_stream.str();
+}
+
+std::string RuleParser::parse_condition_operator() {
+    std::stringstream result_stream;
+    result_stream << read_next_char();
+    if (is_next_char_equals_sign()) {
+        result_stream << read_next_char();
+    }
+    return result_stream.str();
 }
 
 char RuleParser::parse_nonzero() {
@@ -316,7 +329,7 @@ std::unique_ptr<laser::formula::Formula> RuleParser::parse_term() {
     } else if (is_next_char('[')) {
         result = parse_unary_formula();
     } else {
-        result = parse_predicate_atom();
+        result = parse_atom();
     }
     return result;
 }
@@ -324,19 +337,20 @@ std::unique_ptr<laser::formula::Formula> RuleParser::parse_term() {
 std::unique_ptr<laser::formula::Formula> RuleParser::parse_atom() {
     std::unique_ptr<laser::formula::Formula> result;
     skip_spaces();
-    if (is_next_char_math_operator()) {
-        result = parse_math_atom();
-    } else if (is_next_char_comparison_operator()) {
-        result = parse_comparison_atom();
+    if (is_next_char_algebra_operator()) {
+        result = parse_algebra_atom();
+    } else if (is_next_char_condition_operator()) {
+        result = parse_condition_atom();
+    } else if (is_next_char_equals_sign()) {
+        result = parse_assignment_atom();
     } else {
         result = parse_predicate_atom();
     }
     return result;
 }
 
-std::unique_ptr<laser::formula::Formula> RuleParser::parse_predicate_atom() {
+std::vector<std::string> RuleParser::parse_argument_vector() {
     std::vector<std::string> argument_vector;
-    std::string predicate = parse_identifier();
     skip_spaces();
     if (is_next_char('(')) {
         skip_next_char();
@@ -355,18 +369,40 @@ std::unique_ptr<laser::formula::Formula> RuleParser::parse_predicate_atom() {
         }
         skip_expected_char(')');
     }
+    return std::move(argument_vector);
+}
+
+std::unique_ptr<laser::formula::Formula> RuleParser::parse_predicate_atom() {
+    std::string predicate = parse_identifier();
+    std::vector<std::string> argument_vector = parse_argument_vector();
     return std::make_unique<laser::formula::Atom>(predicate,
                                                   std::move(argument_vector));
 }
 
-std::unique_ptr<laser::formula::Formula> RuleParser::parse_comparison_atom() {
-    // TODO
-    return std::make_unique<laser::formula::Atom>("TODO");
+std::unique_ptr<laser::formula::Formula> RuleParser::parse_assignment_atom() {
+    std::string predicate = parse_assignment_operator();
+    auto argument_vector = parse_argument_vector();
+    if (argument_vector.size() != 2) {
+        syntax_error("Not a valid assignment. Expected exactly 2 arguments");
+    }
+    std::string &variable = argument_vector.at(0);
+    std::string &value = argument_vector.at(1);
+    return std::make_unique<laser::formula::Assignment>(std::move(variable),
+                                                        std::move(value));
 }
 
-std::unique_ptr<laser::formula::Formula> RuleParser::parse_math_atom() {
-    // TODO
-    return std::make_unique<laser::formula::Atom>("TODO");
+std::unique_ptr<laser::formula::Formula> RuleParser::parse_condition_atom() {
+    std::string predicate = parse_condition_operator();
+    auto argument_vector = parse_argument_vector();
+    return std::make_unique<laser::formula::Atom>(predicate,
+                                                  std::move(argument_vector));
+}
+
+std::unique_ptr<laser::formula::Formula> RuleParser::parse_algebra_atom() {
+    std::string predicate = parse_algebra_operator();
+    auto argument_vector = parse_argument_vector();
+    return std::make_unique<laser::formula::Atom>(predicate,
+                                                  std::move(argument_vector));
 }
 
 std::unique_ptr<laser::formula::Formula> RuleParser::parse_unary_formula() {

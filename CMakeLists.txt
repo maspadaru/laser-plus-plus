@@ -18,6 +18,7 @@ include_directories(~/tools/llvm/include/c++/v1/)
 file(GLOB LASER_SOURCES
         "src/formula/*.cpp"
         "src/formula/extended/*.cpp"
+        "src/formula/math/*.cpp"
         "src/util/*.cpp"
         "src/rule/*.cpp"
         "src/rule/filter/*.cpp"

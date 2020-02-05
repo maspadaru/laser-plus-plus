@@ -13,7 +13,6 @@
 #include "rule/filter/oblivious_filter.h"
 #include "rule/filter/restricted_filter.h"
 #include "rule/filter/skolem_filter.h"
-#include "rule/math_atom.h"
 #include "rule/shared.h"
 #include "util/chase_algorithm.h"
 #include "util/database.h"
@@ -28,7 +27,6 @@ class Rule {
     bool is_existential_m = false;
     std::unique_ptr<formula::Formula> body;
     std::vector<std::unique_ptr<formula::Formula>> head_atoms;
-    std::vector<MathAtom> math_atoms;
     // for each atom in head_atoms, there is a vector containing the postions
     // in the body grounding where the value of each head variables is found
     std::vector<std::vector<size_t>> head_atoms_var_positions;
@@ -73,9 +71,6 @@ class Rule {
     make_atom_fact(std::shared_ptr<util::Grounding> const &body_fact,
                    size_t head_atom_index, size_t atom_arity);
 
-    void evaluate_math_atoms(
-        std::vector<std::shared_ptr<util::Grounding>> &body_facts);
-
   public:
     explicit Rule(std::unique_ptr<formula::Formula> body_formula,
                   std::vector<std::unique_ptr<formula::Formula>> head_atoms);
@@ -85,14 +80,6 @@ class Rule {
                   std::set<std::string> inertia_variables);
 
     std::unique_ptr<Rule> clone() const;
-
-    // explicit Rule(std::unique_ptr<formula::Formula> body_formula,
-    // std::vector<std::unique_ptr<formula::Formula>> head_atoms,
-    // std::vector<MathAtom> math_atoms,
-    // std::set<std::string> inertia_variables);
-
-    // explicit Rule(std::unique_ptr<formula::Formula> body_formula,
-    // std::vector<std::unique_ptr<formula::Formula>> head_atoms);
 
     ~Rule() = default;
 

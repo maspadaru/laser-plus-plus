@@ -15,7 +15,10 @@ enum class FormulaType {
     TIME_WINDOW,
     BOX,
     DIAMOND,
-    EXISTENTIAL 
+    EXISTENTIAL, 
+    ALGEBRA,
+    CONDITION,
+    ASSIGNMENT
 };
 
 

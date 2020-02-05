@@ -2,15 +2,6 @@
 
 namespace laser::rule {
 
-// Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
-// std::vector<std::unique_ptr<formula::Formula>> head_atoms,
-// std::vector<MathAtom> math_atoms,
-// std::set<std::string> inertia_variables)
-//: body(*body_formula.release()), math_atoms(std::move(math_atoms)),
-// inertia_variables(std::move(inertia_variables)) {
-// init(std::move(head_atoms));
-//}
-
 Rule::Rule(std::unique_ptr<formula::Formula> body_formula,
            std::vector<std::unique_ptr<formula::Formula>> head_atoms)
     : body(std::move(body_formula)) {
@@ -247,11 +238,6 @@ void Rule::init(std::vector<std::unique_ptr<formula::Formula>> head_atoms) {
         head_atom->set_head(true);
     }
     trigger_variables = body->get_variable_names();
-    for (auto const &math_atom : math_atoms) {
-        auto const &math_result_variable = math_atom.get_result_name();
-        trigger_variables.push_back(math_result_variable);
-    }
-    // TODO also make an index of trigger variables
 }
 
 bool Rule::derive_conclusions(util::Timeline const &timeline,
@@ -267,7 +253,6 @@ void Rule::evaluate_head(
     util::Timeline const &timeline, util::Database &database,
     std::vector<std::shared_ptr<util::Grounding>> &body_facts) {
     chase_filter->update(timeline, previous_step, database);
-    evaluate_math_atoms(body_facts);
     auto head_facts =
         chase_filter->build_chase_facts(timeline, previous_step, body_facts);
     evaluate_head_atoms(timeline, head_facts);
@@ -315,12 +300,6 @@ std::vector<std::string> const &Rule::get_frontier_variables() const {
 
 std::vector<std::string> const &Rule::get_bound_variables() const {
     return bound_variables;
-}
-void Rule::evaluate_math_atoms(
-    std::vector<std::shared_ptr<util::Grounding>> &body_facts) {
-    for (auto &math_atom : math_atoms) {
-        math_atom.evaluate(body, body_facts);
-    }
 }
 
 } // namespace laser::rule

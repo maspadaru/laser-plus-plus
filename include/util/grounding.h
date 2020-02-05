@@ -35,6 +35,7 @@ class Grounding {
     bool annotation_less_than(Grounding const &other) const;
 
   public:
+
     Grounding(std::string const &predicate, uint64_t consideration_time,
               uint64_t horizon_time, uint64_t consideration_count,
               uint64_t horizon_count,
