@@ -1,25 +1,32 @@
-#ifndef LASER_FORMULA_CONDITION_ATOM_H
-#define LASER_FORMULA_CONDITION_ATOM_H
+#ifndef LASER_RULE_MATH_ATOM_H
+#define LASER_RULE_MATH_ATOM_H
 
+#include <cstdlib>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "formula/formula.h"
 #include "util/grounding.h"
+#include "formula/formula.h"
 
-namespace laser::formula {
+namespace laser::rule {
 
-class ConditionAtom {
+/**
+ * Math formula
+ * result = left + right
+ * Requirement: The result variable should not be used in other places in the
+ * rule. Use Comparison Atom for that (not yet implemented).
+ */
+class MathAtom {
   private:
     std::string result_name;
     std::string left_name;
     int64_t right_value;
 
   public:
-    ConditionAtom() = default;
+    MathAtom() = default;
 
-    ~ConditionAtom() = default;
+    ~MathAtom() = default;
 
     void set_left_name();
     void set_result_name();
@@ -32,6 +39,6 @@ class ConditionAtom {
                   std::vector<std::shared_ptr<util::Grounding>> &body_facts);
 };
 
-} // namespace laser::formula
+} // namespace laser::rule
 
-#endif // LASER_FORMULA_CONDITION_ATOM_H
+#endif // LASER_RULE_MATH_ATOM_H
