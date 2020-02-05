@@ -191,10 +191,8 @@ std::unique_ptr<rule::Rule> NaiveSMFA::generate_S_D_rule() const {
     auto atom_D = generate_new_binary_atom(predicate_D, variable_X, variable_Y);
     auto atom_S = generate_new_binary_atom(predicate_S, variable_X, variable_Y);
     std::vector<std::unique_ptr<formula::Formula>> head_atoms;
-    std::vector<std::unique_ptr<formula::Formula>> body_atoms;
     head_atoms.push_back(std::move(atom_D));
-    body_atoms.push_back(std::move(atom_S));
-    return std::make_unique<rule::Rule>(std::move(body_atoms),
+    return std::make_unique<rule::Rule>(std::move(atom_S),
                                         std::move(head_atoms));
 }
 
@@ -211,12 +209,11 @@ std::unique_ptr<rule::Rule> NaiveSMFA::generate_D_transitive_rule() const {
         generate_new_binary_atom(predicate_D, variable_X, variable_Y);
     auto body_atom_S =
         generate_new_binary_atom(predicate_S, variable_Y, variable_Z);
+    auto body = std::make_unique<formula::Conjunction>(std::move(body_atom_D),
+                                                       std::move(body_atom_S));
     std::vector<std::unique_ptr<formula::Formula>> head_atoms;
-    std::vector<std::unique_ptr<formula::Formula>> body_atoms;
     head_atoms.push_back(std::move(head_atom_D));
-    body_atoms.push_back(std::move(body_atom_D));
-    body_atoms.push_back(std::move(body_atom_S));
-    return std::make_unique<rule::Rule>(std::move(body_atoms), std::move(head_atoms));
+    return std::make_unique<rule::Rule>(std::move(body), std::move(head_atoms));
 }
 
 std::unique_ptr<rule::Rule>
@@ -233,13 +230,13 @@ NaiveSMFA::generate_C_rule(std::string const &predicate_F) const {
         generate_new_binary_atom(predicate_D, variable_X, variable_Y);
     auto body_atom_F_X = generate_new_unary_atom(predicate_F, variable_X);
     auto body_atom_F_Y = generate_new_unary_atom(predicate_F, variable_Y);
+    auto body_F_and_D = std::make_unique<formula::Conjunction>(
+        std::move(body_atom_F_X), std::move(body_atom_D));
+    auto body = std::make_unique<formula::Conjunction>(
+        std::move(body_F_and_D), std::move(body_atom_F_Y));
     std::vector<std::unique_ptr<formula::Formula>> head_atoms;
-    std::vector<std::unique_ptr<formula::Formula>> body_atoms;
     head_atoms.push_back(std::move(head_atom_C));
-    body_atoms.push_back(std::move(body_atom_D));
-    body_atoms.push_back(std::move(body_atom_F_X));
-    body_atoms.push_back(std::move(body_atom_F_Y));
-    return std::make_unique<rule::Rule>(std::move(body_atoms), std::move(head_atoms));
+    return std::make_unique<rule::Rule>(std::move(body), std::move(head_atoms));
 }
 
 void NaiveSMFA::compute_smfa_rule_vector() {
