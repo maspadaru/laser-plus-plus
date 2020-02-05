@@ -85,8 +85,8 @@ void GroundingTable::diamond_update_table(
     for (auto &iterator : grounding_map) {
         grounding_set &set = iterator.second;
         grounding_set to_remove;
-        for (auto const &new_fact : new_facts) {
-            for (auto const &old_fact : set) {
+        for (auto const &old_fact : set) {
+            for (auto const &new_fact : new_facts) {
                 if (is_match(new_fact, old_fact)) {
                     to_remove.insert(old_fact);
                 }

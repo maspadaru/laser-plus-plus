@@ -39,15 +39,15 @@ class Rule {
     size_t current_step = 0;
     std::vector<std::string> frontier_variables;
     std::vector<std::string> bound_variables;
-    std::set<std::string> inertia_variables;
-    bool has_inertia_variables = false;
+    std::set<std::string> event_variables;
+    bool has_event_variables = false;
     std::vector<std::string> trigger_variables;
 
     void clear();
     void init_frontier_variables(
         std::vector<std::unique_ptr<formula::Formula>> const &head_atoms);
 
-    std::vector<bool> generate_inertia_vector();
+    std::vector<bool> generate_event_vector();
 
     std::shared_ptr<util::Grounding>
     convert_to_head_grounding(std::string const &head_predicate,
@@ -56,13 +56,19 @@ class Rule {
     void init_chase(
         std::vector<std::unique_ptr<formula::Formula>> const &head_atoms);
 
-    void init(std::vector<std::unique_ptr<formula::Formula>> head_atoms);
+    void init_head(std::vector<std::unique_ptr<formula::Formula>> head_atoms);
+
+    void init(std::vector<std::unique_ptr<formula::Formula>> body_atoms,
+              std::vector<std::unique_ptr<formula::Formula>> head_atoms);
+
+    std::unique_ptr<formula::Formula> build_body_formula(
+        size_t index,
+        std::vector<std::unique_ptr<formula::Formula>> list) const;
 
     void expire_head_groundings(util::Timeline const &timeline);
 
     void
-    evaluate_head(util::Timeline const &timeline,
-                  util::Database &database,
+    evaluate_head(util::Timeline const &timeline, util::Database &database,
                   std::vector<std::shared_ptr<util::Grounding>> &body_facts);
 
     void evaluate_head_atoms(
@@ -77,22 +83,18 @@ class Rule {
         std::vector<std::shared_ptr<util::Grounding>> &body_facts);
 
   public:
-    explicit Rule(std::unique_ptr<formula::Formula> body_formula,
+    explicit Rule(std::vector<std::unique_ptr<formula::Formula>> body_atoms,
                   std::vector<std::unique_ptr<formula::Formula>> head_atoms);
 
-    explicit Rule(std::unique_ptr<formula::Formula> body_formula,
+    explicit Rule(std::vector<std::unique_ptr<formula::Formula>> body_atoms,
                   std::vector<std::unique_ptr<formula::Formula>> head_atoms,
-                  std::set<std::string> inertia_variables);
+                  std::set<std::string> event_variables);
+
+    explicit Rule(std::unique_ptr<formula::Formula> body_formula,
+           std::vector<std::unique_ptr<formula::Formula>> head_atoms,
+           std::set<std::string> event_variables);
 
     std::unique_ptr<Rule> clone() const;
-
-    // explicit Rule(std::unique_ptr<formula::Formula> body_formula,
-    // std::vector<std::unique_ptr<formula::Formula>> head_atoms,
-    // std::vector<MathAtom> math_atoms,
-    // std::set<std::string> inertia_variables);
-
-    // explicit Rule(std::unique_ptr<formula::Formula> body_formula,
-    // std::vector<std::unique_ptr<formula::Formula>> head_atoms);
 
     ~Rule() = default;
 

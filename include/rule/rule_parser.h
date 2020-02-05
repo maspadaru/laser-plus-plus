@@ -27,7 +27,7 @@ public:
     std::string rule_string;
     std::stringstream input;
     size_t line_counter = 0;
-    std::set<std::string> inertia_variables;
+    std::set<std::string> event_variables;
 
     // Error handling
     inline void syntax_error(std::string const &error_message) const;
@@ -46,14 +46,16 @@ public:
     bool is_next_char_binary_operator();
     bool is_next_char_conjunction_operator();
     bool is_next_char_math_operator();
-    bool is_next_char_comparison_operator();
+    bool is_next_char_condition_operator();
+    bool is_next_char_equals_sign();
 
     // EBNF Parser Methods
 
     // characters and identifiers
     void parse_eoln();
-    std::string parse_math_sign();
-    std::string parse_comparison_sign();
+    std::string parse_math_operator();
+    std::string parse_condition_operator();
+    std::string parse_assignment_operator();
     char parse_nonzero();
     std::string parse_zero();
     char parse_diggit();
@@ -65,29 +67,28 @@ public:
     std::string parse_identifier();
     std::string parse_argument();
     std::string parse_float_argument();
+    std::vector<std::string> parse_argument_vector(); 
 
     // rules and formulas
     std::vector<std::unique_ptr<laser::rule::Rule>> parse_program();
     std::unique_ptr<laser::rule::Rule> parse_rule();
     std::vector<std::unique_ptr<laser::formula::Formula>> parse_head();
     std::unique_ptr<laser::formula::Formula> parse_head_atom();
-    std::unique_ptr<laser::formula::Formula> parse_body();
-    std::unique_ptr<laser::formula::Formula> parse_complex_formula();
-    std::unique_ptr<laser::formula::Formula> parse_binary_formula();
-    std::unique_ptr<laser::formula::Formula> parse_binary_operator();
+    std::vector<std::unique_ptr<laser::formula::Formula>> parse_body();
     std::unique_ptr<laser::formula::Formula> parse_term();
-    std::unique_ptr<laser::formula::Formula> parse_atom();
-    std::unique_ptr<laser::formula::Formula> parse_predicate_atom();
-    std::unique_ptr<laser::formula::Formula> parse_comparison_atom();
+    std::unique_ptr<laser::formula::Formula> parse_body_atom();
+    std::unique_ptr<laser::formula::Formula> parse_assignment_atom();
+    std::unique_ptr<laser::formula::Formula> parse_condition_atom();
     std::unique_ptr<laser::formula::Formula> parse_math_atom();
-    std::unique_ptr<laser::formula::Formula> parse_unary_formula();
+    std::unique_ptr<laser::formula::Formula> parse_predicate_atom();
+    std::unique_ptr<laser::formula::Formula> parse_extended_atom();
     std::unique_ptr<laser::formula::Formula> parse_diamond();
     std::unique_ptr<laser::formula::Formula> parse_box();
     std::unique_ptr<laser::formula::Formula> parse_negation();
     std::unique_ptr<laser::formula::Formula> parse_time_reference();
     std::unique_ptr<laser::formula::Formula> parse_time_window();
     std::unique_ptr<laser::formula::Formula> parse_tuple_window();
-    std::unique_ptr<laser::formula::Formula> parse_inertia_operator(); 
+    std::unique_ptr<laser::formula::Formula> parse_event_operator(); 
     std::unique_ptr<laser::formula::Formula> parse_extended_head_atom(); 
     std::vector<std::unique_ptr<laser::formula::Formula>> parse_formula_vector();
 
