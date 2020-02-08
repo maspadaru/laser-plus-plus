@@ -13,6 +13,7 @@
 #include "formula/formula.h"
 #include "formula/formula_type.h"
 #include "formula/grounding_table.h"
+#include "formula/math_operator.h"
 #include "util/database.h"
 #include "util/grounding.h"
 #include "util/timeline.h"
@@ -71,6 +72,10 @@ class Atom : public Formula {
     std::unique_ptr<formula::Formula> clone() const override;
 
     FormulaType get_type() const override;
+
+    std::vector<std::string> get_math_arguments() const override;
+
+    MathOperator get_math_operator() const override;
 
     std::vector<std::string> const &get_predicate_vector() const override;
 

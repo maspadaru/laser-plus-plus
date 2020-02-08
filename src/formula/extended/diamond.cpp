@@ -16,6 +16,13 @@ bool Diamond::is_head() const { return is_head_m; }
 
 FormulaType Diamond::get_type() const { return FormulaType::DIAMOND; }
 
+std::vector<std::string> Diamond::get_math_arguments() const {
+    std::vector<std::string> result;
+    return result;
+}
+
+MathOperator Diamond::get_math_operator() const { return MathOperator::NONE; }
+
 std::vector<std::string> const &Diamond::get_predicate_vector() const {
     return child->get_predicate_vector();
 }

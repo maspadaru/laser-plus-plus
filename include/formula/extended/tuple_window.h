@@ -5,6 +5,7 @@
 
 #include "formula/formula.h"
 #include "formula/grounding_table.h"
+#include "formula/math_operator.h"
 #include "util/grounding.h"
 
 namespace laser::formula {
@@ -39,6 +40,10 @@ class TupleWindow : public Formula {
     bool is_head() const override;
 
     FormulaType get_type() const override;
+
+    std::vector<std::string> get_math_arguments() const override;
+
+    MathOperator get_math_operator() const override;
 
     std::vector<std::string> const &get_predicate_vector() const override;
 

@@ -6,6 +6,7 @@
 
 #include "formula/formula.h"
 #include "formula/grounding_table.h"
+#include "formula/math_operator.h"
 #include "util/grounding.h"
 
 namespace laser::formula {
@@ -74,11 +75,16 @@ class TimeReference : public Formula {
 
   public:
     TimeReference() = default;
-    TimeReference(std::string time_variable, std::unique_ptr<formula::Formula> child);
+    TimeReference(std::string time_variable,
+                  std::unique_ptr<formula::Formula> child);
 
     std::unique_ptr<formula::Formula> clone() const override;
 
     FormulaType get_type() const override;
+
+    std::vector<std::string> get_math_arguments() const override;
+
+    MathOperator get_math_operator() const override;
 
     std::vector<std::string> const &get_predicate_vector() const override;
 

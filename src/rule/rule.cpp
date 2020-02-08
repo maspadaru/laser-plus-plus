@@ -118,6 +118,9 @@ void Rule::expire_head_groundings(util::Timeline const &timeline) {
 void Rule::evaluate(util::Timeline const &timeline,
                     util::Database const &database) {
     auto facts = database.get_data_since(previous_step);
+    if (has_math_atoms) {
+        facts = math_manager.evaluate(timeline, previous_step, facts);
+    }
     body->evaluate(timeline, previous_step, facts);
 }
 
@@ -233,6 +236,8 @@ void Rule::clear() {
 void Rule::init(std::vector<std::unique_ptr<formula::Formula>> head_atoms) {
     this->clear();
     init_chase(head_atoms);
+    math_manager.init(body);
+    has_math_atoms = math_manager.has_math_atoms();
     this->head_atoms = std::move(head_atoms);
     for (auto const &head_atom : this->head_atoms) {
         head_atom->set_head(true);

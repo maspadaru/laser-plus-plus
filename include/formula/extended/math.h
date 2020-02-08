@@ -22,7 +22,7 @@ class Math : public Formula {
     FormulaType formula_type = FormulaType::MATH;
     std::string predicate;
     std::string math_sign;
-    MathOperator math_operator;
+    MathOperator math_operator = MathOperator::NONE;
     std::unique_ptr<Formula> child;
     std::vector<std::string> arguments;
 
@@ -38,6 +38,10 @@ class Math : public Formula {
     explicit Math(std::string math_sign, std::vector<std::string> arguments);
 
     ~Math() override = default;
+
+    std::vector<std::string> get_math_arguments() const override;
+
+    MathOperator get_math_operator() const override;
 
     std::unique_ptr<formula::Formula> clone() const override;
 

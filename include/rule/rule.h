@@ -13,6 +13,7 @@
 #include "rule/filter/oblivious_filter.h"
 #include "rule/filter/restricted_filter.h"
 #include "rule/filter/skolem_filter.h"
+#include "rule/math/math_manager.h"
 #include "rule/shared.h"
 #include "util/chase_algorithm.h"
 #include "util/database.h"
@@ -25,6 +26,8 @@ namespace laser::rule {
 class Rule {
   private:
     bool is_existential_m = false;
+    MathManager math_manager;
+    bool has_math_atoms = false;
     std::unique_ptr<formula::Formula> body;
     std::vector<std::unique_ptr<formula::Formula>> head_atoms;
     // for each atom in head_atoms, there is a vector containing the postions
@@ -59,8 +62,7 @@ class Rule {
     void expire_head_groundings(util::Timeline const &timeline);
 
     void
-    evaluate_head(util::Timeline const &timeline,
-                  util::Database &database,
+    evaluate_head(util::Timeline const &timeline, util::Database &database,
                   std::vector<std::shared_ptr<util::Grounding>> &body_facts);
 
     void evaluate_head_atoms(

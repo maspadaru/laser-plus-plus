@@ -3,21 +3,20 @@
 
 namespace laser::formula {
 
-
 enum class MathOperator {
-    EQUALS,
+    ASSIGNMENT,
     PLUS,
     MINUS,
     MULTIPLICATION,
     DIVISION,
+    EQUALS,
+    NOT_EQUAL,
     LESSER,
     GREATHER,
     LESSER_OR_EQUAL,
     GREATHER_OR_EQUAL,
-    NOT_EQUAL,
     NONE
 };
-
 
 } // namespace laser::formula
 

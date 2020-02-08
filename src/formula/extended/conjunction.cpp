@@ -85,6 +85,15 @@ void Conjunction::populate_variable_collections() {
 
 FormulaType Conjunction::get_type() const { return FormulaType::CONJUNCTION; }
 
+std::vector<std::string> Conjunction::get_math_arguments() const {
+    std::vector<std::string> result;
+    return result;
+}
+
+MathOperator Conjunction::get_math_operator() const {
+    return MathOperator::NONE;
+}
+
 std::vector<std::string> const &Conjunction::get_predicate_vector() const {
     return predicate_vector;
 }
@@ -146,12 +155,12 @@ void Conjunction::expire_outdated_groundings(util::Timeline const &timeline) {
     left_child->expire_outdated_groundings(timeline);
     right_child->expire_outdated_groundings(timeline);
     grounding_set.clear();
-    //grounding_vector.clear();
+    // grounding_vector.clear();
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
 Conjunction::get_groundings(util::Timeline const &timeline) {
-     //return grounding_vector;
+    // return grounding_vector;
     std::vector<std::shared_ptr<util::Grounding>> result_vector;
     std::copy(grounding_set.begin(), grounding_set.end(),
               std::back_inserter(result_vector));
@@ -168,20 +177,20 @@ Conjunction::get_conclusions_step(util::Timeline const &timeline) {
     return get_groundings(timeline);
 }
 
-std::string
-Conjunction::hash_common_variables(std::vector<int> const &common_variable_indices,
-                                   util::Grounding const &grounding) const {
-//std::string
-//Conjunction::hash_common_variables(Formula const &child,
-                                   //util::Grounding const &grounding) const {
-    //if (common_child_variables.empty()) {
-        //return "0";
+std::string Conjunction::hash_common_variables(
+    std::vector<int> const &common_variable_indices,
+    util::Grounding const &grounding) const {
+    // std::string
+    // Conjunction::hash_common_variables(Formula const &child,
+    // util::Grounding const &grounding) const {
+    // if (common_child_variables.empty()) {
+    // return "0";
     //}
-    //std::vector<std::string> vector;
-    //for (auto &variable : common_child_variables) {
-        //int variable_index = child.get_variable_index(variable);
-        //auto const &constant = grounding.get_constant(variable_index);
-        //vector.push_back(constant);
+    // std::vector<std::string> vector;
+    // for (auto &variable : common_child_variables) {
+    // int variable_index = child.get_variable_index(variable);
+    // auto const &constant = grounding.get_constant(variable_index);
+    // vector.push_back(constant);
     //}
     std::vector<std::string> vector;
     for (size_t i = 0; i < number_of_common_variables; i++) {
@@ -213,14 +222,14 @@ Conjunction::merge_groundings(util::Timeline const &timeline,
             substitution_vector.push_back(right.get_constant(index));
         }
     }
-    //for (auto const &variable_name : variable_names) {
-        //auto left_index = left_child->get_variable_index(variable_name);
-        //if (left_index >= 0) {
-            //substitution_vector.push_back(left.get_constant(left_index));
-        //} else {
-            //auto right_index = right_child->get_variable_index(variable_name);
-            //substitution_vector.push_back(right.get_constant(right_index));
-        //}
+    // for (auto const &variable_name : variable_names) {
+    // auto left_index = left_child->get_variable_index(variable_name);
+    // if (left_index >= 0) {
+    // substitution_vector.push_back(left.get_constant(left_index));
+    //} else {
+    // auto right_index = right_child->get_variable_index(variable_name);
+    // substitution_vector.push_back(right.get_constant(right_index));
+    //}
     //}
     auto result = std::make_shared<util::Grounding>("", ct, ht, cc, hc,
                                                     substitution_vector);
@@ -257,7 +266,7 @@ void Conjunction::populate_grounding_set_with_common(
                 if (gl_fresh || gr_fresh) {
                     auto new_grounding = merge_groundings(timeline, *gl, *gr);
                     grounding_set.insert(std::move(new_grounding));
-                     //grounding_vector.push_back(std::move(new_grounding));
+                    // grounding_vector.push_back(std::move(new_grounding));
                 }
             }
         }
@@ -276,7 +285,7 @@ void Conjunction::populate_grounding_set_no_common(
             if (gl_fresh || gr_fresh) {
                 auto new_grounding = merge_groundings(timeline, *gl, *gr);
                 grounding_set.insert(std::move(new_grounding));
-                //grounding_vector.push_back(std::move(new_grounding));
+                // grounding_vector.push_back(std::move(new_grounding));
             }
         }
     }
@@ -287,11 +296,11 @@ void Conjunction::populate_grounding_set(
     std::vector<std::shared_ptr<util::Grounding>> const &left_groundings,
     std::vector<std::shared_ptr<util::Grounding>> const &right_groundings) {
     if (common_child_variables.empty()) {
-        populate_grounding_set_no_common(timeline, previous_step, left_groundings,
-                               right_groundings);
+        populate_grounding_set_no_common(timeline, previous_step,
+                                         left_groundings, right_groundings);
     } else {
-        populate_grounding_set_with_common(timeline, previous_step, left_groundings,
-                               right_groundings);
+        populate_grounding_set_with_common(timeline, previous_step,
+                                           left_groundings, right_groundings);
     }
 }
 
@@ -307,7 +316,7 @@ bool Conjunction::evaluate(
     populate_grounding_set(timeline, previous_step, left_groundings,
                            right_groundings);
     return !grounding_set.empty();
-    //return !grounding_vector.empty();
+    // return !grounding_vector.empty();
 }
 
 std::vector<std::unique_ptr<formula::Formula> const *>

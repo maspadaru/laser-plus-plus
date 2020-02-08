@@ -5,9 +5,7 @@
 
 namespace laser::util::special_predicate {
 
-extern const std::string MATH_ASSIGNMENT;
-extern const std::string MATH_ALGEBRA;
-extern const std::string MATH_CONDITION;
+extern const std::string MATH;
 
 } // namespace laser::util::special_predicate
 

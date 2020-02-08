@@ -9,6 +9,7 @@
 
 #include "formula/formula.h"
 #include "formula/grounding_table.h"
+#include "formula/math_operator.h"
 #include "util/grounding.h"
 
 namespace laser::formula {
@@ -42,8 +43,8 @@ class Conjunction : public Formula {
     // grounding_set;
     std::set<std::shared_ptr<util::Grounding>, util::GroundingFullCompare>
         grounding_set;
-     //std::vector<std::shared_ptr<util::Grounding>>
-     //grounding_vector;
+    // std::vector<std::shared_ptr<util::Grounding>>
+    // grounding_vector;
 
     void compute_predicate_vector();
 
@@ -93,6 +94,10 @@ class Conjunction : public Formula {
     std::unique_ptr<formula::Formula> clone() const override;
 
     FormulaType get_type() const override;
+
+    std::vector<std::string> get_math_arguments() const override;
+
+    MathOperator get_math_operator() const override;
 
     std::vector<std::string> const &get_predicate_vector() const override;
 

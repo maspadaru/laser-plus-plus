@@ -15,6 +15,13 @@ bool Box::is_head() const { return is_head_m; }
 
 FormulaType Box::get_type() const { return FormulaType::BOX; }
 
+std::vector<std::string> Box::get_math_arguments() const {
+    std::vector<std::string> result;
+    return result;
+}
+
+MathOperator Box::get_math_operator() const { return MathOperator::NONE; }
+
 std::vector<std::string> const &Box::get_predicate_vector() const {
     return child->get_predicate_vector();
 }

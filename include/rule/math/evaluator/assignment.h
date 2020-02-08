@@ -1,37 +1,40 @@
-#ifndef LASER_FORMULA_MATH_ASSIGNMENT_H
-#define LASER_FORMULA_MATH_ASSIGNMENT_H
+#ifndef LASER_RULE_MATH_EVALUATOR_ASSIGNMENT_H
+#define LASER_RULE_MATH_EVALUATOR_ASSIGNMENT_H
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
-#include <map>
 
-#include "frmula/math/evaluator.h"
 #include "formula/formula.h"
 #include "formula/formula_type.h"
 #include "formula/grounding_table.h"
+#include "formula/math_operator.h"
+#include "rule/math/evaluator.h"
+#include "rule/math/evaluator_type.h"
 #include "util/grounding.h"
 #include "util/shared.h"
 #include "util/timeline.h"
 
-namespace laser::formula {
+namespace laser::rule {
 
 class Assignment : public Evaluator {
   private:
-    FormulaType type = FormulaType::ASSIGNMENT;
+    formula::MathOperator math_operator = formula::MathOperator::EQUALS;
+    EvaluatorType evaluator_type = EvaluatorType::ASSIGNMENT;
+    std::string predicate;
     std::string variable;
     std::string value;
-    std::vector<std::string> predicate_vector;
-    std::map<std::string, size_t> arity_map;
-    GroundingTable grounding_table;
-
-    void init();
+    std::vector<std::string> arguments;
+    formula::GroundingTable grounding_table;
 
   public:
-    explicit Assignment(std::string variable, std::string value);
+    explicit Assignment(std::string const &predicate,
+                        std::vector<std::string> const &arguments,
+                        std::unique_ptr<formula::Formula> const &body);
 
     ~Assignment() override = default;
-
+    
     bool evaluate(
         util::Timeline const &timeline, size_t previous_step,
         std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
@@ -41,12 +44,11 @@ class Assignment : public Evaluator {
     std::vector<std::shared_ptr<util::Grounding>>
     get_groundings(util::Timeline const &timeline) override;
 
-    MathOperator get_operator() const override;
+    formula::MathOperator get_operator() const override;
 
-    init(std::unique_ptr<formula::Formula> const &body) override;
-
+    EvaluatorType get_evaluator_type() const override;
 };
 
-} // namespace laser::formula
+} // namespace laser::rule
 
-#endif // LASER_FORMULA_MATH_ASSIGNMENT_H
+#endif // LASER_RULE_MATH_EVALUATOR_ASSIGNMENT_H

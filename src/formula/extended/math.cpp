@@ -9,25 +9,27 @@ Math::Math(std::string math_sign, std::vector<std::string> arguments)
 
 MathOperator Math::generate_operator(std::string const &math_sign) const {
     auto result = MathOperator::NONE;
-    if (predicate == "=") {
-        result = MathOperator::EQUALS;
-    } else if (predicate == "+") {
+    if (math_sign == "=") {
+        result = MathOperator::ASSIGNMENT;
+    } else if (math_sign == "+") {
         result = MathOperator::PLUS;
-    } else if (predicate == "-") {
+    } else if (math_sign == "-") {
         result = MathOperator::MINUS;
-    } else if (predicate == "*") {
+    } else if (math_sign == "*") {
         result = MathOperator::MULTIPLICATION;
-    } else if (predicate == "/") {
+    } else if (math_sign == "/") {
         result = MathOperator::DIVISION;
-    } else if (predicate == "<") {
+    } else if (math_sign == "<") {
         result = MathOperator::LESSER;
-    } else if (predicate == ">") {
+    } else if (math_sign == ">") {
         result = MathOperator::GREATHER;
-    } else if (predicate == "<=") {
+    } else if (math_sign == "<=") {
         result = MathOperator::LESSER_OR_EQUAL;
-    } else if (predicate == ">=") {
+    } else if (math_sign == ">=") {
         result = MathOperator::GREATHER_OR_EQUAL;
-    } else if (predicate == "!=") {
+    } else if (math_sign == "?=") {
+        result = MathOperator::EQUALS;
+    } else if (math_sign == "!=") {
         result = MathOperator::NOT_EQUAL;
     }
     return result;
@@ -36,7 +38,7 @@ MathOperator Math::generate_operator(std::string const &math_sign) const {
 std::string
 Math::generate_predicate(std::string const &math_sign,
                          std::vector<std::string> const &arguments) const {
-    auto laser_math_pred_str = laser::util::special_predicate::MATH_ASSIGNMENT;
+    auto laser_math_pred_str = laser::util::special_predicate::MATH;
     auto pred_math_sign = laser_math_pred_str + math_sign;
     auto result =
         std::accumulate(arguments.begin(), arguments.end(), pred_math_sign);
@@ -47,7 +49,7 @@ void Math::init() {
     math_operator = generate_operator(math_sign);
     predicate = generate_predicate(math_sign, arguments);
     std::vector<std::string> assignment_args;
-    if (math_operator == MathOperator::EQUALS) {
+    if (math_operator == MathOperator::ASSIGNMENT) {
         // assign atom of form: =(VAR, CONST) has only one variable.
         assignment_args.push_back(arguments.at(0));
     } else {
@@ -58,8 +60,12 @@ void Math::init() {
 }
 
 std::unique_ptr<formula::Formula> Math::clone() const {
-    return std::make_unique<formula::Math>(math_operator, arguments);
+    return std::make_unique<formula::Math>(math_sign, arguments);
 }
+
+std::vector<std::string> Math::get_math_arguments() const { return arguments; }
+
+MathOperator Math::get_math_operator() const { return math_operator; }
 
 bool Math::evaluate(
     util::Timeline const &timeline, size_t previous_step,

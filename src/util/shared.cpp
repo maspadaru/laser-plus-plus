@@ -2,9 +2,7 @@
 
 namespace laser::util::special_predicate {
 
-const std::string MATH_ASSIGNMENT = "laser_math_assignment";
-const std::string MATH_ALGEBRA = "laser_math_algebra";
-const std::string MATH_CONDITION = "laser_math_condition";
+const std::string MATH = "laser_math";
 
 } // namespace laser::util::special_predicate
 

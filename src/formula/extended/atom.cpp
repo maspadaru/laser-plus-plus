@@ -13,12 +13,11 @@ Atom::Atom(std::string predicate, std::vector<std::string> variable_names) {
     set_variable_names(variable_names);
 }
 
-
 std::unique_ptr<formula::Formula> Atom::clone() const {
     auto predicate = predicate_vector.at(0);
     auto variable_names = grounding_table.get_variable_names();
     return std::make_unique<formula::Atom>(predicate, variable_names);
-} 
+}
 
 void Atom::set_variable_names(std::vector<std::string> &variable_names) {
     grounding_table.set_variable_names(variable_names);
@@ -59,6 +58,13 @@ void Atom::compute_unique_variable_names(
 
 FormulaType Atom::get_type() const { return this->type; }
 
+std::vector<std::string> Atom::get_math_arguments() const {
+    std::vector<std::string> result;
+    return result;
+}
+
+MathOperator Atom::get_math_operator() const { return MathOperator::NONE; }
+
 std::vector<std::string> const &Atom::get_predicate_vector() const {
     return predicate_vector;
 }
@@ -89,7 +95,6 @@ std::vector<std::shared_ptr<util::Grounding>>
 Atom::get_groundings(util::Timeline const &timeline) {
     return grounding_table.get_all_groundings();
 }
-
 
 std::vector<std::shared_ptr<util::Grounding>>
 Atom::get_conclusions_timepoint(util::Timeline const &timeline) {

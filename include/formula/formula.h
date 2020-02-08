@@ -6,6 +6,7 @@
 #include <string>
 
 #include "formula_type.h"
+#include "math_operator.h"
 #include "util/database.h"
 #include "util/grounding.h"
 #include "util/timeline.h"
@@ -20,8 +21,7 @@ class Formula {
   public:
     virtual ~Formula() = default;
 
-    virtual std::unique_ptr<formula::Formula>
-    clone() const = 0;
+    virtual std::unique_ptr<formula::Formula> clone() const = 0;
 
     virtual void set_head(bool is_head) = 0;
 
@@ -30,6 +30,10 @@ class Formula {
     virtual uint64_t get_window_size() const = 0;
 
     virtual FormulaType get_type() const = 0;
+
+    virtual std::vector<std::string> get_math_arguments() const = 0;
+
+    virtual MathOperator get_math_operator() const = 0;
 
     virtual std::vector<std::string> const &get_predicate_vector() const = 0;
 

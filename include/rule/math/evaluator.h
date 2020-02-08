@@ -1,32 +1,33 @@
-#ifndef LASER_FORMULA_MATH_EVALUATOR_H
-#define LASER_FORMULA_MATH_EVALUATOR_H
+#ifndef LASER_RULE_MATH_EVALUATOR_H
+#define LASER_RULE_MATH_EVALUATOR_H
 
-#include <map>
 #include <memory>
-#include <string>
+#include <vector>
 
-#include "math_operator.h"
+#include "formula/formula.h"
+#include "formula/math_operator.h"
+#include "rule/math/evaluator_type.h"
 #include "util/database.h"
 #include "util/grounding.h"
 #include "util/timeline.h"
 
-namespace laser::formula {
+namespace laser::rule {
 
 /**
  * Math Evaluator Interface
  */
-class Formula {
+class Evaluator {
   private:
   public:
-    virtual ~Formula() = default;
+    virtual ~Evaluator() = default;
 
-    virtual MathOperator get_operator() const = 0;
+    virtual formula::MathOperator get_operator() const = 0;
 
-    virtual init(std::unique_ptr<formula::Formula> const &body) = 0;
+    virtual EvaluatorType get_evaluator_type() const = 0;
 
     /**
      * Returns the recent groundings
-     */ 
+     */
     virtual bool
     evaluate(util::Timeline const &timeline, size_t previous_step,
              std::vector<std::shared_ptr<util::Grounding>> const &facts) = 0;
@@ -35,11 +36,11 @@ class Formula {
 
     /**
      * cleans the grounding table removing all groundings
-     */ 
+     */
     virtual std::vector<std::shared_ptr<util::Grounding>>
     get_groundings(util::Timeline const &timeline) = 0;
 };
 
-} // namespace laser::formula
+} // namespace laser::rule
 
-#endif // LASER_FORMULA_MATH_EVALUATOR_H
+#endif // LASER_RULE_MATH_EVALUATOR_H
