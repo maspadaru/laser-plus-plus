@@ -16,9 +16,7 @@ enum class FormulaType {
     BOX,
     DIAMOND,
     EXISTENTIAL, 
-    ALGEBRA,
-    CONDITION,
-    ASSIGNMENT
+    MATH
 };
 
 

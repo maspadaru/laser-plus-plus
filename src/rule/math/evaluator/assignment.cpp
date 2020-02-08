@@ -19,10 +19,6 @@ Assignment::Assignment(std::string variable, std::string value)
     init();
 }
 
-std::unique_ptr<formula::Formula> Assignment::clone() const {
-    return std::make_unique<formula::Assignment>(variable, value);
-}
-
 bool Assignment::evaluate(
     util::Timeline const &timeline, size_t previous_step,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
@@ -39,18 +35,18 @@ bool Assignment::evaluate(
     return true;
 }
 
-// not interesting:
-
 void Assignment::expire_outdated_groundings(util::Timeline const &timeline) {
-    auto time = timeline.get_time();
-    auto tuple_count = timeline.get_tuple_count_at(time);
-    grounding_table.expire_outdated_groundings(time, tuple_count);
+    grounding_table.clear();
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
 Assignment::get_groundings(util::Timeline const &timeline) {
-    return grounding_table.get_all_groundings();
+    return grounding_table.get_recent_groundings();
 }
+
+
+
+// not interesting:
 
 std::vector<std::shared_ptr<util::Grounding>>
 Assignment::get_conclusions_step(util::Timeline const &timeline) {

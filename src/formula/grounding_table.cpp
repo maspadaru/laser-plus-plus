@@ -118,4 +118,11 @@ size_t GroundingTable::get_number_of_variables() const {
     return variable_names.size();
 }
 
+void GroundingTable::clear() {
+    recent_groundings_vector.clear();
+    grounding_map.clear();
+
+
+}
+
 } // namespace laser::formula

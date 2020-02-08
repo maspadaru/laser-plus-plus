@@ -2,17 +2,17 @@
 #define LASER_RULE_RULE_PARSER_H
 
 #include <algorithm>
-#include <sstream>
 #include <set>
+#include <sstream>
 
 #include "formula/extended/atom.h"
 #include "formula/extended/box.h"
 #include "formula/extended/conjunction.h"
 #include "formula/extended/diamond.h"
+#include "formula/extended/math.h"
 #include "formula/extended/time_reference.h"
 #include "formula/extended/time_window.h"
 #include "formula/extended/tuple_window.h"
-#include "formula/math/assignment.h"
 #include "rule/rule.h"
 #include "util/format_exception.h"
 
@@ -22,8 +22,7 @@ namespace laser::rule {
  *
  */
 class RuleParser {
-public:
-
+  public:
   private:
     std::string rule_string;
     std::stringstream input;
@@ -70,7 +69,7 @@ public:
     std::string parse_identifier();
     std::string parse_argument();
     std::string parse_float_argument();
-    std::vector<std::string> parse_argument_vector(); 
+    std::vector<std::string> parse_argument_vector();
 
     // rules and formulas
     std::unique_ptr<laser::formula::Formula> parse_assignment_atom();
@@ -96,25 +95,26 @@ public:
     std::unique_ptr<laser::formula::Formula> parse_time_reference();
     std::unique_ptr<laser::formula::Formula> parse_time_window();
     std::unique_ptr<laser::formula::Formula> parse_tuple_window();
-    std::unique_ptr<laser::formula::Formula> parse_inertia_operator(); 
-    std::unique_ptr<laser::formula::Formula> parse_extended_head_atom(); 
-    std::vector<std::unique_ptr<laser::formula::Formula>> parse_formula_vector();
+    std::unique_ptr<laser::formula::Formula> parse_inertia_operator();
+    std::unique_ptr<laser::formula::Formula> parse_extended_head_atom();
+    std::vector<std::unique_ptr<laser::formula::Formula>>
+    parse_formula_vector();
 
   public:
     explicit RuleParser(std::string rule_string);
     ~RuleParser() = default;
 
     /**
-    *
-    * @return Vector of Rule objects
-    * @throw FormatException if the input is not in a format that can be
-    * properly parsed.
-    * @throw ReadException if any problem occurred while reading the input,
-    * e.g.: source file is inaccessible
-    */
+     *
+     * @return Vector of Rule objects
+     * @throw FormatException if the input is not in a format that can be
+     * properly parsed.
+     * @throw ReadException if any problem occurred while reading the input,
+     * e.g.: source file is inaccessible
+     */
     std::vector<std::unique_ptr<laser::rule::Rule>> get_rules();
 };
 
-} // namespace laser::rule 
+} // namespace laser::rule
 
 #endif // LASER_RULE_RULE_PARSER_H

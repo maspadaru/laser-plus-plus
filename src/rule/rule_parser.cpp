@@ -373,35 +373,40 @@ std::vector<std::string> RuleParser::parse_argument_vector() {
 }
 
 std::unique_ptr<laser::formula::Formula> RuleParser::parse_predicate_atom() {
-    std::string predicate = parse_identifier();
-    std::vector<std::string> argument_vector = parse_argument_vector();
-    return std::make_unique<laser::formula::Atom>(predicate,
+    auto predicate = parse_identifier();
+    auto argument_vector = parse_argument_vector();
+    return std::make_unique<laser::formula::Atom>(std::move(predicate),
                                                   std::move(argument_vector));
 }
 
 std::unique_ptr<laser::formula::Formula> RuleParser::parse_assignment_atom() {
-    std::string predicate = parse_assignment_operator();
+    auto predicate = parse_assignment_operator();
     auto argument_vector = parse_argument_vector();
     if (argument_vector.size() != 2) {
         syntax_error("Not a valid assignment. Expected exactly 2 arguments");
     }
-    std::string &variable = argument_vector.at(0);
-    std::string &value = argument_vector.at(1);
-    return std::make_unique<laser::formula::Assignment>(std::move(variable),
-                                                        std::move(value));
+    return std::make_unique<laser::formula::Math>(std::move(predicate),
+                                                  std::move(argument_vector));
 }
 
 std::unique_ptr<laser::formula::Formula> RuleParser::parse_condition_atom() {
-    std::string predicate = parse_condition_operator();
+    auto predicate = parse_condition_operator();
     auto argument_vector = parse_argument_vector();
-    return std::make_unique<laser::formula::Atom>(predicate,
+    if (argument_vector.size() != 2) {
+        syntax_error(
+            "Not a valid condition atom. Expected exactly 2 arguments");
+    }
+    return std::make_unique<laser::formula::Math>(std::move(predicate),
                                                   std::move(argument_vector));
 }
 
 std::unique_ptr<laser::formula::Formula> RuleParser::parse_algebra_atom() {
-    std::string predicate = parse_algebra_operator();
+    auto predicate = parse_algebra_operator();
     auto argument_vector = parse_argument_vector();
-    return std::make_unique<laser::formula::Atom>(predicate,
+    if (argument_vector.size() != 3) {
+        syntax_error("Not a valid algebra atom. Expected exactly 3 arguments");
+    }
+    return std::make_unique<laser::formula::Math>(std::move(predicate),
                                                   std::move(argument_vector));
 }
 

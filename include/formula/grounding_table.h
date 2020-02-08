@@ -59,6 +59,8 @@ class GroundingTable {
                                     uint64_t expiration_tuple_count);
 
     void diamond_update_table(std::vector<grounding_sptr> const &new_facts);
+
+    void clear();
 };
 
 } // namespace laser::formula

@@ -1,35 +1,43 @@
-#ifndef LASER_FORMULA_MATH_ASSIGNMENT_H
-#define LASER_FORMULA_MATH_ASSIGNMENT_H
+#ifndef LASER_FORMULA_EXTENDED_MATH_H
+#define LASER_FORMULA_EXTENDED_MATH_H
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
-#include <map>
 
+#include "formula/extended/atom.h"
 #include "formula/formula.h"
 #include "formula/formula_type.h"
 #include "formula/grounding_table.h"
+#include "formula/math_operator.h"
 #include "util/grounding.h"
 #include "util/shared.h"
 #include "util/timeline.h"
 
 namespace laser::formula {
 
-class Assignment : public Formula {
+class Math : public Formula {
   private:
-    FormulaType type = FormulaType::ASSIGNMENT;
-    std::string variable;
-    std::string value;
-    std::vector<std::string> predicate_vector;
-    std::map<std::string, size_t> arity_map;
-    GroundingTable grounding_table;
+    FormulaType formula_type = FormulaType::MATH;
+    std::string predicate;
+    std::string math_sign;
+    MathOperator math_operator;
+    std::unique_ptr<Formula> child;
+    std::vector<std::string> arguments;
+
+    MathOperator generate_operator(std::string const &math_sign) const;
+
+    std::string
+    generate_predicate(std::string const &math_sign,
+                       std::vector<std::string> const &arguments) const;
 
     void init();
 
   public:
-    explicit Assignment(std::string variable, std::string value);
+    explicit Math(std::string math_sign, std::vector<std::string> arguments);
 
-    ~Assignment() override = default;
+    ~Math() override = default;
 
     std::unique_ptr<formula::Formula> clone() const override;
 
@@ -74,4 +82,4 @@ class Assignment : public Formula {
 
 } // namespace laser::formula
 
-#endif // LASER_FORMULA_MATH_ASSIGNMENT_H
+#endif // LASER_FORMULA_EXTENDED_MATH_H

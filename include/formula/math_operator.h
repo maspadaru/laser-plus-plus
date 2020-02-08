@@ -5,16 +5,17 @@ namespace laser::formula {
 
 
 enum class MathOperator {
+    EQUALS,
     PLUS,
     MINUS,
     MULTIPLICATION,
     DIVISION,
     LESSER,
     GREATHER,
-    EQUAL,
     LESSER_OR_EQUAL,
     GREATHER_OR_EQUAL,
-    NOT_EQUAL
+    NOT_EQUAL,
+    NONE
 };
 
 
