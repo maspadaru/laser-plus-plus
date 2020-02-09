@@ -29,24 +29,24 @@ class Assignment : public Evaluator {
     formula::GroundingTable grounding_table;
 
   public:
-    explicit Assignment(std::string const &predicate,
+    explicit Assignment(std::string predicate,
                         std::vector<std::string> const &arguments,
                         std::unique_ptr<formula::Formula> const &body);
 
     ~Assignment() override = default;
-    
-    bool evaluate(
-        util::Timeline const &timeline, size_t previous_step,
-        std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
-
-    void expire_outdated_groundings(util::Timeline const &timeline) override;
-
-    std::vector<std::shared_ptr<util::Grounding>>
-    get_groundings(util::Timeline const &timeline) override;
 
     formula::MathOperator get_operator() const override;
 
     EvaluatorType get_evaluator_type() const override;
+
+    void evaluate(
+        util::Timeline const &timeline, 
+        std::vector<std::shared_ptr<util::Grounding>> const &facts) override;
+
+    void expire_outdated_groundings() override;
+
+    std::vector<std::shared_ptr<util::Grounding>>
+    get_groundings() override;
 };
 
 } // namespace laser::rule

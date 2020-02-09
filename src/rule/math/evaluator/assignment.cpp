@@ -2,10 +2,10 @@
 
 namespace laser::rule {
 
-Assignment::Assignment(std::string const &predicate,
+Assignment::Assignment(std::string predicate,
                        std::vector<std::string> const &arguments,
                        std::unique_ptr<formula::Formula> const &body)
-    : predicate(predicate) {
+    : predicate(std::move(predicate)) {
     this->arguments = arguments;
     variable = arguments.at(0);
     value = arguments.at(1);
@@ -14,8 +14,8 @@ Assignment::Assignment(std::string const &predicate,
     grounding_table.set_variable_names(variable_names);
 }
 
-bool Assignment::evaluate(
-    util::Timeline const &timeline, size_t previous_step,
+void Assignment::evaluate(
+    util::Timeline const &timeline, 
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     std::vector<std::string> value_vector;
     value_vector.push_back(this->value);
@@ -26,15 +26,15 @@ bool Assignment::evaluate(
     auto grounding = std::make_shared<util::Grounding>(predicate, ct, ht, cc,
                                                        hc, value_vector);
     grounding_table.add_grounding(grounding);
-    return true;
 }
 
-void Assignment::expire_outdated_groundings(util::Timeline const &timeline) {
+void Assignment::expire_outdated_groundings() {
+    // clear all, since groundings will be in their respective Math Atoms.
     grounding_table.clear();
 }
 
 std::vector<std::shared_ptr<util::Grounding>>
-Assignment::get_groundings(util::Timeline const &timeline) {
+Assignment::get_groundings() {
     return grounding_table.get_recent_groundings();
 }
 

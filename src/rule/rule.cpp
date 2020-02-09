@@ -107,6 +107,7 @@ void Rule::expire_outdated_groundings(util::Timeline const &timeline) {
     expire_head_groundings(timeline);
     body->expire_outdated_groundings(timeline);
     chase_filter->expire_outdated_groundings(timeline);
+    math_manager.expire_outdated_groundings();
 }
 
 void Rule::expire_head_groundings(util::Timeline const &timeline) {
@@ -119,7 +120,7 @@ void Rule::evaluate(util::Timeline const &timeline,
                     util::Database const &database) {
     auto facts = database.get_data_since(previous_step);
     if (has_math_atoms) {
-        facts = math_manager.evaluate(timeline, previous_step, facts);
+        facts = math_manager.evaluate(timeline, facts);
     }
     body->evaluate(timeline, previous_step, facts);
 }

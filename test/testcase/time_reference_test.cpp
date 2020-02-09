@@ -12,30 +12,24 @@ TEST(TimeReferenceTest, TimeReferenceBody) {
                                 "2 : b(3)\n"
                                 "3 : b(4), b(5)\n"
                                 "4 : \n";
-
     std::string rule_string = "a(T, X) := [@, T] b(X) \n";
-
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> a(1, 1) a(1, 2)";
     expected[2] = "2 -> a(2, 3)";
     expected[3] = "3 -> a(3, 4) a(3, 5)";
     expected[4] = "4 -> ";
-
     test_framework::run_test(stream_string, rule_string, expected,
                              laser::util::ChaseAlgorithm::OBLIVIOUS);
 }
 
 TEST(TimeReferenceTest, TimeReferenceHead) {
-
     std::string stream_string = "1 10 "
                                 "1 : b(1,x1), b(2, x1)\n"
                                 "2 : b(7, x2)\n"
                                 "3 : b(6, x3), b(9, x3)\n"
                                 "4 : \n";
-
     std::string rule_string = "[@,T]a(X) := b(T, X) \n";
-
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> a(x1)";

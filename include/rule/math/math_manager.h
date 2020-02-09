@@ -8,6 +8,7 @@
 #include "formula/formula_type.h"
 #include "formula/math_operator.h"
 #include "rule/math/evaluator.h"
+#include "rule/math/evaluator/algebra.h"
 #include "rule/math/evaluator/assignment.h"
 #include "rule/math/evaluator_type.h"
 #include "util/database.h"
@@ -30,10 +31,10 @@ class MathManager {
     ~MathManager() = default;
 
     std::vector<std::shared_ptr<util::Grounding>>
-    evaluate(util::Timeline const &timeline, size_t previous_step,
+    evaluate(util::Timeline const &timeline, 
              std::vector<std::shared_ptr<util::Grounding>> const &facts);
 
-    void expire_outdated_groundings(util::Timeline const &timeline);
+    void expire_outdated_groundings();
 
     bool has_math_atoms() const;
 };

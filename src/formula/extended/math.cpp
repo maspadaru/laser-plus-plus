@@ -113,6 +113,7 @@ void Math::add_child(std::unique_ptr<formula::Formula> child) {}
 std::vector<std::unique_ptr<formula::Formula> const *>
 Math::get_children() const {
     std::vector<std::unique_ptr<formula::Formula> const *> result;
+    result.push_back(&child);
     return result;
 }
 

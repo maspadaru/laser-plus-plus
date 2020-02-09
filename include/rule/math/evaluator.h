@@ -28,17 +28,17 @@ class Evaluator {
     /**
      * Returns the recent groundings
      */
-    virtual bool
-    evaluate(util::Timeline const &timeline, size_t previous_step,
+    virtual void 
+    evaluate(util::Timeline const &timeline,
              std::vector<std::shared_ptr<util::Grounding>> const &facts) = 0;
 
-    virtual void expire_outdated_groundings(util::Timeline const &timeline) = 0;
+    virtual void expire_outdated_groundings() = 0;
 
     /**
      * cleans the grounding table removing all groundings
      */
     virtual std::vector<std::shared_ptr<util::Grounding>>
-    get_groundings(util::Timeline const &timeline) = 0;
+    get_groundings() = 0;
 };
 
 } // namespace laser::rule

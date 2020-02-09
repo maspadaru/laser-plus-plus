@@ -14,23 +14,16 @@ generate_evaluator(std::unique_ptr<formula::Formula> const &math_atom,
         result = std::make_unique<Assignment>(predicate, arguments, body);
         break;
     case formula::MathOperator::PLUS:
-        break;
     case formula::MathOperator::MINUS:
-        break;
     case formula::MathOperator::MULTIPLICATION:
-        break;
     case formula::MathOperator::DIVISION:
-        break;
+        result = std::make_unique<Algebra>(math_operator, predicate, arguments,
+                                           body);
     case formula::MathOperator::LESSER:
-        break;
     case formula::MathOperator::GREATHER:
-        break;
     case formula::MathOperator::LESSER_OR_EQUAL:
-        break;
     case formula::MathOperator::GREATHER_OR_EQUAL:
-        break;
     case formula::MathOperator::NOT_EQUAL:
-        break;
     case formula::MathOperator::EQUALS:
         break;
     case formula::MathOperator::NONE:
@@ -69,7 +62,7 @@ void MathManager::init(std::unique_ptr<formula::Formula> const &body) {
 }
 
 std::vector<std::shared_ptr<util::Grounding>> MathManager::evaluate(
-    util::Timeline const &timeline, size_t previous_step,
+    util::Timeline const &timeline, 
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     std::vector<std::shared_ptr<util::Grounding>> input_facts = facts;
     std::vector<std::shared_ptr<util::Grounding>> result = facts;
@@ -77,11 +70,13 @@ std::vector<std::shared_ptr<util::Grounding>> MathManager::evaluate(
     bool is_changed = true;
     while (is_changed) {
         is_changed = false;
+        conclusions.clear();
         for (auto &evaluator : evaluators) {
-            evaluator->evaluate(timeline, previous_step, input_facts);
-            auto ev_conclusions = evaluator->get_groundings(timeline);
-            conclusions.insert(conclusions.end(), ev_conclusions.begin(),
-                               ev_conclusions.end());
+            evaluator->evaluate(timeline, input_facts);
+            auto ev_conclusions = evaluator->get_groundings();
+            conclusions.insert(conclusions.end(),
+                               std::make_move_iterator(ev_conclusions.begin()),
+                               std::make_move_iterator(ev_conclusions.end()));
         }
         if (!conclusions.empty()) {
             result.insert(result.end(), conclusions.begin(), conclusions.end());
@@ -92,9 +87,9 @@ std::vector<std::shared_ptr<util::Grounding>> MathManager::evaluate(
     return result;
 }
 
-void MathManager::expire_outdated_groundings(util::Timeline const &timeline) {
+void MathManager::expire_outdated_groundings() {
     for (auto &evaluator : evaluators) {
-        evaluator->expire_outdated_groundings(timeline);
+        evaluator->expire_outdated_groundings();
     }
 }
 
