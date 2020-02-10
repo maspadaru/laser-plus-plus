@@ -37,6 +37,7 @@ using value_set = std::set<value_node, value_node_compare>;
 
 class Algebra : public Evaluator {
   private:
+    const int TIME_VARIABLE_INDEX = -2;
     const int RESULT_VAR = 0;
     const int LEFT_TERM = 1;
     const int RIGHT_TERM = 2;
@@ -47,33 +48,38 @@ class Algebra : public Evaluator {
     std::string predicate;
     std::vector<std::string> variable_names;
     formula::GroundingTable grounding_table;
-
+    value_set left_value_set;
+    value_set right_value_set;
     /** key - predicate;
      * value - vector containing position of left (or right) vars in atom with
      * this predicate.
      * */
-    std::unordered_map<std::string, std::unordered_set<size_t>> left_var_map;
-    std::unordered_map<std::string, std::unordered_set<size_t>> right_var_map;
+    std::unordered_map<std::string, std::unordered_set<int>> left_var_map;
+    std::unordered_map<std::string, std::unordered_set<int>> right_var_map;
 
+    bool is_double(std::string const &inputString, double &result) const;
     void update_window_size(std::unique_ptr<formula::Formula> const &formula);
-    void update_var_map(std::unique_ptr<formula::Formula> const &formula);
+
+    void update_var_map_time_reference(
+        std::unique_ptr<formula::Formula> const &formula);
+    void update_var_map_atom(std::unique_ptr<formula::Formula> const &formula);
     void init_var_map(std::unique_ptr<formula::Formula> const &formula);
 
+    uint64_t compute_annotation(uint64_t min_window, uint64_t left,
+                                uint64_t right) const;
+
     std::vector<std::shared_ptr<util::Grounding>>
-    generate_groundings(util::Timeline const &timeline,
-                        value_set const &left_set,
-                        value_set const &right_set) const;
+    generate_groundings(util::Timeline const &timeline) const;
 
     double do_math(value_node const &left_node,
                    value_node const &right_node) const;
 
     void update_value_set(
+        util::Timeline const &timeline,
         std::shared_ptr<util::Grounding> const &fact,
-        std::unordered_map<std::string, std::unordered_set<size_t>> const
+        std::unordered_map<std::string, std::unordered_set<int>> const
             &var_map,
         value_set &values) const;
-
-    bool is_double(std::string const &inputString, double &result) const;
 
   public:
     explicit Algebra(formula::MathOperator math_operator, std::string predicate,

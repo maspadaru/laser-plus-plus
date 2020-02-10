@@ -109,11 +109,12 @@ void test_acyclicity_only_first_timepoint() {
 void test_run() {
     const std::string name = "Test Run";
     std::string stream_string = "1 4 "
-                                "1 : p(3, 4) \n"
-                                "2 : \n"
-                                "3 : \n"
+                                "1 : p(11)\n"
+                                "2 : p(22)\n"
+                                "3 : p(33), p(30)\n"
                                 "4 : \n";
-    std::string rule_string = "q(X) := [$, 3][D] p(Y, Z) && +(X, Y, Z)\n";
+    std::string rule_string =
+        "q(T, X, U) := [@, T] p(X) && -(U, T, ONE) && =(ONE, 1) \n";
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     run(name, stream_string, rule_string, chase_alg);
 }

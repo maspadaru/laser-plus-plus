@@ -21,8 +21,7 @@ TEST(AssignmentTest, AssignmentSimple) {
     expected[3] = "3 -> p(3)";
     expected[4] = "4 -> p(3)";
     expected[5] = "5 -> ";
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::OBLIVIOUS);
+    test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
 
 TEST(AssignmentTest, AssignmentConjunctionLast) {
@@ -39,8 +38,7 @@ TEST(AssignmentTest, AssignmentConjunctionLast) {
     expected[2] = "2 -> p(v, 2)";
     expected[3] = "3 -> ";
     expected[4] = "4 -> p(v, 4)";
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::OBLIVIOUS);
+    test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
 
 TEST(AssignmentTest, AssignmentConjunctionFirst) {
@@ -57,8 +55,7 @@ TEST(AssignmentTest, AssignmentConjunctionFirst) {
     expected[2] = "2 -> p(v, 2)";
     expected[3] = "3 -> ";
     expected[4] = "4 -> p(v, 4)";
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::OBLIVIOUS);
+    test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
 
 TEST(AssignmentTest, AssignmentConjunctionMiddle) {
@@ -75,8 +72,7 @@ TEST(AssignmentTest, AssignmentConjunctionMiddle) {
     expected[2] = "2 -> p(v, 2, b)";
     expected[3] = "3 -> ";
     expected[4] = "4 -> p(v, 4, d)";
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::OBLIVIOUS);
+    test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
 
 TEST(AssignmentTest, AssignmentConjunctionConflict) {
@@ -94,8 +90,7 @@ TEST(AssignmentTest, AssignmentConjunctionConflict) {
     expected[3] = "3 -> ";
     expected[4] = "4 -> p(1, 1, 1)";
     expected[5] = "5 -> ";
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::OBLIVIOUS);
+    test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
 
 TEST(AssignmentTest, AssignmentDiamond) {
@@ -113,8 +108,7 @@ TEST(AssignmentTest, AssignmentDiamond) {
     expected[3] = "3 -> p(v)";
     expected[4] = "4 -> p(v)";
     expected[5] = "5 -> ";
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::OBLIVIOUS);
+    test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
 
 TEST(AssignmentTest, AssignmentBox) {
@@ -132,8 +126,7 @@ TEST(AssignmentTest, AssignmentBox) {
     expected[3] = "3 -> p(v)";
     expected[4] = "4 -> p(v)";
     expected[5] = "5 -> ";
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::OBLIVIOUS);
+    test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
 
 TEST(AssignmentTest, AssignmentCondition) {
@@ -146,11 +139,10 @@ TEST(AssignmentTest, AssignmentCondition) {
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> p(v, 1)";
-    expected[2] = "2 -> p(v, 2)";
+    expected[1] = "1 -> ";
+    expected[2] = "2 -> p(x0, y2)";
     expected[3] = "3 -> ";
-    expected[4] = "4 -> p(v, 4)";
+    expected[4] = "4 -> p(x0, y4) p(x0, y3)";
     expected[5] = "5 -> ";
-    test_framework::run_test(stream_string, rule_string, expected,
-                             laser::util::ChaseAlgorithm::OBLIVIOUS);
+    test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
