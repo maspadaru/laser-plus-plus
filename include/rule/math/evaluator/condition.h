@@ -58,6 +58,10 @@ class Condition : public Evaluator {
 
     bool check_condition(value_node const &left_node,
                          value_node const &right_node) const;
+    bool check_numeric_condition(value_node const &left_node,
+                                 value_node const &right_node) const;
+    bool check_string_condition(value_node const &left_node,
+                                value_node const &right_node) const;
 
     void update_value_set(
         util::Timeline const &timeline,

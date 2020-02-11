@@ -12,8 +12,7 @@ TEST(ConditionTest, ConditionEqual) {
                                 "2 : p(77), p(220)\n"
                                 "3 : p(47), p(100), p(300)\n"
                                 "4 : \n";
-    std::string rule_string =
-        "q(X) := p(X) && ?=(X, C) && =(C,100) \n";
+    std::string rule_string = "q(X) := p(X) && ?=(X, C) && =(C,100) \n";
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -30,8 +29,7 @@ TEST(ConditionTest, ConditionNotEqual) {
                                 "2 : p(77), p(220)\n"
                                 "3 : p(47), p(100), p(300)\n"
                                 "4 : \n";
-    std::string rule_string =
-        "q(X) := p(X) && !=(X, C) && =(C,100) \n";
+    std::string rule_string = "q(X) := p(X) && !=(X, C) && =(C,100) \n";
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -48,8 +46,7 @@ TEST(ConditionTest, ConditionGreather) {
                                 "2 : p(77), p(220)\n"
                                 "3 : p(47), p(100), p(300)\n"
                                 "4 : \n";
-    std::string rule_string =
-        "q(X) := p(X) && >(X, C) && =(C,100) \n";
+    std::string rule_string = "q(X) := p(X) && >(X, C) && =(C,100) \n";
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -66,8 +63,7 @@ TEST(ConditionTest, ConditionGreatherEqual) {
                                 "2 : p(77), p(220)\n"
                                 "3 : p(47), p(100), p(300)\n"
                                 "4 : \n";
-    std::string rule_string =
-        "q(X) := p(X) && >=(X, C) && =(C,100) \n";
+    std::string rule_string = "q(X) := p(X) && >=(X, C) && =(C,100) \n";
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -84,8 +80,7 @@ TEST(ConditionTest, ConditionLesser) {
                                 "2 : p(77), p(220)\n"
                                 "3 : p(47), p(100), p(300)\n"
                                 "4 : \n";
-    std::string rule_string =
-        "q(X) := p(X) && <(X, C) && =(C,100) \n";
+    std::string rule_string = "q(X) := p(X) && <(X, C) && =(C,100) \n";
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
@@ -102,14 +97,37 @@ TEST(ConditionTest, ConditionLesserEqual) {
                                 "2 : p(77), p(220)\n"
                                 "3 : p(47), p(100), p(300)\n"
                                 "4 : \n";
-    std::string rule_string =
-        "q(X) := p(X) && <=(X, C) && =(C,100) \n";
+    std::string rule_string = "q(X) := p(X) && <=(X, C) && =(C,100) \n";
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] = "1 -> q(99) q(100)";
     expected[2] = "2 -> q(77)";
     expected[3] = "3 -> q(47) q(100)";
+    expected[4] = "4 -> ";
+    test_framework::run_test(stream_string, rule_string, expected, chase_alg);
+}
+
+TEST(ConditionTest, ConditionString) {
+    std::string stream_string = "1 4 "
+                                "1 : p(monday), p(moon), p(mop)\n"
+                                "2 : \n"
+                                "3 : \n"
+                                "4 : \n";
+    std::string rule_string =
+        "eq(X) := p(X) && ?=(X, MOON) && =(MOON, moon) \n"
+        "neq(X) := p(X) && !=(X, MOON) && =(MOON, moon) \n"
+        "gt(X) := p(X) && >(X, MOON) && =(MOON, moon) \n"
+        "gte(X) := p(X) && >=(X, MOON) && =(MOON, moon) \n"
+        "lt(X) := p(X) && <(X, MOON) && =(MOON, moon) \n"
+        "lte(X) := p(X) && <=(X, MOON) && =(MOON, moon) \n";
+    auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> eq(moon) neq(monday) neq(mop) gt(mop) gte(moon) "
+                  "gte(mop) lt(monday) lte(monday) lte(moon)";
+    expected[2] = "2 -> ";
+    expected[3] = "3 -> ";
     expected[4] = "4 -> ";
     test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }

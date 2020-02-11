@@ -81,11 +81,17 @@ void test_acyclicity_only_first_timepoint() {
 void test_run() {
     const std::string name = "Test Run";
     std::string stream_string = "1 4 "
-                                "1 : p(2), q(1) \n"
+                                "1 : p(monday), p(moon), p(mop)\n"
                                 "2 : \n"
                                 "3 : \n"
                                 "4 : \n";
-    std::string rule_string = "plus(Z) := p(X) && q(Y) && +(Z, X, Y)\n";
+    std::string rule_string =
+        "eq(X) := p(X) && ?=(X, MOON) && =(MOON, moon) \n"
+        "neq(X) := p(X) && !=(X, MOON) && =(MOON, moon) \n"
+        "gt(X) := p(X) && >(X, MOON) && =(MOON, moon) \n"
+        "gte(X) := p(X) && >=(X, MOON) && =(MOON, moon) \n"
+        "lt(X) := p(X) && <(X, MOON) && =(MOON, moon) \n"
+        "lte(X) := p(X) && <=(X, MOON) && =(MOON, moon) \n";
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     run(name, stream_string, rule_string, chase_alg);
 }

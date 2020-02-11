@@ -67,8 +67,8 @@ void Condition::init_var_map(std::unique_ptr<formula::Formula> const &formula) {
     update_window_size(formula);
 }
 
-bool Condition::check_condition(value_node const &left_node,
-                                value_node const &right_node) const {
+bool Condition::check_numeric_condition(value_node const &left_node,
+                                        value_node const &right_node) const {
     int64_t left_value = left_node.num_value;
     int64_t right_value = right_node.num_value;
     bool result;
@@ -97,7 +97,46 @@ bool Condition::check_condition(value_node const &left_node,
     return result;
 }
 
-bool Condition::is_integer(std::string const &inputString, int64_t &result) const {
+bool Condition::check_string_condition(value_node const &left_node,
+                                       value_node const &right_node) const {
+    std::string const &left_value = left_node.str_value;
+    std::string const &right_value = right_node.str_value;
+    bool result;
+    switch (math_operator) {
+    case formula::MathOperator::GREATHER:
+        result = left_value > right_value;
+        break;
+    case formula::MathOperator::GREATHER_OR_EQUAL:
+        result = left_value >= right_value;
+        break;
+    case formula::MathOperator::LESSER:
+        result = left_value < right_value;
+        break;
+    case formula::MathOperator::LESSER_OR_EQUAL:
+        result = left_value <= right_value;
+        break;
+    case formula::MathOperator::EQUALS:
+        result = left_value == right_value;
+        break;
+    case formula::MathOperator::NOT_EQUAL:
+        result = left_value != right_value;
+        break;
+    default:
+        result = false;
+    }
+    return result;
+}
+
+bool Condition::check_condition(value_node const &left_node,
+                                value_node const &right_node) const {
+    if (left_node.is_numeric && right_node.is_numeric) {
+        return check_numeric_condition(left_node, right_node);
+    }
+    return check_string_condition(left_node, right_node);
+}
+
+bool Condition::is_integer(std::string const &inputString,
+                           int64_t &result) const {
     char *end;
     result = std::strtol(inputString.c_str(), &end, 10);
     return !(end == inputString.c_str() || *end != '\0');
@@ -147,25 +186,24 @@ void Condition::update_value_set(
     if (var_map.count(predicate) > 0) {
         auto indices = var_map.at(predicate);
         for (auto index : indices) {
-            bool found = false;
+            bool is_numeric = false;
             std::string str_value;
             int64_t num_value;
             if (index == TIME_VARIABLE_INDEX) {
                 num_value = timeline.get_time();
                 str_value = std::to_string(num_value);
-                found = true;
+                is_numeric = true;
             } else {
                 str_value = fact->get_constant(index);
-                found = is_integer(str_value, num_value);
+                is_numeric = is_integer(str_value, num_value);
             }
-            if (found) {
-                value_node node;
-                node.num_value = num_value;
-                node.str_value = str_value;
-                node.ht = fact->get_horizon_time();
-                node.hc = fact->get_horizon_count() + max_tuple_window;
-                values.insert(node);
-            }
+            value_node node;
+            node.is_numeric = is_numeric;
+            node.num_value = num_value;
+            node.str_value = str_value;
+            node.ht = fact->get_horizon_time();
+            node.hc = fact->get_horizon_count() + max_tuple_window;
+            values.insert(node);
         }
     }
 }

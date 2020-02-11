@@ -7,6 +7,7 @@
 namespace laser::rule {
 
 struct value_node {
+    bool is_numeric = false;
     int64_t num_value;
     uint64_t ht;
     uint64_t hc;
@@ -15,7 +16,10 @@ struct value_node {
 
 struct value_node_compare {
     bool operator()(value_node const &x, value_node const &y) const {
-        return x.num_value < y.num_value;
+        if (x.is_numeric && y.is_numeric) {
+            return x.num_value < y.num_value;
+        }
+        return x.str_value < y.str_value;
     }
 };
 

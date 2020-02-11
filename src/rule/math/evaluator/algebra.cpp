@@ -151,6 +151,7 @@ void Algebra::update_value_set(
             }
             if (found) {
                 value_node node;
+                node.is_numeric = true;
                 node.num_value = num_value;
                 node.str_value = str_value;
                 node.ht = fact->get_horizon_time();
