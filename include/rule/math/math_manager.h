@@ -10,6 +10,7 @@
 #include "rule/math/evaluator.h"
 #include "rule/math/evaluator/algebra.h"
 #include "rule/math/evaluator/assignment.h"
+#include "rule/math/evaluator/condition.h"
 #include "rule/math/evaluator_type.h"
 #include "util/database.h"
 #include "util/grounding.h"
@@ -31,7 +32,7 @@ class MathManager {
     ~MathManager() = default;
 
     std::vector<std::shared_ptr<util::Grounding>>
-    evaluate(util::Timeline const &timeline, 
+    evaluate(util::Timeline const &timeline,
              std::vector<std::shared_ptr<util::Grounding>> const &facts);
 
     void expire_outdated_groundings();

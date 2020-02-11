@@ -78,50 +78,19 @@ void test_acyclicity_only_first_timepoint() {
     run_acyclicity_test(name, rule_string, expected_has_terminating_chase);
 }
 
-//void test_run() {
-    //const std::string name = "Test Run";
-    //std::string stream_string = "1 4 "
-                                //"1 : q(x1, y1, z1)\n"
-                                //"2 : q(x1, y1, z1)\n"
-                                //"3 : q(x1, y1, z1)\n"
-                                //"4 : \n";
-    //std::string rule_string =
-        //"p(a, b, X, Z) && [I, a] && [I, b] := [$, 100] [D] q(X, Y, Z)\n"
-        //" r(X, Z, c, d) && [I, c] && [I, d]  := [$, 100] [D] p(a, b, X, Z)\n";
-    //auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
-    //run(name, stream_string, rule_string, chase_alg);
-//}
-
-//void test_run_no_events() {
-    //const std::string name = "Test Run";
-    //std::string stream_string = "1 4 "
-                                //"1 : q(x1, y1, z1)\n"
-                                //"2 : q(x1, y1, z1)\n"
-                                //"3 : q(x1, y1, z1)\n"
-                                //"4 : \n";
-    //std::string rule_string =
-        //"p(a, b, X, Z) := [$, 100] [D] q(X, Y, Z)\n"
-        //" r(X, Z, c, d) := [$, 100] [D] p(a, b, X, Z)\n";
-    //auto chase_alg = laser::util::ChaseAlgorithm::RESTRICTED;
-    //run(name, stream_string, rule_string, chase_alg);
-//}
-
 void test_run() {
     const std::string name = "Test Run";
     std::string stream_string = "1 4 "
-                                "1 : b(11)\n"
-                                "2 : b(22)\n"
-                                "3 : b(33), b(30)\n"
+                                "1 : p(2), q(1) \n"
+                                "2 : \n"
+                                "3 : \n"
                                 "4 : \n";
-    std::string rule_string =
-        "[@, U] a(X) := [@, T] b(X) && +(U, T, Y) && =(Y, 1) \n";
+    std::string rule_string = "plus(Z) := p(X) && q(Y) && +(Z, X, Y)\n";
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     run(name, stream_string, rule_string, chase_alg);
 }
 
-
 int main() {
-    //test_run_no_events();
     test_run();
     // test_acyclicity_simple();
     // test_acyclicity_obvious_cycle();

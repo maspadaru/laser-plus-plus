@@ -19,12 +19,15 @@ generate_evaluator(std::unique_ptr<formula::Formula> const &math_atom,
     case formula::MathOperator::DIVISION:
         result = std::make_unique<Algebra>(math_operator, predicate, arguments,
                                            body);
+        break;
     case formula::MathOperator::LESSER:
     case formula::MathOperator::GREATHER:
     case formula::MathOperator::LESSER_OR_EQUAL:
     case formula::MathOperator::GREATHER_OR_EQUAL:
     case formula::MathOperator::NOT_EQUAL:
     case formula::MathOperator::EQUALS:
+        result = std::make_unique<Condition>(math_operator, predicate,
+                                             arguments, body);
         break;
     case formula::MathOperator::NONE:
         break;
@@ -62,7 +65,7 @@ void MathManager::init(std::unique_ptr<formula::Formula> const &body) {
 }
 
 std::vector<std::shared_ptr<util::Grounding>> MathManager::evaluate(
-    util::Timeline const &timeline, 
+    util::Timeline const &timeline,
     std::vector<std::shared_ptr<util::Grounding>> const &facts) {
     std::vector<std::shared_ptr<util::Grounding>> input_facts = facts;
     std::vector<std::shared_ptr<util::Grounding>> result = facts;

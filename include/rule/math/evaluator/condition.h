@@ -1,5 +1,5 @@
-#ifndef LASER_RULE_MATH_EVALUATOR_ALGEBRA_H
-#define LASER_RULE_MATH_EVALUATOR_ALGEBRA_H
+#ifndef LASER_RULE_MATH_EVALUATOR_CONDITION_H
+#define LASER_RULE_MATH_EVALUATOR_CONDITION_H
 
 #include <map>
 #include <memory>
@@ -21,13 +21,12 @@
 
 namespace laser::rule {
 
-class Algebra : public Evaluator {
+class Condition : public Evaluator {
   private:
     const int TIME_VARIABLE_INDEX = -2;
-    const int RESULT_VAR = 0;
-    const int LEFT_TERM = 1;
-    const int RIGHT_TERM = 2;
-    EvaluatorType evaluator_type = EvaluatorType::ALGEBRA;
+    const int LEFT_TERM = 0;
+    const int RIGHT_TERM = 1;
+    EvaluatorType evaluator_type = EvaluatorType::CONDITION;
     formula::MathOperator math_operator;
     uint64_t max_time_window = 0;
     uint64_t max_tuple_window = 0;
@@ -57,8 +56,8 @@ class Algebra : public Evaluator {
     std::vector<std::shared_ptr<util::Grounding>>
     generate_groundings(util::Timeline const &timeline) const;
 
-    int64_t do_math(value_node const &left_node,
-                    value_node const &right_node) const;
+    bool check_condition(value_node const &left_node,
+                         value_node const &right_node) const;
 
     void update_value_set(
         util::Timeline const &timeline,
@@ -67,11 +66,12 @@ class Algebra : public Evaluator {
         value_set &values) const;
 
   public:
-    explicit Algebra(formula::MathOperator math_operator, std::string predicate,
-                     std::vector<std::string> arguments,
-                     std::unique_ptr<formula::Formula> const &body);
+    explicit Condition(formula::MathOperator math_operator,
+                       std::string predicate,
+                       std::vector<std::string> arguments,
+                       std::unique_ptr<formula::Formula> const &body);
 
-    ~Algebra() override = default;
+    ~Condition() override = default;
 
     formula::MathOperator get_operator() const override;
 
@@ -88,4 +88,4 @@ class Algebra : public Evaluator {
 
 } // namespace laser::rule
 
-#endif // LASER_RULE_MATH_EVALUATOR_ALGEBRA_H
+#endif // LASER_RULE_MATH_EVALUATOR_CONDITION_H
