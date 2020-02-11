@@ -21,7 +21,7 @@
 namespace laser::rule {
 
 struct value_node {
-    double num_value;
+    long num_value;
     uint64_t ht;
     uint64_t hc;
     std::string str_value;
@@ -57,7 +57,7 @@ class Algebra : public Evaluator {
     std::unordered_map<std::string, std::unordered_set<int>> left_var_map;
     std::unordered_map<std::string, std::unordered_set<int>> right_var_map;
 
-    bool is_double(std::string const &inputString, double &result) const;
+    bool is_integer(std::string const &inputString, long &result) const;
     void update_window_size(std::unique_ptr<formula::Formula> const &formula);
 
     void update_var_map_time_reference(
@@ -71,7 +71,7 @@ class Algebra : public Evaluator {
     std::vector<std::shared_ptr<util::Grounding>>
     generate_groundings(util::Timeline const &timeline) const;
 
-    double do_math(value_node const &left_node,
+    long do_math(value_node const &left_node,
                    value_node const &right_node) const;
 
     void update_value_set(

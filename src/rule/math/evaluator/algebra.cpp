@@ -68,11 +68,11 @@ void Algebra::init_var_map(std::unique_ptr<formula::Formula> const &formula) {
     update_window_size(formula);
 }
 
-double Algebra::do_math(value_node const &left_node,
+long Algebra::do_math(value_node const &left_node,
                         value_node const &right_node) const {
-    double left_value = left_node.num_value;
-    double right_value = right_node.num_value;
-    double result = 0;
+    long left_value = left_node.num_value;
+    long right_value = right_node.num_value;
+    long result = 0;
     switch (math_operator) {
     case formula::MathOperator::PLUS:
         result = left_value + right_value;
@@ -92,9 +92,9 @@ double Algebra::do_math(value_node const &left_node,
     return result;
 }
 
-bool Algebra::is_double(std::string const &inputString, double &result) const {
+bool Algebra::is_integer(std::string const &inputString, long &result) const {
     char *end;
-    result = std::strtod(inputString.c_str(), &end);
+    result = std::strtol(inputString.c_str(), &end, 10);
     return !(end == inputString.c_str() || *end != '\0');
 }
 
@@ -141,14 +141,14 @@ void Algebra::update_value_set(
         for (auto index : indices) {
             bool found = false;
             std::string str_value;
-            double num_value;
+            long num_value;
             if (index == TIME_VARIABLE_INDEX) {
                 num_value = timeline.get_time();
                 str_value = std::to_string(num_value);
                 found = true;
             } else {
                 str_value = fact->get_constant(index);
-                found = is_double(str_value, num_value);
+                found = is_integer(str_value, num_value);
             }
             if (found) {
                 value_node node;

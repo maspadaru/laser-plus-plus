@@ -146,3 +146,21 @@ TEST(AssignmentTest, AssignmentCondition) {
     expected[5] = "5 -> ";
     test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
+
+TEST(AssignmentTest, AassignmentTimeReference) {
+    std::string stream_string = "1 4 "
+                                "1 : b(1)\n"
+                                "2 : b(2)\n"
+                                "3 : b(33), b(30)\n"
+                                "4 : b(4)\n";
+    std::string rule_string =
+        "[@, T] a(X) := b(X) && =(T, 4) \n";
+    auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
+    std::vector<std::string> expected(15);
+    expected[0] = "0 -> ";
+    expected[1] = "1 -> ";
+    expected[2] = "2 -> ";
+    expected[3] = "3 -> ";
+    expected[4] = "4 -> a(1) a(2) a(4) a(33) a(30)";
+    test_framework::run_test(stream_string, rule_string, expected, chase_alg);
+}

@@ -16,7 +16,7 @@ TEST(AlgebraTest, AlgebraSimple) {
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> plus(3.000000)";
+    expected[1] = "1 -> plus(3)";
     expected[2] = "2 -> ";
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
@@ -37,7 +37,7 @@ TEST(AlgebraTest, AlgebraAll) {
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
     expected[1] =
-        "1 -> plus(5.000000) minus(1.000000) times(6.000000) div(1.500000)";
+        "1 -> plus(5) minus(1) times(6) div(1)";
     expected[2] = "2 -> ";
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
@@ -66,7 +66,7 @@ TEST(AlgebraTest, AlgebraMultiple) {
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> result(4.000000, 7.000000)";
+    expected[1] = "1 -> result(4, 7)";
     expected[2] = "2 -> ";
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
@@ -83,9 +83,9 @@ TEST(AlgebraTest, AlgebraDiamond) {
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> q(7.000000)";
-    expected[2] = "2 -> q(7.000000)";
-    expected[3] = "3 -> q(7.000000)";
+    expected[1] = "1 -> q(7)";
+    expected[2] = "2 -> q(7)";
+    expected[3] = "3 -> q(7)";
     expected[4] = "4 -> ";
     test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
@@ -100,7 +100,7 @@ TEST(AlgebraTest, AlgebraDoublePredicate) {
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> q(4.000000) q(6.000000) q(8.000000)";
+    expected[1] = "1 -> q(4) q(6) q(8)";
     expected[2] = "2 -> ";
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
@@ -118,7 +118,7 @@ TEST(AlgebraTest, AlgebraDoubleTerm) {
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> q(2.000000) q(6.000000) q(10.000000)";
+    expected[1] = "1 -> q(2) q(6) q(10)";
     expected[2] = "2 -> ";
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
@@ -136,7 +136,7 @@ TEST(AlgebraTest, AlgebraDoubleVariable) {
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> q(10.000000)";
+    expected[1] = "1 -> q(10)";
     expected[2] = "2 -> ";
     expected[3] = "3 -> ";
     expected[4] = "4 -> ";
@@ -172,9 +172,9 @@ TEST(AlgebraTest, AlgebraReadingTimeVariable) {
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> p(1, 11, 0)";
-    expected[2] = "2 -> p(2, 22, 1)";
-    expected[3] = "3 -> p(3, 33, 2) p(3, 30, 2)";
+    expected[1] = "1 -> q(1, 11, 0)";
+    expected[2] = "2 -> q(2, 22, 1)";
+    expected[3] = "3 -> q(3, 33, 2) q(3, 30, 2)";
     expected[4] = "4 -> ";
     test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
@@ -192,19 +192,12 @@ TEST(AlgebraTest, AlgebraTimeRefNextTime) {
     expected[0] = "0 -> ";
     expected[1] = "1 -> ";
     expected[2] = "2 -> a(11)";
-    expected[3] = "3 -> a(222)";
+    expected[3] = "3 -> a(22)";
     expected[4] = "4 -> a(33) a(30)";
     test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
 
 TEST(AlgebraTest, AlgebraCondition) {
-    // This should return 1 -> a(5); 4 -> a(5) a(6)
-    // However it does not, since at T=1:
-    //      r(5) -> Z = "5", but +(5.0000, 3, 2) => Z = "5.0000"
-    //      The string values are compared, and these values do not match
-    //  Therefore, Algebra Atoms should not be used for conditions!
-    //  The rule can be re-written as:
-    //      a(Z) := p(X) && q(Y) && r(Z) && +(A, X, Y) && ?=(A, Z);
     std::string stream_string = "1 4 "
                                 "1 : p(2), q(3), r(5) \n"
                                 "2 : p(2), q(3), r(6)\n"
@@ -214,10 +207,10 @@ TEST(AlgebraTest, AlgebraCondition) {
     auto chase_alg = laser::util::ChaseAlgorithm::OBLIVIOUS;
     std::vector<std::string> expected(15);
     expected[0] = "0 -> ";
-    expected[1] = "1 -> ";
+    expected[1] = "1 -> a(5)";
     expected[2] = "2 -> ";
     expected[3] = "3 -> ";
-    expected[4] = "4 -> ";
+    expected[4] = "4 -> a(5) a(6)";
     expected[5] = "5 -> ";
     test_framework::run_test(stream_string, rule_string, expected, chase_alg);
 }
