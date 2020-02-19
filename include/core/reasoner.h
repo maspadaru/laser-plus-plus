@@ -22,6 +22,7 @@ namespace laser::core {
 class Reasoner {
   private:
     uint64_t total_facts_read = 0;
+    uint64_t total_conclusions = 0;
     std::mutex fact_map_mutex;
     std::mutex conclusion_map_mutex;
     std::mutex output_ready_mutex;
@@ -65,6 +66,7 @@ class Reasoner {
     void start();
 
     uint64_t get_total_facts_read() const;
+    uint64_t get_total_conclusions() const;
     std::vector<double> const &get_runtimes() const;
 };
 

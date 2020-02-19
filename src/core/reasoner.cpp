@@ -34,6 +34,7 @@ void Reasoner::insert_conclusions(
     uint64_t timepoint,
     std::vector<std::shared_ptr<util::Grounding>> conclusions) {
     std::lock_guard<std::mutex> guard(conclusion_map_mutex);
+    total_conclusions += conclusions.size();
     conclusion_map.try_emplace(timepoint, std::move(conclusions));
 }
 
@@ -114,6 +115,7 @@ void Reasoner::write(util::Timeline timeline) {
 }
 
 uint64_t Reasoner::get_total_facts_read() const { return total_facts_read; }
+uint64_t Reasoner::get_total_conclusions() const { return total_conclusions; }
 
 void Reasoner::listen(util::Timeline timeline) {
     // service_manager->serve_requests();
