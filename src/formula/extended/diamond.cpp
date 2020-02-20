@@ -73,7 +73,6 @@ bool Diamond::evaluate(
     bool result = child->evaluate(timeline, previous_step, facts);
     auto child_facts = child->get_groundings(timeline);
     grounding_table.diamond_update_table(child_facts);
-    //grounding_table.add_grounding_vector(child_facts);
     return result;
 }
 

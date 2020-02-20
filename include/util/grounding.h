@@ -11,8 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "util/string_pool.h"
-
 namespace laser::util {
 
 /**
@@ -31,17 +29,13 @@ class Grounding {
     size_t step = 0;
     bool is_background_fact_m = false;
     bool is_fact_m = false;
-    std::vector<size_t> constant_vector;
-    size_t predicate;
+    std::shared_ptr<std::vector<std::string>> constant_vector;
+    std::shared_ptr<std::string> predicate;
 
     bool annotation_less_than(Grounding const &other) const;
 
-    std::string const &get_string(size_t index) const;
-
-    void init_strings(std::string const &predicate,
-                      std::vector<std::string> const &constant_vector);
-
   public:
+
     Grounding(std::string const &predicate, uint64_t consideration_time,
               uint64_t horizon_time, uint64_t consideration_count,
               uint64_t horizon_count,
@@ -89,7 +83,7 @@ class Grounding {
 
     std::string const &get_constant(size_t variable_index) const;
 
-    std::vector<std::string> get_constant_vector() const;
+    std::vector<std::string> const &get_constant_vector() const;
 
     std::string get_substitution_key() const;
 
@@ -128,7 +122,7 @@ class Grounding {
 
     bool operator==(const Grounding &other) const;
 
-    bool substitution_equal(Grounding const &other) const;
+    bool substitution_equal(Grounding const &other) const; 
     bool substitution_less_than(Grounding const &other) const;
     bool predsubst_less_than(Grounding const &other) const;
 };
@@ -155,7 +149,7 @@ struct GroundingFullHash {
 struct GroundingSubstitutionHash {
   public:
     size_t operator()(Grounding const &x) const {
-        auto key_str = x.get_substitution_key();
+        auto key_str  = x.get_substitution_key();
         auto result = std::hash<std::string>{}(key_str);
         return result;
     }
@@ -225,3 +219,5 @@ struct GroundingPredicateSubstitutionCompare {
 } // namespace laser::util
 
 #endif // LASER_UTIL_GROUNDING_H
+
+    
